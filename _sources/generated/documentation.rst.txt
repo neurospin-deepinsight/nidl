@@ -1,0 +1,92 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+API documentation of NIDL
+==========================
+
+This is the classes and functions reference in nidl. Please refer to the gallery for further details, as the class and function raw specifications may not be enough to give full guidelines on their uses.
+
+.. raw:: html
+
+    <!-- Block section -->
+
+    <div class='container-fluid'>
+
+    <div class='float-left'>
+
+    <div class='row'>
+
+    <div class='col-md-4'>
+    <h3><a href='nidl.html'>
+    nidl
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='nidl.utils.html'>
+    nidl.utils
+    </a></h3>
+    <blockquote>
+        <p>Various utilities to help with development.</p>    </blockquote>
+    </div>
+
+    </div>
+    </div>
+    </div>
+
+.. rst-class:: documentation-contents
+
+  **Contents**:
+    * `nidl <nidl.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.experiment.fetch_experiment <nidl.experiment.fetch_experiment.html>`_
+
+          `nidl.experiment.filter_config <nidl.experiment.filter_config.html>`_
+
+          `nidl.experiment.get_env <nidl.experiment.get_env.html>`_
+
+          `nidl.experiment.load_interface <nidl.experiment.load_interface.html>`_
+
+          `nidl.experiment.update_params <nidl.experiment.update_params.html>`_
+
+    * `nidl.utils <nidl.utils.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.utils.Bunch <nidl.utils.bunch.Bunch.html>`_
+
+          `nidl.utils.Weights <nidl.utils.weights.Weights.html>`_
+
+          `nidl.utils.print_multicolor <nidl.utils.color.print_multicolor.html>`_
+
+          `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
+
+          `nidl.utils.color.Colored <nidl.utils.color.Colored.html>`_
+
+          `nidl.utils.color.attr <nidl.utils.color.attr.html>`_
+
+          `nidl.utils.color.fg <nidl.utils.color.fg.html>`_
+
+          `nidl.utils.color.hex <nidl.utils.color.hex.html>`_
+
+          `nidl.utils.color.print_multicolor <nidl.utils.color.print_multicolor.html>`_
+
+          `nidl.utils.color.print_result <nidl.utils.color.print_result.html>`_
+
+          `nidl.utils.color.print_subtitle <nidl.utils.color.print_subtitle.html>`_
+
+          `nidl.utils.color.print_title <nidl.utils.color.print_title.html>`_
+
+          `nidl.utils.color.print_warning <nidl.utils.color.print_warning.html>`_
+
+          `nidl.utils.color.random_stylize <nidl.utils.color.random_stylize.html>`_
+
+          `nidl.utils.color.stylize <nidl.utils.color.stylize.html>`_
+
+          `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
+
+

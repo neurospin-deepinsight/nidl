@@ -1,0 +1,37 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Search in API documentation of NIDL
+====================================
+
+.. raw:: html
+
+    <!-- Block section -->
+
+    <div class='my-search-bar'>
+    <i class='icon fa fa-search'></i>
+    <input type='text' id='my-search' onkeyup='mySearch()' placeholder='Search for functions & classes...' title='Search'>
+
+    </div>
+    <ul id='my-search-entries'>
+        <li><a href='nidl.experiment.fetch_experiment.html'>nidl.experiment.fetch_experiment</a></li>
+        <li><a href='nidl.experiment.filter_config.html'>nidl.experiment.filter_config</a></li>
+        <li><a href='nidl.experiment.get_env.html'>nidl.experiment.get_env</a></li>
+        <li><a href='nidl.experiment.load_interface.html'>nidl.experiment.load_interface</a></li>
+        <li><a href='nidl.experiment.update_params.html'>nidl.experiment.update_params</a></li>
+        <li><a href='nidl.utils.bunch.Bunch.html'>nidl.utils.Bunch</a></li>
+        <li><a href='nidl.utils.weights.Weights.html'>nidl.utils.Weights</a></li>
+        <li><a href='nidl.utils.bunch.Bunch.html'>nidl.utils.bunch.Bunch</a></li>
+        <li><a href='nidl.utils.color.Colored.html'>nidl.utils.color.Colored</a></li>
+        <li><a href='nidl.utils.color.attr.html'>nidl.utils.color.attr</a></li>
+        <li><a href='nidl.utils.color.fg.html'>nidl.utils.color.fg</a></li>
+        <li><a href='nidl.utils.color.hex.html'>nidl.utils.color.hex</a></li>
+        <li><a href='nidl.utils.color.print_multicolor.html'>nidl.utils.color.print_multicolor</a></li>
+        <li><a href='nidl.utils.color.print_result.html'>nidl.utils.color.print_result</a></li>
+        <li><a href='nidl.utils.color.print_subtitle.html'>nidl.utils.color.print_subtitle</a></li>
+        <li><a href='nidl.utils.color.print_title.html'>nidl.utils.color.print_title</a></li>
+        <li><a href='nidl.utils.color.print_warning.html'>nidl.utils.color.print_warning</a></li>
+        <li><a href='nidl.utils.color.random_stylize.html'>nidl.utils.color.random_stylize</a></li>
+        <li><a href='nidl.utils.color.stylize.html'>nidl.utils.color.stylize</a></li>
+        <li><a href='nidl.utils.color.print_multicolor.html'>nidl.utils.print_multicolor</a></li>
+        <li><a href='nidl.utils.weights.Weights.html'>nidl.utils.weights.Weights</a></li>
+    </ul>

@@ -1,0 +1,15 @@
+..  nidl documentation master file
+
+
+Nidl provides unified deep learning interfaces (compatible with `PyTorch Lightning <https://lightning.ai/pytorch-lightning>`_) to analyze brain volumes and surfaces. It also provides a way to describe your experiments using a single configuration file (for production, a more advanced tool is availble in `Hydra <https://hydra.cc>`_).
+
+
+
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+
+    generated/installation
+    generated/documentation
+    generated/search
+
