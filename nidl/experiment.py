@@ -105,7 +105,8 @@ def fetch_experiment(
         assert key in SECTIONS, f"Unexpected section '{key}'!"
     settings = {key: config.pop(key) if key in config else None
                 for key in ["project", "import", "global", "environments"]}
-    for key in selector or []:
+    selector = selector or []
+    for key in selector:
         assert key in settings["environments"], (
             f"Unexpected environment '{key}'!")
     config_env = get_env(settings["global"], settings["import"])
@@ -242,6 +243,7 @@ def update_params(
         if isinstance(val, str) and val.startswith("auto|"):
             attr = val.split("|")[-1]
             params[key] = eval(attr, interfaces, env)
+            interfaces.pop("__builtins__")
     return params
 
 
@@ -272,7 +274,7 @@ def load_interface(
                 ImportWarning, stacklevel=2)
         elif mod_version != version:
             warnings.warn(
-                f"The '{module_name}' module has a different version!",
+                f"The '{name}' interface has a different version!",
                 ImportWarning, stacklevel=2)
     mod = importlib.import_module(module_name)
     cls = getattr(mod, class_name)

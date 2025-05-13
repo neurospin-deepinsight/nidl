@@ -7,9 +7,12 @@
 ##########################################################################
 
 
+import glob
 import os
+import toml
 import unittest
 from nidl.experiment import fetch_experiment
+from nidl.utils import print_multicolor
 
 
 class TestExperiment(unittest.TestCase):
@@ -19,7 +22,8 @@ class TestExperiment(unittest.TestCase):
         """ Setup test.
         """
         dirname = os.path.abspath(os.path.dirname(__file__))
-        self.expfile = os.path.join(dirname, "experiment.toml")
+        self.configs = glob.glob(os.path.join(dirname, "configs", "*.toml"))
+        print(self.configs)
 
     def tearDown(self):
         """ Run after each test.
@@ -29,8 +33,15 @@ class TestExperiment(unittest.TestCase):
     def test_fetch_experiment(self):
         """ Test 'fetch_experiment'.
         """
-        exp = fetch_experiment(self.expfile, selector=["tiny", "tl"],
-                               verbose=1)
+        for expfile in self.configs:
+            config = toml.load(expfile)
+            project = config["project"]
+            envs = config["environments"]
+            print(f"[{print_multicolor(project['name'], display=False)}] "
+                  f"{project['desc'].lower()}...")
+            exp = fetch_experiment(expfile, selector=envs.keys(),
+                                   verbose=0)
+            print(exp)
 
 
 if __name__ == "__main__":

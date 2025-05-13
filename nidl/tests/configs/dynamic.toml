@@ -1,0 +1,80 @@
+[project]
+name = "Dynamic Experiment"
+desc = "Use already instanciated interfaces to initialize new ones"
+
+
+[dataset]
+interface = "nidl.utils.Bunch"
+n_modalities = 3
+root = "/path/to/the/data"
+
+[dataset.train]
+split = "train"
+
+[dataset.test]
+split = "test"
+
+
+[dataloader]
+interface = "nidl.utils.Bunch"
+batch_size = 128
+num_workers = 4
+
+[dataloader.train]
+shuffle = true
+dataset = "auto|dataset_train"
+
+[dataloader.test]
+shuffle = false
+dataset = "auto|dataset_test"
+
+
+[model]
+interface = "nidl.utils.Bunch"
+n_channels = "auto|dataset_train.n_modalities"
+
+[model.tiny]
+dim = 192
+heads = 3
+mlp_dim = 768
+
+[model.small]
+dim = 384
+heads = 6
+mlp_dim = 1536
+
+[model.base]
+dim = 768
+heads = 12
+mlp_dim = 3072
+
+
+[loss]
+interface = "nidl.utils.Bunch"
+reduction = "mean"
+
+
+[optimizer]
+interface = "nidl.utils.Bunch"
+lr = 0.0001
+
+
+[scheduler]
+interface = "nidl.utils.Bunch"
+optimizer = "auto|optimizer"
+step_size = 1000
+gamma = 0.5
+
+
+[training]
+interface = "nidl.utils.Bunch"
+num_epochs = 200
+gpu = 0
+
+
+[environments]
+train = { dataset = "train", dataloader = "train" }
+test = { dataset = "test", dataloader = "test" }
+tiny-model = { model = "tiny" }
+small-model = { model = "small" }
+base-model = { model = "base" }

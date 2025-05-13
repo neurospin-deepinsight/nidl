@@ -77,5 +77,25 @@ class Bunch(dict):
         pass
 
     def __repr__(self):
-        params = [f"{key}={val}" for key, val in self.items()]
-        return (f"{self.__class__.__name__}<{','.join(params)}>")
+        lines = []
+        for key, item in self.items():
+            item_str = repr(item)
+            item_str = self._addindent(item_str, 2)
+            lines.append(f"{key}: {item_str}")
+        main_str = f"{self.__class__.__name__}("
+        if lines:
+            main_str += "\n  " + "\n  ".join(lines) + "\n"
+        main_str += ")"
+        return main_str
+
+    @classmethod
+    def _addindent(cls, s_, num_spaces):
+        s = s_.split("\n")
+        # don't do anything for single-line stuff
+        if len(s) == 1:
+            return s_
+        first = s.pop(0)
+        s = [(num_spaces * " ") + line for line in s]
+        s = "\n".join(s)
+        s = first + "\n" + s
+        return s

@@ -1,0 +1,80 @@
+[project]
+name = "Cross Validation Experiment"
+desc = "You can define a grid of parameters to explore"
+
+
+[dataset]
+interface = "nidl.utils.Bunch"
+n_modalities = 3
+root = "/path/to/the/data"
+
+[dataset.train]
+split = "train"
+
+[dataset.test]
+split = "test"
+
+
+[dataloader]
+interface = "nidl.utils.Bunch"
+batch_size = 128
+num_workers = 4
+
+[dataloader.train]
+shuffle = true
+dataset = "null"
+
+[dataloader.test]
+shuffle = false
+dataset = "null"
+
+
+[model]
+interface = "nidl.utils.Bunch"
+n_channels = 3
+
+[model.tiny]
+dim = 192
+heads = 3
+mlp_dim = 768
+
+[model.small]
+dim = 384
+heads = 6
+mlp_dim = 1536
+
+[model.base]
+dim = 768
+heads = 12
+mlp_dim = 3072
+
+
+[loss]
+interface = "nidl.utils.Bunch"
+reduction = "mean"
+
+
+[optimizer]
+interface = "nidl.utils.Bunch"
+lr = "cv|[0.01, 0.001, 0.0001]"
+
+
+[scheduler]
+interface = "nidl.utils.Bunch"
+optimizer = "null"
+step_size = 1000
+gamma = 0.5
+
+
+[training]
+interface = "nidl.utils.Bunch"
+num_epochs = 200
+gpu = 0
+
+
+[environments]
+train = { dataset = "train", dataloader = "train" }
+test = { dataset = "test", dataloader = "test" }
+tiny-model = { model = "tiny" }
+small-model = { model = "small" }
+base-model = { model = "base" }
