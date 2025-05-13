@@ -10,6 +10,7 @@ import collections
 import copy
 import importlib
 import inspect
+import itertools
 import warnings
 from pprint import pprint
 from typing import Optional
@@ -66,6 +67,9 @@ def fetch_experiment(
     - dynamic parameters can be defined by specifying where this parameter
       can be find a previously loaded interface, i.e., 'auto|<name>.<param>'.
       Note that the order is important here.
+    - cross validation can be defined by specifying a list of values, i.e.
+      'cv|[1, 2, 3]'. This will automatically instanciate multiple interface,
+      one for each input setting.
 
     The codes works as follows:
     - multiple interfaces of the same type can be returned.
@@ -123,14 +127,22 @@ def fetch_experiment(
                    if "interface_version" in params else None)
         if "interface_occurrences" in params:
             params.pop("interface_occurrences")
-        params = update_params(interfaces, params, config_env)
-        if verbose > 0:
-            print(f"\n[{print_multicolor('Loading', display=False)}] {name}..."
-                  f"\nParameters\n{'-'*10}")
-            pprint(dict(params))
-        interfaces[key] = load_interface(name, params, version)
-        if verbose > 0:
-            print(f"Interface\n{'-'*9}\n{interfaces[key]}")
+        params, param_sets = update_params(interfaces, params, config_env)
+        is_cv = (len(params) > 1)
+        for _idx, _params in enumerate(params):
+            if verbose > 0:
+                print(f"\n[{print_multicolor('Loading', display=False)}] {name}..."
+                      f"\nParameters\n{'-'*10}")
+                pprint(dict(_params))
+            _key = f"{key}_{_idx}" if is_cv else key
+            interfaces[_key] = load_interface(name, _params, version)
+            if verbose > 0:
+                print(f"Interface\n{'-'*9}\n{interfaces[_key]}")
+        if is_cv:
+            names = [f"{key}_{_idx}" for _idx in range(len(params))]
+            _params = dict(zip(names, param_sets))
+            interfaces["grid"] = load_interface(
+                "nidl.utils.Bunch", _params, None)
     return Bunch(**interfaces)
 
 
@@ -222,7 +234,7 @@ def update_params(
         interfaces: dict,
         params: dict,
         env: dict) -> dict:
-    """ Replace auto parameters.
+    """ Replace auto and cv parameters.
 
     Parameters
     ----------
@@ -235,16 +247,35 @@ def update_params(
 
     Returns
     -------
-    updated_params: dict
-        the interface parameters with the auto attributes replaced in place.
+    updated_params: list of dict
+        the interface parameters with the auto attributes replaced in place. In
+        case of cross validation a list of parameters is returned.
+    param_sets: list of dict
+        the cross validation parameter sets. None means no cross validation.
     """
     env.update(globals())
+    grid_search_params = {}
     for key, val in params.items():
-        if isinstance(val, str) and val.startswith("auto|"):
+        if isinstance(val, str) and val.startswith(("auto|", "cv|")):
             attr = val.split("|")[-1]
             params[key] = eval(attr, interfaces, env)
             interfaces.pop("__builtins__")
-    return params
+        if isinstance(val, str) and val.startswith("cv|"):
+            grid_search_params[key] = params[key]
+    if len(grid_search_params) > 0:
+        keys = grid_search_params.keys()
+        param_sets = [
+            dict(zip(keys, values))
+            for values in itertools.product(*grid_search_params.values())]
+        _params = []
+        for cv_params in param_sets:
+            _params.append(copy.deepcopy(params))
+            _params[-1].update(cv_params)
+        params = _params
+    else:
+        param_sets = None
+        params = [params]
+    return params, param_sets
 
 
 def load_interface(

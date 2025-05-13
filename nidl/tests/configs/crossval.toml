@@ -57,6 +57,7 @@ reduction = "mean"
 [optimizer]
 interface = "nidl.utils.Bunch"
 lr = "cv|[0.01, 0.001, 0.0001]"
+weight_decay = "cv|[0.0, 0.2]"
 
 
 [scheduler]
