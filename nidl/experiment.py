@@ -1,0 +1,267 @@
+##########################################################################
+# NSAp - Copyright (C) CEA, 2025
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
+
+import collections
+import copy
+import importlib
+import inspect
+import warnings
+from pprint import pprint
+from typing import Optional
+
+import toml
+
+from .utils import Bunch, print_multicolor
+
+SECTIONS = ("project", "global", "import",
+            "scaler", "transform", "compose", "augmentation", "dataset",
+            "dataloader", "model", "weights", "loss", "optimizer",
+            "scheduler",
+            "training",
+            "environments")
+
+
+def fetch_experiment(
+        expfile: str,
+        selector: Optional[tuple[str]] = None,
+        verbose: int = 0):
+    """ Fetch an experiement from an input configuration file.
+
+    Allowed keys are:
+    - project: define here some usefull information about your experiment such
+      as the 'name', 'author', 'date'...
+    - global: define here global variables that can be reused in other
+      sections.
+    - import: define here import that can be reused in other sections with the
+      'auto' mode (see desciption below).
+    - scaler: dl interface
+    - transform: dl interfaces
+    - compose: dl interfaces
+    - augmentation: dl interface
+    - dataset: dl interface
+    - dataloader: dl interface
+    - model: dl interface
+    - weights: dl interface
+    - loss: dl interface
+    - optimizer: dl interface
+    - scheduler: dl interface
+    - training: define here training settings.
+    - environements: define here the interface to load in order to fullfil your
+      needs and the constraint impose by the 'interface_occurrences'
+      parameter (see desciption below).
+
+    Interface definition:
+    - the 'interface' key contains a name that specifies what class to import
+      in absolute terms.
+    - the 'interface_version' key contains the expected version of the loaded
+      interface. The '__version__' module parameter is checked if available
+      and a warning is displayed if is mismatched is detected or the version
+      connot be checked.
+    - other key are the interface parameters.
+    - dynamic parameters can be defined by specifying where this parameter
+      can be find a previously loaded interface, i.e., 'auto|<name>.<param>'.
+      Note that the order is important here.
+
+    The codes works as follows:
+    - multiple interfaces of the same type can be returned.
+    - the different choices must be described in an 'environments' section.
+    - the output name will be prefixed by the environment name.
+    - use the selector input parameters to filter the available interfaces in
+      the input configuration file.
+
+    How to define multiple building blocks:
+    - the construction is hierarchic, i.e. child building blocks inherit
+      the properties of the parent building block.
+    - a child building block name contains the parent name as a prefix and use
+      the '.' separator.
+
+    The weights section special case:
+    - model names specified in the form `hf-hub:path/architecture_name@revision`
+      will be loaded from Hugging Face hub.
+    - model names specifid with a path will be loaded from the local machine.
+
+    Parameters
+    ----------
+    expfile: str
+        the experimental design file.
+    selector: tuple of str, default=None
+        if multiple interface of the same type are defined, this parameter
+        allows you to select the appropriate environements.
+    verbose: int, default=0
+        enable verbose output.
+
+    Returns
+    -------
+    data: Bunch
+        dictionaray-like object containing the experiment building blocks.
+    """
+    config = toml.load(expfile, _dict=collections.OrderedDict)
+    for key in config:
+        assert key in SECTIONS, f"Unexpected section '{key}'!"
+    settings = {key: config.pop(key) if key in config else None
+                for key in ["project", "import", "global", "environments"]}
+    for key in selector or []:
+        assert key in settings["environments"], (
+            f"Unexpected environment '{key}'!")
+    config_env = get_env(settings["global"], settings["import"])
+    config = filter_config(config, settings["environments"], selector)
+    if verbose > 0:
+        print(f"[{print_multicolor('Configuration', display=False)}]")
+        pprint(config)
+    interfaces = {}
+    for key, params in config.items():
+        name = params.pop("interface") if "interface" in params else None
+        if name is None:
+            raise ValueError(f"No interface defined for '{key}'!")
+        version = (params.pop("interface_version")
+                   if "interface_version" in params else None)
+        if "interface_occurrences" in params:
+            params.pop("interface_occurrences")
+        params = update_params(interfaces, params, config_env)
+        if verbose > 0:
+            print(f"\n[{print_multicolor('Loading', display=False)}] {name}..."
+                  f"\nParameters\n{'-'*10}")
+            pprint(dict(params))
+        interfaces[key] = load_interface(name, params, version)
+        if verbose > 0:
+            print(f"Interface\n{'-'*9}\n{interfaces[key]}")
+    return Bunch(**interfaces)
+
+
+def get_env(
+        variables: dict,
+        modules: dict) -> dict:
+    """ Dynamically load an environement.
+    """
+    env = copy.copy(variables)
+    for key, name in modules.items():
+        module_name, object_name = name.rsplit(".", 1)
+        mod = importlib.import_module(module_name)
+        env[key] = getattr(mod, object_name)
+    return env
+
+
+def filter_config(
+        config: dict,
+        env: dict,
+        selector: tuple[str]) -> dict:
+    """ Filter configuration based on declared environements and user selector.
+
+    Parameters
+    ----------
+    config: dict
+        the current configuration.
+    env: dict
+        the declared environements.
+    selector: tuple of str
+        if multiple interface of the same type are defined, this parameter
+        allows you to select the appropriate environements.
+
+    Returns
+    -------
+    filter_conf: dict
+        the filtered configuration.
+    """
+    selected_env = {}
+    for env_name in selector:
+        for key, val in env[env_name].items():
+            if isinstance(val, list):
+                selected_env.setdefault(key, []).extend(val)
+            else:
+                selected_env.setdefault(key, []).append(val)
+    filter_config = collections.OrderedDict()
+    for section, params in config.items():
+        shared_params, multi_params = {}, []
+        for name in params:
+            if isinstance(params[name], collections.OrderedDict):
+                assert section in selected_env, (
+                    f"Multi-interface '{section}' environments not defined "
+                    "properly!")
+                if name in selected_env[section]:
+                    multi_params.append((name, params[name]))
+            else:
+                shared_params[name] = params[name]
+        n_envs = len(multi_params)
+        if ("interface_occurrences" in params
+                and params["interface_occurrences"] != n_envs):
+            raise ValueError(f"The maximum occurence of the '{section}' "
+                             "interface is not respected. Please update the "
+                             "loaded environments accordingly.")
+        if n_envs > 0:
+            for name, _params in multi_params:
+                _params.update(shared_params)
+                if n_envs > 1:
+                    filter_config[f"{section}_{name}"] = _params
+                else:
+                    filter_config[section] = _params
+        else:
+           filter_config[section] = shared_params
+    return filter_config
+
+
+def update_params(
+        interfaces: dict,
+        params: dict,
+        env: dict) -> dict:
+    """ Replace auto parameters.
+
+    Parameters
+    ----------
+    interfaces: dict
+        the currently loaded interfaces.
+    params: dict
+        the interface parameters.
+    env: dict
+        the local environment.
+
+    Returns
+    -------
+    updated_params: dict
+        the interface parameters with the auto attributes replaced in place.
+    """
+    env.update(globals())
+    for key, val in params.items():
+        if isinstance(val, str) and val.startswith("auto|"):
+            attr = val.split("|")[-1]
+            params[key] = eval(attr, interfaces, env)
+    return params
+
+
+def load_interface(
+        name: str,
+        params: dict,
+        version: Optional[str]):
+    """ Load an interface. 
+
+    Parameters
+    ----------
+    name: str
+        the interface name argument that specifies what class to
+        import in absolute terms, i.e. 'my_module.my_class'.
+    params: dict
+        the interface parameters.
+    version: str, default None
+        the exppected modulee version.
+    """
+    module_name, class_name = name.rsplit(".", 1)
+    root_module_name = module_name.split(".")[0]
+    root_mod = importlib.import_module(root_module_name)
+    if version is not None:
+        mod_version = getattr(root_mod, "__version__", None)
+        if mod_version is None:
+            warnings.warn(
+                f"The '{module_name}' module has no '__version__' parameter!",
+                ImportWarning, stacklevel=2)
+        elif mod_version != version:
+            warnings.warn(
+                f"The '{module_name}' module has a different version!",
+                ImportWarning, stacklevel=2)
+    mod = importlib.import_module(module_name)
+    cls = getattr(mod, class_name)
+    assert inspect.isclass(cls), "An interface MUST be defined as a class!"
+    return cls(**params)

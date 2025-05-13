@@ -1,0 +1,83 @@
+[project]
+name = "SiT training"
+
+[model]
+interface = "surfify.models.SiT"
+interface_version = "0.3.0"
+interface_occurrences = 1
+n_patches = 1280
+n_channels = 2
+n_vertices = 45
+depth = 12
+n_classes = 1
+pool = "cls"
+dim_head = 64
+dropout = 0
+emb_dropout = 0
+
+[model.tiny]
+dim = 192
+heads = 3
+mlp_dim = 768
+
+[model.small]
+dim = 384
+heads = 6
+mlp_dim = 1536
+
+[model.base]
+dim = 768
+heads = 12
+mlp_dim = 3072
+
+[weights]
+interface = "nidl.utils.Weights"
+data_dir = "/tmp/weights"
+filepath = "pytorch_model.bin"
+
+[weights.tiny-imgnet]
+name = "hf-hub:timm/vit_tiny_patch16_224.augreg_in21k"
+
+[weights.small-imgnet]
+name = "hf-hub:timm/vit_small_patch16_224.dino"
+
+[weights.base-imgnet]
+name = "hf-hub:timm/vit_base_patch16_224.dino"
+
+[loss]
+interface = "torch.nn.MSELoss"
+reduction = "mean"
+
+[optimizer]
+interface = "torch.optim.SGD"
+params = "auto|model.parameters()"
+lr = 0.0001
+weight_decay = 0
+momentum = 0.9
+nesterov = false
+
+[scheduler]
+interface = "torch.optim.lr_scheduler.StepLR"
+optimizer = "auto|optimizer"
+step_size = 1000
+gamma = 0.5
+
+[training]
+interface = "nidl.utils.Bunch"
+interface_occurrences = 1
+num_epochs = 200
+gpu = 0
+testing = true
+finetuning = true
+
+[training.randinit]
+
+[training.tl]
+load_weights = "imgnet"
+
+[environments]
+tiny = { model = "tiny", weights = "tiny-imgnet" }
+small = { model = "small", weights = "small-imgnet" }
+base = { model = "base", weights = "base-imgnet" }
+randinit = { training = "randinit" }
+tl = { training = "tl" }
