@@ -40,7 +40,8 @@ Important links
 Content
 -------
 
-Nidl provides unified deep learning interfaces (compatible with `PyTorch Lightning <https://lightning.ai/pytorch-lightning>`) to analyze brain volumes and surfaces. It also provides a way to describe your experiments using a single configuration file (for production, a more advanced tool is availble in `Hydra <https://hydra.cc>`).
+Nidl provides unified deep learning interfaces (compatible with `PyTorch Lightning <https://lightning.ai/pytorch-lightning>`_) to analyze brain volumes and surfaces. It also provides a way to describe your experiments using a single configuration file (for production, a more advanced tool is availble in `Hydra <https://hydra.cc>`_).
+
 
 Where to start
 --------------
