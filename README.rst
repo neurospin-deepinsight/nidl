@@ -2,8 +2,8 @@
 
 |PythonVersion|_ |Coveralls|_ |Testing|_ |Linter|_ |Doc|_ |PyPi|_
 
-.. |PythonVersion| image:: https://img.shields.io/badge/python-3.9%20%7C%203.8%20%7C%203.12-blue
-.. _PythonVersion: https://img.shields.io/badge/python-3.9%20%7C%203.8%20%7C%203.12-blue
+.. |PythonVersion| image:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+.. _PythonVersion: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
 
 .. |Coveralls| image:: https://coveralls.io/repos/neurospin-deepinsight/nidl/badge.svg?branch=master&service=github
 .. _Coveralls: https://coveralls.io/github/neurospin-deepinsight/nidl
@@ -11,7 +11,7 @@
 .. |Testing| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/testing.yml/badge.svg
 .. _Testing: https://github.com/neurospin-deepinsight/nidl/actions
 
-.. |Linter| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/linter.yml/badge.svg
+.. |Linter| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/linters.yml/badge.svg
 .. _Linter: https://github.com/neurospin-deepinsight/nidl/actions
 
 .. |Doc| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/documentation.yml/badge.svg
