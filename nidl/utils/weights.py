@@ -31,8 +31,8 @@ class Weights:
     name: str
         the location of the model weights specified in the form
         `hf-hub:path/architecture_name@revision` if available in Hugging Face
-        hub or `ns-hub:path/architecture_name if available in the NeuroSpin hub
-        or a path if avaiable in your local machine.
+        hub or `ns-hub:path/architecture_name` if available in the NeuroSpin
+        hub or a path if avaiable in your local machine.
     data_dir: pathlib.Path or str
         path where data should be downloaded.
     filepath: str

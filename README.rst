@@ -5,7 +5,7 @@
 .. |PythonVersion| image:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
 .. _PythonVersion: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
 
-.. |Coveralls| image:: https://coveralls.io/repos/neurospin-deepinsight/nidl/badge.svg?branch=master&service=github
+.. |Coveralls| image:: https://coveralls.io/repos/github/neurospin-deepinsight/nidl/badge.svg?branch=main
 .. _Coveralls: https://coveralls.io/github/neurospin-deepinsight/nidl
 
 .. |Testing| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/testing.yml/badge.svg

@@ -34,6 +34,7 @@ def fetch_experiment(
     """ Fetch an experiement from an input configuration file.
 
     Allowed keys are:
+
     - project: define here some usefull information about your experiment such
       as the 'name', 'author', 'date'...
     - global: define here global variables that can be reused in other
@@ -57,6 +58,7 @@ def fetch_experiment(
       parameter (see desciption below).
 
     Interface definition:
+
     - the 'interface' key contains a name that specifies what class to import
       in absolute terms.
     - the 'interface_version' key contains the expected version of the loaded
@@ -72,6 +74,7 @@ def fetch_experiment(
       one for each input setting.
 
     The codes works as follows:
+
     - multiple interfaces of the same type can be returned.
     - the different choices must be described in an 'environments' section.
     - the output name will be prefixed by the environment name.
@@ -79,12 +82,14 @@ def fetch_experiment(
       the input configuration file.
 
     How to define multiple building blocks:
+
     - the construction is hierarchic, i.e. child building blocks inherit
       the properties of the parent building block.
     - a child building block name contains the parent name as a prefix and use
       the '.' separator.
 
     The weights section special case:
+
     - model names specified in the form `hf-hub:path/architecture_name@revision`
       will be loaded from Hugging Face hub.
     - model names specifid with a path will be loaded from the local machine.
