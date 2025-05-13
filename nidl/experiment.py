@@ -134,16 +134,29 @@ def fetch_experiment(
 
 
 def get_env(
-        variables: dict,
+        env: dict,
         modules: dict) -> dict:
-    """ Dynamically load an environement.
+    """ Dynamically update an environement.
+
+    Parameters
+    ----------
+    env: dict
+        a environment tu update.
+    modules: dict
+        some module to add in the current environment
+
+    Returns
+    -------
+    updated_env: dict
+        the updated environemt with the input modules imported.
     """
-    env = copy.copy(variables)
-    for key, name in modules.items():
-        module_name, object_name = name.rsplit(".", 1)
-        mod = importlib.import_module(module_name)
-        env[key] = getattr(mod, object_name)
-    return env
+    updated_env = copy.copy(env or {})
+    if modules is not None:
+        for key, name in modules.items():
+            module_name, object_name = name.rsplit(".", 1)
+            mod = importlib.import_module(module_name)
+            updated_env[key] = getattr(mod, object_name)
+    return updated_env
 
 
 def filter_config(
