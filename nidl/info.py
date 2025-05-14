@@ -23,10 +23,10 @@ Deep learning for NeuroImaging in Python.
 SUMMARY = """
 .. container:: summary-carousel
 
-    `nidl` is a Python module that embeds the follwoing unified plugins:
+    `nidl` is a Python module that includes the follwoing unified plugins:
 
-    * surfify: deep leaning in the cortical surface.
-    * ...
+    * **surfify**: deep leaning in the cortical surface.
+    * **...**: ...
 """
 LONG_DESCRIPTION = (
     "Nidl provides unified deep learning interfaces (compatible with `PyTorch "
@@ -34,10 +34,6 @@ LONG_DESCRIPTION = (
     "volumes and surfaces. It also provides a way to describe your "
     "experiments using a single configuration file (for production, a "
     "more advanced tool is availble in `Hydra <https://hydra.cc>`_).\n")
-EXTRANAME = "NeuroSpin webPage"
-EXTRAURL = (
-    "https://joliot.cea.fr/drf/joliot/Pages/Entites_de_recherche/"
-    "NeuroSpin.aspx")
 LINKS = {"surfify": "https://github.com/neurospin-deepinsight/surfify"}
 URL = "https://github.com/neurospin-deepinsight/nidl"
 AUTHOR = """
