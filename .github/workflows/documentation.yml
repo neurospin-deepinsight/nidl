@@ -88,14 +88,16 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
         python -m pip install --progress-bar off .[plugins]
+        python -m pip install git+https://github.com/AGrigis/pysphinxdoc.git
+    - name: Declare plugins
+      run: |
         declare -a plugins=("surfify")
         for name in "${plugins[@]}"
         do
-            PLUGPATH=$(python -c "import $name; import os; print(os.path.dirname($name.__file__))")
+            PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH
             ln -s $PLUGPATH .
         done
-        python -m pip install git+https://github.com/AGrigis/pysphinxdoc.git
     - name: Compute documentation
       run: |
         mkdir -p tmp/doc
