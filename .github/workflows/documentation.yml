@@ -45,7 +45,9 @@ jobs:
         for name in "${plugins[@]}"
         do
             git clone https://github.com/neurospin-deepinsight/$name ./plugins/$name
+            ls ./plugins/$name
             ln -s ./plugins/$name/examples ./examples/$name
+            ls ./examples/$name
             python -m pip install git+https://github.com/neurospin-deepinsight/$name
             PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH
