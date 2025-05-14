@@ -75,3 +75,16 @@ extend-exclude = [
 
 [tool.ruff.lint.per-file-ignores]
 "*/__init__.py" = ["F401"]
+
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "warnings",
+    "pass",
+    "raise NotImplementedError",
+]
+omit = [
+    "nidl/info.py",
+    "nidl/utils/color.py",
+]

@@ -36,11 +36,12 @@ class TestExperiment(unittest.TestCase):
         for expfile in self.configs:
             config = toml.load(expfile)
             project = config["project"]
-            envs = config["environments"]
+            envs = config.get("environments")
             print(f"[{print_multicolor(project['name'], display=False)}] "
                   f"{project['desc'].lower()}...")
-            exp = fetch_experiment(expfile, selector=envs.keys(),
-                                   verbose=0)
+            exp = fetch_experiment(
+                expfile, selector=envs.keys() if envs is not None else None,
+                verbose=0)
             print(exp)
 
 
