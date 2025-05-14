@@ -38,10 +38,19 @@ jobs:
         python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
         python -m pip install --progress-bar off .[plugins]
         python -m pip install git+https://github.com/AGrigis/pysphinxdoc.git
+    - name: Declare plugins
+      run: |
+        declare -a plugins=("surfify")
+        for name in "${plugins[@]}"
+        do
+            PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
+            echo $PLUGPATH
+            ln -s $PLUGPATH .
+        done
     - name: Compute documentation
       run: |
         mkdir -p tmp/doc
-        sphinxdoc -v 2 -p . -n nidl -o tmp/doc
+        sphinxdoc -v 2 -p . -n *nidl -o tmp/doc
         cd tmp/doc
         make raw-html
         ls source/_static
