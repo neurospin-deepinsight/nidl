@@ -41,8 +41,11 @@ jobs:
     - name: Declare plugins
       run: |
         declare -a plugins=("surfify")
+        mkdir plugins
         for name in "${plugins[@]}"
         do
+            git clone https://github.com/neurospin-deepinsight/$name plugins
+            ln -s plugins/$name/examples ./examples/$name
             python -m pip install git+https://github.com/neurospin-deepinsight/$name
             PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH
@@ -103,8 +106,11 @@ jobs:
     - name: Declare plugins
       run: |
         declare -a plugins=("surfify")
+        mkdir plugins
         for name in "${plugins[@]}"
         do
+            git clone https://github.com/neurospin-deepinsight/$name plugins
+            ln -s plugins/$name/examples ./examples/$name
             python -m pip install git+https://github.com/neurospin-deepinsight/$name
             PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH
