@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../../_static/css/style.css">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../../../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                            <li>API</li>
+                            <li><a href="../../../generated/nidl.html">nidl</a></li><li><a href="../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../generated/surfify.html">surfify</a></li><li><a href="../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <h1>Source code for surfify.losses.vae</h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2021</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Definition of the Cortical Spherical Variational Auto-Encoder (SVAE) loss.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">func</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">kl_divergence</span>
+
+
+<div class="viewcode-block" id="log_likelihood">
+<a class="viewcode-back" href="../../../generated/surfify.losses.vae.log_likelihood.html#surfify.losses.log_likelihood">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood</span><span class="p">(</span><span class="n">recon</span><span class="p">,</span> <span class="n">xs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Computes the log likelihood of the input sample given the reconstructed</span>
+<span class="sd">    sample</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    recon: Tensor (N, C, H, W)</span>
+<span class="sd">        reconstructed images</span>
+<span class="sd">    xs: Tensor (N, C, H, W)</span>
+<span class="sd">        original images</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    log_likelihoods: Tensor (N)</span>
+<span class="sd">        log likelihood for each sample</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">Normal</span><span class="p">(</span><span class="n">recon</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">recon</span><span class="p">))</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">dim</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">recon</span><span class="o">.</span><span class="n">ndim</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="SphericalVAELoss">
+<a class="viewcode-back" href="../../../generated/surfify.losses.vae.SphericalVAELoss.html#surfify.losses.SphericalVAELoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SphericalVAELoss</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Spherical VAE Loss.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">left_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_mse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Init class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        beta: float, default 9</span>
+<span class="sd">            weight of the kl divergence.</span>
+<span class="sd">        left_mask: Tensor (azimuth, elevation), default None</span>
+<span class="sd">            left cortical binary mask.</span>
+<span class="sd">        right_mask: Tensor (azimuth, elevation), default None</span>
+<span class="sd">            right cortical binary mask.</span>
+<span class="sd">        use_mse: bool, default True</span>
+<span class="sd">            optionally uses the log likelihood.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left_mask</span> <span class="o">=</span> <span class="n">left_mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right_mask</span> <span class="o">=</span> <span class="n">right_mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_outputs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_mse</span> <span class="o">=</span> <span class="n">use_mse</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left_recon_x</span><span class="p">,</span> <span class="n">right_recon_x</span><span class="p">,</span> <span class="n">left_x</span><span class="p">,</span> <span class="n">right_x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute loss.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_outputs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;This loss needs intermediate layers outputs. Please register &quot;</span>
+                <span class="s2">&quot;an appropriate callback.&quot;</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_outputs</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span>
+        <span class="c1"># z = self.layer_outputs[&quot;z&quot;]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">left_x</span><span class="o">.</span><span class="n">device</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">left_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">left_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">left_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">right_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">right_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">right_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Reconstruction loss terms</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mse</span><span class="p">:</span>
+            <span class="n">left_recon_loss</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span>
+                <span class="n">left_recon_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+                <span class="n">left_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+            <span class="n">right_recon_loss</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span>
+                <span class="n">right_recon_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+                <span class="n">right_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">left_recon_loss</span> <span class="o">=</span> <span class="n">log_likelihood</span><span class="p">(</span>
+                <span class="n">left_recon_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+                <span class="n">left_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">right_recon_loss</span> <span class="o">=</span> <span class="n">log_likelihood</span><span class="p">(</span>
+                <span class="n">right_recon_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+                <span class="n">right_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_mask</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="c1"># Latent loss between approximate posterior and prior for z</span>
+        <span class="n">kl_div</span> <span class="o">=</span> <span class="n">kl_divergence</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># Need to maximise the ELBO with respect to these weights</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">left_recon_loss</span> <span class="o">+</span> <span class="n">right_recon_loss</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">kl_div</span>
+
+        <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;left_recon_loss&quot;</span><span class="p">:</span> <span class="n">left_recon_loss</span><span class="p">,</span>
+                      <span class="s2">&quot;right_recon_loss&quot;</span><span class="p">:</span> <span class="n">right_recon_loss</span><span class="p">,</span>
+                      <span class="s2">&quot;kl_div&quot;</span><span class="p">:</span> <span class="n">kl_div</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">}</span></div>
+
+</pre></div>
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../../_static/js/wow.min.js"></script>
+        <script src="../../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../../_static/js/scripts.js"></script>
+        <script src="../../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>

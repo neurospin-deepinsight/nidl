@@ -1,0 +1,12 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *surfify*
+===============================
+
+surfify
+^^^^^^^
+
+Helper module for surface integration in PyTorch.
+

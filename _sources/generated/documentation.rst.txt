@@ -29,6 +29,69 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Various utilities to help with development.</p>    </blockquote>
     </div>
+    <div class='col-md-4'>
+    <h3><a href='surfify.html'>
+    surfify
+    </a></h3>
+    <blockquote>
+        <p>Helper module for surface integration in PyTorch.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='surfify.augmentation.html'>
+    surfify.augmentation
+    </a></h3>
+    <blockquote>
+        <p>Surface augmentations.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='surfify.datasets.html'>
+    surfify.datasets
+    </a></h3>
+    <blockquote>
+        <p>Utilities to load datasets, including methods to load and fetch popular
+    reference datasets. It also features some artificial data generators.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='surfify.losses.html'>
+    surfify.losses
+    </a></h3>
+    <blockquote>
+        <p>Common losses.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='surfify.models.html'>
+    surfify.models
+    </a></h3>
+    <blockquote>
+        <p>Common architectures.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='surfify.nn.html'>
+    surfify.nn
+    </a></h3>
+    <blockquote>
+        <p>Suface dedicated modules.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='surfify.plotting.html'>
+    surfify.plotting
+    </a></h3>
+    <blockquote>
+        <p>Utilities to display datasets.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='surfify.utils.html'>
+    surfify.utils
+    </a></h3>
+    <blockquote>
+        <p>Suface utilities.</p>    </blockquote>
+    </div>
 
     </div>
     </div>
@@ -88,5 +151,413 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.utils.color.stylize <nidl.utils.color.stylize.html>`_
 
           `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
+
+    * `surfify <surfify.html>`_
+    * `surfify.augmentation <surfify.augmentation.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.augmentation.BaseTransformer <surfify.augmentation.utils.BaseTransformer.html>`_
+
+          `surfify.augmentation.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
+
+          `surfify.augmentation.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
+
+          `surfify.augmentation.SurfBlur <surfify.augmentation.base.SurfBlur.html>`_
+
+          `surfify.augmentation.SurfCutOut <surfify.augmentation.base.SurfCutOut.html>`_
+
+          `surfify.augmentation.SurfNoise <surfify.augmentation.base.SurfNoise.html>`_
+
+          `surfify.augmentation.SurfRotation <surfify.augmentation.base.SurfRotation.html>`_
+
+          `surfify.augmentation.Transformer <surfify.augmentation.utils.Transformer.html>`_
+
+          `surfify.augmentation.apply_chained_transforms <surfify.augmentation.utils.apply_chained_transforms.html>`_
+
+          `surfify.augmentation.interval <surfify.augmentation.utils.interval.html>`_
+
+          `surfify.augmentation.multichannel_augmentation <surfify.augmentation.utils.multichannel_augmentation.html>`_
+
+          `surfify.augmentation.base.SurfBlur <surfify.augmentation.base.SurfBlur.html>`_
+
+          `surfify.augmentation.base.SurfCutOut <surfify.augmentation.base.SurfCutOut.html>`_
+
+          `surfify.augmentation.base.SurfNoise <surfify.augmentation.base.SurfNoise.html>`_
+
+          `surfify.augmentation.base.SurfRotation <surfify.augmentation.base.SurfRotation.html>`_
+
+          `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
+
+          `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
+
+          `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
+
+          `surfify.augmentation.utils.BaseTransformer <surfify.augmentation.utils.BaseTransformer.html>`_
+
+          `surfify.augmentation.utils.RandomAugmentation <surfify.augmentation.utils.RandomAugmentation.html>`_
+
+          `surfify.augmentation.utils.Transformer <surfify.augmentation.utils.Transformer.html>`_
+
+          `surfify.augmentation.utils.apply_chained_transforms <surfify.augmentation.utils.apply_chained_transforms.html>`_
+
+          `surfify.augmentation.utils.interval <surfify.augmentation.utils.interval.html>`_
+
+          `surfify.augmentation.utils.listify <surfify.augmentation.utils.listify.html>`_
+
+          `surfify.augmentation.utils.multichannel_augmentation <surfify.augmentation.utils.multichannel_augmentation.html>`_
+
+    * `surfify.datasets <surfify.datasets.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.datasets.ClassificationDataset <surfify.datasets._samples_generator.ClassificationDataset.html>`_
+
+          `surfify.datasets.GenericSurfDataset <surfify.datasets._generic.GenericSurfDataset.html>`_
+
+          `surfify.datasets.make_classification <surfify.datasets._samples_generator.make_classification.html>`_
+
+          `surfify.datasets._generic.GenericSurfDataset <surfify.datasets._generic.GenericSurfDataset.html>`_
+
+          `surfify.datasets._samples_generator.ClassificationDataset <surfify.datasets._samples_generator.ClassificationDataset.html>`_
+
+          `surfify.datasets._samples_generator.make_classification <surfify.datasets._samples_generator.make_classification.html>`_
+
+    * `surfify.losses <surfify.losses.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.losses.SphericalVAELoss <surfify.losses.vae.SphericalVAELoss.html>`_
+
+          `surfify.losses.vae.SphericalVAELoss <surfify.losses.vae.SphericalVAELoss.html>`_
+
+          `surfify.losses.vae.log_likelihood <surfify.losses.vae.log_likelihood.html>`_
+
+    * `surfify.models <surfify.models.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.models.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
+
+          `surfify.models.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
+
+          `surfify.models.SphericalBase <surfify.models.base.SphericalBase.html>`_
+
+          `surfify.models.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
+
+          `surfify.models.SphericalGVGG <surfify.models.vgg.SphericalGVGG.html>`_
+
+          `surfify.models.SphericalGVGG11 <surfify.models.vgg.SphericalGVGG11.html>`_
+
+          `surfify.models.SphericalGVGG11BN <surfify.models.vgg.SphericalGVGG11BN.html>`_
+
+          `surfify.models.SphericalGVGG13 <surfify.models.vgg.SphericalGVGG13.html>`_
+
+          `surfify.models.SphericalGVGG13BN <surfify.models.vgg.SphericalGVGG13BN.html>`_
+
+          `surfify.models.SphericalGVGG16 <surfify.models.vgg.SphericalGVGG16.html>`_
+
+          `surfify.models.SphericalGVGG16BN <surfify.models.vgg.SphericalGVGG16BN.html>`_
+
+          `surfify.models.SphericalGVGG19 <surfify.models.vgg.SphericalGVGG19.html>`_
+
+          `surfify.models.SphericalGVGG19BN <surfify.models.vgg.SphericalGVGG19BN.html>`_
+
+          `surfify.models.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
+
+          `surfify.models.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
+
+          `surfify.models.SphericalUNet <surfify.models.unet.SphericalUNet.html>`_
+
+          `surfify.models.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
+
+          `surfify.models.SphericalVGG <surfify.models.vgg.SphericalVGG.html>`_
+
+          `surfify.models.SphericalVGG11 <surfify.models.vgg.SphericalVGG11.html>`_
+
+          `surfify.models.SphericalVGG11BN <surfify.models.vgg.SphericalVGG11BN.html>`_
+
+          `surfify.models.SphericalVGG13 <surfify.models.vgg.SphericalVGG13.html>`_
+
+          `surfify.models.SphericalVGG13BN <surfify.models.vgg.SphericalVGG13BN.html>`_
+
+          `surfify.models.SphericalVGG16 <surfify.models.vgg.SphericalVGG16.html>`_
+
+          `surfify.models.SphericalVGG16BN <surfify.models.vgg.SphericalVGG16BN.html>`_
+
+          `surfify.models.SphericalVGG19 <surfify.models.vgg.SphericalVGG19.html>`_
+
+          `surfify.models.SphericalVGG19BN <surfify.models.vgg.SphericalVGG19BN.html>`_
+
+          `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
+
+          `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
+
+          `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
+
+          `surfify.models.vae.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
+
+          `surfify.models.vae.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
+
+          `surfify.models.vae.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
+
+          `surfify.models.vae.compute_output_dim <surfify.models.vae.compute_output_dim.html>`_
+
+          `surfify.models.vgg.SphericalGVGG <surfify.models.vgg.SphericalGVGG.html>`_
+
+          `surfify.models.vgg.SphericalGVGG11 <surfify.models.vgg.SphericalGVGG11.html>`_
+
+          `surfify.models.vgg.SphericalGVGG11BN <surfify.models.vgg.SphericalGVGG11BN.html>`_
+
+          `surfify.models.vgg.SphericalGVGG13 <surfify.models.vgg.SphericalGVGG13.html>`_
+
+          `surfify.models.vgg.SphericalGVGG13BN <surfify.models.vgg.SphericalGVGG13BN.html>`_
+
+          `surfify.models.vgg.SphericalGVGG16 <surfify.models.vgg.SphericalGVGG16.html>`_
+
+          `surfify.models.vgg.SphericalGVGG16BN <surfify.models.vgg.SphericalGVGG16BN.html>`_
+
+          `surfify.models.vgg.SphericalGVGG19 <surfify.models.vgg.SphericalGVGG19.html>`_
+
+          `surfify.models.vgg.SphericalGVGG19BN <surfify.models.vgg.SphericalGVGG19BN.html>`_
+
+          `surfify.models.vgg.SphericalVGG <surfify.models.vgg.SphericalVGG.html>`_
+
+          `surfify.models.vgg.SphericalVGG11 <surfify.models.vgg.SphericalVGG11.html>`_
+
+          `surfify.models.vgg.SphericalVGG11BN <surfify.models.vgg.SphericalVGG11BN.html>`_
+
+          `surfify.models.vgg.SphericalVGG13 <surfify.models.vgg.SphericalVGG13.html>`_
+
+          `surfify.models.vgg.SphericalVGG13BN <surfify.models.vgg.SphericalVGG13BN.html>`_
+
+          `surfify.models.vgg.SphericalVGG16 <surfify.models.vgg.SphericalVGG16.html>`_
+
+          `surfify.models.vgg.SphericalVGG16BN <surfify.models.vgg.SphericalVGG16BN.html>`_
+
+          `surfify.models.vgg.SphericalVGG19 <surfify.models.vgg.SphericalVGG19.html>`_
+
+          `surfify.models.vgg.SphericalVGG19BN <surfify.models.vgg.SphericalVGG19BN.html>`_
+
+          `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
+
+          `surfify.models.unet.DownBlock <surfify.models.unet.DownBlock.html>`_
+
+          `surfify.models.unet.DownGBlock <surfify.models.unet.DownGBlock.html>`_
+
+          `surfify.models.unet.GraphicalUNet <surfify.models.unet.GraphicalUNet.html>`_
+
+          `surfify.models.unet.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
+
+          `surfify.models.unet.SphericalUNet <surfify.models.unet.SphericalUNet.html>`_
+
+          `surfify.models.unet.UpBlock <surfify.models.unet.UpBlock.html>`_
+
+          `surfify.models.unet.UpGBlock <surfify.models.unet.UpGBlock.html>`_
+
+    * `surfify.nn <surfify.nn.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.nn.IcoDiNeConv <surfify.nn.modules.IcoDiNeConv.html>`_
+
+          `surfify.nn.IcoFixIndexUpSample <surfify.nn.modules.IcoFixIndexUpSample.html>`_
+
+          `surfify.nn.IcoGenericUpConv <surfify.nn.modules.IcoGenericUpConv.html>`_
+
+          `surfify.nn.IcoMaxIndexUpSample <surfify.nn.modules.IcoMaxIndexUpSample.html>`_
+
+          `surfify.nn.IcoPool <surfify.nn.modules.IcoPool.html>`_
+
+          `surfify.nn.IcoRePaConv <surfify.nn.modules.IcoRePaConv.html>`_
+
+          `surfify.nn.IcoSpMaConv <surfify.nn.modules.IcoSpMaConv.html>`_
+
+          `surfify.nn.IcoSpMaConvTranspose <surfify.nn.modules.IcoSpMaConvTranspose.html>`_
+
+          `surfify.nn.IcoUpConv <surfify.nn.modules.IcoUpConv.html>`_
+
+          `surfify.nn.IcoUpSample <surfify.nn.modules.IcoUpSample.html>`_
+
+          `surfify.nn.functional.circular_pad <surfify.nn.functional.circular_pad.html>`_
+
+          `surfify.nn.modules.IcoDiNeConv <surfify.nn.modules.IcoDiNeConv.html>`_
+
+          `surfify.nn.modules.IcoFixIndexUpSample <surfify.nn.modules.IcoFixIndexUpSample.html>`_
+
+          `surfify.nn.modules.IcoGenericUpConv <surfify.nn.modules.IcoGenericUpConv.html>`_
+
+          `surfify.nn.modules.IcoMaxIndexUpSample <surfify.nn.modules.IcoMaxIndexUpSample.html>`_
+
+          `surfify.nn.modules.IcoPool <surfify.nn.modules.IcoPool.html>`_
+
+          `surfify.nn.modules.IcoRePaConv <surfify.nn.modules.IcoRePaConv.html>`_
+
+          `surfify.nn.modules.IcoSpMaConv <surfify.nn.modules.IcoSpMaConv.html>`_
+
+          `surfify.nn.modules.IcoSpMaConvTranspose <surfify.nn.modules.IcoSpMaConvTranspose.html>`_
+
+          `surfify.nn.modules.IcoUpConv <surfify.nn.modules.IcoUpConv.html>`_
+
+          `surfify.nn.modules.IcoUpSample <surfify.nn.modules.IcoUpSample.html>`_
+
+    * `surfify.plotting <surfify.plotting.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.plotting.plot_trisurf <surfify.plotting.surface.plot_trisurf.html>`_
+
+          `surfify.plotting.surface.plot_trisurf <surfify.plotting.surface.plot_trisurf.html>`_
+
+    * `surfify.utils <surfify.utils.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.utils.cart2sph <surfify.utils.coord.cart2sph.html>`_
+
+          `surfify.utils.debug_msg <surfify.utils.debug_msg.html>`_
+
+          `surfify.utils.downsample <surfify.utils.sampling.downsample.html>`_
+
+          `surfify.utils.downsample_data <surfify.utils.sampling.downsample_data.html>`_
+
+          `surfify.utils.downsample_ico <surfify.utils.sampling.downsample_ico.html>`_
+
+          `surfify.utils.find_neighbors <surfify.utils.sampling.find_neighbors.html>`_
+
+          `surfify.utils.find_rotation_interpol_coefs <surfify.utils.sampling.find_rotation_interpol_coefs.html>`_
+
+          `surfify.utils.get_logger <surfify.utils.get_logger.html>`_
+
+          `surfify.utils.get_rectangular_projection <surfify.utils.sampling.get_rectangular_projection.html>`_
+
+          `surfify.utils.grid2text <surfify.utils.coord.grid2text.html>`_
+
+          `surfify.utils.ico2ico <surfify.utils.coord.ico2ico.html>`_
+
+          `surfify.utils.icosahedron <surfify.utils.sampling.icosahedron.html>`_
+
+          `surfify.utils.interpolate <surfify.utils.sampling.interpolate.html>`_
+
+          `surfify.utils.interpolate_data <surfify.utils.sampling.interpolate_data.html>`_
+
+          `surfify.utils.min_depth_to_get_n_neighbors <surfify.utils.sampling.min_depth_to_get_n_neighbors.html>`_
+
+          `surfify.utils.neighbors <surfify.utils.sampling.neighbors.html>`_
+
+          `surfify.utils.neighbors_rec <surfify.utils.sampling.neighbors_rec.html>`_
+
+          `surfify.utils.number_of_ico_vertices <surfify.utils.sampling.number_of_ico_vertices.html>`_
+
+          `surfify.utils.number_of_neighbors <surfify.utils.sampling.number_of_neighbors.html>`_
+
+          `surfify.utils.order_of_ico_from_vertices <surfify.utils.sampling.order_of_ico_from_vertices.html>`_
+
+          `surfify.utils.order_triangles <surfify.utils.sampling.order_triangles.html>`_
+
+          `surfify.utils.patch_tri <surfify.utils.sampling.patch_tri.html>`_
+
+          `surfify.utils.rotate_data <surfify.utils.sampling.rotate_data.html>`_
+
+          `surfify.utils.setup_logging <surfify.utils.setup_logging.html>`_
+
+          `surfify.utils.sph2cart <surfify.utils.coord.sph2cart.html>`_
+
+          `surfify.utils.text2grid <surfify.utils.coord.text2grid.html>`_
+
+          `surfify.utils.text2ico <surfify.utils.coord.text2ico.html>`_
+
+          `surfify.utils.sampling._patch_tri_iter <surfify.utils.sampling._patch_tri_iter.html>`_
+
+          `surfify.utils.sampling.build_freesurfer_ico <surfify.utils.sampling.build_freesurfer_ico.html>`_
+
+          `surfify.utils.sampling.build_fslr_ref <surfify.utils.sampling.build_fslr_ref.html>`_
+
+          `surfify.utils.sampling.downsample <surfify.utils.sampling.downsample.html>`_
+
+          `surfify.utils.sampling.downsample_data <surfify.utils.sampling.downsample_data.html>`_
+
+          `surfify.utils.sampling.downsample_ico <surfify.utils.sampling.downsample_ico.html>`_
+
+          `surfify.utils.sampling.find_neighbors <surfify.utils.sampling.find_neighbors.html>`_
+
+          `surfify.utils.sampling.find_rotation_interpol_coefs <surfify.utils.sampling.find_rotation_interpol_coefs.html>`_
+
+          `surfify.utils.sampling.get_angle_with_xaxis <surfify.utils.sampling.get_angle_with_xaxis.html>`_
+
+          `surfify.utils.sampling.get_rectangular_projection <surfify.utils.sampling.get_rectangular_projection.html>`_
+
+          `surfify.utils.sampling.icosahedron <surfify.utils.sampling.icosahedron.html>`_
+
+          `surfify.utils.sampling.interpolate <surfify.utils.sampling.interpolate.html>`_
+
+          `surfify.utils.sampling.interpolate_data <surfify.utils.sampling.interpolate_data.html>`_
+
+          `surfify.utils.sampling.middle_point <surfify.utils.sampling.middle_point.html>`_
+
+          `surfify.utils.sampling.min_depth_to_get_n_neighbors <surfify.utils.sampling.min_depth_to_get_n_neighbors.html>`_
+
+          `surfify.utils.sampling.neighbors <surfify.utils.sampling.neighbors.html>`_
+
+          `surfify.utils.sampling.neighbors_rec <surfify.utils.sampling.neighbors_rec.html>`_
+
+          `surfify.utils.sampling.normalize <surfify.utils.sampling.normalize.html>`_
+
+          `surfify.utils.sampling.number_of_ico_vertices <surfify.utils.sampling.number_of_ico_vertices.html>`_
+
+          `surfify.utils.sampling.number_of_neighbors <surfify.utils.sampling.number_of_neighbors.html>`_
+
+          `surfify.utils.sampling.order_of_ico_from_vertices <surfify.utils.sampling.order_of_ico_from_vertices.html>`_
+
+          `surfify.utils.sampling.order_triangles <surfify.utils.sampling.order_triangles.html>`_
+
+          `surfify.utils.sampling.patch_tri <surfify.utils.sampling.patch_tri.html>`_
+
+          `surfify.utils.sampling.rotate_data <surfify.utils.sampling.rotate_data.html>`_
+
+          `surfify.utils.sampling.triangles_to_edges <surfify.utils.sampling.triangles_to_edges.html>`_
+
+          `surfify.utils.sampling.vertex_adjacency_graph <surfify.utils.sampling.vertex_adjacency_graph.html>`_
+
+          `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
+
+          `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
+
+          `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
+
+          `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
+
+          `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
+
+          `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
+
+          `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
+
+          `surfify.utils.io.HidePrints <surfify.utils.io.HidePrints.html>`_
+
+          `surfify.utils.io.compute_and_store <surfify.utils.io.compute_and_store.html>`_
+
+          `surfify.utils.io.decompose_cifti <surfify.utils.io.decompose_cifti.html>`_
+
+          `surfify.utils.io.read_freesurfer <surfify.utils.io.read_freesurfer.html>`_
+
+          `surfify.utils.io.read_gifti <surfify.utils.io.read_gifti.html>`_
+
+          `surfify.utils.io.surf_data_from_cifti <surfify.utils.io.surf_data_from_cifti.html>`_
+
+          `surfify.utils.io.ungzip <surfify.utils.io.ungzip.html>`_
+
+          `surfify.utils.io.volume_from_cifti <surfify.utils.io.volume_from_cifti.html>`_
+
+          `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
+
+          `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
 
 
