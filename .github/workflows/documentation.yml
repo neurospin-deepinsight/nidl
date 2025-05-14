@@ -43,7 +43,7 @@ jobs:
         declare -a plugins=("surfify")
         for name in "${plugins[@]}"
         do
-            python -m pip install $name
+            python -m pip install git+https://github.com/neurospin-deepinsight/$name
             PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH
             ln -s $PLUGPATH .
@@ -98,13 +98,14 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install joblib
         python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-        python -m pip install --progress-bar off .[plugins]
+        python -m pip install --progress-bar off .
         python -m pip install git+https://github.com/AGrigis/pysphinxdoc.git
     - name: Declare plugins
       run: |
         declare -a plugins=("surfify")
         for name in "${plugins[@]}"
         do
+            python -m pip install git+https://github.com/neurospin-deepinsight/$name
             PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH
             ln -s $PLUGPATH .
