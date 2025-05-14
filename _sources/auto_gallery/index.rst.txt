@@ -20,6 +20,117 @@ Use Cases
     </div>
 
 
+Spherical Modules Use Cases
+---------------------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Credit: A Grigis">
+
+.. only:: html
+
+  .. image:: /auto_gallery/surfify/images/thumb/sphx_glr_plot_spherical_neighbors_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_gallery_surfify_plot_spherical_neighbors.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Spherical neighbors</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Credit: A Grigis">
+
+.. only:: html
+
+  .. image:: /auto_gallery/surfify/images/thumb/sphx_glr_plot_unet_segmentation_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_gallery_surfify_plot_unet_segmentation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">UNet segmentation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Credit: A Grigis">
+
+.. only:: html
+
+  .. image:: /auto_gallery/surfify/images/thumb/sphx_glr_plot_project_texture_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_gallery_surfify_plot_project_texture.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Project texture</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Credit: C Ambroise">
+
+.. only:: html
+
+  .. image:: /auto_gallery/surfify/images/thumb/sphx_glr_plot_match_icosahedron_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_gallery_surfify_plot_match_icosahedron.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Icosahedron matching</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Credit: A Grigis &amp; C Ambroise">
+
+.. only:: html
+
+  .. image:: /auto_gallery/surfify/images/thumb/sphx_glr_plot_augmentation_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_gallery_surfify_plot_augmentation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Spherical augmentations</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+   :includehidden:
+
+
+   /auto_gallery/surfify/index.rst
+
+
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-gallery
@@ -27,6 +138,10 @@ Use Cases
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download all examples in Python source code: auto_gallery_python.zip </auto_gallery/auto_gallery_python.zip>`
+
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+      :download:`Download all examples in Jupyter notebooks: auto_gallery_jupyter.zip </auto_gallery/auto_gallery_jupyter.zip>`
 
 
 .. only:: html

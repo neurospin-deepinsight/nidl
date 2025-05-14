@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../_static/css/style.css">
+        <link rel="stylesheet" href="../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+                    
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                                
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                
+                                
+                            
+                            <li>API</li>
+                            <li><a href="../../generated/nidl.html">nidl</a></li><li><a href="../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../generated/surfify.html">surfify</a></li><li><a href="../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-gallery-surfify-plot-match-icosahedron-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="icosahedron-matching">
+<span id="sphx-glr-auto-gallery-surfify-plot-match-icosahedron-py"></span><h1>Icosahedron matching<a class="headerlink" href="#icosahedron-matching" title="Link to this heading">¶</a></h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div>
+<p>Credit: C Ambroise</p>
+<p>A simple example on how to match two icosahedrons of the same order.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">transform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.mplot3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">axes3d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">surfify.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_trisurf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">surfify.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">icosahedron</span><span class="p">,</span> <span class="n">ico2ico</span>
+</pre></div>
+</div>
+<p>We first build the reference icosahedron.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">vertices_norm</span><span class="p">,</span> <span class="n">triangles_norm</span> <span class="o">=</span> <span class="n">icosahedron</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">standard_ico</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vertices_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">triangles_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(642, 3) (1280, 3)
+</pre></div>
+</div>
+<p>Then we fetch freesurfer’s icosahedron of the same order.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">vertices</span><span class="p">,</span> <span class="n">triangles</span> <span class="o">=</span> <span class="n">icosahedron</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">triangles</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(642, 3) (1280, 3)
+</pre></div>
+</div>
+<p>We try to find the optimal rotation between the two icosahedrons using
+the scipy module.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rotation</span><span class="p">,</span> <span class="n">rmse</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">align_vectors</span><span class="p">(</span><span class="n">vertices_norm</span><span class="p">,</span> <span class="n">vertices</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">rmse</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>29.54571598073452
+</pre></div>
+</div>
+<p>Okay, does not seem to be working, because the rmse is supposed to be very
+close or equal to zero</p>
+<p>We print the vertices to try to find the issue here: it seems that the order
+of the vertices is not the same in the two matrices. That is why the previous
+algorithm did not work properly, since it can only match to the corresponding
+row in the other matrix.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">vertices_norm</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[[-0.52573111  0.85065081  0.        ]
+ [ 0.52573111  0.85065081  0.        ]
+ [-0.52573111 -0.85065081  0.        ]
+ ...
+ [ 0.96386126  0.2664047   0.        ]
+ [ 0.91298249  0.39960705 -0.08232358]
+ [ 0.91298249  0.39960705  0.08232358]]
+[[ 0.      0.      1.    ]
+ [ 0.8944  0.      0.4472]
+ [ 0.2764  0.8507  0.4472]
+ ...
+ [ 0.1815  0.296  -0.9378]
+ [ 0.0272  0.3462 -0.9378]
+ [ 0.0692  0.213  -0.9746]]
+</pre></div>
+</div>
+<p>Here we plot the sufaces together to show that they have the same structure
+but their vertices are not at the same places.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="s2">&quot;3d&quot;</span><span class="p">,</span> <span class="s2">&quot;aspect&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">},</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plot_trisurf</span><span class="p">(</span><span class="n">vertices_norm</span><span class="p">,</span> <span class="n">triangles_norm</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+             <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">plot_trisurf</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">triangles</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+             <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_match_icosahedron_001.png" srcset="../../_images/sphx_glr_plot_match_icosahedron_001.png" alt="plot match icosahedron" class = "sphx-glr-single-img"/><p>To compute the rotation between the two structures, we do not need all the
+vertices. So we consider a small subset of 4 points that have correspondances
+in both icosahedrons (for instance they have the same absolute
+values, only sign differs, for each dimension).
+The 4 firsts work for the reference icosahedron.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">vertices_of_interest_norm</span> <span class="o">=</span> <span class="n">vertices_norm</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now we search for 4 similar vertices in the FreeSurfer icosahedron.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)):</span>
+    <span class="n">coords_of_interest</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">idx_of_interest</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coords_of_interest</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx_of_interest</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">vertices_of_interest</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">idx_of_interest</span><span class="p">]</span>
+        <span class="n">fs_row_idx</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">break</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fs_row_idx</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2
+</pre></div>
+</div>
+<p>Now we need to find a rotation between these two set of points.
+Many can be possible, depending on the ordering of the points. To do this,
+we compute the optimal rotation matrix between our reference points and
+the others variously permuted, until we find a rotation that works.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="n">permutations</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">n_permutations</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">it</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">best_rmse</span> <span class="o">=</span> <span class="n">rmse</span>
+<span class="n">best_rotation</span> <span class="o">=</span> <span class="n">rotation</span>
+<span class="k">while</span> <span class="n">rmse</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">it</span> <span class="o">&lt;</span> <span class="n">n_permutations</span><span class="p">:</span>
+    <span class="n">it</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">permutations</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="n">rotation</span><span class="p">,</span> <span class="n">rmse</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">align_vectors</span><span class="p">(</span>
+                <span class="n">vertices_of_interest_norm</span><span class="p">,</span> <span class="n">vertices_of_interest</span><span class="p">[</span><span class="n">order</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">rmse</span> <span class="o">&lt;</span> <span class="n">best_rmse</span><span class="p">:</span>
+        <span class="n">best_rmse</span> <span class="o">=</span> <span class="n">rmse</span>
+        <span class="n">best_rotation</span> <span class="o">=</span> <span class="n">rotation</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of permutations tested </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">best_rotation</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">best_rmse</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Number of permutations tested 24/24
+[[-0.52575203  0.         -0.85063788]
+ [ 0.          1.          0.        ]
+ [ 0.85063788  0.         -0.52575203]]
+9.971395685383565e-05
+</pre></div>
+</div>
+<p>Now we found a rotation that works, we can simply apply it to the icosahedron
+so it matches the reference one.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="s2">&quot;3d&quot;</span><span class="p">,</span> <span class="s2">&quot;aspect&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">},</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plot_trisurf</span><span class="p">(</span><span class="n">vertices_norm</span><span class="p">,</span> <span class="n">triangles_norm</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+             <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">plot_trisurf</span><span class="p">(</span><span class="n">best_rotation</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">vertices</span><span class="p">),</span> <span class="n">triangles</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+             <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_match_icosahedron_002.png" srcset="../../_images/sphx_glr_plot_match_icosahedron_002.png" alt="plot match icosahedron" class = "sphx-glr-single-img"/><p>To easily solve the issue outlined in this example, you can find a
+function in the <cite>surfify.utils</cite> module. <cite>ico2ico</cite> allows you to find a
+proper rotation between a reference icosahedron and another one.
+We plot only half of the triangles of each icosahedron so it clearly appears
+that they are the same.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rotation</span> <span class="o">=</span> <span class="n">ico2ico</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">vertices_norm</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="s2">&quot;3d&quot;</span><span class="p">,</span> <span class="s2">&quot;aspect&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">},</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plot_trisurf</span><span class="p">(</span><span class="n">vertices_norm</span><span class="p">,</span> <span class="n">triangles_norm</span><span class="p">[::</span><span class="mi">2</span><span class="p">],</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+             <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">plot_trisurf</span><span class="p">(</span><span class="n">rotation</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">vertices</span><span class="p">),</span> <span class="n">triangles</span><span class="p">[::</span><span class="mi">2</span><span class="p">],</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+             <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_match_icosahedron_003.png" srcset="../../_images/sphx_glr_plot_match_icosahedron_003.png" alt="plot match icosahedron" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/surfify/utils/coord.py:246: UserWarning: A proper mapping between the two icosahedrons could not be found. The closest rotation has a rmse of 0.9190925817849288.
+  warnings.warn(
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.451 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  68 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gallery-surfify-plot-match-icosahedron-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/4bcde963b82daa95bbcc8cfd3fc7dc9e/plot_match_icosahedron.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_match_icosahedron.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/b63ead4fbe1de2103e707d1cd6c9dba0/plot_match_icosahedron.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_match_icosahedron.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/84b653f45ef6969c575294a89479eff0/plot_match_icosahedron.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_match_icosahedron.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../_static/js/wow.min.js"></script>
+        <script src="../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../_static/js/scripts.js"></script>
+        <script src="../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>
