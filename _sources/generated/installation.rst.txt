@@ -21,12 +21,9 @@ This tutorial will walk you through the process of intalling NIDL...
 Installing a stable version
 ==============================
 
-Install the python package with *pip*
--------------------------------------
-
 **Install the package without the root privilege**
 
->>> pip install --user nidl
+>>> pip install nidl
 
 **Install the package with the root privilege**
 
@@ -38,13 +35,9 @@ Install the python package with *pip*
 Installing the current version
 ===============================
 
-**Clone the project**
+**Install the package in develop mode from the Git repository**
 
->>> git clone https://github.com/neurospin-deepinsight/nidl
-
-**Install in the package directory created by the previous step**
-
->>> python setup.py develop --user
+>>> pip install -e git+https://github.com/neurospin-deepinsight/nidl
 
 
 
