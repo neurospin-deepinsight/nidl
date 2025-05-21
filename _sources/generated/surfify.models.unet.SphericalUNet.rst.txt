@@ -9,7 +9,7 @@
 .. autoclass:: surfify.models.unet.SphericalUNet
      :members:
 
-.. minigallery:: surfify.models.SphericalUNet surfify.models.unet.SphericalUNet
+.. minigallery:: surfify.models.unet.SphericalUNet surfify.models.SphericalUNet
     :add-heading: Examples
     :heading-level: -
 

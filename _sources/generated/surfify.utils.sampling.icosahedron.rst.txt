@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.icosahedron
 
-.. minigallery:: surfify.utils.icosahedron surfify.utils.sampling.icosahedron
+.. minigallery:: surfify.utils.sampling.icosahedron surfify.utils.icosahedron
     :add-heading: Examples
     :heading-level: -
 

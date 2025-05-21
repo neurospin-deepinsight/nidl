@@ -9,7 +9,7 @@
 .. autoclass:: surfify.models.vae.SphericalHemiFusionEncoder
      :members:
 
-.. minigallery:: surfify.models.SphericalHemiFusionEncoder surfify.models.vae.SphericalHemiFusionEncoder
+.. minigallery:: surfify.models.vae.SphericalHemiFusionEncoder surfify.models.SphericalHemiFusionEncoder
     :add-heading: Examples
     :heading-level: -
 

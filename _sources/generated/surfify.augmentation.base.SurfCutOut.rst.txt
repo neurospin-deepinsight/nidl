@@ -9,7 +9,7 @@
 .. autoclass:: surfify.augmentation.base.SurfCutOut
      :members:
 
-.. minigallery:: surfify.augmentation.SurfCutOut surfify.augmentation.base.SurfCutOut
+.. minigallery:: surfify.augmentation.base.SurfCutOut surfify.augmentation.SurfCutOut
     :add-heading: Examples
     :heading-level: -
 
