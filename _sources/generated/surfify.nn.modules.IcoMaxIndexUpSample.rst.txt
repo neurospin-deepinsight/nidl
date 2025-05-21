@@ -9,7 +9,7 @@
 .. autoclass:: surfify.nn.modules.IcoMaxIndexUpSample
      :members:
 
-.. minigallery:: surfify.nn.IcoMaxIndexUpSample surfify.nn.modules.IcoMaxIndexUpSample
+.. minigallery:: surfify.nn.modules.IcoMaxIndexUpSample surfify.nn.IcoMaxIndexUpSample
     :add-heading: Examples
     :heading-level: -
 
