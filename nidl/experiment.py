@@ -135,7 +135,7 @@ def fetch_experiment(
         print(f"[{print_multicolor('Configuration', display=False)}]")
         pprint(config)
     interfaces = {}
-    cv_interfaces = [name.split("_")[0] for name in cv if cv is not None]
+    cv_interfaces = [name.split("_")[0] for name in cv or []]
     for key, params in config.items():
         name = params.pop("interface") if "interface" in params else None
         if name is None:
