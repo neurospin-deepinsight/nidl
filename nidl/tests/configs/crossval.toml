@@ -3,6 +3,10 @@ name = "Cross Validation Experiment"
 desc = "You can define a grid of parameters to explore"
 
 
+[import]
+np = "numpy"
+
+
 [dataset]
 interface = "nidl.utils.Bunch"
 n_modalities = 3
@@ -69,7 +73,7 @@ gamma = 0.5
 
 [training]
 interface = "nidl.utils.Bunch"
-num_epochs = 200
+num_epochs = "cv|np.random.randint(100, 200, 4)"
 gpu = 0
 
 

@@ -1,0 +1,25 @@
+[project]
+name = "Load Weights"
+desc = "You can load weights stored on a hub."
+
+
+[weights]
+interface = "nidl.utils.Weights"
+data_dir = "/tmp/weights"
+filepath = "pytorch_model.bin"
+
+[weights.tiny-imgnet]
+name = "hf-hub:timm/vit_tiny_patch16_224.augreg_in21k"
+
+[weights.small-imgnet]
+name = "hf-hub:timm/vit_small_patch16_224.dino"
+
+[weights.base-imgnet]
+name = "hf-hub:timm/vit_base_patch16_224.dino"
+
+
+[environments]
+tiny-model = { weights = "tiny-imgnet" }
+small-model = { weights = "small-imgnet" }
+base-model = { weights = "base-imgnet" }
+

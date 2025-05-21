@@ -5,6 +5,7 @@ desc = "Use global variables to organize the config file"
 
 [global]
 data_dir = "/path/to/the/data"
+batch_sizes = "auto|[64,128]"
 
 
 [dataset]
@@ -21,7 +22,7 @@ split = "test"
 
 [dataloader]
 interface = "nidl.utils.Bunch"
-batch_size = 128
+batch_size = "auto|batch_sizes[1]"
 num_workers = 4
 
 [dataloader.train]

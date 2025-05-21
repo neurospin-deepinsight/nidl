@@ -199,7 +199,6 @@ class Weights:
             return weight_file
         weight_file.parent.mkdir(parents=True, exist_ok=True)
         url = urlparse.urljoin(cls.NS_URL, ns_id, filepath)
-        print(url)
         urlrequest.urlretrieve(url, str(weight_file))
         return weight_file
 

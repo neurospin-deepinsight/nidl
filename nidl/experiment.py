@@ -11,6 +11,7 @@ import copy
 import importlib
 import inspect
 import itertools
+import os
 import warnings
 from pprint import pprint
 from typing import Optional
@@ -30,6 +31,8 @@ SECTIONS = ("project", "global", "import",
 def fetch_experiment(
         expfile: str,
         selector: Optional[tuple[str]] = None,
+        cv: Optional[tuple[str]] = None,
+        logdir: Optional[str] = None,
         verbose: int = 0):
     """ Fetch an experiement from an input configuration file.
 
@@ -101,6 +104,12 @@ def fetch_experiment(
     selector: tuple of str, default=None
         if multiple interface of the same type are defined, this parameter
         allows you to select the appropriate environements.
+    cv: tuple of str, default=None
+        if a cross validation scheme is defined, this parameter allows you to
+        select only some interfaces (i.e., the best set of hyperparapeters).
+    logdir: str, defautl=None
+        allows you to save a couple of information about the loaded interface:
+        for the moment only the source code of each interface.
     verbose: int, default=0
         enable verbose output.
 
@@ -109,6 +118,8 @@ def fetch_experiment(
     data: Bunch
         dictionaray-like object containing the experiment building blocks.
     """
+    if logdir is not None:
+        assert os.path.isdir(logdir), "Please create the log directory!"
     config = toml.load(expfile, _dict=collections.OrderedDict)
     for key in config:
         assert key in SECTIONS, f"Unexpected section '{key}'!"
@@ -124,6 +135,7 @@ def fetch_experiment(
         print(f"[{print_multicolor('Configuration', display=False)}]")
         pprint(config)
     interfaces = {}
+    cv_interfaces = [name.split("_")[0] for name in cv if cv is not None]
     for key, params in config.items():
         name = params.pop("interface") if "interface" in params else None
         if name is None:
@@ -136,18 +148,25 @@ def fetch_experiment(
         is_cv = (len(params) > 1)
         for _idx, _params in enumerate(params):
             if verbose > 0:
-                print(f"\n[{print_multicolor('Loading', display=False)}] {name}..."
+                print(f"\n[{print_multicolor('Loading', display=False)}] "
+                      "{name}..."
                       f"\nParameters\n{'-'*10}")
                 pprint(dict(_params))
             _key = f"{key}_{_idx}" if is_cv else key
-            interfaces[_key] = load_interface(name, _params, version)
-            if verbose > 0:
-                print(f"Interface\n{'-'*9}\n{interfaces[_key]}")
+            if (not is_cv or cv is None or key not in cv_interfaces or
+                    _key in cv):
+                interfaces[_key], code = load_interface(name, _params, version)
+                if verbose > 0:
+                    print(f"Interface\n{'-'*9}\n{interfaces[_key]}")
+                if code is not None and logdir is not None:
+                    logfile = os.path.join(logdir, name)
+                    with open(logfile, "w") as of:
+                        of.write(code)
         if is_cv:
             names = [f"{key}_{_idx}" for _idx in range(len(params))]
             _params = dict(zip(names, param_sets))
-            interfaces["grid"] = load_interface(
-                "nidl.utils.Bunch", _params, None)
+            interfaces.setdefault("grid", Bunch())[key] = load_interface(
+                    "nidl.utils.Bunch", _params, None)[0]
     return Bunch(**interfaces)
 
 
@@ -159,7 +178,7 @@ def get_env(
     Parameters
     ----------
     env: dict
-        a environment tu update.
+        a environment to update.
     modules: dict
         some module to add in the current environment
 
@@ -171,9 +190,27 @@ def get_env(
     updated_env = copy.copy(env or {})
     if modules is not None:
         for key, name in modules.items():
-            module_name, object_name = name.rsplit(".", 1)
+            if "." in name:
+                module_name, object_name = name.rsplit(".", 1)
+            else:
+                module_name, object_name = name, None
             mod = importlib.import_module(module_name)
-            updated_env[key] = getattr(mod, object_name)
+            if object_name is not None:
+                updated_env[key] = getattr(mod, object_name)
+            else:
+                updated_env[key] = mod
+    for key, val in updated_env.items():
+        if isinstance(val, str) and val.startswith("auto|"):
+            attr = val.split("|")[-1]
+            try:
+                updated_env[key] = eval(attr, globals(), updated_env)
+            except Exception as exc:
+                print(f"\n[{print_multicolor('Help', display=False)}]..."
+                      f"\nEnvironment\n{'-'*11}")
+                pprint(updated_env)
+                raise ValueError(
+                    f"Can't find the '{attr}' dynamic global argument. Please "
+                    "check for a typo in your configuration file.") from exc
     return updated_env
 
 
@@ -217,13 +254,15 @@ def filter_config(
                     multi_params.append((name, params[name]))
             else:
                 shared_params[name] = params[name]
-        n_envs = len(multi_params)
+        n_envs = (1 if len(multi_params) == 0 else len(multi_params))
+        multi_envs = (len(multi_params) > 0)
         if ("interface_occurrences" in params
                 and params["interface_occurrences"] != n_envs):
-            raise ValueError(f"The maximum occurence of the '{section}' "
-                             "interface is not respected. Please update the "
-                             "loaded environments accordingly.")
-        if n_envs > 0:
+            raise ValueError(
+                f"The maximum occurence of the '{section}' interface is not "
+                f"respected: {params['interface_occurrences']} vs. {n_envs}. "
+                "Please update the loaded environments accordingly.")
+        if multi_envs:
             for name, _params in multi_params:
                 _params.update(shared_params)
                 if n_envs > 1:
@@ -263,7 +302,18 @@ def update_params(
     for key, val in params.items():
         if isinstance(val, str) and val.startswith(("auto|", "cv|")):
             attr = val.split("|")[-1]
-            params[key] = eval(attr, interfaces, env)
+            try:
+                params[key] = eval(attr, interfaces, env)
+            except Exception as exc:
+                interfaces.pop("__builtins__")
+                print(f"\n[{print_multicolor('Help', display=False)}]..."
+                      f"\nEnvironment\n{'-'*11}")
+                pprint(env)
+                print(f"\Interfaces\n{'-'*10}")
+                pprint(interfaces)
+                raise ValueError(
+                    f"Can't find the '{attr}' dynamic argument. Please check "
+                    "for a typo in your configuration file.") from exc
             interfaces.pop("__builtins__")
         if isinstance(val, str) and val.startswith("cv|"):
             grid_search_params[key] = params[key]
@@ -298,6 +348,13 @@ def load_interface(
         the interface parameters.
     version: str, default None
         the exppected modulee version.
+
+    Returns
+    -------
+    cls: object
+        a class object.
+    code: str
+        the code of the output class object, None in case of issue. 
     """
     module_name, class_name = name.rsplit(".", 1)
     root_module_name = module_name.split(".")[0]
@@ -315,4 +372,11 @@ def load_interface(
     mod = importlib.import_module(module_name)
     cls = getattr(mod, class_name)
     assert inspect.isclass(cls), "An interface MUST be defined as a class!"
-    return cls(**params)
+    try:
+        code = inspect.getsource(cls)
+    except Exception:
+        warnings.warn(
+                f"Impossible to retrieve the '{name}' source code!",
+                ImportWarning, stacklevel=2)
+        code = None
+    return cls(**params), code
