@@ -34,7 +34,8 @@ class BaseEstimator(pl.LightningModule):
     def __init__(
             self,
             random_state: Optional[int] = None,
-            ignore: Optional[Sequence[str]] = None):
+            ignore: Optional[Sequence[str]] = None,
+            **kwargs):
         """ Init class.
 
         Parameters
@@ -45,18 +46,20 @@ class BaseEstimator(pl.LightningModule):
             int for reproducible output across multiple function calls.
         ignore: list of str, default=None
             Ignore attribute of instance `nn.Module`.
+        kwargs: dict
+            Trainer parameters.
         """
         super().__init__()
         self.save_hyperparameters(ignore=ignore)
         self.fitted_ = False
+        self.trainer_params_ = kwargs
         self._batch_connector = lambda batch: batch
 
     def fit(
             self,
             X_train: data.DataLoader,
-            X_val:  Optional[data.DataLoader] = None,
-            **kwargs):
-        trainer = pl.Trainer(**kwargs)
+            X_val:  Optional[data.DataLoader] = None):
+        trainer = pl.Trainer(**self.trainer_params_)
         trainer.logger._default_hp_metric = None
         pl.seed_everything(self.hparams.random_state)
         trainer.fit(self, X_train, X_val)
@@ -67,20 +70,18 @@ class BaseEstimator(pl.LightningModule):
     @available_if(_estimator_is("transformer"))
     def transform(
             self,
-            X_test: data.DataLoader,
-            **kwargs):
+            X_test: data.DataLoader):
         check_is_fitted(self)
-        trainer = pl.Trainer(**kwargs)
+        trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
             self, X_test, return_predictions=True))
     
     @available_if(_estimator_is(("regressor", "classifier", "clusterer")))
     def predict(
             self,
-            X_test: data.DataLoader,
-            **kwargs):
+            X_test: data.DataLoader):
         check_is_fitted(self)
-        trainer = pl.Trainer(**kwargs)
+        trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
             self, X_test, return_predictions=True))
 

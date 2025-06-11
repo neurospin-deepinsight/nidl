@@ -36,6 +36,8 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
         optionaly, use a MultiStepLR scheduler.
     random_state: int, default=None
         setting a seed for reproducibility.
+    kwargs: dict
+        Trainer parameters.
 
     Attributes
     ----------
@@ -58,9 +60,10 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
             num_classes: int,
             lr: float,
             weight_decay: float,
-            max_epochs: Optional[int] = None,
-            random_state: Optional[int] = None):
-        super().__init__(random_state=random_state, ignore=["model"])
+            random_state: Optional[int] = None,
+            **kwargs):
+        super().__init__(random_state=random_state, ignore=["model"],
+                         **kwargs)
         self.model = model
         self.validation_step_outputs = {}
 
@@ -68,7 +71,8 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
         optimizer = optim.AdamW(
             self.parameters(), lr=self.hparams.lr,
             weight_decay=self.hparams.weight_decay)
-        if self.hparams.max_epochs is not None:
+        if (hasattr(self.hparams, "max_epochs") and
+                self.hparams.max_epochs is not None):
             lr_scheduler = optim.lr_scheduler.MultiStepLR(
                 optimizer, milestones=[int(self.hparams.max_epochs * 0.6),
                 int(self.hparams.max_epochs * 0.8)], gamma=0.1)

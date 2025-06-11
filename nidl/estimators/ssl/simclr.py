@@ -97,6 +97,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         optionaly, use a CosineAnnealingLR scheduler.
     random_state: int, default=None
         setting a seed for reproducibility.
+    kwargs: dict
+        Trainer parameters.
 
     Attributes
     ----------
@@ -122,9 +124,10 @@ class SimCLR(TransformerMixin, BaseEstimator):
             lr: float,
             temperature: float,
             weight_decay: float,
-            max_epochs: Optional[int] = None,
-            random_state: Optional[int] = None):
-        super().__init__(random_state=random_state, ignore=["encoder"])
+            random_state: Optional[int] = None,
+            **kwargs):
+        super().__init__(random_state=random_state, ignore=["encoder"],
+                         **kwargs)
         assert self.hparams.temperature > 0.0, (
             "The temperature must be a positive float!")
         assert hasattr(encoder, "latent_size"), (
@@ -145,7 +148,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         optimizer = optim.AdamW(
             self.parameters(), lr=self.hparams.lr,
             weight_decay=self.hparams.weight_decay)
-        if self.hparams.max_epochs is not None:
+        if (hasattr(self.hparams, "max_epochs") and
+                self.hparams.max_epochs is not None):
             lr_scheduler = optim.lr_scheduler.CosineAnnealingLR(
                 optimizer, T_max=self.hparams.max_epochs,
                 eta_min=(self.hparams.lr / 50))
