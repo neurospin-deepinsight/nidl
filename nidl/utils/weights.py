@@ -75,7 +75,7 @@ class Weights:
         if self.weight_file is None:
             warnings.warn("Define weight file location first!", stacklevel=2)
             return
-        model.load_pretrained(self.weight_file)
+        model.load_state_dict(torch.load(self.weight_file, weights_only=True))
 
     @classmethod
     def hub_split(
@@ -137,16 +137,16 @@ class Weights:
         weight_file: Path
             local path to the model weights.
         """
+        split_id = hf_id.split("/")
+        weight_file = Path(data_dir) / split_id[0] / split_id[1] / filepath
+        if not force_download and weight_file.is_file():
+            return weight_file
         cmd = ["git", "lfs", "--version"]
         try:
             subprocess.check_call(cmd)
         except Exception as exc:
             raise OSError("Make sure git-lfs is installed: "
                           "https://git-lfs.com") from exc
-        split_id = hf_id.split("/")
-        weight_file = Path(data_dir) / split_id[0] / split_id[1] / filepath
-        if not force_download and weight_file.is_file():
-            return weight_file
         weight_file.parent.mkdir(parents=True, exist_ok=True)
         if hf_revision is not None:
             url = urlparse.urljoin(cls.HF_URL, f"{hf_id}@{hf_revision}")

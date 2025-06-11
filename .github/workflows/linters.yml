@@ -35,4 +35,4 @@ jobs:
         pip install --progress-bar off .
     - name: Lint with Ruff
       run: |
-        ruff check --diff nidl
+        ruff check nidl

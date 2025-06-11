@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "torch >=2.1.0, <2.8.0",
+    "pytorch-lightning",
     "toml",
 ]
 dynamic = ["version"]
@@ -66,6 +67,7 @@ extend-select = [
     "RUF",
 ]
 ignore = [
+    "N803", # rgument name `X_test` should be lowercase
 ]
 
 [tool.ruff]

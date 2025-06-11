@@ -22,7 +22,7 @@ from .utils import Bunch, print_multicolor
 
 SECTIONS = ("project", "global", "import",
             "scaler", "transform", "compose", "augmentation", "dataset",
-            "dataloader", "model", "weights", "loss", "optimizer",
+            "dataloader", "model", "weights", "loss", "optimizer", "probe",
             "scheduler",
             "training",
             "environments")
@@ -55,6 +55,7 @@ def fetch_experiment(
     - loss: dl interface
     - optimizer: dl interface
     - scheduler: dl interface
+    - probe: dl interface
     - training: define here training settings.
     - environements: define here the interface to load in order to fullfil your
       needs and the constraint impose by the 'interface_occurrences'
@@ -149,7 +150,7 @@ def fetch_experiment(
         for _idx, _params in enumerate(params):
             if verbose > 0:
                 print(f"\n[{print_multicolor('Loading', display=False)}] "
-                      "{name}..."
+                      f"{name}..."
                       f"\nParameters\n{'-'*10}")
                 pprint(dict(_params))
             _key = f"{key}_{_idx}" if is_cv else key
@@ -244,6 +245,8 @@ def filter_config(
                 selected_env.setdefault(key, []).append(val)
     filter_config = collections.OrderedDict()
     for section, params in config.items():
+        if selected_env.get(section) == ["none"]:
+            continue
         shared_params, multi_params = {}, []
         for name in params:
             if isinstance(params[name], collections.OrderedDict):
@@ -265,10 +268,10 @@ def filter_config(
         if multi_envs:
             for name, _params in multi_params:
                 _params.update(shared_params)
-                if n_envs > 1:
-                    filter_config[f"{section}_{name}"] = _params
-                else:
+                if params.get("interface_occurrences") == 1:
                     filter_config[section] = _params
+                else:
+                    filter_config[f"{section}_{name}"] = _params
         else:
            filter_config[section] = shared_params
     return filter_config
@@ -309,7 +312,7 @@ def update_params(
                 print(f"\n[{print_multicolor('Help', display=False)}]..."
                       f"\nEnvironment\n{'-'*11}")
                 pprint(env)
-                print(f"\Interfaces\n{'-'*10}")
+                print(f"\nInterfaces\n{'-'*10}")
                 pprint(interfaces)
                 raise ValueError(
                     f"Can't find the '{attr}' dynamic argument. Please check "
