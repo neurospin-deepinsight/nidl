@@ -171,6 +171,18 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -192,6 +204,8 @@
 						                <li> <a href='#logistic-regression'>Logistic Regression</a> </li>                                    
                                     
 						                <li> <a href='#baseline'>Baseline</a> </li>                                    
+                                    
+						                <li> <a href='#conclusion'>Conclusion</a> </li>                                    
                                     
                                 
                             
@@ -250,8 +264,7 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="self-supervised-contrastive-learning-with-simclr">
 <span id="sphx-glr-auto-gallery-simclr-stl10-py"></span><h1>Self-Supervised Contrastive Learning with SimCLR<a class="headerlink" href="#self-supervised-contrastive-learning-with-simclr" title="Link to this heading">¶</a></h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div>
-<p>From: <a class="reference external" href="https://uvadlc-notebooks.readthedocs.io/">https://uvadlc-notebooks.readthedocs.io/</a>
-# <a class="reference external" href="https://lightning.ai/docs/pytorch/LTS/notebooks/course_UvA-DL/13-contrastive-learning.html">https://lightning.ai/docs/pytorch/LTS/notebooks/course_UvA-DL/13-contrastive-learning.html</a></p>
+<p>From: <a class="reference external" href="https://uvadlc-notebooks.readthedocs.io">https://uvadlc-notebooks.readthedocs.io</a></p>
 <p>In this tutorial, we will take a closer look at self-supervised contrastive
 learning. Self-supervised learning, or also sometimes called unsupervised
 learning, describes the scenario where we have given input data, but no
@@ -444,15 +457,7 @@ to get good results.</p>
 <span class="n">latent_size</span> <span class="o">=</span> <span class="n">encoder</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">out_features</span>
 <span class="n">encoder</span><span class="o">.</span><span class="n">latent_size</span> <span class="o">=</span> <span class="n">latent_size</span>
 <span class="n">encoder</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <a href="../generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SimCLR</span></a><span class="p">(</span>
-    <span class="n">encoder</span><span class="p">,</span>
-    <span class="n">hidden_dims</span><span class="o">=</span><span class="p">[</span><span class="n">encoder</span><span class="o">.</span><span class="n">latent_size</span> <span class="p">,</span> <span class="n">hidden_dim</span><span class="p">],</span>
-    <span class="n">lr</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">,</span>
-    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.07</span><span class="p">,</span>
-    <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
-    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
-<span class="p">)</span>
+
 <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">ModelCheckpoint</span><span class="p">(</span>
         <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc_top5&quot;</span><span class="p">),</span>
@@ -464,12 +469,22 @@ to get good results.</p>
     <span class="s2">&quot;max_epochs&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
     <span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
 <span class="p">}</span>
+<span class="n">model</span> <span class="o">=</span> <a href="../generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SimCLR</span></a><span class="p">(</span>
+    <span class="n">encoder</span><span class="p">,</span>
+    <span class="n">hidden_dims</span><span class="o">=</span><span class="p">[</span><span class="n">encoder</span><span class="o">.</span><span class="n">latent_size</span> <span class="p">,</span> <span class="n">hidden_dim</span><span class="p">],</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.07</span><span class="p">,</span>
+    <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">trainer_params</span>
+<span class="p">)</span>
+
 <span class="k">if</span> <span class="n">load_pretrained</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found pretrained model at </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">weight_file</span><span class="si">}</span><span class="s2">, loading...&quot;</span><span class="p">)</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">load_pretrained</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">,</span> <span class="o">**</span><span class="n">trainer_params</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -548,18 +563,6 @@ Here, we will only train the model with all the data available:</p>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">checkpointdir</span><span class="p">,</span>
     <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-linear-resnet18-stl10.pt&quot;</span>
 <span class="p">)</span>
-<span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">ModelCheckpoint</span><span class="p">(</span>
-        <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">),</span>
-    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
-<span class="p">]</span>
-<span class="n">trainer_params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;default_root_dir&quot;</span><span class="p">:</span> <span class="n">checkpointdir</span><span class="p">,</span>
-    <span class="s2">&quot;accelerator&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
-    <span class="s2">&quot;max_epochs&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-    <span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
-    <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="mi">10</span>
-<span class="p">}</span>
 <span class="n">train_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
     <span class="n">train_img_data</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
@@ -576,22 +579,33 @@ Here, we will only train the model with all the data available:</p>
     <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
 <span class="p">)</span>
 
-
+<span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ModelCheckpoint</span><span class="p">(</span>
+        <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">),</span>
+    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="n">trainer_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default_root_dir&quot;</span><span class="p">:</span> <span class="n">checkpointdir</span><span class="p">,</span>
+    <span class="s2">&quot;accelerator&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
+    <span class="s2">&quot;max_epochs&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
+    <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
 <span class="n">model</span> <span class="o">=</span> <a href="../generated/nidl.estimators.linear.LogisticRegression.html#nidl.estimators.linear.LogisticRegression" title="nidl.estimators.linear.LogisticRegression" class="sphx-glr-backref-module-nidl-estimators-linear sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LogisticRegression</span></a><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">new_model</span><span class="p">),</span>
     <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
     <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
-    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">trainer_params</span>
 <span class="p">)</span>
 <span class="k">if</span> <span class="n">load_pretrained</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found pretrained model at </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">weight_file</span><span class="si">}</span><span class="s2">, loading...&quot;</span><span class="p">)</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">load_pretrained</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fc</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="o">**</span><span class="n">trainer_params</span><span class="p">)</span>
-<span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_loader</span><span class="p">,</span> <span class="o">**</span><span class="n">trainer_params</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">batch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predictions: </span><span class="si">{</span><span class="n">preds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Labels: </span><span class="si">{</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -664,6 +678,15 @@ first iterations or not.</p>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><span class="n">train_transforms</span>
 <span class="p">)</span>
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">train_img_data</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
+<span class="p">)</span>
+
 <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">ModelCheckpoint</span><span class="p">(</span>
         <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">),</span>
@@ -676,67 +699,57 @@ first iterations or not.</p>
     <span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
     <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="mi">2</span>
 <span class="p">}</span>
-<span class="n">train_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
-    <span class="n">train_img_data</span><span class="p">,</span>
-    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
-<span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <a href="../generated/nidl.estimators.linear.LogisticRegression.html#nidl.estimators.linear.LogisticRegression" title="nidl.estimators.linear.LogisticRegression" class="sphx-glr-backref-module-nidl-estimators-linear sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LogisticRegression</span></a><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet18</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
     <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
     <span class="n">weight_decay</span><span class="o">=</span><span class="mf">2e-4</span><span class="p">,</span>
-    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">trainer_params</span>
 <span class="p">)</span>
 <span class="k">if</span> <span class="n">load_pretrained</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found pretrained model at </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">weight_file</span><span class="si">}</span><span class="s2">, loading...&quot;</span><span class="p">)</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">load_pretrained</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span> <span class="o">**</span><span class="n">trainer_params</span><span class="p">)</span>
-<span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_loader</span><span class="p">,</span> <span class="o">**</span><span class="n">trainer_params</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">)</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">batch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predictions: </span><span class="si">{</span><span class="n">preds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Labels: </span><span class="si">{</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">preds</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">acc</span><span class="si">:</span><span class="s2">4.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-
-<span class="c1"># The ResNet trained from scratch achieves ~73% on the test set. This</span>
-<span class="c1"># is almost 7% less than the contrastive learning model, and even</span>
-<span class="c1"># slightly less than SimCLR achieves with 1/10 of the data. This shows</span>
-<span class="c1"># that self-supervised, contrastive learning provides considerable</span>
-<span class="c1"># performance gains by leveraging large amounts of unlabeled data when</span>
-<span class="c1"># little labeled data is available.</span>
-<span class="c1">#</span>
-<span class="c1"># Conclusion</span>
-<span class="c1"># ----------</span>
-<span class="c1">#</span>
-<span class="c1"># In this tutorial, we have discussed self-supervised contrastive learning</span>
-<span class="c1"># and implemented SimCLR as an example method. We have applied it to the</span>
-<span class="c1"># STL10 dataset and showed that it can learn generalizable representations</span>
-<span class="c1"># that we can use to train simple classification models. With 500 images per</span>
-<span class="c1"># label, it achieved an 8% higher accuracy than a similar model solely</span>
-<span class="c1"># trained from supervision and performs on par with it when only using a</span>
-<span class="c1"># tenth of the labeled data. Our experimental results are limited to a single</span>
-<span class="c1"># dataset, but recent works such as Ting Chen et al. showed similar trends</span>
-<span class="c1"># for larger datasets like ImageNet. Besides the discussed hyperparameters,</span>
-<span class="c1"># the size of the model seems to be important in contrastive learning as</span>
-<span class="c1"># well. If a lot of unlabeled data is available, larger models can achieve</span>
-<span class="c1"># much stronger results and come close to their supervised baselines.</span>
-<span class="c1"># Further, there are also approaches for combining contrastive and</span>
-<span class="c1"># supervised learning, leading to performance gains beyond</span>
-<span class="c1"># supervision (see Khosla et al.). Moreover, contrastive learning is not</span>
-<span class="c1"># the only approach to self-supervised learning that has come up in the</span>
-<span class="c1"># last two years and showed great results. Other methods include</span>
-<span class="c1"># distillation-based methods like BYOL and redundancy reduction techniques</span>
-<span class="c1"># like Barlow Twins. There is a lot more to explore in the self-supervised</span>
-<span class="c1"># domain, and more, impressive steps ahead are to be expected.</span>
 </pre></div>
 </div>
+<p>The ResNet trained from scratch achieves ~73% on the test set. This
+is almost 7% less than the contrastive learning model, and even
+slightly less than SimCLR achieves with 1/10 of the data. This shows
+that self-supervised, contrastive learning provides considerable
+performance gains by leveraging large amounts of unlabeled data when
+little labeled data is available.</p>
+</section>
+<section id="conclusion">
+<h2 style='text-decoration: underline overline #aF8A4B;'>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
+<p>In this tutorial, we have discussed self-supervised contrastive learning
+and implemented SimCLR as an example method. We have applied it to the
+STL10 dataset and showed that it can learn generalizable representations
+that we can use to train simple classification models. With 500 images per
+label, it achieved an 8% higher accuracy than a similar model solely
+trained from supervision and performs on par with it when only using a
+tenth of the labeled data. Our experimental results are limited to a single
+dataset, but recent works such as Ting Chen et al. showed similar trends
+for larger datasets like ImageNet. Besides the discussed hyperparameters,
+the size of the model seems to be important in contrastive learning as
+well. If a lot of unlabeled data is available, larger models can achieve
+much stronger results and come close to their supervised baselines.
+Further, there are also approaches for combining contrastive and
+supervised learning, leading to performance gains beyond
+supervision (see Khosla et al.). Moreover, contrastive learning is not
+the only approach to self-supervised learning that has come up in the
+last two years and showed great results. Other methods include
+distillation-based methods like BYOL and redundancy reduction techniques
+like Barlow Twins. There is a lot more to explore in the self-supervised
+domain, and more, impressive steps ahead are to be expected.</p>
 <p><strong>Estimated memory usage:</strong>  0 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gallery-simclr-stl10-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

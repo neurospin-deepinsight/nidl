@@ -236,6 +236,8 @@
 <span class="sd">        optionaly, use a CosineAnnealingLR scheduler.</span>
 <span class="sd">    random_state: int, default=None</span>
 <span class="sd">        setting a seed for reproducibility.</span>
+<span class="sd">    kwargs: dict</span>
+<span class="sd">        Trainer parameters.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -261,9 +263,10 @@
             <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
             <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
             <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="n">max_epochs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;encoder&quot;</span><span class="p">])</span>
+            <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;encoder&quot;</span><span class="p">],</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="p">(</span>
             <span class="s2">&quot;The temperature must be a positive float!&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">encoder</span><span class="p">,</span> <span class="s2">&quot;latent_size&quot;</span><span class="p">),</span> <span class="p">(</span>
@@ -286,7 +289,8 @@
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="p">,</span> <span class="s2">&quot;max_epochs&quot;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">CosineAnnealingLR</span><span class="p">(</span>
                 <span class="n">optimizer</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span><span class="p">,</span>
                 <span class="n">eta_min</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span> <span class="o">/</span> <span class="mi">50</span><span class="p">))</span>

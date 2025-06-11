@@ -175,6 +175,8 @@
 <span class="sd">        optionaly, use a MultiStepLR scheduler.</span>
 <span class="sd">    random_state: int, default=None</span>
 <span class="sd">        setting a seed for reproducibility.</span>
+<span class="sd">    kwargs: dict</span>
+<span class="sd">        Trainer parameters.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -197,9 +199,10 @@
             <span class="n">num_classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
             <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
             <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="n">max_epochs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">])</span>
+            <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">],</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -209,7 +212,8 @@
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="p">,</span> <span class="s2">&quot;max_epochs&quot;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">MultiStepLR</span><span class="p">(</span>
                 <span class="n">optimizer</span><span class="p">,</span> <span class="n">milestones</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">),</span>
                 <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">)],</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>

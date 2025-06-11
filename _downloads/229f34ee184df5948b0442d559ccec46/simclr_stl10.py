@@ -2,8 +2,7 @@
 Self-Supervised Contrastive Learning with SimCLR
 ================================================
 
-From: https://uvadlc-notebooks.readthedocs.io/
-# https://lightning.ai/docs/pytorch/LTS/notebooks/course_UvA-DL/13-contrastive-learning.html
+From: https://uvadlc-notebooks.readthedocs.io
 
 In this tutorial, we will take a closer look at self-supervised contrastive
 learning. Self-supervised learning, or also sometimes called unsupervised
@@ -213,15 +212,7 @@ encoder = torchvision.models.resnet18(
 latent_size = encoder.fc.out_features
 encoder.latent_size = latent_size
 encoder.fc = nn.Identity()
-model = SimCLR(
-    encoder,
-    hidden_dims=[encoder.latent_size , hidden_dim],
-    lr=5e-4,
-    temperature=0.07,
-    weight_decay=1e-4,
-    max_epochs=500,
-    random_state=42
-)
+
 callbacks = [
     ModelCheckpoint(
         save_weights_only=True, mode="max", monitor="val_acc_top5"),
@@ -233,12 +224,22 @@ trainer_params = {
     "max_epochs": 500,
     "callbacks": callbacks,
 }
+model = SimCLR(
+    encoder,
+    hidden_dims=[encoder.latent_size , hidden_dim],
+    lr=5e-4,
+    temperature=0.07,
+    weight_decay=1e-4,
+    random_state=42,
+    **trainer_params
+)
+
 if load_pretrained:
     print(f"Found pretrained model at {weights.weight_file}, loading...") 
     weights.load_pretrained(model)
     model.fitted_ = True
 else:
-    model.fit(train_loader, val_loader, **trainer_params)
+    model.fit(train_loader, val_loader)
 
 # %%
 # Logistic Regression
@@ -323,18 +324,6 @@ weights = Weights(
     data_dir=checkpointdir,
     filepath="weights-linear-resnet18-stl10.pt"
 )
-callbacks = [
-    ModelCheckpoint(
-        save_weights_only=True, mode="max", monitor="val_acc"),
-    LearningRateMonitor(logging_interval="epoch")
-]
-trainer_params = {
-    "default_root_dir": checkpointdir,
-    "accelerator": device,
-    "max_epochs": 100,
-    "callbacks": callbacks,
-    "check_val_every_n_epoch": 10
-}
 train_loader = data.DataLoader(
     train_img_data,
     batch_size=batch_size,
@@ -351,22 +340,33 @@ test_loader = data.DataLoader(
     num_workers=num_workers
 )
 
-
+callbacks = [
+    ModelCheckpoint(
+        save_weights_only=True, mode="max", monitor="val_acc"),
+    LearningRateMonitor(logging_interval="epoch")
+]
+trainer_params = {
+    "default_root_dir": checkpointdir,
+    "accelerator": device,
+    "max_epochs": 100,
+    "callbacks": callbacks,
+    "check_val_every_n_epoch": 10
+}
 model = LogisticRegression(
     model=deepcopy(new_model),
     num_classes=10,
     lr=1e-3,
     weight_decay=1e-3,
-    max_epochs=100,
-    random_state=42
+    random_state=42,
+    **trainer_params
 )
 if load_pretrained:
     print(f"Found pretrained model at {weights.weight_file}, loading...")
     weights.load_pretrained(model.model.fc)
     model.fitted_ = True
 else:
-    model.fit(train_loader, **trainer_params)
-preds = model.predict(test_loader, **trainer_params)
+    model.fit(train_loader)
+preds = model.predict(test_loader)
 labels = torch.cat([batch[1] for batch in test_loader])
 print(f"Predictions: {preds.shape}")
 print(f"Labels: {labels.shape}")
@@ -443,6 +443,15 @@ train_img_aug_data = STL10(
     download=True,
     transform=train_transforms
 )
+train_loader = data.DataLoader(
+    train_img_data,
+    batch_size=batch_size,
+    shuffle=True,
+    drop_last=False,
+    pin_memory=True,
+    num_workers=num_workers
+)
+
 callbacks = [
     ModelCheckpoint(
         save_weights_only=True, mode="max", monitor="val_acc"),
@@ -455,35 +464,28 @@ trainer_params = {
     "callbacks": callbacks,
     "check_val_every_n_epoch": 2
 }
-train_loader = data.DataLoader(
-    train_img_data,
-    batch_size=batch_size,
-    shuffle=True,
-    drop_last=False,
-    pin_memory=True,
-    num_workers=num_workers
-)
 model = LogisticRegression(
     model=torchvision.models.resnet18(weights=None, num_classes=10),
     num_classes=10,
     lr=1e-3,
     weight_decay=2e-4,
-    max_epochs=100,
-    random_state=42
+    random_state=42,
+    **trainer_params
 )
 if load_pretrained:
     print(f"Found pretrained model at {weights.weight_file}, loading...")
     weights.load_pretrained(model.model)
     model.fitted_ = True
 else:
-    model.fit(train_loader, test_loader, **trainer_params)
-preds = model.predict(test_loader, **trainer_params)
+    model.fit(train_loader, test_loader)
+preds = model.predict(test_loader)
 labels = torch.cat([batch[1] for batch in test_loader])
 print(f"Predictions: {preds.shape}")
 print(f"Labels: {labels.shape}")
 acc = (preds.argmax(dim=-1) == labels).float().mean()
 print(f"Accuracy: {100 * acc:4.2f}%")
 
+# %%
 # The ResNet trained from scratch achieves ~73% on the test set. This
 # is almost 7% less than the contrastive learning model, and even
 # slightly less than SimCLR achieves with 1/10 of the data. This shows

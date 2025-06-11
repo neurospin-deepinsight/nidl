@@ -173,7 +173,8 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">ignore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">ignore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Init class.</span>
 
 <span class="sd">        Parameters</span>
@@ -184,18 +185,20 @@
 <span class="sd">            int for reproducible output across multiple function calls.</span>
 <span class="sd">        ignore: list of str, default=None</span>
 <span class="sd">            Ignore attribute of instance `nn.Module`.</span>
+<span class="sd">        kwargs: dict</span>
+<span class="sd">            Trainer parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_hyperparameters</span><span class="p">(</span><span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_batch_connector</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">batch</span><span class="p">:</span> <span class="n">batch</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">X_train</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
-            <span class="n">X_val</span><span class="p">:</span>  <span class="n">Optional</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">X_val</span><span class="p">:</span>  <span class="n">Optional</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">_default_hp_metric</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">pl</span><span class="o">.</span><span class="n">seed_everything</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">)</span>
@@ -206,20 +209,18 @@
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">(</span><span class="s2">&quot;transformer&quot;</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
         <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">((</span><span class="s2">&quot;regressor&quot;</span><span class="p">,</span> <span class="s2">&quot;classifier&quot;</span><span class="p">,</span> <span class="s2">&quot;clusterer&quot;</span><span class="p">)))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
         <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 

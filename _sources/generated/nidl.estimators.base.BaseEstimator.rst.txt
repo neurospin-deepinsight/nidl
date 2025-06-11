@@ -9,7 +9,7 @@
 .. autoclass:: nidl.estimators.base.BaseEstimator
      :members:
 
-.. minigallery:: nidl.estimators.BaseEstimator nidl.estimators.base.BaseEstimator
+.. minigallery:: nidl.estimators.base.BaseEstimator nidl.estimators.BaseEstimator
     :add-heading: Examples
     :heading-level: -
 

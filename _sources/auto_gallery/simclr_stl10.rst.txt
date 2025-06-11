@@ -21,8 +21,7 @@
 Self-Supervised Contrastive Learning with SimCLR
 ================================================
 
-From: https://uvadlc-notebooks.readthedocs.io/
-# https://lightning.ai/docs/pytorch/LTS/notebooks/course_UvA-DL/13-contrastive-learning.html
+From: https://uvadlc-notebooks.readthedocs.io
 
 In this tutorial, we will take a closer look at self-supervised contrastive
 learning. Self-supervised learning, or also sometimes called unsupervised
@@ -40,7 +39,7 @@ Setup
 This notebook requires some packages besides nidl. Let's first start with
 importing our standard libraries below:
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-42
+.. GENERATED FROM PYTHON SOURCE LINES 23-41
 
 .. code-block:: Python
 
@@ -63,11 +62,11 @@ importing our standard libraries below:
     from torchvision.datasets import STL10
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-44
+.. GENERATED FROM PYTHON SOURCE LINES 42-43
 
 Let's define some global parameters:
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-53
+.. GENERATED FROM PYTHON SOURCE LINES 43-52
 
 .. code-block:: Python
 
@@ -81,13 +80,13 @@ Let's define some global parameters:
     device = "gpu" if torch.cuda.is_available() else "cpu"
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-57
+.. GENERATED FROM PYTHON SOURCE LINES 53-56
 
 As in many tutorials before, we provide pre-trained models. If you are 
 running this notebook locally, make sure to have sufficient disk space
 available.
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-66
+.. GENERATED FROM PYTHON SOURCE LINES 56-65
 
 .. code-block:: Python
 
@@ -101,7 +100,7 @@ available.
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-80
+.. GENERATED FROM PYTHON SOURCE LINES 66-79
 
 Data Augmentation for Contrastive Learning
 ------------------------------------------
@@ -117,7 +116,7 @@ positive examples by sampling more than two augmentations of the same
 image. However, the most efficient training is usually obtained by using
 only two.
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-89
+.. GENERATED FROM PYTHON SOURCE LINES 79-88
 
 .. code-block:: Python
 
@@ -131,7 +130,7 @@ only two.
             return [self.base_transforms(x) for i in range(self.n_views)]
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-105
+.. GENERATED FROM PYTHON SOURCE LINES 89-104
 
 Next, we can look at the specific augmentations we want to apply. The choice
 of the data augmentation to use is the most crucial hyperparameter in SimCLR
@@ -149,7 +148,7 @@ brightness scale highly varies in a dataset, the original settings can be
 more beneficial since the model can't rely on this information anymore to
 distinguish between images.
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-120
+.. GENERATED FROM PYTHON SOURCE LINES 104-119
 
 .. code-block:: Python
 
@@ -169,7 +168,7 @@ distinguish between images.
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-142
+.. GENERATED FROM PYTHON SOURCE LINES 120-141
 
 Dataset
 -------
@@ -193,7 +192,7 @@ transformations above: the unlabeled_data will be used to train our model
 via contrastive learning, and train_data_contrast will be used as a validation
 set in contrastive learning.
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-156
+.. GENERATED FROM PYTHON SOURCE LINES 141-155
 
 .. code-block:: Python
 
@@ -212,12 +211,12 @@ set in contrastive learning.
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-159
+.. GENERATED FROM PYTHON SOURCE LINES 156-158
 
 Before starting with our implementation of SimCLR, let's look at some example
 image pairs sampled with our augmentations:
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-170
+.. GENERATED FROM PYTHON SOURCE LINES 158-169
 
 .. code-block:: Python
 
@@ -233,11 +232,11 @@ image pairs sampled with our augmentations:
     plt.axis("off")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-172
+.. GENERATED FROM PYTHON SOURCE LINES 170-171
 
 And create the associated dataloaders:
 
-.. GENERATED FROM PYTHON SOURCE LINES 172-191
+.. GENERATED FROM PYTHON SOURCE LINES 171-190
 
 .. code-block:: Python
 
@@ -261,7 +260,7 @@ And create the associated dataloaders:
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-208
+.. GENERATED FROM PYTHON SOURCE LINES 191-207
 
 Training
 --------
@@ -280,7 +279,7 @@ image to more negative examples, leading to overall smoother loss gradients.
 However, in our case, we experienced that a batch size of 256 was sufficient
 to get good results.
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-243
+.. GENERATED FROM PYTHON SOURCE LINES 207-244
 
 .. code-block:: Python
 
@@ -292,15 +291,7 @@ to get good results.
     latent_size = encoder.fc.out_features
     encoder.latent_size = latent_size
     encoder.fc = nn.Identity()
-    model = SimCLR(
-        encoder,
-        hidden_dims=[encoder.latent_size , hidden_dim],
-        lr=5e-4,
-        temperature=0.07,
-        weight_decay=1e-4,
-        max_epochs=500,
-        random_state=42
-    )
+
     callbacks = [
         ModelCheckpoint(
             save_weights_only=True, mode="max", monitor="val_acc_top5"),
@@ -312,15 +303,25 @@ to get good results.
         "max_epochs": 500,
         "callbacks": callbacks,
     }
+    model = SimCLR(
+        encoder,
+        hidden_dims=[encoder.latent_size , hidden_dim],
+        lr=5e-4,
+        temperature=0.07,
+        weight_decay=1e-4,
+        random_state=42,
+        **trainer_params
+    )
+
     if load_pretrained:
         print(f"Found pretrained model at {weights.weight_file}, loading...") 
         weights.load_pretrained(model)
         model.fitted_ = True
     else:
-        model.fit(train_loader, val_loader, **trainer_params)
+        model.fit(train_loader, val_loader)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 244-269
+.. GENERATED FROM PYTHON SOURCE LINES 245-270
 
 Logistic Regression
 -------------------
@@ -348,7 +349,7 @@ gain in this simple setup.
 The data we use is the training and test set of STL10. The training contains
 500 images per class, while the test set has 800 images per class.
 
-.. GENERATED FROM PYTHON SOURCE LINES 269-292
+.. GENERATED FROM PYTHON SOURCE LINES 270-293
 
 .. code-block:: Python
 
@@ -376,13 +377,13 @@ The data we use is the training and test set of STL10. The training contains
     print("Number of test examples:", len(test_img_data))
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 293-296
+.. GENERATED FROM PYTHON SOURCE LINES 294-297
 
 Next, we create a model where the encoder weights are froozen, i.e. the
 output representations will be used as inputs to the Logistic Regression
 model.
 
-.. GENERATED FROM PYTHON SOURCE LINES 296-307
+.. GENERATED FROM PYTHON SOURCE LINES 297-308
 
 .. code-block:: Python
 
@@ -398,7 +399,7 @@ model.
     new_model.fc.requires_grad_(True)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 308-320
+.. GENERATED FROM PYTHON SOURCE LINES 309-321
 
 Finally, we train the Logistic Regression model and evaluate the model on the
 test set every 10 epochs to allow early stopping, but the low frequency of
@@ -413,7 +414,7 @@ intuition on how well the representations learned by contrastive learning
 can be transfered to a image recognition task like this classification.
 Here, we will only train the model with all the data available:
 
-.. GENERATED FROM PYTHON SOURCE LINES 320-381
+.. GENERATED FROM PYTHON SOURCE LINES 321-381
 
 .. code-block:: Python
 
@@ -423,18 +424,6 @@ Here, we will only train the model with all the data available:
         data_dir=checkpointdir,
         filepath="weights-linear-resnet18-stl10.pt"
     )
-    callbacks = [
-        ModelCheckpoint(
-            save_weights_only=True, mode="max", monitor="val_acc"),
-        LearningRateMonitor(logging_interval="epoch")
-    ]
-    trainer_params = {
-        "default_root_dir": checkpointdir,
-        "accelerator": device,
-        "max_epochs": 100,
-        "callbacks": callbacks,
-        "check_val_every_n_epoch": 10
-    }
     train_loader = data.DataLoader(
         train_img_data,
         batch_size=batch_size,
@@ -451,22 +440,33 @@ Here, we will only train the model with all the data available:
         num_workers=num_workers
     )
 
-
+    callbacks = [
+        ModelCheckpoint(
+            save_weights_only=True, mode="max", monitor="val_acc"),
+        LearningRateMonitor(logging_interval="epoch")
+    ]
+    trainer_params = {
+        "default_root_dir": checkpointdir,
+        "accelerator": device,
+        "max_epochs": 100,
+        "callbacks": callbacks,
+        "check_val_every_n_epoch": 10
+    }
     model = LogisticRegression(
         model=deepcopy(new_model),
         num_classes=10,
         lr=1e-3,
         weight_decay=1e-3,
-        max_epochs=100,
-        random_state=42
+        random_state=42,
+        **trainer_params
     )
     if load_pretrained:
         print(f"Found pretrained model at {weights.weight_file}, loading...")
         weights.load_pretrained(model.model.fc)
         model.fitted_ = True
     else:
-        model.fit(train_loader, **trainer_params)
-    preds = model.predict(test_loader, **trainer_params)
+        model.fit(train_loader)
+    preds = model.predict(test_loader)
     labels = torch.cat([batch[1] for batch in test_loader])
     print(f"Predictions: {preds.shape}")
     print(f"Labels: {labels.shape}")
@@ -522,7 +522,7 @@ Regression setup. Note that we allow the ResNet to perform validation
 every 2 epochs to also check whether the model overfits strongly in the
 first iterations or not.
 
-.. GENERATED FROM PYTHON SOURCE LINES 422-517
+.. GENERATED FROM PYTHON SOURCE LINES 422-488
 
 .. code-block:: Python
 
@@ -550,6 +550,15 @@ first iterations or not.
         download=True,
         transform=train_transforms
     )
+    train_loader = data.DataLoader(
+        train_img_data,
+        batch_size=batch_size,
+        shuffle=True,
+        drop_last=False,
+        pin_memory=True,
+        num_workers=num_workers
+    )
+
     callbacks = [
         ModelCheckpoint(
             save_weights_only=True, mode="max", monitor="val_acc"),
@@ -562,65 +571,60 @@ first iterations or not.
         "callbacks": callbacks,
         "check_val_every_n_epoch": 2
     }
-    train_loader = data.DataLoader(
-        train_img_data,
-        batch_size=batch_size,
-        shuffle=True,
-        drop_last=False,
-        pin_memory=True,
-        num_workers=num_workers
-    )
     model = LogisticRegression(
         model=torchvision.models.resnet18(weights=None, num_classes=10),
         num_classes=10,
         lr=1e-3,
         weight_decay=2e-4,
-        max_epochs=100,
-        random_state=42
+        random_state=42,
+        **trainer_params
     )
     if load_pretrained:
         print(f"Found pretrained model at {weights.weight_file}, loading...")
         weights.load_pretrained(model.model)
         model.fitted_ = True
     else:
-        model.fit(train_loader, test_loader, **trainer_params)
-    preds = model.predict(test_loader, **trainer_params)
+        model.fit(train_loader, test_loader)
+    preds = model.predict(test_loader)
     labels = torch.cat([batch[1] for batch in test_loader])
     print(f"Predictions: {preds.shape}")
     print(f"Labels: {labels.shape}")
     acc = (preds.argmax(dim=-1) == labels).float().mean()
     print(f"Accuracy: {100 * acc:4.2f}%")
 
-    # The ResNet trained from scratch achieves ~73% on the test set. This
-    # is almost 7% less than the contrastive learning model, and even
-    # slightly less than SimCLR achieves with 1/10 of the data. This shows
-    # that self-supervised, contrastive learning provides considerable
-    # performance gains by leveraging large amounts of unlabeled data when
-    # little labeled data is available.
-    # 
-    # Conclusion
-    # ----------
-    # 
-    # In this tutorial, we have discussed self-supervised contrastive learning
-    # and implemented SimCLR as an example method. We have applied it to the
-    # STL10 dataset and showed that it can learn generalizable representations
-    # that we can use to train simple classification models. With 500 images per
-    # label, it achieved an 8% higher accuracy than a similar model solely
-    # trained from supervision and performs on par with it when only using a
-    # tenth of the labeled data. Our experimental results are limited to a single
-    # dataset, but recent works such as Ting Chen et al. showed similar trends 
-    # for larger datasets like ImageNet. Besides the discussed hyperparameters, 
-    # the size of the model seems to be important in contrastive learning as 
-    # well. If a lot of unlabeled data is available, larger models can achieve 
-    # much stronger results and come close to their supervised baselines. 
-    # Further, there are also approaches for combining contrastive and 
-    # supervised learning, leading to performance gains beyond 
-    # supervision (see Khosla et al.). Moreover, contrastive learning is not 
-    # the only approach to self-supervised learning that has come up in the 
-    # last two years and showed great results. Other methods include 
-    # distillation-based methods like BYOL and redundancy reduction techniques 
-    # like Barlow Twins. There is a lot more to explore in the self-supervised 
-    # domain, and more, impressive steps ahead are to be expected.
+
+.. GENERATED FROM PYTHON SOURCE LINES 489-519
+
+The ResNet trained from scratch achieves ~73% on the test set. This
+is almost 7% less than the contrastive learning model, and even
+slightly less than SimCLR achieves with 1/10 of the data. This shows
+that self-supervised, contrastive learning provides considerable
+performance gains by leveraging large amounts of unlabeled data when
+little labeled data is available.
+
+Conclusion
+----------
+
+In this tutorial, we have discussed self-supervised contrastive learning
+and implemented SimCLR as an example method. We have applied it to the
+STL10 dataset and showed that it can learn generalizable representations
+that we can use to train simple classification models. With 500 images per
+label, it achieved an 8% higher accuracy than a similar model solely
+trained from supervision and performs on par with it when only using a
+tenth of the labeled data. Our experimental results are limited to a single
+dataset, but recent works such as Ting Chen et al. showed similar trends 
+for larger datasets like ImageNet. Besides the discussed hyperparameters, 
+the size of the model seems to be important in contrastive learning as 
+well. If a lot of unlabeled data is available, larger models can achieve 
+much stronger results and come close to their supervised baselines. 
+Further, there are also approaches for combining contrastive and 
+supervised learning, leading to performance gains beyond 
+supervision (see Khosla et al.). Moreover, contrastive learning is not 
+the only approach to self-supervised learning that has come up in the 
+last two years and showed great results. Other methods include 
+distillation-based methods like BYOL and redundancy reduction techniques 
+like Barlow Twins. There is a lot more to explore in the self-supervised 
+domain, and more, impressive steps ahead are to be expected.
 
 **Estimated memory usage:**  0 MB
 

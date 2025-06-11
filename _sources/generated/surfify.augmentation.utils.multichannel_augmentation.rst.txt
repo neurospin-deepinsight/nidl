@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.augmentation.utils.multichannel_augmentation
 
-.. minigallery:: surfify.augmentation.multichannel_augmentation surfify.augmentation.utils.multichannel_augmentation
+.. minigallery:: surfify.augmentation.utils.multichannel_augmentation surfify.augmentation.multichannel_augmentation
     :add-heading: Examples
     :heading-level: -
 

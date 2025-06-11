@@ -15,7 +15,7 @@ Use Cases
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="From: https://uvadlc-notebooks.readthedocs.io/ # https://lightning.ai/docs/pytorch/LTS/notebooks/course_UvA-DL/13-contrastive-learning.html">
+    <div class="sphx-glr-thumbcontainer" tooltip="From: https://uvadlc-notebooks.readthedocs.io">
 
 .. only:: html
 
