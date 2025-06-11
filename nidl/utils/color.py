@@ -645,7 +645,7 @@ def random_stylize(text, reset=True):
     """
     colors = list(Colored("white").paint.keys())
     text = [stylize(char,
-                    fg(colors[np.random.choice(len(text))]) + attr("bold"),
+                    fg(colors[np.random.choice(len(colors))]) + attr("bold"),
                     reset=reset)
             for char in text]
     return "".join(text)
