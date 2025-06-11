@@ -1,0 +1,104 @@
+import hashlib
+import re
+import warnings
+from pathlib import Path
+from typing import Optional
+import requests
+import tqdm
+
+def download_file_with_progress_bar(url: str,
+                                    expected_checksum: str,
+                                    location: str,
+                                    file_name: str) -> Optional[str]:
+    """Download a file from the given URL.
+
+    During download, progress is reported using a progress bar. The downloaded
+    file's checksum is compared to the provided ``expected_checksum``.
+
+    Args:
+        url: The URL to download the file from.
+        expected_checksum: The expected checksum value of the downloaded file.
+        location: The directory where the file will be saved.
+        file_name: The name of the file.
+
+    Returns:
+        The path of the downloaded file if the download is successful, None otherwise.
+
+    Raises:
+        RuntimeError: If the maximum ``retry count`` is exceeded.
+    """
+
+    # Check if the file already exists in the location
+    location_path = Path(location)
+    file_path = location_path / file_name
+
+    if file_path.exists():
+        existing_checksum = calculate_checksum(file_path)
+        if existing_checksum == expected_checksum:
+            return file_path
+
+
+    response = requests.get(url, stream=True)
+
+    # Check if the request was successful
+    if response.status_code != 200:
+        raise requests.HTTPError(
+            f"Error occurred while downloading the file. Response code: {response.status_code}"
+        )
+
+    # Check if the response headers contain the 'Content-Disposition' header
+    if 'Content-Disposition' not in response.headers:
+        raise ValueError(
+            "Unable to determine the filename. 'Content-Disposition' header not found."
+        )
+
+    # Extract the filename from the 'Content-Disposition' header
+    filename_match = re.search(r'filename="(.+)"',
+                               response.headers.get("Content-Disposition"))
+    if not filename_match:
+        raise ValueError(
+            "Unable to determine the filename from the 'Content-Disposition' header."
+        )
+
+    # Create the directory and any necessary parent directories
+    location_path.mkdir(exist_ok=True)
+
+    filename = filename_match.group(1)
+    file_path = location_path / filename
+
+    total_size = int(response.headers.get("Content-Length", 0))
+    checksum = hashlib.md5()  # create checksum
+
+    with open(file_path, "wb") as file:
+        with tqdm.tqdm(total=total_size, unit="B",
+                       unit_scale=True) as progress_bar:
+            for data in response.iter_content(chunk_size=1024):
+                file.write(data)
+                checksum.update(
+                    data)  # Update the checksum with the downloaded data
+                progress_bar.update(len(data))
+
+    downloaded_checksum = checksum.hexdigest()  # Get the checksum value
+    if downloaded_checksum != expected_checksum:
+        file_path.unlink()
+        raise ValueError("Checksum verification failed.")
+
+    else:
+        print(f"Download complete. Dataset saved in '{file_path}'")
+        return url
+
+
+def calculate_checksum(file_path: str) -> str:
+    """Calculate the MD5 checksum of a file.
+
+    Args:
+        file_path: The path to the file.
+
+    Returns:
+        The MD5 checksum of the file.
+    """
+    checksum = hashlib.md5()
+    with open(file_path, "rb") as file:
+        for chunk in iter(lambda: file.read(4096), b""):
+            checksum.update(chunk)
+    return checksum.hexdigest()

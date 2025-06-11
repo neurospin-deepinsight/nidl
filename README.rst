@@ -20,13 +20,32 @@
 .. |PyPi| image:: https://badge.fury.io/py/nidl.svg
 .. _PyPi: target:: https://badge.fury.io/py/nidl
 
-
+.. image:: assets/logo.png
+   :alt: Logo
+   :scale: 50%
+   
 A Deep Learning toolbox for NeuroImaging
 ========================================
 
 \:+1: If you are using the code please add a star to the repository :+1:
 
 This work is made available by a `community of people <./AUTHORS.rst>`_, amoung which the CEA Neurospin BAOBAB laboratory.
+
+
+Main principles of NIDL
+---------------
+
+**Principle 1:** Usability over Performance
+This principle may be surprising! However, it follows PyTorch. As one Hacker News poster wrote about PyTorch: PyTorch is amazing! […] Although I’m confused. How can a ML framework be not obsessed with speed/performance? See Hacker News discussion on PyTorch.
+
+**Principle 2:** Simple Over Easy
+Here, we borrow from The Zen of Python:
+- Explicit is better than implicit
+- Simple is better than complex
+
+**Principle 3:** Python First with Best In Class Language Interoperability
+NIDL is deeply integrated in Python and should be very easy to easy in coordination with scikit-learn, nilearn, NumPy, scipy 
+
 
 
 Important links
