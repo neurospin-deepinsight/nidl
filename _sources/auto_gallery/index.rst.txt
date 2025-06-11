@@ -13,11 +13,34 @@ Use Cases
 
 .. thumbnail-parent-div-open
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="From: https://uvadlc-notebooks.readthedocs.io/ # https://lightning.ai/docs/pytorch/LTS/notebooks/course_UvA-DL/13-contrastive-learning.html">
+
+.. only:: html
+
+  .. image:: /auto_gallery/images/thumb/sphx_glr_simclr_stl10_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_gallery_simclr_stl10.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Self-Supervised Contrastive Learning with SimCLR</div>
+    </div>
+
+
 .. thumbnail-parent-div-close
 
 .. raw:: html
 
     </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_gallery/simclr_stl10
 
 
 Spherical Modules Use Cases

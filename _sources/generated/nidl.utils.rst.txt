@@ -19,16 +19,6 @@ Various utilities to help with development.
   **Functions**:
     * `nidl.utils.print_multicolor <nidl.utils.color.print_multicolor.html>`_
 
-nidl.utils.weights
-^^^^^^^^^^^^^^^^^^
-
-Various utilities to download model weights.
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
-
 nidl.utils.color
 ^^^^^^^^^^^^^^^^
 
@@ -50,6 +40,31 @@ Various utilities to print text in a terminal using term colors.
     * `nidl.utils.color.print_warning <nidl.utils.color.print_warning.html>`_
     * `nidl.utils.color.random_stylize <nidl.utils.color.random_stylize.html>`_
     * `nidl.utils.color.stylize <nidl.utils.color.stylize.html>`_
+
+nidl.utils.validation
+^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.utils.validation._AvailableIfDescriptor <nidl.utils.validation._AvailableIfDescriptor.html>`_
+
+  **Functions**:
+    * `nidl.utils.validation._estimator_is <nidl.utils.validation._estimator_is.html>`_
+    * `nidl.utils.validation.available_if <nidl.utils.validation.available_if.html>`_
+    * `nidl.utils.validation.check_is_fitted <nidl.utils.validation.check_is_fitted.html>`_
+
+nidl.utils.weights
+^^^^^^^^^^^^^^^^^^
+
+Various utilities to download model weights.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
 
 nidl.utils.bunch
 ^^^^^^^^^^^^^^^^

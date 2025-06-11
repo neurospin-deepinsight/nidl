@@ -27,6 +27,18 @@ Surface augmentations.
     * `surfify.augmentation.interval <surfify.augmentation.utils.interval.html>`_
     * `surfify.augmentation.multichannel_augmentation <surfify.augmentation.utils.multichannel_augmentation.html>`_
 
+surfify.augmentation.mixup
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Original mixup augmentations.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
+    * `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
+    * `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
+
 surfify.augmentation.base
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -40,18 +52,6 @@ train CNNs.
     * `surfify.augmentation.base.SurfCutOut <surfify.augmentation.base.SurfCutOut.html>`_
     * `surfify.augmentation.base.SurfNoise <surfify.augmentation.base.SurfNoise.html>`_
     * `surfify.augmentation.base.SurfRotation <surfify.augmentation.base.SurfRotation.html>`_
-
-surfify.augmentation.mixup
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Original mixup augmentations.
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
-    * `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
-    * `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
 
 surfify.augmentation.utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

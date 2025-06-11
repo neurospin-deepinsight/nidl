@@ -9,7 +9,7 @@
 .. autoclass:: surfify.nn.modules.IcoPool
      :members:
 
-.. minigallery:: surfify.nn.modules.IcoPool surfify.nn.IcoPool
+.. minigallery:: surfify.nn.IcoPool surfify.nn.modules.IcoPool
     :add-heading: Examples
     :heading-level: -
 

@@ -23,6 +23,29 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     </blockquote>
     </div>
     <div class='col-md-4'>
+    <h3><a href='nidl.estimators.html'>
+    nidl.estimators
+    </a></h3>
+    <blockquote>
+        <p>Module that defines common estimators.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='nidl.estimators.linear.html'>
+    nidl.estimators.linear
+    </a></h3>
+    <blockquote>
+        <p>Linear estimators.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='nidl.estimators.ssl.html'>
+    nidl.estimators.ssl
+    </a></h3>
+    <blockquote>
+        <p>Self-supervised estimators.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
     <h3><a href='nidl.utils.html'>
     nidl.utils
     </a></h3>
@@ -115,6 +138,49 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.experiment.update_params <nidl.experiment.update_params.html>`_
 
+    * `nidl.estimators <nidl.estimators.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.estimators.BaseEstimator <nidl.estimators.base.BaseEstimator.html>`_
+
+          `nidl.estimators.ClassifierMixin <nidl.estimators.base.ClassifierMixin.html>`_
+
+          `nidl.estimators.ClusterMixin <nidl.estimators.base.ClusterMixin.html>`_
+
+          `nidl.estimators.RegressorMixin <nidl.estimators.base.RegressorMixin.html>`_
+
+          `nidl.estimators.TransformerMixin <nidl.estimators.base.TransformerMixin.html>`_
+
+          `nidl.estimators.base.BaseEstimator <nidl.estimators.base.BaseEstimator.html>`_
+
+          `nidl.estimators.base.ClassifierMixin <nidl.estimators.base.ClassifierMixin.html>`_
+
+          `nidl.estimators.base.ClusterMixin <nidl.estimators.base.ClusterMixin.html>`_
+
+          `nidl.estimators.base.RegressorMixin <nidl.estimators.base.RegressorMixin.html>`_
+
+          `nidl.estimators.base.TransformerMixin <nidl.estimators.base.TransformerMixin.html>`_
+
+    * `nidl.estimators.linear <nidl.estimators.linear.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.estimators.linear.LogisticRegression <nidl.estimators.linear.logistic_regression.LogisticRegression.html>`_
+
+          `nidl.estimators.linear.logistic_regression.LogisticRegression <nidl.estimators.linear.logistic_regression.LogisticRegression.html>`_
+
+    * `nidl.estimators.ssl <nidl.estimators.ssl.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.estimators.ssl.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
+
+          `nidl.estimators.ssl.simclr.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
+
     * `nidl.utils <nidl.utils.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
@@ -125,8 +191,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.utils.Weights <nidl.utils.weights.Weights.html>`_
 
           `nidl.utils.print_multicolor <nidl.utils.color.print_multicolor.html>`_
-
-          `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
 
           `nidl.utils.color.Colored <nidl.utils.color.Colored.html>`_
 
@@ -149,6 +213,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.utils.color.random_stylize <nidl.utils.color.random_stylize.html>`_
 
           `nidl.utils.color.stylize <nidl.utils.color.stylize.html>`_
+
+          `nidl.utils.validation._AvailableIfDescriptor <nidl.utils.validation._AvailableIfDescriptor.html>`_
+
+          `nidl.utils.validation._estimator_is <nidl.utils.validation._estimator_is.html>`_
+
+          `nidl.utils.validation.available_if <nidl.utils.validation.available_if.html>`_
+
+          `nidl.utils.validation.check_is_fitted <nidl.utils.validation.check_is_fitted.html>`_
+
+          `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
 
           `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
 
@@ -180,6 +254,12 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.augmentation.multichannel_augmentation <surfify.augmentation.utils.multichannel_augmentation.html>`_
 
+          `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
+
+          `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
+
+          `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
+
           `surfify.augmentation.base.SurfBlur <surfify.augmentation.base.SurfBlur.html>`_
 
           `surfify.augmentation.base.SurfCutOut <surfify.augmentation.base.SurfCutOut.html>`_
@@ -187,12 +267,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.augmentation.base.SurfNoise <surfify.augmentation.base.SurfNoise.html>`_
 
           `surfify.augmentation.base.SurfRotation <surfify.augmentation.base.SurfRotation.html>`_
-
-          `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
-
-          `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
-
-          `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
 
           `surfify.augmentation.utils.BaseTransformer <surfify.augmentation.utils.BaseTransformer.html>`_
 
@@ -295,17 +369,19 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
 
-          `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
+          `surfify.models.unet.DownBlock <surfify.models.unet.DownBlock.html>`_
 
-          `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
+          `surfify.models.unet.DownGBlock <surfify.models.unet.DownGBlock.html>`_
 
-          `surfify.models.vae.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
+          `surfify.models.unet.GraphicalUNet <surfify.models.unet.GraphicalUNet.html>`_
 
-          `surfify.models.vae.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
+          `surfify.models.unet.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
 
-          `surfify.models.vae.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
+          `surfify.models.unet.SphericalUNet <surfify.models.unet.SphericalUNet.html>`_
 
-          `surfify.models.vae.compute_output_dim <surfify.models.vae.compute_output_dim.html>`_
+          `surfify.models.unet.UpBlock <surfify.models.unet.UpBlock.html>`_
+
+          `surfify.models.unet.UpGBlock <surfify.models.unet.UpGBlock.html>`_
 
           `surfify.models.vgg.SphericalGVGG <surfify.models.vgg.SphericalGVGG.html>`_
 
@@ -345,19 +421,17 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
 
-          `surfify.models.unet.DownBlock <surfify.models.unet.DownBlock.html>`_
+          `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
 
-          `surfify.models.unet.DownGBlock <surfify.models.unet.DownGBlock.html>`_
+          `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
 
-          `surfify.models.unet.GraphicalUNet <surfify.models.unet.GraphicalUNet.html>`_
+          `surfify.models.vae.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
 
-          `surfify.models.unet.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
+          `surfify.models.vae.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
 
-          `surfify.models.unet.SphericalUNet <surfify.models.unet.SphericalUNet.html>`_
+          `surfify.models.vae.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
 
-          `surfify.models.unet.UpBlock <surfify.models.unet.UpBlock.html>`_
-
-          `surfify.models.unet.UpGBlock <surfify.models.unet.UpGBlock.html>`_
+          `surfify.models.vae.compute_output_dim <surfify.models.vae.compute_output_dim.html>`_
 
     * `surfify.nn <surfify.nn.html>`_
         .. hidden-technical-block::
@@ -526,20 +600,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.utils.sampling.vertex_adjacency_graph <surfify.utils.sampling.vertex_adjacency_graph.html>`_
 
-          `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
-
-          `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
-
-          `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
-
-          `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
-
-          `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
-
-          `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
-
-          `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
-
           `surfify.utils.io.HidePrints <surfify.utils.io.HidePrints.html>`_
 
           `surfify.utils.io.compute_and_store <surfify.utils.io.compute_and_store.html>`_
@@ -559,5 +619,19 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
 
           `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
+
+          `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
+
+          `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
+
+          `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
+
+          `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
+
+          `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
+
+          `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
+
+          `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
 
 

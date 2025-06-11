@@ -1,0 +1,27 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.estimators.ssl*
+===========================================
+
+nidl.estimators.ssl
+^^^^^^^^^^^^^^^^^^^
+
+Self-supervised estimators.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.estimators.ssl.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
+
+nidl.estimators.ssl.simclr
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.estimators.ssl.simclr.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
+

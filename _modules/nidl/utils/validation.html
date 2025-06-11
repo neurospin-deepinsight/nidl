@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../../_static/css/style.css">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../../../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                            <li>API</li>
+                            <li><a href="../../../generated/nidl.html">nidl</a></li><li><a href="../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../generated/surfify.html">surfify</a></li><li><a href="../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <h1>Source code for nidl.utils.validation</h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div><div class="highlight"><pre>
+<span></span><span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2025</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_wrapper</span><span class="p">,</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">isclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MethodType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+
+<div class="viewcode-block" id="check_is_fitted">
+<a class="viewcode-back" href="../../../generated/nidl.utils.validation.check_is_fitted.html#nidl.utils.validation.check_is_fitted">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_is_fitted</span><span class="p">(</span>
+        <span class="n">estimator</span><span class="p">,</span>
+        <span class="n">msg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Checks if the estimator is fitted by verifying the presence of</span>
+<span class="sd">    fitted attributes (ending with a trailing underscore) and otherwise</span>
+<span class="sd">    raises an Exception with the given message.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    estimator: estimator instance</span>
+<span class="sd">        Estimator instance for which the check is performed.</span>
+<span class="sd">    msg: str, default=None</span>
+<span class="sd">        The default error message is, &quot;This %(name)s instance is not fitted</span>
+<span class="sd">        yet. Call &#39;fit&#39; with appropriate arguments before using this</span>
+<span class="sd">        estimator.&quot;</span>
+<span class="sd">        For custom messages if &quot;%(name)s&quot; is present in the message string,</span>
+<span class="sd">        it is substituted for the estimator name.</span>
+<span class="sd">        Eg. : &quot;Estimator, %(name)s, must be fitted before sparsifying&quot;.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If the estimator is a class or not an estimator instance.</span>
+<span class="sd">    Exception</span>
+<span class="sd">        If the fittted attribute is not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">estimator</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">estimator</span><span class="si">}</span><span class="s2"> is a class, not an instance.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;This </span><span class="si">%(name)s</span><span class="s2"> instance is not fitted yet. Call &#39;fit&#39; with &quot;</span>
+            <span class="s2">&quot;appropriate arguments before using this estimator.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="s2">&quot;fit&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">estimator</span><span class="si">}</span><span class="s2"> is not an estimator instance.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="s2">&quot;fitted_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">estimator</span><span class="o">.</span><span class="n">fitted_</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">estimator</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="_estimator_is">
+<a class="viewcode-back" href="../../../generated/nidl.utils.validation._estimator_is.html#nidl.utils.validation._estimator_is">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_estimator_is</span><span class="p">(</span>
+        <span class="n">attrs</span><span class="p">:</span> <span class="nb">str</span> <span class="ow">or</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Check if we can delegate a method to the underlying estimator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">estimator</span><span class="p">:</span> <span class="p">(</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="s2">&quot;_estimator_type&quot;</span><span class="p">)</span> <span class="ow">and</span>
+        <span class="n">estimator</span><span class="o">.</span><span class="n">_estimator_type</span> <span class="ow">in</span> <span class="n">attrs</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="_AvailableIfDescriptor">
+<a class="viewcode-back" href="../../../generated/nidl.utils.validation._AvailableIfDescriptor.html#nidl.utils.validation._AvailableIfDescriptor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_AvailableIfDescriptor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implements a conditional property using the descriptor protocol.</span>
+
+<span class="sd">    Using this class to create a decorator will raise an ``AttributeError``</span>
+<span class="sd">    if check(self) returns a falsey value. Note that if check raises an error</span>
+<span class="sd">    this will also result in hasattr returning false.</span>
+
+<span class="sd">    See https://docs.python.org/3/howto/descriptor.html for an explanation of</span>
+<span class="sd">    descriptors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">check</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="n">check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span> <span class="o">=</span> <span class="n">attribute_name</span>
+
+        <span class="c1"># update the docstring of the descriptor</span>
+        <span class="n">update_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="n">attr_err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">check_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr_err_msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr_err_msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># delegate only on instances, not the classes.</span>
+            <span class="c1"># this is to allow access to the docstrings.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># This makes it possible to use the decorated method as an</span>
+            <span class="c1"># unbound method, for instance when monkeypatching.</span>
+            <span class="nd">@wraps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">out</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<div class="viewcode-block" id="available_if">
+<a class="viewcode-back" href="../../../generated/nidl.utils.validation.available_if.html#nidl.utils.validation.available_if">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">available_if</span><span class="p">(</span><span class="n">check</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; An attribute that is available only if check returns a truthy value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    check: callable</span>
+<span class="sd">        When passed the object with the decorated method, this should return</span>
+<span class="sd">        a truthy value if the attribute is available, and either return False</span>
+<span class="sd">        or raise an AttributeError if not available.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    callable</span>
+<span class="sd">        Callable makes the decorated method available if `check` returns</span>
+<span class="sd">        a truthy value, otherwise the decorated method is unavailable.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from nidl.utils.validation import available_if</span>
+<span class="sd">    &gt;&gt;&gt; class HelloIfEven:</span>
+<span class="sd">    ...    def __init__(self, x):</span>
+<span class="sd">    ...        self.x = x</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...    def _x_is_even(self):</span>
+<span class="sd">    ...        return self.x % 2 == 0</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...    @available_if(_x_is_even)</span>
+<span class="sd">    ...    def say_hello(self):</span>
+<span class="sd">    ...        print(&quot;Hello&quot;)</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; obj = HelloIfEven(1)</span>
+<span class="sd">    &gt;&gt;&gt; hasattr(obj, &quot;say_hello&quot;)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; obj.x = 2</span>
+<span class="sd">    &gt;&gt;&gt; hasattr(obj, &quot;say_hello&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; obj.say_hello()</span>
+<span class="sd">    Hello</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">fn</span><span class="p">:</span> <span class="n">_AvailableIfDescriptor</span><span class="p">(</span>
+        <span class="n">fn</span><span class="p">,</span> <span class="n">check</span><span class="p">,</span> <span class="n">attribute_name</span><span class="o">=</span><span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div>
+
+</pre></div>
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../../_static/js/wow.min.js"></script>
+        <script src="../../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../../_static/js/scripts.js"></script>
+        <script src="../../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>
