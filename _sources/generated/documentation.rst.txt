@@ -192,6 +192,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.utils.print_multicolor <nidl.utils.color.print_multicolor.html>`_
 
+          `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
+
           `nidl.utils.color.Colored <nidl.utils.color.Colored.html>`_
 
           `nidl.utils.color.attr <nidl.utils.color.attr.html>`_
@@ -224,8 +226,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
 
-          `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
-
     * `surfify <surfify.html>`_
     * `surfify.augmentation <surfify.augmentation.html>`_
         .. hidden-technical-block::
@@ -254,12 +254,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.augmentation.multichannel_augmentation <surfify.augmentation.utils.multichannel_augmentation.html>`_
 
-          `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
-
-          `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
-
-          `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
-
           `surfify.augmentation.base.SurfBlur <surfify.augmentation.base.SurfBlur.html>`_
 
           `surfify.augmentation.base.SurfCutOut <surfify.augmentation.base.SurfCutOut.html>`_
@@ -267,6 +261,12 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.augmentation.base.SurfNoise <surfify.augmentation.base.SurfNoise.html>`_
 
           `surfify.augmentation.base.SurfRotation <surfify.augmentation.base.SurfRotation.html>`_
+
+          `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
+
+          `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
+
+          `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
 
           `surfify.augmentation.utils.BaseTransformer <surfify.augmentation.utils.BaseTransformer.html>`_
 
@@ -293,11 +293,11 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.datasets.make_classification <surfify.datasets._samples_generator.make_classification.html>`_
 
-          `surfify.datasets._generic.GenericSurfDataset <surfify.datasets._generic.GenericSurfDataset.html>`_
-
           `surfify.datasets._samples_generator.ClassificationDataset <surfify.datasets._samples_generator.ClassificationDataset.html>`_
 
           `surfify.datasets._samples_generator.make_classification <surfify.datasets._samples_generator.make_classification.html>`_
+
+          `surfify.datasets._generic.GenericSurfDataset <surfify.datasets._generic.GenericSurfDataset.html>`_
 
     * `surfify.losses <surfify.losses.html>`_
         .. hidden-technical-block::
@@ -369,19 +369,17 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
 
-          `surfify.models.unet.DownBlock <surfify.models.unet.DownBlock.html>`_
+          `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
 
-          `surfify.models.unet.DownGBlock <surfify.models.unet.DownGBlock.html>`_
+          `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
 
-          `surfify.models.unet.GraphicalUNet <surfify.models.unet.GraphicalUNet.html>`_
+          `surfify.models.vae.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
 
-          `surfify.models.unet.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
+          `surfify.models.vae.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
 
-          `surfify.models.unet.SphericalUNet <surfify.models.unet.SphericalUNet.html>`_
+          `surfify.models.vae.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
 
-          `surfify.models.unet.UpBlock <surfify.models.unet.UpBlock.html>`_
-
-          `surfify.models.unet.UpGBlock <surfify.models.unet.UpGBlock.html>`_
+          `surfify.models.vae.compute_output_dim <surfify.models.vae.compute_output_dim.html>`_
 
           `surfify.models.vgg.SphericalGVGG <surfify.models.vgg.SphericalGVGG.html>`_
 
@@ -421,17 +419,19 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
 
-          `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
+          `surfify.models.unet.DownBlock <surfify.models.unet.DownBlock.html>`_
 
-          `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
+          `surfify.models.unet.DownGBlock <surfify.models.unet.DownGBlock.html>`_
 
-          `surfify.models.vae.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
+          `surfify.models.unet.GraphicalUNet <surfify.models.unet.GraphicalUNet.html>`_
 
-          `surfify.models.vae.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
+          `surfify.models.unet.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
 
-          `surfify.models.vae.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
+          `surfify.models.unet.SphericalUNet <surfify.models.unet.SphericalUNet.html>`_
 
-          `surfify.models.vae.compute_output_dim <surfify.models.vae.compute_output_dim.html>`_
+          `surfify.models.unet.UpBlock <surfify.models.unet.UpBlock.html>`_
+
+          `surfify.models.unet.UpGBlock <surfify.models.unet.UpGBlock.html>`_
 
     * `surfify.nn <surfify.nn.html>`_
         .. hidden-technical-block::
@@ -548,6 +548,40 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.utils.text2ico <surfify.utils.coord.text2ico.html>`_
 
+          `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
+
+          `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
+
+          `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
+
+          `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
+
+          `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
+
+          `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
+
+          `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
+
+          `surfify.utils.io.HidePrints <surfify.utils.io.HidePrints.html>`_
+
+          `surfify.utils.io.compute_and_store <surfify.utils.io.compute_and_store.html>`_
+
+          `surfify.utils.io.decompose_cifti <surfify.utils.io.decompose_cifti.html>`_
+
+          `surfify.utils.io.read_freesurfer <surfify.utils.io.read_freesurfer.html>`_
+
+          `surfify.utils.io.read_gifti <surfify.utils.io.read_gifti.html>`_
+
+          `surfify.utils.io.surf_data_from_cifti <surfify.utils.io.surf_data_from_cifti.html>`_
+
+          `surfify.utils.io.ungzip <surfify.utils.io.ungzip.html>`_
+
+          `surfify.utils.io.volume_from_cifti <surfify.utils.io.volume_from_cifti.html>`_
+
+          `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
+
+          `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
+
           `surfify.utils.sampling._patch_tri_iter <surfify.utils.sampling._patch_tri_iter.html>`_
 
           `surfify.utils.sampling.build_freesurfer_ico <surfify.utils.sampling.build_freesurfer_ico.html>`_
@@ -599,39 +633,5 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.utils.sampling.triangles_to_edges <surfify.utils.sampling.triangles_to_edges.html>`_
 
           `surfify.utils.sampling.vertex_adjacency_graph <surfify.utils.sampling.vertex_adjacency_graph.html>`_
-
-          `surfify.utils.io.HidePrints <surfify.utils.io.HidePrints.html>`_
-
-          `surfify.utils.io.compute_and_store <surfify.utils.io.compute_and_store.html>`_
-
-          `surfify.utils.io.decompose_cifti <surfify.utils.io.decompose_cifti.html>`_
-
-          `surfify.utils.io.read_freesurfer <surfify.utils.io.read_freesurfer.html>`_
-
-          `surfify.utils.io.read_gifti <surfify.utils.io.read_gifti.html>`_
-
-          `surfify.utils.io.surf_data_from_cifti <surfify.utils.io.surf_data_from_cifti.html>`_
-
-          `surfify.utils.io.ungzip <surfify.utils.io.ungzip.html>`_
-
-          `surfify.utils.io.volume_from_cifti <surfify.utils.io.volume_from_cifti.html>`_
-
-          `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
-
-          `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
-
-          `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
-
-          `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
-
-          `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
-
-          `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
-
-          `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
-
-          `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
-
-          `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
 
 

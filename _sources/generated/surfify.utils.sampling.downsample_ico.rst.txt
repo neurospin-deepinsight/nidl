@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.downsample_ico
 
-.. minigallery:: surfify.utils.downsample_ico surfify.utils.sampling.downsample_ico
+.. minigallery:: surfify.utils.sampling.downsample_ico surfify.utils.downsample_ico
     :add-heading: Examples
     :heading-level: -
 

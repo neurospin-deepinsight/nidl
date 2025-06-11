@@ -173,11 +173,11 @@
                                     
 						                <li> <a href='#surfify-models-base'>Surfify.models.base</a> </li>                                    
                                     
-						                <li> <a href='#surfify-models-unet'>Surfify.models.unet</a> </li>                                    
+						                <li> <a href='#surfify-models-vae'>Surfify.models.vae</a> </li>                                    
                                     
 						                <li> <a href='#surfify-models-vgg'>Surfify.models.vgg</a> </li>                                    
                                     
-						                <li> <a href='#surfify-models-vae'>Surfify.models.vae</a> </li>                                    
+						                <li> <a href='#surfify-models-unet'>Surfify.models.unet</a> </li>                                    
                                     
                                 
                             
@@ -277,18 +277,22 @@ and related informations.</p>
 </dd>
 </dl>
 </section>
-<section id="surfify-models-unet">
-<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.unet<a class="headerlink" href="#surfify-models-unet" title="Link to this heading">¶</a></h2>
-<p>The spherical UNet architecture.</p>
+<section id="surfify-models-vae">
+<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.vae<a class="headerlink" href="#surfify-models-vae" title="Link to this heading">¶</a></h2>
+<p>Cortical Spherical Variational Auto-Encoder (GMVAE) models.</p>
+<p>[1] Representation Learning of Resting State fMRI with Variational
+Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfMRI-VAE">https://github.com/libilab/rsfMRI-VAE</a></p>
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="surfify.models.unet.DownBlock.html">surfify.models.unet.DownBlock</a></p></li>
-<li><p><a class="reference external" href="surfify.models.unet.DownGBlock.html">surfify.models.unet.DownGBlock</a></p></li>
-<li><p><a class="reference external" href="surfify.models.unet.GraphicalUNet.html">surfify.models.unet.GraphicalUNet</a></p></li>
-<li><p><a class="reference external" href="surfify.models.unet.SphericalGUNet.html">surfify.models.unet.SphericalGUNet</a></p></li>
-<li><p><a class="reference external" href="surfify.models.unet.SphericalUNet.html">surfify.models.unet.SphericalUNet</a></p></li>
-<li><p><a class="reference external" href="surfify.models.unet.UpBlock.html">surfify.models.unet.UpBlock</a></p></li>
-<li><p><a class="reference external" href="surfify.models.unet.UpGBlock.html">surfify.models.unet.UpGBlock</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.HemiFusionDecoder.html">surfify.models.vae.HemiFusionDecoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.HemiFusionEncoder.html">surfify.models.vae.HemiFusionEncoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionDecoder.html">surfify.models.vae.SphericalHemiFusionDecoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionEncoder.html">surfify.models.vae.SphericalHemiFusionEncoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.SphericalVAE.html">surfify.models.vae.SphericalVAE</a></p></li>
+</ul>
+</dd>
+<dt><strong>Functions</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.vae.compute_output_dim.html">surfify.models.vae.compute_output_dim</a></p></li>
 </ul>
 </dd>
 </dl>
@@ -324,22 +328,18 @@ and related informations.</p>
 </dd>
 </dl>
 </section>
-<section id="surfify-models-vae">
-<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.vae<a class="headerlink" href="#surfify-models-vae" title="Link to this heading">¶</a></h2>
-<p>Cortical Spherical Variational Auto-Encoder (GMVAE) models.</p>
-<p>[1] Representation Learning of Resting State fMRI with Variational
-Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfMRI-VAE">https://github.com/libilab/rsfMRI-VAE</a></p>
+<section id="surfify-models-unet">
+<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.unet<a class="headerlink" href="#surfify-models-unet" title="Link to this heading">¶</a></h2>
+<p>The spherical UNet architecture.</p>
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="surfify.models.vae.HemiFusionDecoder.html">surfify.models.vae.HemiFusionDecoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.HemiFusionEncoder.html">surfify.models.vae.HemiFusionEncoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionDecoder.html">surfify.models.vae.SphericalHemiFusionDecoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionEncoder.html">surfify.models.vae.SphericalHemiFusionEncoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.SphericalVAE.html">surfify.models.vae.SphericalVAE</a></p></li>
-</ul>
-</dd>
-<dt><strong>Functions</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="surfify.models.vae.compute_output_dim.html">surfify.models.vae.compute_output_dim</a></p></li>
+<li><p><a class="reference external" href="surfify.models.unet.DownBlock.html">surfify.models.unet.DownBlock</a></p></li>
+<li><p><a class="reference external" href="surfify.models.unet.DownGBlock.html">surfify.models.unet.DownGBlock</a></p></li>
+<li><p><a class="reference external" href="surfify.models.unet.GraphicalUNet.html">surfify.models.unet.GraphicalUNet</a></p></li>
+<li><p><a class="reference external" href="surfify.models.unet.SphericalGUNet.html">surfify.models.unet.SphericalGUNet</a></p></li>
+<li><p><a class="reference external" href="surfify.models.unet.SphericalUNet.html">surfify.models.unet.SphericalUNet</a></p></li>
+<li><p><a class="reference external" href="surfify.models.unet.UpBlock.html">surfify.models.unet.UpBlock</a></p></li>
+<li><p><a class="reference external" href="surfify.models.unet.UpGBlock.html">surfify.models.unet.UpGBlock</a></p></li>
 </ul>
 </dd>
 </dl>

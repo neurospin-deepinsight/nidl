@@ -19,6 +19,16 @@ Various utilities to help with development.
   **Functions**:
     * `nidl.utils.print_multicolor <nidl.utils.color.print_multicolor.html>`_
 
+nidl.utils.bunch
+^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
+
 nidl.utils.color
 ^^^^^^^^^^^^^^^^
 
@@ -65,14 +75,4 @@ Various utilities to download model weights.
 
   **Classes**:
     * `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
-
-nidl.utils.bunch
-^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
 

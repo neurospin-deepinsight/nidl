@@ -9,7 +9,7 @@
 .. autoclass:: nidl.estimators.base.RegressorMixin
      :members:
 
-.. minigallery:: nidl.estimators.base.RegressorMixin nidl.estimators.RegressorMixin
+.. minigallery:: nidl.estimators.RegressorMixin nidl.estimators.base.RegressorMixin
     :add-heading: Examples
     :heading-level: -
 

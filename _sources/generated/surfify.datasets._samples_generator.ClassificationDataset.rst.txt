@@ -9,7 +9,7 @@
 .. autoclass:: surfify.datasets._samples_generator.ClassificationDataset
      :members:
 
-.. minigallery:: surfify.datasets._samples_generator.ClassificationDataset surfify.datasets.ClassificationDataset
+.. minigallery:: surfify.datasets.ClassificationDataset surfify.datasets._samples_generator.ClassificationDataset
     :add-heading: Examples
     :heading-level: -
 
