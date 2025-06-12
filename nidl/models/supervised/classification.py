@@ -6,66 +6,60 @@ import torch
 import numpy as np
 import logging
 # This library
-from nidl.models.base import BaseEstimator, EmbeddingTransformerMixin
+from nidl.models.base import BaseEstimator
 from nidl.volume.backbones import AlexNet, resnet18, resnet50, densenet121, \
-    VisionTransformer, MLP, Offset0ModelMSE
-from nidl.utils.lr_schedulers import LinearWarmupCosineAnnealingLR
-from nidl.losses import RnCLoss
+    VisionTransformer, Offset0ModelMSE, MLP, Linear
 
 
+class DeepClassifier(BaseEstimator):
+    """Supervised deep model for classification tasks.
 
-class RnC(BaseEstimator, EmbeddingTransformerMixin):
+    Input data are mapped to predictions (class labels) with a neural network.
+    The model optimizes a binary cross-entropy loss (default) or other classification losses. It can be
+    trained on a very large dataset (e.g. UKB with 100k subjects and 3D volumes of >1M voxels).
+    This nidl estimator has `fit` and `predict` methods implemented.
+
+    NB: this model can be used for linear classification as well by defining a linear encoder.
+
     """
-    Rank-N-Contrast (RnC) [1] is a framework that learns continuous
-    representations for regression by contrasting samples against each other based on
-    their rankings in the target space. Authors demonstrate, theoretically and empirically,
-    that RnC guarantees the desired order of learned representations in accordance with
-    the target orders, enjoying not only better performance but also significantly im-
-    proved robustness, efficiency, and generalization.
-
-    [1] Rank-N-Contrast: Learning Continuous Representations for Regression, Zha et al., NeurIPS 2023
-    """
-
     def __init__(self, 
                  encoder: Union[str, nn.Module, Type[nn.Module]]="alexnet_3d", 
-                 encoder_kwargs: Optional[Dict[str, Any]]=None,
-                 n_embedding: int=16,
-                 temperature: float=2.0,
-                 label_diff: str='l1',
+                 encoder_kwargs: Optional[Dict[str, Any]]=dict(in_channels=1, n_embedding=1),
+                 loss: Union[str, nn.Module]='bce_with_logits',
                  optimizer: Union[str, Optimizer, Type[Optimizer]]="sgd", 
                  optimizer_kwargs: Optional[Dict[str, Any]]=dict(momentum=0.9, weight_decay=1e-4),
-                 learning_rate: float=0.5,
-                 lr_scheduler: Optional[Union[str, LRSchedulerPLType, Type[LRSchedulerPLType]]]="cosine_annealing",
-                 lr_scheduler_kwargs: Optional[Dict[str, Any]]=dict(eta_min=5e-4),
+                 learning_rate: float=1e-3,
+                 lr_scheduler: Optional[Union[str, LRSchedulerPLType, Type[LRSchedulerPLType]]]="constant",
+                 lr_scheduler_kwargs: Optional[Dict[str, Any]]=None,
                  **kwargs: Any
                 ):
         """
         Parameters
         ----------
-        encoder: str in {'alexnet_3d', 'resnet18_3d', 'resnet50_3d', 'densenet121_3d', 'mlp', 'cebra', 'vit'} 
+        encoder: str in {'alexnet_3d', 'resnet18_3d', 'resnet50_3d', 'densenet121_3d', 'mlp', 
+                         'cebra', 'vit', 'linear'} 
                 or nn.Module or class, default='alexnet_3d'
-            Which DNN architecture to use for encoding the input. 
+            Which DNN architecture to use for predicting the targets. 
             If not in the default backbones, a PyTorch :class:`~torch.nn.Module` is expected. 
             In general, the uninstantiated class should be passed, although instantiated
             modules will also work.
 
-        encoder_kwargs: dictionary or None, default=None
+        encoder_kwargs: dictionary or None, default=dict(in_channels=1, n_embedding=1)
             It specifies the options for building the encoder (depends on each architecture).
-            If `n_embedding` is specified here, it will override the `n_embedding` parameter.
+            By default, it builds an AlexNet with 1 input channel and output dimension 1 (for binary classification).
              Examples: 
-                * encoder='mlp', encoder_kwargs={"layers": [10, 4, 3, 2]} builds an MLP with 4 hidden layers, 
-                    the input dimension being 10. Output dimension is always 'n_embedding'.
-                * encoder='cebra', encoder_kwargs={"num_input": 10} builds an MLP with input dimension 10 (adapted from CEBRA)
-        
-        n_embedding: int, default=16
-            Dimension of the embedding space.
+                * encoder='alexnet_3d', encoder_kwargs={"in_channels": 1, "n_embedding": n_classes}
+                    builds an AlexNet with 1 input channel (default) and output dimension 'n_classes'.
+                * encoder='linear', encoder_kwargs={"in_features": 10, "out_features": n_classes, "bias": True}
+                    builds a linear layer with input dimension 10 and output dimension 'n_classes'.
+                * encoder='mlp', encoder_kwargs={"layers": [10, 4, 3, 2], "n_embedding": n_classes} 
+                    builds an MLP with 4 hidden layers, the input dimension being 10. 
+                * encoder='cebra', encoder_kwargs={"num_input": 10, "n_embedding": n_classes} 
+                    builds an MLP with input dimension 10 (adapted from CEBRA)
 
-        temperature: float, default=2.0
-            The temperature parameter for the RnC loss function.
-        
-        label_diff: str in {'l1', 'l2'}, default='l1'
-            Which distance to use between labels, ultimately used to rank 
-            the samples according to this distance matrix in the loss function.
+        loss: str in {"bce_with_logits", "bce", "cross_entropy_loss"} or nn.Module, default="bce_with_logits"
+            Loss to optimize. By default, Binary Cross-Entropy loss is optimizer for binary classification.
+            If a string is provided, it will be mapped to the corresponding PyTorch loss function.
 
         optimizer: str in {'sgd', 'adam', 'adamW'} or Optimizer or class, default='sgd'
             The optimizer to use for training the model. It can be a string:
@@ -80,14 +74,14 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
             scaling factor for l2 penalization on model's weights and the momentum factor for SGD, respectively.
             This is ignored if `optimizer` is an instantiated object.
 
-        learning_rate: float, default=0.5
+        learning_rate: float, default=1e-3
             The initial learning rate used.
 
-        lr_scheduler: str in {'cosine_annealing', 'linear_warmup_cosine_annealing', 'constant'} or 
-            LRSchedulerPLType or class or None, default='cosine_annealing'
+        lr_scheduler: str in {'cosine_annealing', 'constant'} or 
+            LRSchedulerPLType or class or None, default='constant'
             The learning rate scheduler to use.
 
-        lr_scheduler_kwargs: dictionary or None, default=dict(eta_min=5e-4)
+        lr_scheduler_kwargs: dictionary or None, default=None
             Additional keyword arguments for the learning rate scheduler.
             By default, it sets the minimum learning rate to 5e-4 for the cosine annealing scheduler.
             If `lr_scheduler` is an instantiated object, these kwargs are ignored.
@@ -99,17 +93,15 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         Attributes
         ----------
         encoder_: torch.nn.Module
-            Deep neural network trained to map input data to low-dimensional vectors.
-            
-        loss_: RnCLoss
-            The RnC loss function used for training the model.
+            Deep neural network trained to map input data to predictions.
+         
+        loss_: InfoNCE
+            The InfoNCE loss function used for training the model.
         """
         super().__init__(**kwargs)
         self.encoder = encoder
         self.encoder_kwargs = encoder_kwargs if encoder_kwargs is not None else {}
-        self.n_embedding = n_embedding
-        self.temperature = temperature
-        self.label_diff = label_diff
+        self.loss = loss
         self.optimizer = optimizer
         self.learning_rate = learning_rate
         self.lr_scheduler = lr_scheduler
@@ -132,22 +124,40 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
 
         Returns
         ----------
-        self: RnC
+        self: DeepRegressor
             The fitted model.
 
         """
         # Instantiate the encoder + projection head + loss
         self.encoder_ = self._build_encoder(self.encoder, self.encoder_kwargs)
-        self.loss_ = self._build_loss(self.temperature)
-        self._cache = dict(val_embedding=[], y_true=[])
+        self.loss_ = self._build_loss(self.loss)
+        self._cache = dict(y_pred=[], y_true=[])
 
         # Fit the model
         return super().fit(train_dataloader, val_dataloader)
 
 
+    def predict_step(self,  batch: Any, batch_idx: int):
+        """ Computes the predictions for the given batch. 
+        This method is called during predict.
+
+        Parameters
+        ----------
+        batch: Any
+            A batch of data that has been generated from val_dataloader.
+            It should be a pair of Tensors (X, y) where X is the input
+            and y is the (continuous) label.
+        
+        batch_idx: int
+            The index of the current batch.
+        """
+        X, y = self.parse_batch(batch)
+        return self.forward(X)
+
+
     def forward(self, X: torch.Tensor) -> torch.Tensor:
         """ 
-        Forward pass through the encoder to obtain the embeddings.
+        Forward pass through the encoder to obtain the predictions.
 
         Parameters
         ----------
@@ -156,12 +166,12 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
 
         Returns
         -------
-        embeddings: torch.Tensor
-            The output embeddings.
+        predictions: torch.Tensor
+            The output predictions.
         """
         X = X.to(self.device)
-        Z = self.encoder_(X)
-        return Z
+        y_pred = self.encoder_(X)
+        return y_pred
     
 
     def training_step(self,  batch: Any, batch_idx: int):
@@ -171,9 +181,9 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         ----------
         batch: Any 
             A batch of data that has been generated from train_dataloader.
-            It should be a triplet of Tensors (V1, V2, y) where V1 and V2 
-            are two views of the same sample and y is the (continuous) label. 
-        
+            It should be a pair of Tensors (X, y) where X is the input
+            and y is the categorical label.
+
         batch_idx: int
             The index of the current batch.
         
@@ -182,9 +192,9 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         loss: Tensor
             Training loss computed on this batch of data.
         """
-        V1, V2, y = self.parse_batch(batch)
-        Z1, Z2 = self.encoder_(V1), self.encoder_(V2)
-        loss = self.loss_(Z1, Z2, y)
+        X, y = self.parse_batch(batch)
+        y_pred = self.encoder_(X)
+        loss = self.loss_(y_pred, y)
         self.log("loss/train", loss, prog_bar=True)
         return loss
     
@@ -196,19 +206,18 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         ----------
         batch: Any
             A batch of data that has been generated from val_dataloader.
-            It should be a pair of Tensors (V1, V2) or a tuple (V1, V2, y) 
-            where V1 and V2 are two views of the same sample. 
-            If (V1, V2, y) is given, y is ignored.
+            It should be a pair of Tensors (X, y) where X is the input
+            and y is the (continuous) label.
         
         batch_idx: int
             The index of the current batch.
         """
-    
-        V1, V2, y = self.parse_batch(batch)
-        Z1, Z2 = self.encoder_(V1), self.encoder_(V2)
-        self._cache["val_embedding"].extend(np.stack((Z1.cpu().detach().numpy(), 
-                                                      Z2.cpu().detach().numpy()), axis=1))
-        self._cache["y_true"].extend(y[:len(Z1)].cpu().detach().numpy())
+
+        X, y = self.parse_batch(batch)
+        y_pred = self.encoder_(X)
+        self.log("loss/val", self.loss_(y_pred, y))
+        self._cache["y_pred"].extend(y_pred.cpu().detach().numpy())
+        self._cache["y_true"].extend(y.cpu().detach().numpy())
 
 
     def parse_batch(self, batch: Any) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -218,33 +227,26 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         ----------
         batch: Any
             A batch of data that has been generated from train_dataloader or val_dataloader.
-            It should be a tuple (V1, V2, y) where V1 and V2 are two views of the same sample
+            It should be a pair of Tensors (X, y) where X is the input
             and y is the (continuous) label.
 
         Returns
         -------
-        tuple of (torch.Tensor, torch.Tensor, torch.Tensor)
-            Tuple (V1, V2, y)
+        tuple of (torch.Tensor, torch.Tensor)
+            Tuple (X, y)
         """
-        if isinstance(batch, Sequence) and len(batch) == 3:
-            return batch[0].to(self.device), batch[1].to(self.device), batch[2].to(self.device)
-        elif isinstance(batch, torch.Tensor) and len(batch) == 3:
-            return batch[0].to(self.device), batch[1].to(self.device), batch[2].to(self.device)
+        if isinstance(batch, Sequence) and len(batch) == 2:
+            return batch[0].to(self.device), batch[1].to(self.device)
+        elif isinstance(batch, torch.Tensor) and len(batch) == 2:
+            return batch[0].to(self.device), batch[1].to(self.device)
         else:
-            raise ValueError("batch should be a tuple of 3 " \
-            "Tensors (representing two views and label), got %s" % type(batch))
-    
+            raise ValueError("batch should be a tuple of 2 " \
+            "Tensors (representing input and label), got %s" % type(batch))
+
 
     def on_validation_epoch_end(self):
-        """ Computes the validation loss across the entire validation set. """
-
-        Z = torch.tensor(np.array(self._cache["val_embedding"])).to(self.device)
-        Z1, Z2 = Z[:, 0], Z[:, 1]
-        y = torch.tensor(np.array(self._cache["y_true"])).to(self.device)
-        self.log("loss/val", self.loss_(Z1, Z2, y))
-
         # Free the cache
-        self._cache["val_embedding"] = []
+        self._cache["y_pred"] = []
         self._cache["y_true"] = []
 
 
@@ -283,7 +285,6 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         elif isinstance(self.lr_scheduler, str):
             known_schedulers = {
                 "cosine_annealing": torch.optim.lr_scheduler.CosineAnnealingLR,
-                "linear_warmup_cosine_annealing": LinearWarmupCosineAnnealingLR,
                 "constant": None
             }
             if self.lr_scheduler not in known_schedulers:
@@ -331,16 +332,10 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
             "resnet50_3d": resnet50,
             "densenet121_3d": densenet121,
             "mlp": MLP,
+            "linear": Linear,
             "cebra": Offset0ModelMSE,
             "vit": VisionTransformer
         }
-
-        if "n_embedding" in encoder_kwargs:
-            logging.getLogger(__name__).warning("n_embedding is specified in encoder_kwargs, " \
-                                "it will override the n_embedding parameter")
-            self.n_embedding = encoder_kwargs["n_embedding"]
-        else:
-            encoder_kwargs["n_embedding"] = self.n_embedding
 
         if isinstance(encoder, str):
             if encoder not in known_encoders:
@@ -359,21 +354,26 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         return encoder
 
 
-    def _build_loss(self, temperature: float, label_diff: float) -> nn.Module:
-        """ Builds the RnC loss function with the specified temperature.
+    def _build_loss(self, loss: Union[str, nn.Module]) -> nn.Module:
+        """ Builds the regression loss function.
 
         Parameters
         ----------
-        temperature: float
-            Scaling parameter in the similarity function between two latent representations.
-        
-        label_diff: str in {'l1', 'l2'}
-            Which distance to use between labels, ultimately used to rank 
-            the samples according to this distance matrix.
-
+        loss: str in {'cross_entropy', 'bce_with_logits', 'bce'} or nn.Module
+            Which loss function to use for classification.
         Returns
         -------
-        loss: nn.Module
-            The RnC loss function.
+        loss_fn: nn.Module
+            The PyTorch loss function to use for training.
         """
-        return RnCLoss(temperature=temperature, label_diff=label_diff)
+        if isinstance(loss, nn.Module):
+            return loss
+        if loss == "cross_entropy":
+            return nn.CrossEntropyLoss()
+        elif loss == "bce_with_logits":
+            return nn.BCEWithLogitsLoss()
+        elif loss == "bce":
+            return nn.BCELoss()
+        else:
+            raise ValueError(f"Unknown loss function: {loss}")
+

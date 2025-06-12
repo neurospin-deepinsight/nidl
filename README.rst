@@ -22,7 +22,7 @@
 
 .. image:: assets/logo.png
    :alt: Logo
-   :scale: 50%
+   :scale: 15%
    
 A Deep Learning toolbox for NeuroImaging
 ========================================

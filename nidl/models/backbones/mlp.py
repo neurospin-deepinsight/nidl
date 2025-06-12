@@ -1,4 +1,6 @@
 import torch.nn as nn
+from typing import List
+
 
 class BasicBlock(nn.Module):
     def __init__(self, inp, out):
@@ -16,9 +18,17 @@ class BasicBlock(nn.Module):
 
 class MLP(nn.Module):
     """
-        A series of FC-BN-ReLU parametrized by a list of int "layers"
+        A series of FC-BN-ReLU layers followed by a final linear layer.
     """
-    def __init__(self, layers, n_embedding):
+    def __init__(self, layers: List[int], n_embedding: int):
+        """
+        Parameters
+        ----------
+        layers : list of int
+            List of integers representing the number of neurons in each layer.
+        n_embedding : int
+            The number of output features for the final layer.
+        """
         super(MLP, self).__init__()
         self.mlp = nn.Sequential(*[BasicBlock(layers[i], layers[i+1]) for i in range(len(layers)-1)],
                                  nn.Linear(layers[-1], n_embedding))

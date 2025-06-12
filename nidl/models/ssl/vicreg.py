@@ -152,8 +152,8 @@ class VICReg(BaseEstimator, EmbeddingTransformerMixin):
         projection_head_: torch.nn.Module
             Projection head that maps the output of the encoder to a latent space for contrastive loss optimization.
     
-        loss_: InfoNCE
-            The InfoNCE loss function used for training the model.
+        loss_: VICRegLoss
+            The VICReg loss function used for training the model.
         """
         super().__init__(**kwargs)
         self.encoder = encoder
@@ -186,7 +186,7 @@ class VICReg(BaseEstimator, EmbeddingTransformerMixin):
 
         Returns
         ----------
-        self: SimCLR
+        self: VICReg
             The fitted model.
 
         """

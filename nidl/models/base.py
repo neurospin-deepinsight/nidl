@@ -25,6 +25,7 @@ class BaseEstimator(ABC, LightningModule):
      - 'log' method for logging a metric
      - 'fit' method for fitting the model to data
      - 'predict' method for making predictions on new data
+     - 'predict_step' method for defining the prediction step
      - 'training_step' method for defining the training step
      - 'validation_step' method for defining the validation step
      - 'test_step' method for defining the test step
@@ -299,6 +300,10 @@ class BaseEstimator(ABC, LightningModule):
         check_is_fitted(self, "_trainer", check_is_none=True)
         return self._trainer.predict(self, dataloaders=dataloader)
 
+    def predict_step(self, *args, **kwargs):
+        """Define the prediction step of the model."""
+        return super().predict_step(*args, **kwargs)
+    
     def training_step(self, *args, **kwargs):
         return super().training_step(*args, **kwargs)
     

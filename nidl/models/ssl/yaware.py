@@ -189,7 +189,7 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
 
         Returns
         ----------
-        self: SimCLR
+        self: yAware
             The fitted model.
 
         """

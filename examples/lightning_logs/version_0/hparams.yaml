@@ -1,0 +1,57 @@
+accelerator: auto
+accumulate_grad_batches: 1
+barebones: false
+benchmark: null
+callbacks: null
+check_val_every_n_epoch: 1
+default_root_dir: null
+detect_anomaly: false
+deterministic: null
+devices: auto
+enable_checkpointing: null
+enable_model_summary: null
+enable_progress_bar: null
+encoder: resnet18_3d
+encoder_kwargs: null
+fast_dev_run: false
+gradient_clip_algorithm: null
+gradient_clip_val: null
+inference_mode: true
+kernel_kwargs:
+  bandwidth: 5.0
+  kernel: gaussian
+learning_rate: 0.0001
+limit_predict_batches: null
+limit_test_batches: null
+limit_train_batches: null
+limit_val_batches: null
+log_every_n_steps: null
+logger: null
+lr_scheduler: null
+lr_scheduler_kwargs: null
+max_epochs: 100
+max_steps: -1
+max_time: null
+min_epochs: null
+min_steps: null
+n_embedding: 16
+num_nodes: 1
+num_sanity_val_steps: null
+optimizer: adam
+optimizer_kwargs:
+  betas: !!python/tuple
+  - 0.9
+  - 0.99
+  weight_decay: 5.0e-05
+overfit_batches: 0.0
+plugins: null
+precision: null
+profiler: null
+projection_head: yaware
+projection_head_kwargs: null
+reload_dataloaders_every_n_epochs: 0
+strategy: auto
+sync_batchnorm: false
+temperature: 0.1
+use_distributed_sampler: true
+val_check_interval: null
