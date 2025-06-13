@@ -1,27 +1,167 @@
-from warnings import simplefilter
 from torch.utils.data import DataLoader
-from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import LogisticRegressionCV, RidgeCV
 from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report, roc_auc_score, mean_absolute_error, \
     root_mean_squared_error, r2_score
 from scipy.stats import pearsonr
-from typing import List, Union
+from typing import List, Union, Any, Tuple, Sequence
+import torch
 from pytorch_lightning import Callback
+from abc import ABC, abstractmethod
 # Local import
 from nidl.utils.util import check_array
-
-# Silence repeated convergence warnings from scikit-learn logistic regression.
-simplefilter("ignore", category=ConvergenceWarning)
+from nidl.models import BaseEstimator
 
 
-class RidgeCVCallback(Callback):
-    """Perform Ridge regression on top of a `torch.nn.Module` model trained by a 
-    `neuroclav.solvers.base.Solver`. 
+class ModelProbing(ABC, Callback):
+    """ Define the basic logic of model's probing:
+
+        1) Embeds the input data (training+test) through the BaseEstimator 
+           (calling .forward() by default)
+        2) Train the probe on the training embedding
+        3) Test the probe on the test embedding and log the metrics
+    
+    # TODO: be more flexible on the frequency (could be every 'n' validation loop)
+    # TODO: include a potential validation set for training the probe
+
+    """
+    def __init__(
+               self,
+               train_dataloader: DataLoader,
+               test_dataloader: DataLoader,
+               frequency: str="by_epoch",
+               prog_bar: bool=True
+               ):
+        """
+        Parameters
+        ----------
+        train_dataloader: torch.utils.data.DataLoader
+            Training dataloader to use for fitting the ridge regression. 
+
+        test_dataloader: torch.utils.data.DataLoader
+            Testing dataloader to use for evaluating the ridge regression. 
+
+        frequency: str in {'by_epoch', 'by_fit'}
+            When to apply the linear probing. Either 'by_epoch', after each validation loop 
+            or 'by_fit', only once at the end of training.
+        
+        prog_bar: bool, default=True
+            Whether to display the metrics in the progress bar.
+        """
+        super().__init__()
+        self.train_dataloader = train_dataloader
+        self.test_dataloader = test_dataloader
+        self.frequency = frequency
+        self.prog_bar = prog_bar
+
+    @abstractmethod
+    def fit(self, X, y):
+        """Fit the probe on (X, y)"""
+        pass
+
+    @abstractmethod
+    def predict(self, X):
+        """Predict on new data X"""
+        pass
+
+    @abstractmethod
+    def log_metrics(self, pl_module, y_pred, y_true):
+        """Log the metrics"""
+        pass
+
+    def linear_probing(self, pl_module: BaseEstimator, log: bool=True):
+            
+        if not isinstance(pl_module, BaseEstimator):
+            raise ValueError("Your Lightning module must derive from 'BaseEstimator', " \
+                             "got %s" % type(pl_module))
+        
+        # Embed the data
+        X_train, y_train = self.extract_features(pl_module, self.train_dataloader)
+        X_test, y_test = self.extract_features(pl_module, self.test_dataloader)
+
+        # Check arrays
+        X_train, y_train = check_array(X_train), check_array(y_train, ensure_2d=False)
+        X_test, y_test = check_array(X_test), check_array(y_test, ensure_2d=False)
+
+        # Fit the probe
+        self.fit(X_train, y_train)
+
+        # Make predictions
+        y_pred = self.predict(X_test)
+
+        # Compute/Log metrics
+        self.log_metrics(pl_module, y_pred, y_test)
+    
+
+    def extract_features(self, pl_module, dataloader):
+        """Extract features from a given dataloader with the current BaseEstimator.
+        By default, it uses the forward() logic applied on each batch to get the embeddings.
+        
+        !! You may override this method for your specific need.
+        """
+
+        is_training = pl_module.training  # Save state
+
+        pl_module.eval()
+        X, y = [], []
+
+        with torch.no_grad():
+            for batch in dataloader:
+                x_batch, y_batch = self.parse_batch(batch)
+                x_batch = x_batch.to(pl_module.device)
+                features = pl_module.forward(x_batch)
+                X.append(features.detach().cpu())
+                y.append(y_batch.detach().cpu())
+        X = torch.cat(X).numpy()
+        y = torch.cat(y).numpy()
+
+        if is_training:
+            pl_module.train()
+
+        return X, y 
+    
+
+    def parse_batch(self, batch: Any) -> Tuple[torch.Tensor, torch.Tensor]:
+        """ Parses the batch to return (X, y)
+
+        Parameters
+        ----------
+        batch: Any
+            A batch of data that has been generated from train_dataloader or test_dataloader.
+            It should be a pair of Tensors (X, y) where X is the input
+            and y is the (continuous) label.
+
+        Returns
+        -------
+        tuple of (torch.Tensor, torch.Tensor)
+            Tuple (X, y)
+        """
+        if isinstance(batch, Sequence) and len(batch) == 2:
+            return batch[0], batch[1]
+        elif isinstance(batch, torch.Tensor) and len(batch) == 2:
+            return batch[0], batch[1]
+        else:
+            raise ValueError("batch should be a tuple of 2 " \
+            "Tensors (representing input and label), got %s" % type(batch))        
+    
+
+    def on_validation_epoch_end(self, trainer, pl_module):
+        if self.frequency == "by_epoch":
+            self.linear_probing(pl_module)
+
+
+    def on_fit_end(self, trainer, pl_module):
+        if self.frequency == "by_fit":
+            self.linear_probing(pl_module)
+
+
+
+class RidgeCVCallback(ModelProbing):
+    """Perform Ridge regression on top of a `nidl.models.base.BaseEstimator` model.
       
       Concretely, after each validation loop or each fit, this callback:
-        1) Embeds the input data through the torch model
+        1) Embeds the input data through the BaseEstimator (calling .forward() by default)
         2) Performs n-fold CV to find the best l2 regularization strength
         3) Log the main regression metrics including:
             * root mean squared error
@@ -39,15 +179,16 @@ class RidgeCVCallback(Callback):
                cv: int=5,
                scoring: str="r2",
                frequency: str="by_epoch",
-               **extraction_kwargs):
+               prog_bar: bool=True
+               ):
         """
         Parameters
         ----------
         train_dataloader: torch.utils.data.DataLoader
-            Training dataloader to use for fitting the classifier. 
+            Training dataloader to use for fitting the ridge regression. 
 
         test_dataloader: torch.utils.data.DataLoader
-            Testing dataloader to use for evaluating the classifier. 
+            Testing dataloader to use for evaluating the ridge regression. 
         
         dataset_name: str or None
             Name of the dataset to be used for classification. This name
@@ -70,74 +211,46 @@ class RidgeCVCallback(Callback):
         frequency: str in {'by_epoch', 'by_fit'}
             When to apply the linear probing. Either 'by_epoch', after each validation loop 
             or 'by_fit', only once at the end of training.
-
-        extraction_kwargs: dict
-            Keyword arguments given to `solver.get_embedding` method
+        
+       prog_bar: bool, default=True
+            Whether to display the metrics in the progress bar.
         """
-
-        self.train_dataloader = train_dataloader
-        self.test_dataloader = test_dataloader
+        super().__init__(train_dataloader=train_dataloader, 
+                         test_dataloader=test_dataloader, 
+                         frequency=frequency, prog_bar=prog_bar)
         self.dataset_name = dataset_name
         self.alphas = alphas
         self.cv = cv
         self.scoring = scoring
-        self.frequency = frequency
-        self.extraction_kwargs = extraction_kwargs
-
-    def linear_probing(self, solver, log: bool=True):
-            
-        if not hasattr(solver, "get_embedding"):
-            raise ValueError("`get_embedding` must be implemented for linear probing")
-        
-        # Embed the data
-        X_train, y_train = solver.get_embedding(self.train_dataloader, **self.extraction_kwargs)
-        X_test, y_test = solver.get_embedding(self.test_dataloader, **self.extraction_kwargs)
-
-        # Check arrays
-        X_train, y_train = check_array(X_train), check_array(y_train)
-        X_test, y_test = check_array(X_test), check_array(y_test)
-
-        # Fit the regressor
-        linear_probe = RidgeCV(
+        self.probe = RidgeCV(
             alphas=self.alphas,
             cv=self.cv,
             scoring=self.scoring,
         )
-        linear_probe.fit(X_train, y_train)
-
-        # Make predictions
-        predictions = linear_probe.predict(X_test)
-
-        # Compute regression metrics
+    
+    def fit(self, X, y):
+        return self.probe.fit(X, y)
+    
+    def predict(self, X):
+        return self.probe.predict(X)
+    
+    def log_metrics(self, pl_module, y_pred, y_true):
+         # Compute regression metrics
         metrics_report = dict()
-        metrics_report["MAE"] = mean_absolute_error(y_test, predictions)
-        metrics_report["RMSE"] = root_mean_squared_error(y_test, predictions)
-        metrics_report["R2"] = r2_score(y_test, predictions)
-        metrics_report["pearson_r"] = pearsonr(y_test.flatten(), predictions.flatten()).statistic
+        metrics_report["MAE"] = mean_absolute_error(y_true, y_pred)
+        metrics_report["RMSE"] = root_mean_squared_error(y_true, y_pred)
+        metrics_report["R2"] = r2_score(y_true, y_pred)
+        metrics_report["pearson_r"] = pearsonr(y_true.flatten(), y_pred.flatten()).statistic
 
         # Log the results
-        if log:
-            base_name = f"ridge_probe_{self.dataset_name}" \
-                if self.dataset_name is not None else "ridge_probe"
-            for name, value in metrics_report.items():
-                solver.log(f"{base_name}/{name}", value)
-            
-        # Return all metrics
-        return metrics_report
-
-    def on_validation_epoch_end(self, solver):
-        if self.frequency == "by_epoch":
-            self.linear_probing(solver)
-
-    def on_fit_end(self, solver):
-        if self.frequency == "by_fit":
-            self.linear_probing(solver)
-
+        base_name = f"ridge_probe_{self.dataset_name}" if self.dataset_name is not None else "ridge_probe"
+        for name, value in metrics_report.items():
+            pl_module.log(f"{base_name}/{name}", value, prog_bar=self.prog_bar, on_epoch=True)
+    
 
 class KNeighborsRegressorCVCallback(Callback):
-    """Perform KNN regression on top of a `torch.nn.Module` model trained by a 
-    `neuroclav.solvers.base.Solver`. 
-      
+    """Perform KNN regression on top of a `nidl.models.base.BaseEstimator` model.
+
       Concretely, after each validation loop or each fit, this callback:
         1) Embeds the input data through the torch model
         2) Performs n-fold CV to find the best `n_neighbors` neighbors
@@ -158,7 +271,7 @@ class KNeighborsRegressorCVCallback(Callback):
                n_jobs: Union[int, None]=None,
                scoring: str="r2",
                frequency: str = "by_epoch",
-               **extraction_kwargs):
+               prog_bar: bool=True):
         """
         Parameters
         ----------
@@ -196,78 +309,47 @@ class KNeighborsRegressorCVCallback(Callback):
             When to apply the linear probing. Either 'by_epoch', after each validation loop 
             or 'by_fit', only once at the end of training.
 
-        extraction_kwargs: dict
-            Keyword arguments given to `solver.get_embedding` method
+        prog_bar: bool, default=True
+            Whether to display the metrics in the progress bar.
         """
-
-        self.train_dataloader = train_dataloader
-        self.test_dataloader = test_dataloader
+        super().__init__(train_dataloader=train_dataloader, 
+                         test_dataloader=test_dataloader, 
+                         frequency=frequency, prog_bar=prog_bar)
         self.dataset_name = dataset_name
         self.n_neighbors = n_neighbors
         self.cv = cv
         self.n_jobs = n_jobs
         self.scoring = scoring
-        self.frequency = frequency
-        self.extraction_kwargs = extraction_kwargs
-    
-    def knn_probing(self, solver, log: bool=True):
-            
-        if not hasattr(solver, "get_embedding"):
-            raise ValueError("`get_embedding` must be implemented for linear probing")
-        
-        # Embed the data
-        X_train, y_train = solver.get_embedding(self.train_dataloader, **self.extraction_kwargs)
-        X_test, y_test = solver.get_embedding(self.test_dataloader, **self.extraction_kwargs)
-
-        # Check arrays
-        X_train, y_train = check_array(X_train), check_array(y_train)
-        X_test, y_test = check_array(X_test), check_array(y_test)
-
-        # Fit the regressor
-        linear_probe = GridSearchCV(
+        self.probe = GridSearchCV(
             KNeighborsRegressor(),
             param_grid={"n_neighbors": self.n_neighbors},
             scoring=self.scoring,
             n_jobs=self.n_jobs,
-            cv=self.cv)
-        linear_probe.fit(X_train, y_train)
-
-        # Make predictions
-        predictions = linear_probe.predict(X_test)
-
-        # Check arrays
-        X_train, y_train = check_array(X_train), check_array(y_train)
-        X_test, y_test = check_array(X_test), check_array(y_test)
-
-        # Compute regression metrics
+            cv=self.cv
+        )
+    
+    def fit(self, X, y):
+        return self.probe.fit(X, y)
+    
+    def predict(self, X):
+        return self.probe.predict(X)
+    
+    def log_metrics(self, pl_module, y_pred, y_true):
+         # Compute regression metrics
         metrics_report = dict()
-        metrics_report["MAE"] = mean_absolute_error(y_test, predictions)
-        metrics_report["RMSE"] = root_mean_squared_error(y_test, predictions)
-        metrics_report["R2"] = r2_score(y_test, predictions)
-        metrics_report["pearson_r"] = pearsonr(y_test.flatten(), predictions.flatten()).statistic
+        metrics_report["MAE"] = mean_absolute_error(y_true, y_pred)
+        metrics_report["RMSE"] = root_mean_squared_error(y_true, y_pred)
+        metrics_report["R2"] = r2_score(y_true, y_pred)
+        metrics_report["pearson_r"] = pearsonr(y_true.flatten(), y_pred.flatten()).statistic
 
         # Log the results
-        if log:
-            base_name = f"knn_regression_probe_{self.dataset_name}" \
-                if self.dataset_name is not None else "knn_regression_probe"
-            for name, value in metrics_report.items():
-                solver.log(f"{base_name}/{name}", value)
-            
-        # Return all metrics
-        return metrics_report
-
-    def on_validation_epoch_end(self, solver):
-        if self.frequency == "by_epoch":
-            self.knn_probing(solver)
-
-    def on_fit_end(self, solver):
-        if self.frequency == "by_fit":
-            self.knn_probing(solver)
+        base_name = f"knn_regression_probe_{self.dataset_name}" if self.dataset_name is not None else "knn_regression_probe"
+        for name, value in metrics_report.items():
+            pl_module.log(f"{base_name}/{name}", value, prog_bar=self.prog_bar, on_epoch=True)
 
 
 class LogisticRegressionCVCallback(Callback):
-    """Performs logistic regression (classification) on top of a `torch.nn.Module` 
-    trained by a `neuroclav.solvers.base.Solver`.
+    """Performs logistic regression (classification) on top of a `nidl.models.base.BaseEstimator` model.
 
     Concretely, after each validation loop or each fit, this callback:
         1) Embeds the input data through the torch model
@@ -289,7 +371,7 @@ class LogisticRegressionCVCallback(Callback):
                  scoring: str="balanced_accuracy",
                  linear_solver: str="lbfgs",
                  frequency: str = "by_epoch",
-                 **extraction_kwargs):
+                 prog_bar: bool=True):
         """
         Parameters
         ----------
@@ -336,11 +418,12 @@ class LogisticRegressionCVCallback(Callback):
             When to apply the linear probing. Either 'by_epoch', after each validation loop 
             or 'by_fit', only once at the end of training.
 
-        extraction_kwargs: dict
-            Keyword arguments given to `solver.get_embedding` method
+        prog_bar: bool, default=True
+            Whether to display the metrics in the progress bar.
         """
-        self.train_dataloader = train_dataloader
-        self.test_dataloader = test_dataloader
+        super().__init__(train_dataloader=train_dataloader, 
+                         test_dataloader=test_dataloader, 
+                         frequency=frequency, prog_bar=prog_bar)
         self.dataset_name = dataset_name
         self.Cs = Cs
         self.cv = cv
@@ -348,23 +431,7 @@ class LogisticRegressionCVCallback(Callback):
         self.n_jobs = n_jobs
         self.scoring = scoring
         self.linear_solver = linear_solver
-        self.frequency = frequency
-        self.extraction_kwargs = extraction_kwargs
-
-    def linear_probing(self, solver, log: bool=True):
-            
-            if not hasattr(solver, "get_embedding"):
-                raise ValueError("`get_embedding` must be implemented for linear probing")
-            # Embed the data
-            X_train, y_train = solver.get_embedding(self.train_dataloader, **self.extraction_kwargs)
-            X_test, y_test = solver.get_embedding(self.test_dataloader, **self.extraction_kwargs)
-
-            # Check arrays
-            X_train, y_train = check_array(X_train), check_array(y_train)
-            X_test, y_test = check_array(X_test), check_array(y_test)
-
-            # Fit the classifier
-            linear_probe = LogisticRegressionCV(
+        self.probe = LogisticRegressionCV(
                 Cs=self.Cs,
                 cv=self.cv,
                 penalty="l2",
@@ -372,46 +439,31 @@ class LogisticRegressionCVCallback(Callback):
                 max_iter=self.max_iter,
                 scoring=self.scoring,
                 n_jobs=self.n_jobs,
-            )
-            linear_probe.fit(X_train, y_train)
+        )
 
-            # Make predictions
-            predictions = linear_probe.predict(X_test)
-            predictions_score = linear_probe.predict_proba(X_test)
+    def fit(self, X, y):
+        return self.probe.fit(X, y)
+    
+    def predict(self, X):
+        return (self.probe.predict(X), self.probe.predict_proba(X))
+    
+    def log_metrics(self, pl_module, y_pred, y_true):
+        # Compute classification metrics
+        metrics_report = classification_report(y_true, y_pred[0], output_dict=True)
+        metrics_report["ROC-AUC"] = roc_auc_score(y_true, y_pred[1])
 
-            # Check arrays
-            X_train, y_train = check_array(X_train), check_array(y_train)
-            X_test, y_test = check_array(X_test), check_array(y_test)
-
-            # Compute classification metrics
-            metrics_report = classification_report(y_test, predictions, output_dict=True)
-            metrics_report["ROC-AUC"] = roc_auc_score(y_test, predictions_score)
-
-            # Log the results
-            if log:
-                base_name = f"logistic_probe_{self.dataset_name}" \
-                    if self.dataset_name is not None else "logistic_probe"
-                for name, value in metrics_report.items():
-                    if isinstance(value, dict):
-                        solver.log_dict(f"{base_name}/{name}", value)
-                    else:
-                        solver.log(f"{base_name}/{name}", value)
-            
-            # Return all metrics
-            return metrics_report
-
-    def on_validation_epoch_end(self, solver):
-        if self.frequency == "by_epoch":
-            self.linear_probing(solver)
-
-    def on_fit_end(self, solver):
-        if self.frequency == "by_fit":
-            self.linear_probing(solver)
+        # Log the results
+        base_name = f"logistic_probe_{self.dataset_name}" \
+            if self.dataset_name is not None else "logistic_probe"
+        for name, value in metrics_report.items():
+            if isinstance(value, dict):
+                pl_module.log_dict(f"{base_name}/{name}", value)
+            else:
+                pl_module.log(f"{base_name}/{name}", value)
 
 
 class KNeighborsClassifierCVCallback(Callback):
-    """Performs KNN classification on top of a `torch.nn.Module` 
-    trained by a `neuroclav.solvers.base.Solver`.
+    """Performs KNN classification on top of a `nidl.models.base.BaseEstimator` model.
 
     Concretely, after each validation loop or each fit, this callback:
         1) Embeds the input data through the torch model
@@ -431,7 +483,7 @@ class KNeighborsClassifierCVCallback(Callback):
                  n_jobs: int=None,
                  scoring: str="balanced_accuracy",
                  frequency: str = "by_epoch",
-                 **extraction_kwargs):
+                 prog_bar: bool=True):
         """
         Parameters
         ----------
@@ -468,69 +520,43 @@ class KNeighborsClassifierCVCallback(Callback):
             When to apply the linear probing. Either 'by_epoch', after each validation loop 
             or 'by_fit', only once at the end of training.
 
-        extraction_kwargs: dict
-            Keyword arguments given to `solver.get_embedding` method
+        prog_bar: bool, default=True
+            Whether to display the metrics in the progress bar.
         """
-        self.train_dataloader = train_dataloader
-        self.test_dataloader = test_dataloader
+        super().__init__(train_dataloader=train_dataloader, 
+                         test_dataloader=test_dataloader, 
+                         frequency=frequency, prog_bar=prog_bar)
         self.dataset_name = dataset_name
         self.n_neighbors = n_neighbors
         self.cv = cv
         self.n_jobs = n_jobs
         self.scoring = scoring
         self.frequency = frequency
-        self.extraction_kwargs = extraction_kwargs
-
-    def knn_probing(self, solver, log: bool=True):
-            
-            if not hasattr(solver, "get_embedding"):
-                raise ValueError("`get_embedding` must be implemented for linear probing")
-            # Embed the data
-            X_train, y_train = solver.get_embedding(self.train_dataloader, **self.extraction_kwargs)
-            X_test, y_test = solver.get_embedding(self.test_dataloader, **self.extraction_kwargs)
-
-            # Check arrays
-            X_train, y_train = check_array(X_train), check_array(y_train)
-            X_test, y_test = check_array(X_test), check_array(y_test)
-
-            # Fit the classifier
-            linear_probe = GridSearchCV(
+        self.prog_bar = prog_bar
+        self.probe = GridSearchCV(
                 KNeighborsClassifier(),
                 param_grid={"n_neighbors": self.n_neighbors},
                 scoring=self.scoring,
                 n_jobs=self.n_jobs,
-                cv=self.cv)
-            linear_probe.fit(X_train, y_train)
+                cv=self.cv
+        )
 
-            # Make predictions
-            predictions = linear_probe.predict(X_test)
-            predictions_score = linear_probe.predict_proba(X_test)
-            
-            # Check arrays
-            X_train, y_train = check_array(X_train), check_array(y_train)
-            X_test, y_test = check_array(X_test), check_array(y_test)
+    def fit(self, X, y):
+        return self.probe.fit(X, y)
+    
+    def predict(self, X):
+        return (self.probe.predict(X), self.probe.predict_proba(X))
+    
+    def log_metrics(self, pl_module, y_pred, y_true):
+        # Compute classification metrics
+        metrics_report = classification_report(y_true, y_pred[0], output_dict=True)
+        metrics_report["ROC-AUC"] = roc_auc_score(y_true, y_pred[1])
 
-            # Compute classification metrics
-            metrics_report = classification_report(y_test, predictions, output_dict=True)
-            metrics_report["ROC-AUC"] = roc_auc_score(y_test, predictions_score)
-
-            # Log the results
-            if log:
-                base_name = f"knn_classification_probe_{self.dataset_name}" \
-                    if self.dataset_name is not None else "knn_classification"
-                for name, value in metrics_report.items():
-                    if isinstance(value, dict):
-                        solver.log_dict(f"{base_name}/{name}", value)
-                    else:
-                        solver.log(f"{base_name}/{name}", value)
-            
-            # Return all metrics
-            return metrics_report
-
-    def on_validation_epoch_end(self, solver):
-        if self.frequency == "by_epoch":
-            self.knn_probing(solver)
-
-    def on_fit_end(self, solver):
-        if self.frequency == "by_fit":
-            self.knn_probing(solver)
+        # Log the results
+        base_name = f"knn_classification_probe_{self.dataset_name}" \
+            if self.dataset_name is not None else "knn_classification_probe"
+        for name, value in metrics_report.items():
+            if isinstance(value, dict):
+                pl_module.log_dict(f"{base_name}/{name}", value)
+            else:
+                pl_module.log(f"{base_name}/{name}", value)

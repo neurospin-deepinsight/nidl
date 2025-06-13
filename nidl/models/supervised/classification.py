@@ -250,7 +250,7 @@ class DeepClassifier(BaseEstimator):
 
 
     def parse_batch(self, batch: Any) -> Tuple[torch.Tensor, torch.Tensor]:
-        """ Parses the batch to return the two views of the data.
+        """ Parses the batch to return (X, y)
 
         Parameters
         ----------

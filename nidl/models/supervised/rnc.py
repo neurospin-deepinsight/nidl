@@ -137,7 +137,7 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         """
         # Instantiate the encoder + projection head + loss
         self.encoder_ = self._build_encoder(self.encoder, self.encoder_kwargs)
-        self.loss_ = self._build_loss(self.temperature)
+        self.loss_ = self._build_loss(self.temperature, self.label_diff)
         self._cache = []
 
         # Fit the model
@@ -262,14 +262,13 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
             "adamW": torch.optim.AdamW,
             "sgd": torch.optim.SGD
         }
-        params = list(self.encoder_.parameters()) + list(self.projection_head_.parameters())
         if isinstance(self.optimizer, str):
             if self.optimizer not in known_optimizers:
                 raise ValueError(f"Optimizer '{self.optimizer}' is not implemented. "
                                  f"Please use one of the available optimizers: "
                                  f"{', '.join(known_optimizers.keys())}")
             optimizer = known_optimizers[self.optimizer](
-                params=params,
+                params=self.encoder_.parameters(),
                 lr=self.learning_rate,
                 **self.optimizer_kwargs
             )
@@ -279,7 +278,7 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
             optimizer = self.optimizer
         elif isinstance(self.optimizer, type) and issubclass(self.optimizer, Optimizer):
             optimizer = self.optimizer(
-                params=params,
+                params=self.encoder_.parameters(),
                 lr=self.learning_rate,
                 **self.optimizer_kwargs
             )

@@ -54,7 +54,7 @@ class OpenBHB(Dataset):
     def __init__(self,
                  root: str, 
                  modality: Union[str, Tuple[str]]='vbm', 
-                 target: str='age',
+                 target: Union[str, None]='age',
                  split: str='train', 
                  transforms: Callable=None,
                  target_transforms: Callable=None,
@@ -81,8 +81,9 @@ class OpenBHB(Dataset):
                 "fs_destrieux_roi" = FreeSurfer measures computed over Destrieux atlas (148 regions)
                 "fs_xhemi"= FreeSurfer measures computed on the surface mesh fsaverage7. 
 
-        target: str  in {'age', 'sex' or 'site'}
-            Target value to return with each image.
+        target: str  in {'age', 'sex' or 'site'} or None
+            Target value to return with each image. 
+            If None, no targets are returned.
 
         split: str in {'train', 'val', 'internal_val', 'external_val'}
             The dataset split. 'val' is the union of 'internal val' and 'external val'.
@@ -103,7 +104,7 @@ class OpenBHB(Dataset):
         root = os.path.expanduser(root)
         valid_modalities = ['vbm', 'vbm_roi', 'quasiraw', 'fs_desikan_roi', 'fs_destrieux_roi', 'fs_xhemi']
         valid_splits = ["train", "val", "internal_val", "external_val"]
-        valid_targets = ["age", "sex", "site"]
+        valid_targets = ["age", "sex", "site", None]
 
         if isinstance(modality, str):
             modality = (modality,)
@@ -169,9 +170,19 @@ class OpenBHB(Dataset):
     
         samples = []
         split = "train" if self.split == "train" else "val"
-        target = "siteXacq" if self.target == "site" else self.target
-        for (id, t) in participants[["participant_id", target]].values:
+
+        if self.target is not None:
+            target = "siteXacq" if self.target == "site" else self.target
+            _samples = participants[["participant_id", target]].values
+        else:
+            _samples = participants["participant_id"].values
+
+        for s in _samples:
             sample = []
+            if self.target is not None:
+                id, t = s
+            else:
+                id, t = s, None
             for mod in self.modality:
                 file_path = os.path.join(self.root, split, "derivatives", 
                                          f"sub-%i"%id, "ses-1", img_paths[mod] % id)
@@ -302,7 +313,10 @@ class OpenBHB(Dataset):
             sample = self.transforms(sample)
         if self.target_transforms is not None:
             target = self.target_transforms(target)
-        return sample, target
+        if self.target is None:
+            return sample
+        else:
+            return sample, target
 
     def __len__(self):
         return len(self.samples)

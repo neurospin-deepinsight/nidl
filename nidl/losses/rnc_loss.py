@@ -82,6 +82,7 @@ class RnCLoss(nn.Module):
         
         """
 
+        z1, z2, labels = self.check_params(z1, z2, labels)
         features = torch.cat([z1, z2], dim=0)  # [2bs, feat_dim]
         labels = labels.repeat(2, 1)  # [2bs, label_dim]
 
@@ -105,5 +106,20 @@ class RnCLoss(nn.Module):
             neg_mask = (label_diffs >= pos_label_diffs.view(-1, 1)).float()  # [2bs, 2bs - 1]
             pos_log_probs = pos_logits - torch.log((neg_mask * exp_logits).sum(dim=-1))  # 2bs
             loss += - (pos_log_probs / (n * (n - 1))).sum()
-
         return loss
+    
+
+    def check_params(self, z1, z2, labels):
+        if not isinstance(labels, torch.Tensor):
+            raise ValueError(f"labels must be torch.Tensor, got {type(labels)}")
+        
+        if not isinstance(z1, torch.Tensor) or not isinstance(z2, torch.Tensor):
+            raise ValueError(f"z1 and z2 must be torch.Tensor, got {type(z1), type(z2)}")
+
+        if labels.ndim == 0:
+            labels = labels[None, None]
+        if labels.ndim == 1:
+            labels = labels[:, None]
+        elif labels.ndim > 2:
+            raise ValueError(f"Labels must have 0, 1 or 2 dimensions, got {labels.ndim}.")
+        return z1, z2, labels
