@@ -298,11 +298,16 @@ class BaseEstimator(ABC, LightningModule):
 
     def predict(self, dataloader):
         check_is_fitted(self, "_trainer", check_is_none=True)
-        return self._trainer.predict(self, dataloaders=dataloader)
+        outputs = self._trainer.predict(self, dataloaders=dataloader)
+        return self.predict_epoch_end(outputs)
 
     def predict_step(self, *args, **kwargs):
         """Define the prediction step of the model."""
         return super().predict_step(*args, **kwargs)
+    
+    def predict_epoch_end(self, outputs):
+        """Define post-processing on the outputs of predict_step"""
+        return outputs
     
     def training_step(self, *args, **kwargs):
         return super().training_step(*args, **kwargs)

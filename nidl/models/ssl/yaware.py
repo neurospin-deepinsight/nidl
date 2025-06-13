@@ -1,7 +1,7 @@
 from pytorch_lightning.utilities.types import LRSchedulerPLType
 from torch.optim import Optimizer
 import torch.nn as nn
-from typing import  Dict, Any, Union, Optional, Type, Sequence, Tuple
+from typing import  Dict, Any, Union, Optional, Type, Sequence, Tuple, List
 import torch
 import numpy as np
 import logging
@@ -12,7 +12,6 @@ from nidl.volume.backbones import AlexNet, resnet18, resnet50, densenet121, \
 from nidl.models.ssl.utils.heads import yAwareProjectionHead
 from nidl.utils.lr_schedulers import LinearWarmupCosineAnnealingLR
 from nidl.losses import yAwareInfoNCE
-from nidl.models.ssl.utils import KernelMetric
 
 
 class yAware(BaseEstimator, EmbeddingTransformerMixin):
@@ -60,7 +59,8 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
                  projection_head_kwargs: Optional[Dict[str, Any]]=None,
                  n_embedding: int=16,
                  temperature: float=0.1,
-                 kernel_kwargs: Optional[Dict[str, Any]]=dict(kernel="gaussian", bandwidth=1.0),
+                 kernel: str="gaussian",
+                 bandwidth: Union[str, int, float, List[float]]="scott",
                  optimizer: Union[str, Optimizer, Type[Optimizer]]="adam", 
                  optimizer_kwargs: Optional[Dict[str, Any]]=dict(betas=(0.9, 0.99), weight_decay=5e-5),
                  learning_rate: float=1e-4,
@@ -105,18 +105,16 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
             Small values implies more uniformity between samples' embedding whereas high values
             imposes clustered embedding more sensitive to augmentations.
         
-        kernel_kwargs: dictionary or None, default=None
-            It specifies the options for computing the kernel between auxiliary variables: 
+        kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, default="gaussian"
+            Kernel used as similarity function between auxiliary variables. 
 
-            `kernel`: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, default="gaussian"
-                Kernel used as similarity function between auxiliary variables. 
-
-            `bandwidth`: str or float or list of float, default=1.0
-                The method used to calculate the estimator bandwidth:
-                * If `bandwidth` is str, must be 'scott' or 'silverman'
-                * If `bandwidth` is float, it sets the bandwidth to H=diag(scalar)
-                * If `bandwidth` is a list, it sets the bandwidth to H=diag(list) and it
-                  must be of length equal to the number of features in the auxiliary variables 'y'.
+        bandwidth: str in {'scott', 'silverman'} or float or list of float, default="scott"
+            The method used to calculate the bandwidth in kernel:
+            * If `bandwidth` is str, must be scott's or 'silverman's for automatic 
+                bandwidth estimation (see Rosenblatt, M. (1956) or Parzen, E. (1962))
+            * If `bandwidth` is float, it sets the bandwidth to H=diag(scalar)
+            * If `bandwidth` is a list, it sets the bandwidth to H=diag(list) and it
+                must be of length equal to the number of features in the auxiliary variables 'y'.
 
         optimizer: str in {'sgd', 'adam', 'adamW'} or Optimizer or class, default='adamW'
             The optimizer to use for training the model. It can be a string:
@@ -166,7 +164,8 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         self.projection_head_kwargs = projection_head_kwargs if projection_head_kwargs is not None else {}
         self.n_embedding = n_embedding
         self.temperature = temperature
-        self.kernel_kwargs = kernel_kwargs if kernel_kwargs is not None else {}
+        self.kernel = kernel
+        self.bandwidth = bandwidth
         self.optimizer = optimizer
         self.learning_rate = learning_rate
         self.lr_scheduler = lr_scheduler
@@ -197,7 +196,7 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         self.encoder_ = self._build_encoder(self.encoder, self.encoder_kwargs)
         self.projection_head_ = self._build_projection_head(self.projection_head, self.projection_head_kwargs)
         self.loss_ = self._build_loss(self.temperature, self.kernel_kwargs)
-        self._cache = dict(val_embedding=[], y_true=[])
+        self._cache = []
 
         # Fit the model
         return super().fit(train_dataloader, val_dataloader)
@@ -249,8 +248,15 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         Z1, Z2 = self.projection_head_(self.encoder_(V1)), self.projection_head_(self.encoder_(V2))
         loss = self.loss_(Z1, Z2, y)
         self.log("loss/train", loss, prog_bar=True)
-        return loss
-    
+        outputs = { 
+            "loss": loss, 
+            "Z1": Z1.cpu().detach(), 
+            "Z2": Z2.cpu().detach(), 
+            "y_true": y.cpu().detach() if y is not None else None
+        }
+        # Returns everything needed for further logging/metrics computation
+        return outputs
+
 
     def validation_step(self,  batch: Any, batch_idx: int):
         """ Only computes the validation embedding for further metrics computation.
@@ -267,29 +273,30 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         """
     
         V1, V2, y = self.parse_batch(batch)
-        # Compute the embeddings for the two views
         Z1, Z2 = self.projection_head_(self.encoder_(V1)), self.projection_head_(self.encoder_(V2))
-        # Store the embeddings and the true labels
-        self._cache["val_embedding"].extend(np.stack((Z1.cpu().detach().numpy(), 
-                                                      Z2.cpu().detach().numpy()), axis=1))
-        if y is not None:
-            self._cache["y_true"].extend(y[:len(Z1)].cpu().detach().numpy())
+        outputs = {
+            "Z1": Z1.cpu().detach(), 
+            "Z2": Z2.cpu().detach(), 
+            "y_true": y.cpu().detach() if y is not None else None
+        }
+        self._cache.append(outputs)
+        # Returns everything needed for further logging/metrics computation
+        return outputs 
 
 
     def on_validation_epoch_end(self):
         """ Computes the validation loss across the entire validation set. """
 
-        Z = torch.tensor(np.array(self._cache["val_embedding"])).to(self.device)
-        if "y_true" in self._cache:
-            y = torch.tensor(np.array(self._cache["y_true"]).to(self.device))
-        else:
+        Z1 = torch.cat([out["Z1"] for out in self._cache], dim=0).to(self.device)
+        Z2 = torch.cat([out["Z2"] for out in self._cache], dim=0).to(self.device)
+        if len(self._cache) > 0 and self._cache[0]["y_true"] is None:
             y = None
-        Z1, Z2 = Z[:, 0], Z[:, 1]
+        else:
+            y = torch.cat([out["y_true"] for out in self._cache], dim=0).to(self.device)
         self.log("loss/val", self.loss_(Z1, Z2, y))
-
+        
         # Free the cache
-        self._cache["val_embedding"] = []
-        self._cache["y_true"] = []
+        self._cache = []
 
     
     def parse_batch(self, batch: Any) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
@@ -451,7 +458,10 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         return projection_head
     
 
-    def _build_loss(self, temperature: float, kernel_kwargs: Dict[str, Any]) -> nn.Module:
+    def _build_loss(self, 
+                    temperature: float, 
+                    kernel: str,
+                    bandwidth: Union[str, int, float, List[float]]) -> nn.Module:
         """ Builds the InfoNCE loss function with the specified temperature.
 
         Parameters
@@ -459,13 +469,15 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         temperature: float
             The temperature parameter for the InfoNCE loss.
         
-        kernel_kwargs: dict
-            The keyword arguments for the kernel metric used in the loss function.
+        kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}
+            Kernel used as similarity function between auxiliary variables. 
+
+        bandwidth: str in {'scott', 'silverman'} or float or list of float
+            The method used to calculate the bandwidth in kernel.
 
         Returns
         -------
         loss: nn.Module
             The InfoNCE loss function.
         """
-        return yAwareInfoNCE(temperature=temperature, 
-                             kernel=KernelMetric(**kernel_kwargs))
+        return yAwareInfoNCE(kernel=kernel, bandwidth=bandwidth, temperature=temperature)

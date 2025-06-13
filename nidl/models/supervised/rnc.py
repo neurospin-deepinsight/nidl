@@ -13,7 +13,6 @@ from nidl.utils.lr_schedulers import LinearWarmupCosineAnnealingLR
 from nidl.losses import RnCLoss
 
 
-
 class RnC(BaseEstimator, EmbeddingTransformerMixin):
     """
     Rank-N-Contrast (RnC) [1] is a framework that learns continuous
@@ -139,7 +138,7 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         # Instantiate the encoder + projection head + loss
         self.encoder_ = self._build_encoder(self.encoder, self.encoder_kwargs)
         self.loss_ = self._build_loss(self.temperature)
-        self._cache = dict(val_embedding=[], y_true=[])
+        self._cache = []
 
         # Fit the model
         return super().fit(train_dataloader, val_dataloader)
@@ -186,8 +185,14 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
         Z1, Z2 = self.encoder_(V1), self.encoder_(V2)
         loss = self.loss_(Z1, Z2, y)
         self.log("loss/train", loss, prog_bar=True)
-        return loss
-    
+        outputs = { 
+            "loss": loss, 
+            "Z1": Z1.cpu().detach(), 
+            "Z2": Z2.cpu().detach(), 
+            "y_true": y.cpu().detach() if y is not None else None
+        }
+        # Returns everything needed for further logging/metrics computation
+        return outputs    
 
     def validation_step(self,  batch: Any, batch_idx: int):
         """ Only computes the validation embedding for further metrics computation.
@@ -206,9 +211,14 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
     
         V1, V2, y = self.parse_batch(batch)
         Z1, Z2 = self.encoder_(V1), self.encoder_(V2)
-        self._cache["val_embedding"].extend(np.stack((Z1.cpu().detach().numpy(), 
-                                                      Z2.cpu().detach().numpy()), axis=1))
-        self._cache["y_true"].extend(y[:len(Z1)].cpu().detach().numpy())
+        outputs = {
+            "Z1": Z1.cpu().detach(), 
+            "Z2": Z2.cpu().detach(), 
+            "y_true": y.cpu().detach() if y is not None else None
+        }
+        self._cache.append(outputs)
+        # Returns everything needed for further logging/metrics computation
+        return outputs 
 
 
     def parse_batch(self, batch: Any) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -238,14 +248,12 @@ class RnC(BaseEstimator, EmbeddingTransformerMixin):
     def on_validation_epoch_end(self):
         """ Computes the validation loss across the entire validation set. """
 
-        Z = torch.tensor(np.array(self._cache["val_embedding"])).to(self.device)
-        Z1, Z2 = Z[:, 0], Z[:, 1]
-        y = torch.tensor(np.array(self._cache["y_true"])).to(self.device)
+        Z1 = torch.cat([out["Z1"] for out in self._cache], dim=0).to(self.device)
+        Z2 = torch.cat([out["Z2"] for out in self._cache], dim=0).to(self.device)
+        y = torch.cat([out["y_true"] for out in self._cache], dim=0).to(self.device)
         self.log("loss/val", self.loss_(Z1, Z2, y))
-
         # Free the cache
-        self._cache["val_embedding"] = []
-        self._cache["y_true"] = []
+        self._cache = []
 
 
     def configure_optimizers(self):

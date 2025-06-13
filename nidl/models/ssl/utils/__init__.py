@@ -11,8 +11,6 @@ from .heads import NNCLRProjectionHead
 from .heads import MSNProjectionHead
 from .heads import VICRegProjectionHead
 
-from .kernels import KernelMetric
-
 __all__ = [
     "ProjectionHead",
     "BarlowTwinsProjectionHead",
@@ -25,6 +23,5 @@ __all__ = [
     "MoCoProjectionHead",
     "NNCLRProjectionHead",
     "MSNProjectionHead",
-    "VICRegProjectionHead",
-    "KernelMetric"
+    "VICRegProjectionHead"
 ]

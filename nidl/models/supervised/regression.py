@@ -1,12 +1,12 @@
 from pytorch_lightning.utilities.types import LRSchedulerPLType
 from torch.optim import Optimizer
 import torch.nn as nn
-from typing import  Dict, Any, Union, Optional, Type, Sequence, Tuple
+from typing import  Dict, Any, Union, Optional, Type, Sequence, Tuple, List
 import torch
-import numpy as np
 import logging
 # This library
 from nidl.models.base import BaseEstimator
+from nidl.utils.validation import check_is_fitted
 from nidl.volume.backbones import AlexNet, resnet18, resnet50, densenet121, \
     VisionTransformer, Offset0ModelMSE, MLP, Linear
 
@@ -17,7 +17,7 @@ class DeepRegressor(BaseEstimator):
     Input data are mapped to predictions (continuous values) with a neural network.
     The model optimizes a Mean Squared Error (MSE) loss or l1 loss (default). It can be
     trained on a very large dataset (e.g. UKB with 100k subjects and 3D volumes of >1M voxels).
-    This nidl estimator has `fit`, `predict_proba`, `predict` methods implemented.
+    This nidl estimator has `fit`, `predict` methods implemented.
 
     NB: this model can be used for linear regression as well by defining a linear encoder.
 
@@ -129,13 +129,17 @@ class DeepRegressor(BaseEstimator):
             The fitted model.
 
         """
-        # Instantiate the encoder + projection head + loss
+        # Instantiate the encoder + loss
         self.encoder_ = self._build_encoder(self.encoder, self.encoder_kwargs)
         self.loss_ = self._build_loss(self.loss)
-        self._cache = dict(y_pred=[], y_true=[])
 
         # Fit the model
         return super().fit(train_dataloader, val_dataloader)
+
+
+    def predict(self, dataloader):
+        check_is_fitted(self, "encoder_")
+        return super().predict(dataloader)
 
 
     def predict_step(self,  batch: Any, batch_idx: int):
@@ -151,9 +155,30 @@ class DeepRegressor(BaseEstimator):
         
         batch_idx: int
             The index of the current batch.
+
+        Returns
+        ----------
+        torch.Tensor
+            Output predictions from the input batch.
         """
         X, y = self.parse_batch(batch)
         return self.forward(X)
+
+
+    def predict_epoch_end(self, outputs: List[torch.Tensor]):
+        """ Aggregate outputs from 'predict_step' in a consistent torch.Tensor
+        
+        Parameters
+        ----------
+        outputs: List[torch.Tensor]
+            Outputs given by 'predict_step'.
+        
+        Returns
+        ----------
+        torch.Tensor
+            The concatenated outputs along the batch dimension.
+        """
+        return torch.cat(outputs, dim=0)
 
 
     def forward(self, X: torch.Tensor) -> torch.Tensor:
@@ -190,14 +215,16 @@ class DeepRegressor(BaseEstimator):
         
         Returns
         ----------
-        loss: Tensor
-            Training loss computed on this batch of data.
+        {"loss": Tensor, "y_pred": Tensor, "y_true": Tensor}
+            Training loss, predictions and ground truth computed on this batch.
         """
         X, y = self.parse_batch(batch)
         y_pred = self.encoder_(X)
         loss = self.loss_(y_pred, y)
         self.log("loss/train", loss, prog_bar=True)
-        return loss
+        return {"loss": loss, 
+                "y_pred": y_pred.cpu().detach(), 
+                "y_true": y.cpu().detach()}
     
 
     def validation_step(self,  batch: Any, batch_idx: int):
@@ -216,9 +243,11 @@ class DeepRegressor(BaseEstimator):
 
         X, y = self.parse_batch(batch)
         y_pred = self.encoder_(X)
-        self.log("loss/val", self.loss_(y_pred, y))
-        self._cache["y_pred"].extend(y_pred.cpu().detach().numpy())
-        self._cache["y_true"].extend(y.cpu().detach().numpy())
+        loss = self.loss_(y_pred, y)
+        self.log("loss/val", loss)
+        return {"loss": loss, 
+                "y_pred": y_pred.cpu().detach(), 
+                "y_true": y.cpu().detach()}
 
 
     def parse_batch(self, batch: Any) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -243,13 +272,7 @@ class DeepRegressor(BaseEstimator):
         else:
             raise ValueError("batch should be a tuple of 2 " \
             "Tensors (representing input and label), got %s" % type(batch))
-
-
-    def on_validation_epoch_end(self):
-        # Free the cache
-        self._cache["y_pred"] = []
-        self._cache["y_true"] = []
-
+        
 
     def configure_optimizers(self):
         known_optimizers = {
@@ -257,14 +280,13 @@ class DeepRegressor(BaseEstimator):
             "adamW": torch.optim.AdamW,
             "sgd": torch.optim.SGD
         }
-        params = list(self.encoder_.parameters()) + list(self.projection_head_.parameters())
         if isinstance(self.optimizer, str):
             if self.optimizer not in known_optimizers:
                 raise ValueError(f"Optimizer '{self.optimizer}' is not implemented. "
                                  f"Please use one of the available optimizers: "
                                  f"{', '.join(known_optimizers.keys())}")
             optimizer = known_optimizers[self.optimizer](
-                params=params,
+                params=self.encoder_.parameters(),
                 lr=self.learning_rate,
                 **self.optimizer_kwargs
             )
@@ -274,7 +296,7 @@ class DeepRegressor(BaseEstimator):
             optimizer = self.optimizer
         elif isinstance(self.optimizer, type) and issubclass(self.optimizer, Optimizer):
             optimizer = self.optimizer(
-                params=params,
+                params=self.encoder_.parameters(),
                 lr=self.learning_rate,
                 **self.optimizer_kwargs
             )

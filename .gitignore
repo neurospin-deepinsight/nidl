@@ -18,6 +18,7 @@ __pycache__/
 
 # Distribution / packaging / data storage
 outputs/
+lightning_logs/
 nevergrad_repository/
 .Python
 env/

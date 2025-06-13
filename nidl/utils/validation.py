@@ -53,7 +53,7 @@ def check_is_fitted(estimator, attributes=None, *, msg=None, all_or_any=all, che
         If the attributes are not found.
 
     """
-    if not isclass(estimator):
+    if isclass(estimator):
         raise TypeError("{} is a class, not an instance.".format(estimator))
     if msg is None:
         msg = (

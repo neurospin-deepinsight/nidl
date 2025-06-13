@@ -7,5 +7,5 @@ __all__ = [
     "InfoNCE",
     "RnCLoss",
     "VICRegLoss",
-    "yAwareInfoNCE"
+    "yAwareInfoNCE",
 ]

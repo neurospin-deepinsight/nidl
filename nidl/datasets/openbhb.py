@@ -289,10 +289,11 @@ class OpenBHB(Dataset):
     def load_sample(self, sample):
         if isinstance(sample, str):
             # Returns a simple array
-            return np.load(sample)[0]
+            return np.load(sample)[0].astype(np.float32)
         else:
             # Returns a dict {modality: array} 
-            return {mod: np.load(s)[0] for (mod, s) in zip(self.modality, sample)}
+            return {mod: np.load(s)[0].astype(np.float32) 
+                    for (mod, s) in zip(self.modality, sample)}
 
     def __getitem__(self, idx: int):
         sample, target = self.samples[idx]

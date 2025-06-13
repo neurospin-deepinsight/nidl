@@ -17,8 +17,6 @@ from nidl.losses import InfoNCE
 class SimCLR(BaseEstimator, EmbeddingTransformerMixin):
     """A Simple Framework for Contrastive Learning of Visual Representations [1]
 
-    This code is an adaptation of the original repository: https://github.com/sthalles/SimCLR.
-
     SimCLR is a self-supervised learning framework for learning visual representations without labels. 
     It leverages contrastive learning by maximizing the agreement between differently augmented views 
     of the same image while minimizing agreement between different images. The framework consists of:
@@ -179,7 +177,7 @@ class SimCLR(BaseEstimator, EmbeddingTransformerMixin):
         self.encoder_ = self._build_encoder(self.encoder, self.encoder_kwargs)
         self.projection_head_ = self._build_projection_head(self.projection_head, self.projection_head_kwargs)
         self.loss_ = self._build_loss(self.temperature)
-        self._cache = dict(val_embedding=[])
+        self._cache = []
 
         # Fit the model
         return super().fit(train_dataloader, val_dataloader)
@@ -225,14 +223,19 @@ class SimCLR(BaseEstimator, EmbeddingTransformerMixin):
         
         Returns
         ----------
-        loss: Tensor
-            Training loss computed on this batch of data.
+        {"loss": torch.Tensor, "Z1": torch.Tensor, "Z2": torch.Tensor}
         """
         V1, V2 = self.parse_batch(batch)
         Z1, Z2 = self.projection_head_(self.encoder_(V1)), self.projection_head_(self.encoder_(V2))
         loss = self.loss_(Z1, Z2)
         self.log("loss/train", loss, prog_bar=True)
-        return loss
+        outputs = {
+            "loss": loss,
+            "Z1": Z1.cpu().detach(), 
+            "Z2": Z2.cpu().detach()
+        }
+        # Returns everything needed for further logging/metrics computation
+        return outputs 
     
 
     def validation_step(self,  batch: Any, batch_idx: int):
@@ -252,8 +255,24 @@ class SimCLR(BaseEstimator, EmbeddingTransformerMixin):
     
         V1, V2 = self.parse_batch(batch)
         Z1, Z2 = self.projection_head_(self.encoder_(V1)), self.projection_head_(self.encoder_(V2))
-        self._cache["val_embedding"].extend(np.stack((Z1.cpu().detach().numpy(), 
-                                                      Z2.cpu().detach().numpy()), axis=1))
+        outputs = {
+            "Z1": Z1.cpu().detach(), 
+            "Z2": Z2.cpu().detach()
+        }
+        self._cache.append(outputs)
+        # Returns everything needed for further logging/metrics computation
+        return outputs 
+    
+
+    def on_validation_epoch_end(self):
+        """ Computes the validation loss across the entire validation set. """
+
+        Z1 = torch.cat([out["Z1"] for out in self._cache], dim=0).to(self.device)
+        Z2 = torch.cat([out["Z2"] for out in self._cache], dim=0).to(self.device)
+        self.log("loss/val", self.loss_(Z1, Z2))
+
+        # Free the cache
+        self._cache = []
 
 
     def parse_batch(self, batch: Any) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -282,18 +301,7 @@ class SimCLR(BaseEstimator, EmbeddingTransformerMixin):
         else:
             raise ValueError("batch should be a tuple of " \
                              "two Tensors (representing two views), got %s" % type(batch))
-    
-
-    def on_validation_epoch_end(self):
-        """ Computes the validation loss across the entire validation set. """
-
-        Z = torch.tensor(np.array(self._cache["val_embedding"])).to(self.device)
-        Z1, Z2 = Z[:, 0], Z[:, 1]
-        self.log("loss/val", self.loss_(Z1, Z2))
-
-        # Free the cache
-        self._cache["val_embedding"] = []
-
+        
 
     def configure_optimizers(self):
         known_optimizers = {
