@@ -7,12 +7,13 @@
 ##########################################################################
 
 from collections.abc import Sequence
-from typing import Callable, Optional
+from typing import Optional
 
 import pytorch_lightning as pl
 import torch
 import torch.utils.data as data
 
+from ..callbacks.check_typing import BatchTypingCallback
 from ..utils.validation import _estimator_is, available_if, check_is_fitted
 
     
@@ -35,6 +36,7 @@ class BaseEstimator(pl.LightningModule):
             self,
             random_state: Optional[int] = None,
             ignore: Optional[Sequence[str]] = None,
+            hints_batch: Optional[bool] = True,
             **kwargs):
         """ Init class.
 
@@ -46,6 +48,9 @@ class BaseEstimator(pl.LightningModule):
             int for reproducible output across multiple function calls.
         ignore: list of str, default=None
             Ignore attribute of instance `nn.Module`.
+        hints_batch: bool, default=False
+            Require the 'batch' parameter type hints to be specified. This
+            type will be checked at runtime using the callback mechanism.
         kwargs: dict
             Trainer parameters.
         """
@@ -53,7 +58,10 @@ class BaseEstimator(pl.LightningModule):
         self.save_hyperparameters(ignore=ignore)
         self.fitted_ = False
         self.trainer_params_ = kwargs
-        self._batch_connector = lambda batch: batch
+        if hints_batch:
+            self.trainer_params_.setdefault("callbacks", []).append(
+                BatchTypingCallback()
+            )
 
     def fit(
             self,
@@ -84,11 +92,6 @@ class BaseEstimator(pl.LightningModule):
         trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
             self, X_test, return_predictions=True))
-
-    def set_batch_connector(
-            self,
-            connector: Callable):
-        self.batch_connector_ = connector
         
 
 class RegressorMixin:

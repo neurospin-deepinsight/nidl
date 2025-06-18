@@ -51,8 +51,6 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
     -----
     A batch of data must contains two elements: a tensor with images, and a
     tensor with the variable to predict.
-    Using the `set_batch_connector` method allows you to pass a function that
-    reorganizes your batch of data according to these specifications.
     """
     def __init__(
             self,
@@ -84,7 +82,7 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
             self,
             batch: tuple[torch.Tensor, Sequence[torch.Tensor]],
             mode: str):
-        imgs, labels = self._batch_connector(batch)
+        imgs, labels = batch
         preds = self.model(imgs)
         loss = func.cross_entropy(preds, labels)
         acc = (preds.argmax(dim=-1) == labels).float().mean()
@@ -116,5 +114,5 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
             batch: Union[tuple[torch.Tensor, Sequence[torch.Tensor]],
                          tuple[torch.Tensor]],
             batch_idx: int):
-        imgs = self._batch_connector(batch)[0] 
+        imgs = batch[0] 
         return self.model(imgs)

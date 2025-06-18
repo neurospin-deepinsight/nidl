@@ -6,12 +6,10 @@
 # for details.
 ##########################################################################
 
-
-import glob
 import os
-import tempfile
-import toml
+import glob
 import unittest
+
 from nidl.estimators import (
     BaseEstimator, ClassifierMixin, ClusterMixin, RegressorMixin,
     TransformerMixin)
