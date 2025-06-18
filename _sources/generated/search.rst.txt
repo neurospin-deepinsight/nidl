@@ -13,6 +13,7 @@ Search in API documentation of NIDL
 
     </div>
     <ul id='my-search-entries'>
+        <li><a href='nidl.callbacks.check_typing.BatchTypingCallback.html'>nidl.callbacks.check_typing.BatchTypingCallback</a></li>
         <li><a href='nidl.estimators.base.BaseEstimator.html'>nidl.estimators.BaseEstimator</a></li>
         <li><a href='nidl.estimators.base.ClassifierMixin.html'>nidl.estimators.ClassifierMixin</a></li>
         <li><a href='nidl.estimators.base.ClusterMixin.html'>nidl.estimators.ClusterMixin</a></li>

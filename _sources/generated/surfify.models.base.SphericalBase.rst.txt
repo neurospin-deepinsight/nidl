@@ -9,7 +9,7 @@
 .. autoclass:: surfify.models.base.SphericalBase
      :members:
 
-.. minigallery:: surfify.models.SphericalBase surfify.models.base.SphericalBase
+.. minigallery:: surfify.models.base.SphericalBase surfify.models.SphericalBase
     :add-heading: Examples
     :heading-level: -
 

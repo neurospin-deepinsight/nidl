@@ -87,7 +87,7 @@
                             <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
                             
                             <li>API</li>
-                            <li><a href="../../../../generated/nidl.html">nidl</a></li><li><a href="../../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../../generated/surfify.html">surfify</a></li><li><a href="../../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../../generated/surfify.utils.html">surfify.utils</a></li>
+                            <li><a href="../../../../generated/nidl.html">nidl</a></li><li><a href="../../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../../generated/surfify.html">surfify</a></li><li><a href="../../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../../generated/surfify.utils.html">surfify.utils</a></li>
 						</ul>
 					</li> -->
 				</ul>
@@ -253,8 +253,6 @@
 <span class="sd">    -----</span>
 <span class="sd">    A batch of data must contains two elements: two tensors with contrasted</span>
 <span class="sd">    images, and a list of tensors containing auxiliary variables.</span>
-<span class="sd">    Using the `set_batch_connector` method allows you to pass a function that</span>
-<span class="sd">    reorganizes your batch of data according to these specifications.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -304,7 +302,7 @@
             <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
                          <span class="n">Sequence</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
             <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">imgs</span><span class="p">,</span> <span class="n">aux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_connector</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">imgs</span><span class="p">,</span> <span class="n">aux</span> <span class="o">=</span> <span class="n">batch</span>
         <span class="n">imgs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># Encode all images</span>
@@ -375,7 +373,7 @@
             <span class="n">batch</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
                          <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
             <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_connector</span><span class="p">(</span><span class="n">batch</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">imgs</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span></div>
 </div>
 
