@@ -1,0 +1,17 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.datasets*
+=====================================
+
+nidl.datasets
+^^^^^^^^^^^^^
+
+Common datasets.
+
+nidl.datasets.base
+^^^^^^^^^^^^^^^^^^
+
+Base class to generate datasets.
+

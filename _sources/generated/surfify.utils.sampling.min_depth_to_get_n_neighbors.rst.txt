@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.min_depth_to_get_n_neighbors
 
-.. minigallery:: surfify.utils.min_depth_to_get_n_neighbors surfify.utils.sampling.min_depth_to_get_n_neighbors
+.. minigallery:: surfify.utils.sampling.min_depth_to_get_n_neighbors surfify.utils.min_depth_to_get_n_neighbors
     :add-heading: Examples
     :heading-level: -
 

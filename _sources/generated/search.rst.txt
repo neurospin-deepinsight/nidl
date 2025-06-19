@@ -33,6 +33,7 @@ Search in API documentation of NIDL
         <li><a href='nidl.experiment.get_env.html'>nidl.experiment.get_env</a></li>
         <li><a href='nidl.experiment.load_interface.html'>nidl.experiment.load_interface</a></li>
         <li><a href='nidl.experiment.update_params.html'>nidl.experiment.update_params</a></li>
+        <li><a href='nidl.transforms.ssl.ContrastiveTransformations.html'>nidl.transforms.ssl.ContrastiveTransformations</a></li>
         <li><a href='nidl.utils.bunch.Bunch.html'>nidl.utils.Bunch</a></li>
         <li><a href='nidl.utils.weights.Weights.html'>nidl.utils.Weights</a></li>
         <li><a href='nidl.utils.bunch.Bunch.html'>nidl.utils.bunch.Bunch</a></li>

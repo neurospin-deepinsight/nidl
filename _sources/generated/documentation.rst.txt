@@ -30,15 +30,22 @@ This is the classes and functions reference in nidl. Please refer to the gallery
         <p>Module that defines common callbacks.</p>    </blockquote>
     </div>
     <div class='col-md-4'>
+    <h3><a href='nidl.datasets.html'>
+    nidl.datasets
+    </a></h3>
+    <blockquote>
+        <p>Common datasets.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.estimators.html'>
     nidl.estimators
     </a></h3>
     <blockquote>
         <p>Module that defines common estimators.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.estimators.linear.html'>
     nidl.estimators.linear
     </a></h3>
@@ -52,6 +59,15 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Self-supervised estimators.</p>    </blockquote>
     </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='nidl.transforms.html'>
+    nidl.transforms
+    </a></h3>
+    <blockquote>
+        <p>Common transformations.</p>    </blockquote>
+    </div>
     <div class='col-md-4'>
     <h3><a href='nidl.utils.html'>
     nidl.utils
@@ -59,16 +75,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Various utilities to help with development.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='surfify.html'>
     surfify
     </a></h3>
     <blockquote>
         <p>Helper module for surface integration in PyTorch.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='surfify.augmentation.html'>
     surfify.augmentation
     </a></h3>
@@ -83,16 +99,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
         <p>Utilities to load datasets, including methods to load and fetch popular
     reference datasets. It also features some artificial data generators.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='surfify.losses.html'>
     surfify.losses
     </a></h3>
     <blockquote>
         <p>Common losses.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='surfify.models.html'>
     surfify.models
     </a></h3>
@@ -106,16 +122,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Suface dedicated modules.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='surfify.plotting.html'>
     surfify.plotting
     </a></h3>
     <blockquote>
         <p>Utilities to display datasets.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='surfify.utils.html'>
     surfify.utils
     </a></h3>
@@ -152,6 +168,7 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.callbacks.check_typing.BatchTypingCallback <nidl.callbacks.check_typing.BatchTypingCallback.html>`_
 
+    * `nidl.datasets <nidl.datasets.html>`_
     * `nidl.estimators <nidl.estimators.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
@@ -194,6 +211,13 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.estimators.ssl.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
 
           `nidl.estimators.ssl.simclr.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
+
+    * `nidl.transforms <nidl.transforms.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.transforms.ssl.ContrastiveTransformations <nidl.transforms.ssl.ContrastiveTransformations.html>`_
 
     * `nidl.utils <nidl.utils.html>`_
         .. hidden-technical-block::
