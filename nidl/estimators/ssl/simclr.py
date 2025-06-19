@@ -84,7 +84,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
     Parameters
     ----------
     encoder: nn.Module
-        the encoder f(.) architecture.
+        the encoder f(.). It must store the size of the encoded one-dimensional
+        feature vector in a `latent_size` parameter.
     hidden_dims: list of str
         the projector g(.) MLP architecture.
     lr: float
