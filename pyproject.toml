@@ -22,6 +22,7 @@ dependencies = [
     "pytorch-lightning",
     "toml",
     "python-typex",
+    "pandas"
 ]
 dynamic = ["version"]
 
