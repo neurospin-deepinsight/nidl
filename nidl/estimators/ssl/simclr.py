@@ -7,7 +7,7 @@
 ##########################################################################
 
 from collections.abc import Sequence
-from typing import Optional, Union
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -137,7 +137,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
             in_channels=self.f.latent_size, hidden_channels=hidden_dims,
             activation_layer=nn.ReLU, inplace=True, bias=True, dropout=0.
         )
-        self.g = nn.ModuleList([
+        self.g = nn.Sequential(*[
             layer for layer in self.g.children()
             if not isinstance(layer, nn.Dropout)
         ])
@@ -158,15 +158,13 @@ class SimCLR(TransformerMixin, BaseEstimator):
 
     def info_nce_loss(
             self,
-            batch: tuple[tuple[torch.Tensor, torch.Tensor],
-                         Sequence[torch.Tensor]],
+            batch: tuple[torch.Tensor, torch.Tensor],
             mode: str):
-        imgs, aux = batch
-        imgs = torch.cat(imgs, dim=0)
+        imgs = torch.cat(batch, dim=0)
 
         # Encode all images
-        z = self.g(imgs)
-        feats = self.f(z)
+        z = self.f(imgs)
+        feats = self.g(z)
         # Calculate cosine similarity
         cos_sim = func.cosine_similarity(
             feats[:, None, :], feats[None, :, :], dim=-1)
@@ -194,32 +192,28 @@ class SimCLR(TransformerMixin, BaseEstimator):
         self.log(mode + "_acc_top5", (sim_argsort < 5).float().mean())
         self.log(mode + "_acc_mean_pos", 1 + sim_argsort.float().mean())
 
-        return z, nll, aux
+        return nll
 
     def training_step(
             self,
-            batch: tuple[tuple[torch.Tensor, torch.Tensor],
-                         Sequence[torch.Tensor]],
+            batch: tuple[torch.Tensor, torch.Tensor],
             batch_idx: int):
-        _, loss, _ = self.info_nce_loss(batch, mode="train")
-        return loss
+        return self.info_nce_loss(batch, mode="train")
 
     def validation_step(
             self,
-            batch: tuple[tuple[torch.Tensor, torch.Tensor],
-                         Sequence[torch.Tensor]],
+            batch: tuple[torch.Tensor, torch.Tensor],
             batch_idx: int):
-        z, loss, aux = self.info_nce_loss(batch, mode="val")
-        self.validation_step_outputs.setdefault("z", []).append(z)
-        self.validation_step_outputs.setdefault("aux", []).append(aux)
+        self.info_nce_loss(batch, mode="val")
+        # self.validation_step_outputs.setdefault("z", []).append(z)
+        # self.validation_step_outputs.setdefault("aux", []).append(aux)
 
     def on_validation_epoch_end(self):
         self.validation_step_outputs.clear()
 
     def predict_step(
             self,
-            batch: Union[tuple[torch.Tensor, Sequence[torch.Tensor]],
-                         tuple[torch.Tensor]],
+            batch: torch.Tensor,
             batch_idx: int):
         imgs = batch[0]
-        return self.g(imgs)
+        return self.f(imgs)

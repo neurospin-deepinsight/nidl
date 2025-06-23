@@ -8,3 +8,5 @@
 
 """ Common datasets.
 """
+
+from .base import BaseImageDataset, BaseNumpyDataset

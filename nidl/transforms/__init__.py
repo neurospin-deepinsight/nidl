@@ -8,3 +8,5 @@
 
 """ Common transformations.
 """
+
+from .ssl import ContrastiveTransforms

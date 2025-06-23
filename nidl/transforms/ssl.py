@@ -11,7 +11,7 @@
 """
 
 
-class ContrastiveTransformations:
+class ContrastiveTransforms:
     """ In self supervised learning, to allow efficient training, we need to
     prepare the data loading such that we sample two different, random
     augmentations for each image in the batch.

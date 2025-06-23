@@ -27,16 +27,14 @@ class BaseEstimator(pl.LightningModule):
     - a `transform` or `predict` method if the child class inherit from a
       valid  Mixin class.
 
-    This class also provides a way to connect a custom DataLoader to a
-    predefined estimator. Using the `set_batch_connector` method allows you to
-    pass a function that reorganizes your batch of data according to the
-    estimator's specifications.
+    This class also provides a way to check the type of the input batch using
+    the `hints_batch` parameter through the `BatchTypingCallback` callback.
     """
     def __init__(
             self,
             random_state: Optional[int] = None,
             ignore: Optional[Sequence[str]] = None,
-            hints_batch: Optional[bool] = True,
+            hints_batch: Optional[bool] = False,
             **kwargs):
         """ Init class.
 

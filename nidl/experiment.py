@@ -17,6 +17,7 @@ from pprint import pprint
 from typing import Optional
 
 import toml
+from toml.decoder import InlineTableDict
 
 from .utils import Bunch, print_multicolor
 
@@ -249,7 +250,8 @@ def filter_config(
             continue
         shared_params, multi_params = {}, []
         for name in params:
-            if isinstance(params[name], collections.OrderedDict):
+            if (not isinstance(params[name], InlineTableDict) and
+                    isinstance(params[name], collections.OrderedDict)):
                 assert section in selected_env, (
                     f"Multi-interface '{section}' environments not defined "
                     "properly!")
