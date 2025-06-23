@@ -9,7 +9,7 @@
 .. autoclass:: surfify.nn.modules.IcoGenericUpConv
      :members:
 
-.. minigallery:: surfify.nn.IcoGenericUpConv surfify.nn.modules.IcoGenericUpConv
+.. minigallery:: surfify.nn.modules.IcoGenericUpConv surfify.nn.IcoGenericUpConv
     :add-heading: Examples
     :heading-level: -
 

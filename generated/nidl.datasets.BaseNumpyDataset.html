@@ -99,6 +99,12 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
                                 
                                     
                                         
@@ -106,6 +112,17 @@
                                         
                                     
                                 
+                                    
+                                        
+                                        
+                                        
+                                    
+                                
+                                
+                                    <li>SECTIONS</li>
+                                    
+						                <li> <a href='#nidl.datasets.BaseNumpyDataset.get_data'>Basenumpydataset.get_data()</a> </li>                                    
+                                    
                                 
                             
                             <li>API</li>
@@ -161,25 +178,77 @@
 <p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/surfify/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
 </div>
 <dl class="py class">
-<dt class="sig sig-object py" id="nidl.transforms.ssl.ContrastiveTransformations">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.transforms.ssl.</span></span><span class="sig-name descname"><span class="pre">ContrastiveTransformations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transforms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_views</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/transforms/ssl.html#ContrastiveTransformations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.ssl.ContrastiveTransformations" title="Link to this definition">¶</a></dt>
-<dd><p>In self supervised learning, to allow efficient training, we need to
-prepare the data loading such that we sample two different, random
-augmentations for each image in the batch.
-The easiest way to do this is by creating a transformation that, when being
-called, applies a set of data augmentations to an image twice (or more).</p>
+<dt class="sig sig-object py" id="nidl.datasets.BaseNumpyDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.datasets.</span></span><span class="sig-name descname"><span class="pre">BaseNumpyDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patterns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">withdraw_subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/base.html#BaseNumpyDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.BaseNumpyDataset" title="Link to this definition">¶</a></dt>
+<dd><p>Neuroimaging dataset that uses numpy arrays and memory mapping.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>transforms</strong> : transforms.Compose or equivalent</p>
+<dd class="field-odd"><p><strong>root</strong> : str</p>
 <blockquote>
-<div><p>the input set of transformations to be applied.</p>
+<div><p>the location where are stored the data.</p>
 </div></blockquote>
-<p><strong>n_views</strong> : int, default=2</p>
+<p><strong>patterns</strong> : str or list of str</p>
 <blockquote>
-<div><p>the number of positive examples.</p>
+<div><p>the relative locations (no path names matching allowed in specified
+pattern) of the numpy array to be loaded.</p>
+</div></blockquote>
+<p><strong>channels</strong> : str or list of str, default=None</p>
+<blockquote>
+<div><p>the name of the channels.</p>
+</div></blockquote>
+<p><strong>split</strong> : str, default ‘train’</p>
+<blockquote>
+<div><p>define the split to be considered.</p>
+</div></blockquote>
+<p><strong>targets</strong> : str or list of str, default=None</p>
+<blockquote>
+<div><p>the dataset will also return these tabular data.</p>
+</div></blockquote>
+<p><strong>target_mapping</strong> : dict, default None</p>
+<blockquote>
+<div><p>optionaly, define a dictionary specifying different replacement values
+for different existing values. See pandas DataFrame.replace
+documentation for more information.</p>
+</div></blockquote>
+<p><strong>transforms</strong> : callable, default None</p>
+<blockquote>
+<div><p>a function that can be called to augment the input images.</p>
+</div></blockquote>
+<p><strong>mask</strong> : str, default None</p>
+<blockquote>
+<div><p>optionnaly, mask the input data using this numpy array.</p>
+</div></blockquote>
+<p><strong>withdraw_subjects</strong> : list of str, default None</p>
+<blockquote>
+<div><p>optionaly, provide a list of subjects to remove from the dataset.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong></p>
+<blockquote>
+<div><p>If the mandatorry input files are not found.</p>
+</div></blockquote>
+<p><strong>KeyError</strong></p>
+<blockquote>
+<div><p>If the mandatory key are not found.</p>
+</div></blockquote>
+<p><strong>UserWarning</strong></p>
+<blockquote>
+<div><p>If missing data are found.</p>
 </div></blockquote>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>A ‘participants.tsv’ file containing subject information (including the
+requested targets) is expected at the root.
+A ‘&lt;split&gt;.tsv’ file containg the subject to include is expected at the
+root.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.BaseNumpyDataset.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/base.html#BaseNumpyDataset.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.BaseNumpyDataset.get_data" title="Link to this definition">¶</a></dt>
+<dd><p>Proper data indexing.</p>
+</dd></dl>
+
 </dd></dl>
 
 

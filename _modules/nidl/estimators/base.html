@@ -166,16 +166,14 @@
 <span class="sd">    - a `transform` or `predict` method if the child class inherit from a</span>
 <span class="sd">      valid  Mixin class.</span>
 
-<span class="sd">    This class also provides a way to connect a custom DataLoader to a</span>
-<span class="sd">    predefined estimator. Using the `set_batch_connector` method allows you to</span>
-<span class="sd">    pass a function that reorganizes your batch of data according to the</span>
-<span class="sd">    estimator&#39;s specifications.</span>
+<span class="sd">    This class also provides a way to check the type of the input batch using</span>
+<span class="sd">    the `hints_batch` parameter through the `BatchTypingCallback` callback.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">ignore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">hints_batch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">hints_batch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Init class.</span>
 

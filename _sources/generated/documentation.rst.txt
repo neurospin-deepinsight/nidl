@@ -169,6 +169,20 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.callbacks.check_typing.BatchTypingCallback <nidl.callbacks.check_typing.BatchTypingCallback.html>`_
 
     * `nidl.datasets <nidl.datasets.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.datasets.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
+
+          `nidl.datasets.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
+
+          `nidl.datasets.base.BaseDataset <nidl.datasets.base.BaseDataset.html>`_
+
+          `nidl.datasets.base.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
+
+          `nidl.datasets.base.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
+
     * `nidl.estimators <nidl.estimators.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
@@ -217,7 +231,9 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           :label: [+ show/hide members]
           :starthidden: true
 
-          `nidl.transforms.ssl.ContrastiveTransformations <nidl.transforms.ssl.ContrastiveTransformations.html>`_
+          `nidl.transforms.ContrastiveTransforms <nidl.transforms.ssl.ContrastiveTransforms.html>`_
+
+          `nidl.transforms.ssl.ContrastiveTransforms <nidl.transforms.ssl.ContrastiveTransforms.html>`_
 
     * `nidl.utils <nidl.utils.html>`_
         .. hidden-technical-block::

@@ -10,8 +10,21 @@ nidl.datasets
 
 Common datasets.
 
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.datasets.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
+    * `nidl.datasets.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
+
 nidl.datasets.base
 ^^^^^^^^^^^^^^^^^^
 
 Base class to generate datasets.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.datasets.base.BaseDataset <nidl.datasets.base.BaseDataset.html>`_
+    * `nidl.datasets.base.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
+    * `nidl.datasets.base.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
 

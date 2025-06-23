@@ -10,6 +10,11 @@ nidl.transforms
 
 Common transformations.
 
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.transforms.ContrastiveTransforms <nidl.transforms.ssl.ContrastiveTransforms.html>`_
+
 nidl.transforms.ssl
 ^^^^^^^^^^^^^^^^^^^
 
@@ -18,5 +23,5 @@ Common transformations for self supervised learning.
 .. rst-class:: documentation-contents
 
   **Classes**:
-    * `nidl.transforms.ssl.ContrastiveTransformations <nidl.transforms.ssl.ContrastiveTransformations.html>`_
+    * `nidl.transforms.ssl.ContrastiveTransforms <nidl.transforms.ssl.ContrastiveTransforms.html>`_
 

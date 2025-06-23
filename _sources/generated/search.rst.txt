@@ -14,6 +14,11 @@ Search in API documentation of NIDL
     </div>
     <ul id='my-search-entries'>
         <li><a href='nidl.callbacks.check_typing.BatchTypingCallback.html'>nidl.callbacks.check_typing.BatchTypingCallback</a></li>
+        <li><a href='nidl.datasets.base.BaseImageDataset.html'>nidl.datasets.BaseImageDataset</a></li>
+        <li><a href='nidl.datasets.base.BaseNumpyDataset.html'>nidl.datasets.BaseNumpyDataset</a></li>
+        <li><a href='nidl.datasets.base.BaseDataset.html'>nidl.datasets.base.BaseDataset</a></li>
+        <li><a href='nidl.datasets.base.BaseImageDataset.html'>nidl.datasets.base.BaseImageDataset</a></li>
+        <li><a href='nidl.datasets.base.BaseNumpyDataset.html'>nidl.datasets.base.BaseNumpyDataset</a></li>
         <li><a href='nidl.estimators.base.BaseEstimator.html'>nidl.estimators.BaseEstimator</a></li>
         <li><a href='nidl.estimators.base.ClassifierMixin.html'>nidl.estimators.ClassifierMixin</a></li>
         <li><a href='nidl.estimators.base.ClusterMixin.html'>nidl.estimators.ClusterMixin</a></li>
@@ -33,7 +38,8 @@ Search in API documentation of NIDL
         <li><a href='nidl.experiment.get_env.html'>nidl.experiment.get_env</a></li>
         <li><a href='nidl.experiment.load_interface.html'>nidl.experiment.load_interface</a></li>
         <li><a href='nidl.experiment.update_params.html'>nidl.experiment.update_params</a></li>
-        <li><a href='nidl.transforms.ssl.ContrastiveTransformations.html'>nidl.transforms.ssl.ContrastiveTransformations</a></li>
+        <li><a href='nidl.transforms.ssl.ContrastiveTransforms.html'>nidl.transforms.ContrastiveTransforms</a></li>
+        <li><a href='nidl.transforms.ssl.ContrastiveTransforms.html'>nidl.transforms.ssl.ContrastiveTransforms</a></li>
         <li><a href='nidl.utils.bunch.Bunch.html'>nidl.utils.Bunch</a></li>
         <li><a href='nidl.utils.weights.Weights.html'>nidl.utils.Weights</a></li>
         <li><a href='nidl.utils.bunch.Bunch.html'>nidl.utils.bunch.Bunch</a></li>
