@@ -9,7 +9,7 @@
 .. autoclass:: surfify.models.vae.SphericalVAE
      :members:
 
-.. minigallery:: surfify.models.SphericalVAE surfify.models.vae.SphericalVAE
+.. minigallery:: surfify.models.vae.SphericalVAE surfify.models.SphericalVAE
     :add-heading: Examples
     :heading-level: -
 

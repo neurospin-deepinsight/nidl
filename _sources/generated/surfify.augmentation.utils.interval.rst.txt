@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.augmentation.utils.interval
 
-.. minigallery:: surfify.augmentation.interval surfify.augmentation.utils.interval
+.. minigallery:: surfify.augmentation.utils.interval surfify.augmentation.interval
     :add-heading: Examples
     :heading-level: -
 

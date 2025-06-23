@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.coord.sph2cart
 
-.. minigallery:: surfify.utils.sph2cart surfify.utils.coord.sph2cart
+.. minigallery:: surfify.utils.coord.sph2cart surfify.utils.sph2cart
     :add-heading: Examples
     :heading-level: -
 

@@ -9,7 +9,7 @@
 .. autoclass:: nidl.estimators.base.TransformerMixin
      :members:
 
-.. minigallery:: nidl.estimators.base.TransformerMixin nidl.estimators.TransformerMixin
+.. minigallery:: nidl.estimators.TransformerMixin nidl.estimators.base.TransformerMixin
     :add-heading: Examples
     :heading-level: -
 
