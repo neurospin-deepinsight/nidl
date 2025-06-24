@@ -1,10 +1,12 @@
 import torch
 from torch import nn
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, List
 from einops import rearrange, repeat
+from functools import partial
 
 # Local import
 from nidl.volume.utils.input_adapters import PatchEmbeddings
+from nidl.volume.utils.jepa_predictor import apply_masks
 
 class FeedForward(nn.Module):
     def __init__(self, dim, hidden_dim, dropout = 0.):
@@ -76,7 +78,7 @@ class Transformer(nn.Module):
         return self.norm(x)
 
 class VisionTransformer(nn.Module):
-    """ ViT implementation adapted from [1] to handle 3D volumes as input.
+    """ 3D-ViT implementation adapted from [1] to handle 3D volumes as input.
 
     Code implementation in:
     * I-JEPA: https://github.com/facebookresearch/ijepa/blob/main/src/models/vision_transformer.py
@@ -169,8 +171,58 @@ class VisionTransformer(nn.Module):
         self.transformer = Transformer(n_embedding, depth, heads, mlp_ratio, qkv_bias, dropout)
         self.pool = pool
 
-    def forward(self, img: torch.Tensor):
+    def forward(self, 
+                img: torch.Tensor, 
+                masks: Optional[Union[torch.Tensor, List[torch.Tensor]]]=None):
+        """
+        This method processes a 3D input image volume, optionally applies patch masks,
+        adds positional embeddings and a classification token (if applicable), passes
+        the sequence through a Transformer encoder, and returns the final representation
+        according to the specified pooling strategy.
+
+        Parameters
+        ----------
+        img : torch.Tensor
+            Input tensor of shape (B, C, D, H, W), where:
+            - B is the batch size,
+            - C is the number of channels,
+            - D, H, W are the spatial dimensions (depth, height, width).
+
+        masks : Union[torch.Tensor, List[torch.Tensor]], optional
+            Mask indices indicating which patches TO KEEP. Can be:
+            - A tensor of shape (B, K), or
+            - A list of such tensors, each representing a different view.
+            If provided, the model will only process the masked patches.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor of shape (B, n_embedding) or (B, N, n_embedding),
+            depending on the pooling method:
+            - If `pool == 'cls'`, returns the [CLS] token embedding.
+            - If `pool == 'mean'`, returns the mean-pooled token embeddings.
+            - If `pool is None`, returns the full sequence of patch embeddings.
+
+        Raises
+        ------
+        ValueError
+            If the specified pooling strategy is not one of `'cls'`, `'mean'`, or `None`.
+
+        Notes
+        -----
+        This forward pass includes optional masked patch selection, positional embedding,
+        and the addition of a learnable [CLS] token. It is commonly used in masked 
+        pretraining or classification tasks involving volumetric (3D) data.
+        """
+
         x = self.patch_embed(img)
+
+         # -- mask x
+        if masks is not None:
+            if isinstance(masks, torch.Tensor):
+                masks = [masks]
+            x = apply_masks(x, masks)
+
         b, _, _ = x.shape
         if self.pool == 'cls': # Add the [CLS] token
             cls_tokens = repeat(self.cls_token, '1 1 d -> b 1 d', b = b)
@@ -189,4 +241,31 @@ class VisionTransformer(nn.Module):
         else:
             raise ValueError(f"Unknown 'pool': {self.pool}")
         return x
-    
+
+
+def vit_tiny(image_size=128, patch_size=16, **kwargs):
+    model = VisionTransformer(
+        image_size=image_size, patch_size=patch_size, n_embedding=192, 
+        depth=12, heads=3, mlp_ratio=4, qkv_bias=True, **kwargs)
+    return model
+
+
+def vit_small(image_size=128, patch_size=16, **kwargs):
+    model = VisionTransformer(
+        image_size=image_size, patch_size=patch_size, n_embedding=384, 
+        depth=12, heads=6, mlp_ratio=4, qkv_bias=True, **kwargs)
+    return model
+
+
+def vit_base(image_size=128, patch_size=16, **kwargs):
+    model = VisionTransformer(
+        image_size=image_size, patch_size=patch_size, n_embedding=768, 
+        depth=12, heads=12, mlp_ratio=4, qkv_bias=True, **kwargs)
+    return model
+
+
+def vit_large(image_size=128, patch_size=16, **kwargs):
+    model = VisionTransformer(
+        image_size=image_size, patch_size=patch_size, n_embedding=1024, 
+        depth=24, heads=16, mlp_ratio=4, qkv_bias=True, **kwargs)
+    return model

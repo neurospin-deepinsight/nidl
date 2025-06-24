@@ -236,7 +236,7 @@ class KernelMetric(BaseEstimator):
                                         where=_data_sqr_cov!=0)
             self.sqr_bandwidth_ = _data_sqr_cov * factor
             self.inv_sqr_bandwidth_ = _data_inv_sqr_cov / factor
-            print("Bandwidth automatically set to:\n", self.sqr_bandwidth_**2)
+            print("Square-root bandwidth ('sigma') automatically set to:\n", self.sqr_bandwidth_)
         else:
             raise ValueError("`bandwidth` should be a string ('scott' or 'silverman'), " \
                              "a scalar (float or int), or a list of floats, got %s" % type(self.bandwidth))

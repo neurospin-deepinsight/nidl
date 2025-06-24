@@ -73,8 +73,8 @@ class BaseEstimator(ABC, LightningModule):
             plugins: Optional[Union[_PLUGIN_INPUT, list[_PLUGIN_INPUT]]] = None,
             sync_batchnorm: bool = False,
             reload_dataloaders_every_n_epochs: int = 0,
-            default_root_dir: Optional[_PATH] = None,
-            **kwargs: Any):
+            default_root_dir: Optional[_PATH] = None
+            ):
         """
             Parameters
             ----------
@@ -246,7 +246,7 @@ class BaseEstimator(ABC, LightningModule):
                 If ``gradient_clip_algorithm`` is invalid.
 
         """
-        super().__init__(**kwargs)
+        super().__init__()
         self.trainer_kwargs_ = dict(
             accelerator=accelerator,
             strategy=strategy,

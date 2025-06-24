@@ -75,7 +75,7 @@ class VICReg(BaseEstimator, EmbeddingTransformerMixin):
         """
         Parameters
         ----------
-        encoder: str in {'alexnet_3d', 'resnet18_3d', 'resnet50_3d', 'densenet121_3d', 'mlp', 'cebra', 'vit'} 
+        encoder: str in {'alexnet_3d', 'resnet18_3d', 'resnet50_3d', 'densenet121_3d', 'mlp', 'cebra', 'vit_3d'} 
                 or nn.Module or class, default='alexnet_3d'
             Which DNN architecture to use for encoding the input. 
             If not in the default backbones, a PyTorch :class:`~torch.nn.Module` is expected. 
@@ -398,7 +398,7 @@ class VICReg(BaseEstimator, EmbeddingTransformerMixin):
             "densenet121_3d": densenet121,
             "mlp": MLP,
             "cebra": Offset0ModelMSE,
-            "vit": VisionTransformer
+            "vit_3d": VisionTransformer
         }
 
         if "n_embedding" in encoder_kwargs:

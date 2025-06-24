@@ -152,7 +152,7 @@ class TwoViewsCollateFunction(BaseCollateFunction):
 
 
 class MaskCollateFunction(BaseCollateFunction):
-    """Collate function that generates:
+    """Collate function of the JEPA model that generates:
         1) the batch of images with eventual labels (can be None)
         2) 'num_enc_masks' masks per sample given to a context encoder with random scale and unit aspect ratio
         3) 'num_pred_masks' masks per sample given to a target predictor with random scale and random aspect ratio

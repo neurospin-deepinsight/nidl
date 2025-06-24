@@ -71,7 +71,7 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         """
         Parameters
         ----------
-        encoder: str in {'alexnet_3d', 'resnet18_3d', 'resnet50_3d', 'densenet121_3d', 'mlp', 'cebra', 'vit'} 
+        encoder: str in {'alexnet_3d', 'resnet18_3d', 'resnet50_3d', 'densenet121_3d', 'mlp', 'cebra', 'vit_3d'} 
                 or nn.Module or class, default='alexnet_3d'
             Which DNN architecture to use for encoding the input. 
             If not in the default backbones, a PyTorch :class:`~torch.nn.Module` is expected. 
@@ -86,13 +86,13 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
                     the input dimension being 10. Output dimension is always 'n_embedding'.
                 * encoder='cebra', encoder_kwargs={"num_input": 10} builds an MLP with input dimension 10 (adapted from CEBRA)
         
-        projection_head: str in {'simclr'} or nn.Module or class or None, default='simclr'
+        projection_head: str in {'yaware'} or nn.Module or class or None, default='yaware'
             Which projection head to use for the model. 
             If None, no projection head is used and the the encoder output is directly used for loss computation.
             If not in the default heads, a PyTorch :class:`~torch.nn.Module` is expected. 
             In general, the uninstantiated class should be passed, although instantiated
             modules will also work.
-            By default, a 2-layer MLP with ReLU activation, 2048-d hidden units and 
+            By default, a 2-layer MLP with ReLU activation, 512-d hidden units and 
             128-d output dimensions is used.
 
         projection_head_kwargs: dictionary or None, default=None
@@ -195,7 +195,7 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         # Instantiate the encoder + projection head + loss
         self.encoder_ = self._build_encoder(self.encoder, self.encoder_kwargs)
         self.projection_head_ = self._build_projection_head(self.projection_head, self.projection_head_kwargs)
-        self.loss_ = self._build_loss(self.temperature, self.kernel_kwargs)
+        self.loss_ = self._build_loss(temperature=self.temperature, kernel=self.kernel, bandwidth=self.bandwidth)
         self._cache = []
 
         # Fit the model
@@ -323,8 +323,7 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
         elif isinstance(batch, torch.Tensor) and len(batch) == 3:
             V1, V2, y = batch[0].to(self.device), batch[1].to(self.device), batch[2].to(self.device)
         else:
-            raise ValueError("batch should be of type TwoViewsBatch or a tuple of " \
-                             "two Tensors (representing two views), or a triplet " \
+            raise ValueError("batch should be a tuple of two Tensors (representing two views), or a triplet " \
                              "of Tensors (representing two views and an auxiliary variable), got %s"%type(batch))
         return V1, V2, y
     
@@ -403,7 +402,7 @@ class yAware(BaseEstimator, EmbeddingTransformerMixin):
             "densenet121_3d": densenet121,
             "mlp": MLP,
             "cebra": Offset0ModelMSE,
-            "vit": VisionTransformer
+            "vit_3d": VisionTransformer
         }
 
         if "n_embedding" in encoder_kwargs:
