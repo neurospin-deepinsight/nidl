@@ -9,7 +9,7 @@
 .. autoclass:: nidl.volume.backbones.resnet3d.ResNet
      :members:
 
-.. minigallery:: nidl.volume.backbones.ResNet nidl.volume.backbones.resnet3d.ResNet
+.. minigallery:: nidl.volume.backbones.resnet3d.ResNet nidl.volume.backbones.ResNet
     :add-heading: Examples
     :heading-level: -
 

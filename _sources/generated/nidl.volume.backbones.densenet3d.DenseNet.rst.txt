@@ -9,7 +9,7 @@
 .. autoclass:: nidl.volume.backbones.densenet3d.DenseNet
      :members:
 
-.. minigallery:: nidl.volume.backbones.densenet3d.DenseNet nidl.volume.backbones.DenseNet
+.. minigallery:: nidl.volume.backbones.DenseNet nidl.volume.backbones.densenet3d.DenseNet
     :add-heading: Examples
     :heading-level: -
 
