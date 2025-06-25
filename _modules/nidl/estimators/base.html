@@ -178,7 +178,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    callbacks:  list of Callback or Callback, default=None</span>
+<span class="sd">    callbacks: list of Callback or Callback, default=None</span>
 <span class="sd">        add a callback or list of callbacks.</span>
 <span class="sd">    check_val_every_n_epoch: int, default=1</span>
 <span class="sd">        perform a validation loop after every `N` training epochs. If ``None``,</span>
@@ -302,36 +302,68 @@
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
+<div class="viewcode-block" id="BaseEstimator.fit">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">X_train</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
             <span class="n">X_val</span><span class="p">:</span>  <span class="n">Optional</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; The `fit` method.</span>
+
+<span class="sd">        In the child class you will need to define:</span>
+
+<span class="sd">        - a `training_step` method for defining the training instructions at</span>
+<span class="sd">          each step.</span>
+<span class="sd">        - a `validation_step` method for defining the validation instructions</span>
+<span class="sd">          at each step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">_default_hp_metric</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">pl</span><span class="o">.</span><span class="n">seed_everything</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
+
+<div class="viewcode-block" id="BaseEstimator.transform">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.transform">[docs]</a>
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">(</span><span class="s2">&quot;transformer&quot;</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
-        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-    
-    <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">((</span><span class="s2">&quot;regressor&quot;</span><span class="p">,</span> <span class="s2">&quot;classifier&quot;</span><span class="p">,</span> <span class="s2">&quot;clusterer&quot;</span><span class="p">)))</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; The `transform` method.</span>
+
+<span class="sd">        In the child class you will need to define:</span>
+
+<span class="sd">        - a `transform_step` method for defining the transform instructions at</span>
+<span class="sd">          each step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
 
-        
+    
+<div class="viewcode-block" id="BaseEstimator.predict">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.predict">[docs]</a>
+    <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">((</span><span class="s2">&quot;regressor&quot;</span><span class="p">,</span> <span class="s2">&quot;classifier&quot;</span><span class="p">,</span> <span class="s2">&quot;clusterer&quot;</span><span class="p">)))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; The `predict` method.</span>
+
+<span class="sd">        In the child class you will need to define:</span>
+
+<span class="sd">        - a `predict_step` method for defining the predict instructions at</span>
+<span class="sd">          each step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
+</div>
+
+
 
 <div class="viewcode-block" id="RegressorMixin">
 <a class="viewcode-back" href="../../../generated/nidl.estimators.base.RegressorMixin.html#nidl.estimators.RegressorMixin">[docs]</a>

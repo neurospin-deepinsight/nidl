@@ -99,6 +99,36 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
                                 
                                     
                                         
@@ -106,6 +136,21 @@
                                         
                                     
                                 
+                                    
+                                        
+                                        
+                                        
+                                    
+                                
+                                
+                                    <li>SECTIONS</li>
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.fit'>Baseestimator.fit()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.predict'>Baseestimator.predict()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.transform'>Baseestimator.transform()</a> </li>                                    
+                                    
                                 
                             
                             <li>API</li>
@@ -177,7 +222,7 @@ valid  Mixin class.</p></li>
 </ul>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>callbacks</strong> :  list of Callback or Callback, default=None</p>
+<dd class="field-odd"><p><strong>callbacks</strong> : list of Callback or Callback, default=None</p>
 <blockquote>
 <div><p>add a callback or list of callbacks.</p>
 </div></blockquote>
@@ -299,6 +344,41 @@ instance you can check the type of the input batches using
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.fit" title="Link to this definition">¶</a></dt>
+<dd><p>The <cite>fit</cite> method.</p>
+<p>In the child class you will need to define:</p>
+<ul class="simple">
+<li><p>a <cite>training_step</cite> method for defining the training instructions at
+each step.</p></li>
+<li><p>a <cite>validation_step</cite> method for defining the validation instructions
+at each step.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.predict" title="Link to this definition">¶</a></dt>
+<dd><p>The <cite>predict</cite> method.</p>
+<p>In the child class you will need to define:</p>
+<ul class="simple">
+<li><p>a <cite>predict_step</cite> method for defining the predict instructions at
+each step.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.transform" title="Link to this definition">¶</a></dt>
+<dd><p>The <cite>transform</cite> method.</p>
+<p>In the child class you will need to define:</p>
+<ul class="simple">
+<li><p>a <cite>transform_step</cite> method for defining the transform instructions at
+each step.</p></li>
+</ul>
+</dd></dl>
+
 </dd></dl>
 
 
