@@ -144,61 +144,163 @@
 <span class="c1">##########################################################################</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.trainer.connectors.accelerator_connector</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_PRECISION_INPUT</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">..callbacks.check_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BatchTypingCallback</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">_estimator_is</span><span class="p">,</span> <span class="n">available_if</span><span class="p">,</span> <span class="n">check_is_fitted</span>
 
     
 <div class="viewcode-block" id="BaseEstimator">
 <a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseEstimator</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Base class for all estimators in nidl.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Base class for all estimators in the NIDL framework designed for</span>
+<span class="sd">    scalability.</span>
 
-<span class="sd">    Basicaly, this class is a LightningModule with embeded Trainer parameters.</span>
-<span class="sd">    It defines:</span>
+<span class="sd">    Inherits from PyTorch Lightning&#39;s LightningModule.</span>
+<span class="sd">    This class provides a common interface for training, validation, and</span>
+<span class="sd">    prediction/transformation in a distributed setting (multi-node multi-GPU)</span>
+<span class="sd">    inheriting from the Lightning&#39;s Trainer capabilities.</span>
+
+<span class="sd">    Basicaly, this class defines:</span>
 
 <span class="sd">    - a `fit` method.</span>
 <span class="sd">    - a `transform` or `predict` method if the child class inherit from a</span>
 <span class="sd">      valid  Mixin class.</span>
 
-<span class="sd">    This class also provides a way to check the type of the input batch using</span>
-<span class="sd">    the `hints_batch` parameter through the `BatchTypingCallback` callback.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    callbacks:  list of Callback or Callback, default=None</span>
+<span class="sd">        add a callback or list of callbacks.</span>
+<span class="sd">    check_val_every_n_epoch: int, default=1</span>
+<span class="sd">        perform a validation loop after every `N` training epochs. If ``None``,</span>
+<span class="sd">        validation will be done solely based on the number of training</span>
+<span class="sd">        batches, requiring ``val_check_interval`` to be an integer value.</span>
+<span class="sd">    val_check_interval: int or float, default=None</span>
+<span class="sd">        how often to check the validation set. Pass a ``float`` in the range</span>
+<span class="sd">        [0.0, 1.0] to check after a fraction of the training epoch. Pass an</span>
+<span class="sd">        ``int`` to check after a fixed number of training batches. An ``int``</span>
+<span class="sd">        value can only be higher than the number of training batches when</span>
+<span class="sd">        ``check_val_every_n_epoch=None``, which validates after every ``N``</span>
+<span class="sd">        training batches across epochs or during iteration-based training.</span>
+<span class="sd">        Default: ``1.0``.</span>
+<span class="sd">    max_epochs: int, default=None</span>
+<span class="sd">        stop training once this number of epochs is reached. If both</span>
+<span class="sd">        max_epochs and max_steps are not specified, defaults to</span>
+<span class="sd">        ``max_epochs = 1000``. To enable infinite training, set</span>
+<span class="sd">        ``max_epochs = -1``.</span>
+<span class="sd">    min_epochs: int, default=None</span>
+<span class="sd">        force training for at least these many epochs.</span>
+<span class="sd">        Disabled by default.</span>
+<span class="sd">    max_steps: int, default -1</span>
+<span class="sd">        stop training after this number of steps. If ``max_steps = -1``</span>
+<span class="sd">        and ``max_epochs = None``, will default to ``max_epochs = 1000``.</span>
+<span class="sd">        To enable infinite training, set ``max_epochs`` to ``-1``.</span>
+<span class="sd">    min_steps: int, default=None</span>
+<span class="sd">        force training for at least these number of steps.</span>
+<span class="sd">        Disabled by default.</span>
+<span class="sd">    enable_checkpointing: bool, default=None</span>
+<span class="sd">        if ``True``, enable checkpointing. It will configure a default</span>
+<span class="sd">        ModelCheckpoint callback if there is no user-defined ModelCheckpoint in</span>
+<span class="sd">        trainer callbacks.</span>
+<span class="sd">        Default: ``True``.</span>
+<span class="sd">    enable_progress_bar: bool, default=None</span>
+<span class="sd">        whether to enable to progress bar by default.</span>
+<span class="sd">        Default: ``True``.</span>
+<span class="sd">    enable_model_summary: bool, default=None</span>
+<span class="sd">        whether to enable model summarization by default.</span>
+<span class="sd">        Default: ``True``.</span>
+<span class="sd">    accelerator: str or Accelerator, default=&quot;auto&quot;</span>
+<span class="sd">        supports passing different accelerator types (&quot;cpu&quot;, &quot;gpu&quot;, &quot;tpu&quot;,</span>
+<span class="sd">        &quot;hpu&quot;, &quot;mps&quot;, &quot;auto&quot;) as well as custom accelerator instances.</span>
+<span class="sd">    strategy: str or Strategy, default=&quot;auto&quot;</span>
+<span class="sd">        supports different training strategies with aliases as well custom</span>
+<span class="sd">        strategies.</span>
+<span class="sd">    devices: listof int, str, int, default=&quot;auto&quot;</span>
+<span class="sd">        the devices to use. Can be set to a positive number (int or str), a</span>
+<span class="sd">        sequence of device indices (list or str), the value ``-1`` to indicate</span>
+<span class="sd">        all available devices should be used, or ``&quot;auto&quot;`` for automatic</span>
+<span class="sd">        selection based on the chosen accelerator.</span>
+<span class="sd">    num_nodes: int, default=1</span>
+<span class="sd">        number of GPU nodes for distributed training.</span>
+<span class="sd">    precision: int or str, default=&quot;32-true&quot;</span>
+<span class="sd">        double precision (64, &#39;64&#39; or &#39;64-true&#39;), full</span>
+<span class="sd">        precision (32, &#39;32&#39; or &#39;32-true&#39;), 16bit mixed precision (16, &#39;16&#39;,</span>
+<span class="sd">        &#39;16-mixed&#39;) or bfloat16 mixed precision (&#39;bf16&#39;, &#39;bf16-mixed&#39;).</span>
+<span class="sd">        Can be used on CPU, GPU, TPUs, or HPUs.</span>
+<span class="sd">    ignore: list of str, default=None</span>
+<span class="sd">        ignore attribute of instance `nn.Module`.</span>
+<span class="sd">    random_state: int, default=None</span>
+<span class="sd">        when shuffling is used, `random_state` affects the ordering of the</span>
+<span class="sd">        indices, which controls the randomness of each batch. Pass an</span>
+<span class="sd">        int for reproducible output across multiple function calls.</span>
+<span class="sd">    kwargs: dict</span>
+<span class="sd">        lightning&#39;s trainer extra parameters.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fitted_: bool</span>
+<span class="sd">        True if the estimator has been fitted, False otherwise.</span>
+<span class="sd">    trainer_params_: dict</span>
+<span class="sd">        the trainer parameters.</span>
+<span class="sd">    trainer: Trainer</span>
+<span class="sd">        the current trainer.</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Callbacks can help you to tune, monitor or debug an estimator. For</span>
+<span class="sd">    instance you can check the type of the input batches using</span>
+<span class="sd">    `BatchTypingCallback` callback.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">callbacks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Callback</span><span class="p">],</span> <span class="n">Callback</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">check_val_every_n_epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">val_check_interval</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">max_epochs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">min_epochs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">min_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">enable_checkpointing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">enable_progress_bar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">enable_model_summary</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">accelerator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Accelerator</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">devices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">num_nodes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">precision</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_PRECISION_INPUT</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">ignore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">hints_batch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Init class.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        random_state: int, default=None</span>
-<span class="sd">            When shuffling is used, `random_state` affects the ordering of the</span>
-<span class="sd">            indices, which controls the randomness of each batch. Pass an</span>
-<span class="sd">            int for reproducible output across multiple function calls.</span>
-<span class="sd">        ignore: list of str, default=None</span>
-<span class="sd">            Ignore attribute of instance `nn.Module`.</span>
-<span class="sd">        hints_batch: bool, default=False</span>
-<span class="sd">            Require the &#39;batch&#39; parameter type hints to be specified. This</span>
-<span class="sd">            type will be checked at runtime using the callback mechanism.</span>
-<span class="sd">        kwargs: dict</span>
-<span class="sd">            Trainer parameters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_hyperparameters</span><span class="p">(</span><span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span> <span class="o">=</span> <span class="n">kwargs</span>
-        <span class="k">if</span> <span class="n">hints_batch</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;callbacks&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">BatchTypingCallback</span><span class="p">()</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">callbacks</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
+            <span class="n">check_val_every_n_epoch</span><span class="p">:</span> <span class="n">check_val_every_n_epoch</span><span class="p">,</span>
+            <span class="n">val_check_interval</span><span class="p">:</span> <span class="n">val_check_interval</span><span class="p">,</span>
+            <span class="n">max_epochs</span><span class="p">:</span> <span class="n">max_epochs</span><span class="p">,</span>
+            <span class="n">min_epochs</span><span class="p">:</span> <span class="n">min_epochs</span><span class="p">,</span>
+            <span class="n">max_steps</span><span class="p">:</span> <span class="n">max_steps</span><span class="p">,</span>
+            <span class="n">min_steps</span><span class="p">:</span> <span class="n">min_steps</span><span class="p">,</span>
+            <span class="n">enable_checkpointing</span><span class="p">:</span> <span class="n">enable_checkpointing</span><span class="p">,</span>
+            <span class="n">enable_progress_bar</span><span class="p">:</span> <span class="n">enable_progress_bar</span><span class="p">,</span>
+            <span class="n">enable_model_summary</span><span class="p">:</span> <span class="n">enable_model_summary</span><span class="p">,</span>
+            <span class="n">accelerator</span><span class="p">:</span> <span class="n">accelerator</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="p">:</span> <span class="n">strategy</span><span class="p">,</span>
+            <span class="n">devices</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
+            <span class="n">num_nodes</span><span class="p">:</span> <span class="n">num_nodes</span><span class="p">,</span>
+            <span class="n">precision</span><span class="p">:</span> <span class="n">precision</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -209,7 +311,6 @@
         <span class="n">pl</span><span class="o">.</span><span class="n">seed_everything</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">best_model_path</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">checkpoint_callback</span><span class="o">.</span><span class="n">best_model_path</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">(</span><span class="s2">&quot;transformer&quot;</span><span class="p">))</span>

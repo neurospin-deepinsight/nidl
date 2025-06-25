@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.coord.text2ico
 
-.. minigallery:: surfify.utils.text2ico surfify.utils.coord.text2ico
+.. minigallery:: surfify.utils.coord.text2ico surfify.utils.text2ico
     :add-heading: Examples
     :heading-level: -
 

@@ -9,7 +9,7 @@
 .. autoclass:: nidl.volume.backbones.alexnet3d.AlexNet
      :members:
 
-.. minigallery:: nidl.volume.backbones.AlexNet nidl.volume.backbones.alexnet3d.AlexNet
+.. minigallery:: nidl.volume.backbones.alexnet3d.AlexNet nidl.volume.backbones.AlexNet
     :add-heading: Examples
     :heading-level: -
 

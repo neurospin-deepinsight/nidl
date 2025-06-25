@@ -162,41 +162,143 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.base.BaseEstimator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.base.</span></span><span class="sig-name descname"><span class="pre">BaseEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hints_batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.base.BaseEstimator" title="Link to this definition">¶</a></dt>
-<dd><p>Base class for all estimators in nidl.</p>
-<p>Basicaly, this class is a LightningModule with embeded Trainer parameters.
-It defines:</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.base.</span></span><span class="sig-name descname"><span class="pre">BaseEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Callback</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callback</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_val_every_n_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_check_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_checkpointing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_progress_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_model_summary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Accelerator</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Strategy</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">devices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">64</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">32</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">16</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'transformer-engine'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'transformer-engine-float16'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'16-true'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'16-mixed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bf16-true'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bf16-mixed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'32-true'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'64-true'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'64'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'32'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'16'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bf16'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.base.BaseEstimator" title="Link to this definition">¶</a></dt>
+<dd><p>Base class for all estimators in the NIDL framework designed for
+scalability.</p>
+<p>Inherits from PyTorch Lightning’s LightningModule.
+This class provides a common interface for training, validation, and
+prediction/transformation in a distributed setting (multi-node multi-GPU)
+inheriting from the Lightning’s Trainer capabilities.</p>
+<p>Basicaly, this class defines:</p>
 <ul class="simple">
 <li><p>a <cite>fit</cite> method.</p></li>
 <li><p>a <cite>transform</cite> or <cite>predict</cite> method if the child class inherit from a
 valid  Mixin class.</p></li>
 </ul>
-<p>This class also provides a way to check the type of the input batch using
-the <cite>hints_batch</cite> parameter through the <cite>BatchTypingCallback</cite> callback.</p>
-<p>Init class.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>random_state</strong> : int, default=None</p>
+<dd class="field-odd"><p><strong>callbacks</strong> :  list of Callback or Callback, default=None</p>
 <blockquote>
-<div><p>When shuffling is used, <cite>random_state</cite> affects the ordering of the
-indices, which controls the randomness of each batch. Pass an
-int for reproducible output across multiple function calls.</p>
+<div><p>add a callback or list of callbacks.</p>
+</div></blockquote>
+<p><strong>check_val_every_n_epoch</strong> : int, default=1</p>
+<blockquote>
+<div><p>perform a validation loop after every <cite>N</cite> training epochs. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+validation will be done solely based on the number of training
+batches, requiring <code class="docutils literal notranslate"><span class="pre">val_check_interval</span></code> to be an integer value.</p>
+</div></blockquote>
+<p><strong>val_check_interval</strong> : int or float, default=None</p>
+<blockquote>
+<div><p>how often to check the validation set. Pass a <code class="docutils literal notranslate"><span class="pre">float</span></code> in the range
+[0.0, 1.0] to check after a fraction of the training epoch. Pass an
+<code class="docutils literal notranslate"><span class="pre">int</span></code> to check after a fixed number of training batches. An <code class="docutils literal notranslate"><span class="pre">int</span></code>
+value can only be higher than the number of training batches when
+<code class="docutils literal notranslate"><span class="pre">check_val_every_n_epoch=None</span></code>, which validates after every <code class="docutils literal notranslate"><span class="pre">N</span></code>
+training batches across epochs or during iteration-based training.
+Default: <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
+</div></blockquote>
+<p><strong>max_epochs</strong> : int, default=None</p>
+<blockquote>
+<div><p>stop training once this number of epochs is reached. If both
+max_epochs and max_steps are not specified, defaults to
+<code class="docutils literal notranslate"><span class="pre">max_epochs</span> <span class="pre">=</span> <span class="pre">1000</span></code>. To enable infinite training, set
+<code class="docutils literal notranslate"><span class="pre">max_epochs</span> <span class="pre">=</span> <span class="pre">-1</span></code>.</p>
+</div></blockquote>
+<p><strong>min_epochs</strong> : int, default=None</p>
+<blockquote>
+<div><p>force training for at least these many epochs.
+Disabled by default.</p>
+</div></blockquote>
+<p><strong>max_steps</strong> : int, default -1</p>
+<blockquote>
+<div><p>stop training after this number of steps. If <code class="docutils literal notranslate"><span class="pre">max_steps</span> <span class="pre">=</span> <span class="pre">-1</span></code>
+and <code class="docutils literal notranslate"><span class="pre">max_epochs</span> <span class="pre">=</span> <span class="pre">None</span></code>, will default to <code class="docutils literal notranslate"><span class="pre">max_epochs</span> <span class="pre">=</span> <span class="pre">1000</span></code>.
+To enable infinite training, set <code class="docutils literal notranslate"><span class="pre">max_epochs</span></code> to <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</div></blockquote>
+<p><strong>min_steps</strong> : int, default=None</p>
+<blockquote>
+<div><p>force training for at least these number of steps.
+Disabled by default.</p>
+</div></blockquote>
+<p><strong>enable_checkpointing</strong> : bool, default=None</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code>, enable checkpointing. It will configure a default
+ModelCheckpoint callback if there is no user-defined ModelCheckpoint in
+trainer callbacks.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div></blockquote>
+<p><strong>enable_progress_bar</strong> : bool, default=None</p>
+<blockquote>
+<div><p>whether to enable to progress bar by default.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div></blockquote>
+<p><strong>enable_model_summary</strong> : bool, default=None</p>
+<blockquote>
+<div><p>whether to enable model summarization by default.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div></blockquote>
+<p><strong>accelerator</strong> : str or Accelerator, default=”auto”</p>
+<blockquote>
+<div><p>supports passing different accelerator types (“cpu”, “gpu”, “tpu”,
+“hpu”, “mps”, “auto”) as well as custom accelerator instances.</p>
+</div></blockquote>
+<p><strong>strategy</strong> : str or Strategy, default=”auto”</p>
+<blockquote>
+<div><p>supports different training strategies with aliases as well custom
+strategies.</p>
+</div></blockquote>
+<p><strong>devices</strong> : listof int, str, int, default=”auto”</p>
+<blockquote>
+<div><p>the devices to use. Can be set to a positive number (int or str), a
+sequence of device indices (list or str), the value <code class="docutils literal notranslate"><span class="pre">-1</span></code> to indicate
+all available devices should be used, or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> for automatic
+selection based on the chosen accelerator.</p>
+</div></blockquote>
+<p><strong>num_nodes</strong> : int, default=1</p>
+<blockquote>
+<div><p>number of GPU nodes for distributed training.</p>
+</div></blockquote>
+<p><strong>precision</strong> : int or str, default=”32-true”</p>
+<blockquote>
+<div><p>double precision (64, ‘64’ or ‘64-true’), full
+precision (32, ‘32’ or ‘32-true’), 16bit mixed precision (16, ‘16’,
+‘16-mixed’) or bfloat16 mixed precision (‘bf16’, ‘bf16-mixed’).
+Can be used on CPU, GPU, TPUs, or HPUs.</p>
 </div></blockquote>
 <p><strong>ignore</strong> : list of str, default=None</p>
 <blockquote>
-<div><p>Ignore attribute of instance <cite>nn.Module</cite>.</p>
+<div><p>ignore attribute of instance <cite>nn.Module</cite>.</p>
 </div></blockquote>
-<p><strong>hints_batch</strong> : bool, default=False</p>
+<p><strong>random_state</strong> : int, default=None</p>
 <blockquote>
-<div><p>Require the ‘batch’ parameter type hints to be specified. This
-type will be checked at runtime using the callback mechanism.</p>
+<div><p>when shuffling is used, <cite>random_state</cite> affects the ordering of the
+indices, which controls the randomness of each batch. Pass an
+int for reproducible output across multiple function calls.</p>
 </div></blockquote>
 <p><strong>kwargs</strong> : dict</p>
 <blockquote>
-<div><p>Trainer parameters.</p>
+<div><p>lightning’s trainer extra parameters.</p>
 </div></blockquote>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Callbacks can help you to tune, monitor or debug an estimator. For
+instance you can check the type of the input batches using
+<cite>BatchTypingCallback</cite> callback.</p>
+<p class="rubric">Attributes</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a href="#id1"><span class="problematic" id="id2">fitted_</span></a></p></td>
+<td><p>(bool) True if the estimator has been fitted, False otherwise.</p></td>
+</tr>
+<tr class="row-even"><td><p><a href="#id3"><span class="problematic" id="id4">trainer_params_</span></a></p></td>
+<td><p>(dict) the trainer parameters.</p></td>
+</tr>
+<tr class="row-odd"><td><p>trainer</p></td>
+<td><p>(Trainer) the current trainer.</p></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 
