@@ -180,7 +180,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         nll = nll.mean()
 
         # Logging loss
-        self.log(mode + "_loss", nll)
+        self.log(mode + "_loss", nll, prog_bar=True)
         # Get ranking position of positive example
         comb_sim = torch.cat(
             [cos_sim[pos_mask][:, None], cos_sim.masked_fill(pos_mask, -9e15)],
