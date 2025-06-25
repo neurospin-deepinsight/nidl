@@ -39,7 +39,7 @@ class BaseEstimator(pl.LightningModule):
 
     Parameters
     ----------
-    callbacks:  list of Callback or Callback, default=None
+    callbacks: list of Callback or Callback, default=None
         add a callback or list of callbacks.
     check_val_every_n_epoch: int, default=1
         perform a validation loop after every `N` training epochs. If ``None``,
@@ -167,6 +167,15 @@ class BaseEstimator(pl.LightningModule):
             self,
             X_train: data.DataLoader,
             X_val:  Optional[data.DataLoader] = None):
+        """ The `fit` method.
+
+        In the child class you will need to define:
+
+        - a `training_step` method for defining the training instructions at
+          each step.
+        - a `validation_step` method for defining the validation instructions
+          at each step.
+        """
         trainer = pl.Trainer(**self.trainer_params_)
         trainer.logger._default_hp_metric = None
         pl.seed_everything(self.hparams.random_state)
@@ -178,6 +187,13 @@ class BaseEstimator(pl.LightningModule):
     def transform(
             self,
             X_test: data.DataLoader):
+        """ The `transform` method.
+
+        In the child class you will need to define:
+
+        - a `transform_step` method for defining the transform instructions at
+          each step.
+        """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
@@ -187,11 +203,18 @@ class BaseEstimator(pl.LightningModule):
     def predict(
             self,
             X_test: data.DataLoader):
+        """ The `predict` method.
+
+        In the child class you will need to define:
+
+        - a `predict_step` method for defining the predict instructions at
+          each step.
+        """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
             self, X_test, return_predictions=True))
-        
+
 
 class RegressorMixin:
     """ Mixin class for all regression estimators in nidl.
