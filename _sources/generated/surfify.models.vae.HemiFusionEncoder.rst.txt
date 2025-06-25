@@ -9,7 +9,7 @@
 .. autoclass:: surfify.models.vae.HemiFusionEncoder
      :members:
 
-.. minigallery:: surfify.models.HemiFusionEncoder surfify.models.vae.HemiFusionEncoder
+.. minigallery:: surfify.models.vae.HemiFusionEncoder surfify.models.HemiFusionEncoder
     :add-heading: Examples
     :heading-level: -
 

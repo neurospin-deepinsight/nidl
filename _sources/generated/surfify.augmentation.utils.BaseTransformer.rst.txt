@@ -9,7 +9,7 @@
 .. autoclass:: surfify.augmentation.utils.BaseTransformer
      :members:
 
-.. minigallery:: surfify.augmentation.BaseTransformer surfify.augmentation.utils.BaseTransformer
+.. minigallery:: surfify.augmentation.utils.BaseTransformer surfify.augmentation.BaseTransformer
     :add-heading: Examples
     :heading-level: -
 

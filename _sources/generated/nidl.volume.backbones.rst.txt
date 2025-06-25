@@ -1,0 +1,78 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.volume.backbones*
+=============================================
+
+nidl.volume.backbones
+^^^^^^^^^^^^^^^^^^^^^
+
+Definition of common volumic architectures.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.backbones.AlexNet <nidl.volume.backbones.alexnet3d.AlexNet.html>`_
+    * `nidl.volume.backbones.DenseNet <nidl.volume.backbones.densenet3d.DenseNet.html>`_
+    * `nidl.volume.backbones.ResNet <nidl.volume.backbones.resnet3d.ResNet.html>`_
+    * `nidl.volume.backbones.ResNetTruncated <nidl.volume.backbones.resnet3d.ResNetTruncated.html>`_
+
+  **Functions**:
+    * `nidl.volume.backbones.densenet121 <nidl.volume.backbones.densenet3d.densenet121.html>`_
+    * `nidl.volume.backbones.resnet18 <nidl.volume.backbones.resnet3d.resnet18.html>`_
+    * `nidl.volume.backbones.resnet18_trunc <nidl.volume.backbones.resnet3d.resnet18_trunc.html>`_
+    * `nidl.volume.backbones.resnet50 <nidl.volume.backbones.resnet3d.resnet50.html>`_
+    * `nidl.volume.backbones.resnet50_trunc <nidl.volume.backbones.resnet3d.resnet50_trunc.html>`_
+
+nidl.volume.backbones.alexnet3d
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.backbones.alexnet3d.AlexNet <nidl.volume.backbones.alexnet3d.AlexNet.html>`_
+
+nidl.volume.backbones.resnet3d
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.backbones.resnet3d.BasicBlock <nidl.volume.backbones.resnet3d.BasicBlock.html>`_
+    * `nidl.volume.backbones.resnet3d.Bottleneck <nidl.volume.backbones.resnet3d.Bottleneck.html>`_
+    * `nidl.volume.backbones.resnet3d.ResNet <nidl.volume.backbones.resnet3d.ResNet.html>`_
+    * `nidl.volume.backbones.resnet3d.ResNetTruncated <nidl.volume.backbones.resnet3d.ResNetTruncated.html>`_
+
+  **Functions**:
+    * `nidl.volume.backbones.resnet3d._resnet <nidl.volume.backbones.resnet3d._resnet.html>`_
+    * `nidl.volume.backbones.resnet3d._resnet_trunc <nidl.volume.backbones.resnet3d._resnet_trunc.html>`_
+    * `nidl.volume.backbones.resnet3d.conv1x1 <nidl.volume.backbones.resnet3d.conv1x1.html>`_
+    * `nidl.volume.backbones.resnet3d.conv3x3 <nidl.volume.backbones.resnet3d.conv3x3.html>`_
+    * `nidl.volume.backbones.resnet3d.resnet18 <nidl.volume.backbones.resnet3d.resnet18.html>`_
+    * `nidl.volume.backbones.resnet3d.resnet18_trunc <nidl.volume.backbones.resnet3d.resnet18_trunc.html>`_
+    * `nidl.volume.backbones.resnet3d.resnet50 <nidl.volume.backbones.resnet3d.resnet50.html>`_
+    * `nidl.volume.backbones.resnet3d.resnet50_trunc <nidl.volume.backbones.resnet3d.resnet50_trunc.html>`_
+
+nidl.volume.backbones.densenet3d
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.backbones.densenet3d.DenseNet <nidl.volume.backbones.densenet3d.DenseNet.html>`_
+    * `nidl.volume.backbones.densenet3d._DenseBlock <nidl.volume.backbones.densenet3d._DenseBlock.html>`_
+    * `nidl.volume.backbones.densenet3d._DenseLayer <nidl.volume.backbones.densenet3d._DenseLayer.html>`_
+    * `nidl.volume.backbones.densenet3d._Transition <nidl.volume.backbones.densenet3d._Transition.html>`_
+
+  **Functions**:
+    * `nidl.volume.backbones.densenet3d._bn_function_factory <nidl.volume.backbones.densenet3d._bn_function_factory.html>`_
+    * `nidl.volume.backbones.densenet3d._densenet <nidl.volume.backbones.densenet3d._densenet.html>`_
+    * `nidl.volume.backbones.densenet3d.densenet121 <nidl.volume.backbones.densenet3d.densenet121.html>`_
+

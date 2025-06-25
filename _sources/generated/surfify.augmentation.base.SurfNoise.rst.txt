@@ -9,7 +9,7 @@
 .. autoclass:: surfify.augmentation.base.SurfNoise
      :members:
 
-.. minigallery:: surfify.augmentation.base.SurfNoise surfify.augmentation.SurfNoise
+.. minigallery:: surfify.augmentation.SurfNoise surfify.augmentation.base.SurfNoise
     :add-heading: Examples
     :heading-level: -
 

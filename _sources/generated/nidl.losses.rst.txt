@@ -1,0 +1,27 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.losses*
+===================================
+
+nidl.losses
+^^^^^^^^^^^
+
+Definition of common losses.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.losses.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
+
+nidl.losses.infonce
+^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.losses.infonce.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
+
