@@ -165,8 +165,8 @@ class BaseEstimator(pl.LightningModule):
 
     def fit(
             self,
-            X_train: data.DataLoader,
-            X_val:  Optional[data.DataLoader] = None):
+            train_dataloader: data.DataLoader,
+            val_dataloader:  Optional[data.DataLoader] = None):
         """ The `fit` method.
 
         In the child class you will need to define:
@@ -175,45 +175,77 @@ class BaseEstimator(pl.LightningModule):
           each step.
         - a `validation_step` method for defining the validation instructions
           at each step.
+
+        Parameters
+        ----------
+        train_dataloader: torch DataLoader
+            training samples.
+        val_dataloader: torch DataLoader, default None
+            validation samples.
+
+        Returns
+        -------
+        self: object
+            fitted estimator.
         """
         trainer = pl.Trainer(**self.trainer_params_)
         trainer.logger._default_hp_metric = None
         pl.seed_everything(self.hparams.random_state)
-        trainer.fit(self, X_train, X_val)
+        trainer.fit(self, train_dataloader, val_dataloader)
         self.fitted_ = True
         return self
 
     @available_if(_estimator_is("transformer"))
     def transform(
             self,
-            X_test: data.DataLoader):
-        """ The `transform` method.
+            test_dataloader: data.DataLoader):
+        """ The `transform` method for transformer.
 
         In the child class you will need to define:
 
         - a `transform_step` method for defining the transform instructions at
           each step.
+
+        Parameters
+        ----------
+        test_dataloader: torch DataLoader
+            testing samples.
+
+        Returns
+        -------
+        out: torch Tensor
+            returns transformed samples.
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
-            self, X_test, return_predictions=True))
+            self, test_dataloader, return_predictions=True))
     
     @available_if(_estimator_is(("regressor", "classifier", "clusterer")))
     def predict(
             self,
-            X_test: data.DataLoader):
-        """ The `predict` method.
+            test_dataloader: data.DataLoader):
+        """ The `predict` method for regression, classification and clustering.
 
         In the child class you will need to define:
 
         - a `predict_step` method for defining the predict instructions at
           each step.
+
+        Parameters
+        ----------
+        test_dataloader: torch DataLoader
+            testing samples.
+
+        Returns
+        -------
+        out: torch Tensor
+            returns predicted samples.
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
-            self, X_test, return_predictions=True))
+            self, test_dataloader, return_predictions=True))
 
 
 class RegressorMixin:

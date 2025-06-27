@@ -69,7 +69,6 @@ extend-select = [
     "RUF",
 ]
 ignore = [
-    "N803", # rgument name `X_test` should be lowercase
 ]
 
 [tool.ruff]

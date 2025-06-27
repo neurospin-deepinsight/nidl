@@ -14,6 +14,7 @@ The core developers are:
 
 * Antoine Grigis
 * Benoit Dufumier
+* Joel Chavas
 
 Other contributors
 ..................
@@ -22,3 +23,4 @@ Some other past or present contributors are:
 
 * Vincent Frouin
 * Edouard Duchesnay
+* Jean-François Mangin
