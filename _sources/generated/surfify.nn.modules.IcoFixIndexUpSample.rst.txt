@@ -9,7 +9,7 @@
 .. autoclass:: surfify.nn.modules.IcoFixIndexUpSample
      :members:
 
-.. minigallery:: surfify.nn.IcoFixIndexUpSample surfify.nn.modules.IcoFixIndexUpSample
+.. minigallery:: surfify.nn.modules.IcoFixIndexUpSample surfify.nn.IcoFixIndexUpSample
     :add-heading: Examples
     :heading-level: -
 

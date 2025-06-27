@@ -9,7 +9,7 @@
 .. autoclass:: nidl.utils.bunch.Bunch
      :members:
 
-.. minigallery:: nidl.utils.bunch.Bunch nidl.utils.Bunch
+.. minigallery:: nidl.utils.Bunch nidl.utils.bunch.Bunch
     :add-heading: Examples
     :heading-level: -
 

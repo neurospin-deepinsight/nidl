@@ -306,8 +306,8 @@
 <a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">X_train</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
-            <span class="n">X_val</span><span class="p">:</span>  <span class="n">Optional</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">train_dataloader</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
+            <span class="n">val_dataloader</span><span class="p">:</span>  <span class="n">Optional</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; The `fit` method.</span>
 
 <span class="sd">        In the child class you will need to define:</span>
@@ -316,11 +316,23 @@
 <span class="sd">          each step.</span>
 <span class="sd">        - a `validation_step` method for defining the validation instructions</span>
 <span class="sd">          at each step.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        train_dataloader: torch DataLoader</span>
+<span class="sd">            training samples.</span>
+<span class="sd">        val_dataloader: torch DataLoader, default None</span>
+<span class="sd">            validation samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self: object</span>
+<span class="sd">            fitted estimator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">_default_hp_metric</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">pl</span><span class="o">.</span><span class="n">seed_everything</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
-        <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">)</span>
+        <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_dataloader</span><span class="p">,</span> <span class="n">val_dataloader</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -330,18 +342,28 @@
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">(</span><span class="s2">&quot;transformer&quot;</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; The `transform` method.</span>
+            <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; The `transform` method for transformer.</span>
 
 <span class="sd">        In the child class you will need to define:</span>
 
 <span class="sd">        - a `transform_step` method for defining the transform instructions at</span>
 <span class="sd">          each step.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        test_dataloader: torch DataLoader</span>
+<span class="sd">            testing samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out: torch Tensor</span>
+<span class="sd">            returns transformed samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">test_dataloader</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
 
     
 <div class="viewcode-block" id="BaseEstimator.predict">
@@ -349,18 +371,28 @@
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">((</span><span class="s2">&quot;regressor&quot;</span><span class="p">,</span> <span class="s2">&quot;classifier&quot;</span><span class="p">,</span> <span class="s2">&quot;clusterer&quot;</span><span class="p">)))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">X_test</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; The `predict` method.</span>
+            <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; The `predict` method for regression, classification and clustering.</span>
 
 <span class="sd">        In the child class you will need to define:</span>
 
 <span class="sd">        - a `predict_step` method for defining the predict instructions at</span>
 <span class="sd">          each step.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        test_dataloader: torch DataLoader</span>
+<span class="sd">            testing samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out: torch Tensor</span>
+<span class="sd">            returns predicted samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">test_dataloader</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
 </div>
 
 

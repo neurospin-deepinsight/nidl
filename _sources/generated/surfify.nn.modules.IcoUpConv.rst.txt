@@ -9,7 +9,7 @@
 .. autoclass:: surfify.nn.modules.IcoUpConv
      :members:
 
-.. minigallery:: surfify.nn.IcoUpConv surfify.nn.modules.IcoUpConv
+.. minigallery:: surfify.nn.modules.IcoUpConv surfify.nn.IcoUpConv
     :add-heading: Examples
     :heading-level: -
 

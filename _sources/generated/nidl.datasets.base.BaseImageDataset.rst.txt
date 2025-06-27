@@ -9,7 +9,7 @@
 .. autoclass:: nidl.datasets.base.BaseImageDataset
      :members:
 
-.. minigallery:: nidl.datasets.BaseImageDataset nidl.datasets.base.BaseImageDataset
+.. minigallery:: nidl.datasets.base.BaseImageDataset nidl.datasets.BaseImageDataset
     :add-heading: Examples
     :heading-level: -
 
