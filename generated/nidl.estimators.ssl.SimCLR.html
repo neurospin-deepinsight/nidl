@@ -183,11 +183,11 @@
                                     
 						                <li> <a href='#nidl.estimators.ssl.SimCLR.configure_optimizers'>Simclr.configure_optimizers()</a> </li>                                    
                                     
-						                <li> <a href='#nidl.estimators.ssl.SimCLR.on_validation_epoch_end'>Simclr.on_validation_epoch_end()</a> </li>                                    
-                                    
-						                <li> <a href='#nidl.estimators.ssl.SimCLR.predict_step'>Simclr.predict_step()</a> </li>                                    
+						                <li> <a href='#nidl.estimators.ssl.SimCLR.info_nce_loss'>Simclr.info_nce_loss()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.ssl.SimCLR.training_step'>Simclr.training_step()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.ssl.SimCLR.transform_step'>Simclr.transform_step()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.ssl.SimCLR.validation_step'>Simclr.validation_step()</a> </li>                                    
                                     
@@ -282,34 +282,22 @@ Aaron van den Oord et al. for contrastive learning. In short, the InfoNCE
 loss compares the similarity of z_i and z_j to the similarity of z_i to
 any other representation in the batch by performing a softmax over the
 similarity values. The loss can be formally written as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">ell_</span><span class="p">{</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">}</span> <span class="o">=</span> <span class="o">-</span>\<span class="n">log</span> \<span class="n">frac</span><span class="p">{</span>\<span class="n">exp</span><span class="p">(</span>\<span class="n">text</span><span class="p">{</span><span class="n">sim</span><span class="p">}(</span><span class="n">z_i</span><span class="p">,</span><span class="n">z_j</span><span class="p">)</span><span class="o">/</span>\<span class="n">tau</span><span class="p">)}{</span>
-</pre></div>
-</div>
-<blockquote>
-<div><blockquote>
-<div><dl class="simple">
-<dt>sum_{k=1}^{2N}mathbb{1}_{[kneq i]}</dt><dd><p>exp(text{sim}(z_i,z_k)/tau)}</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="simple">
-<dt>= -text{sim}(z_i,z_j)/tau</dt><dd><dl class="simple">
-<dt>+logleft[sum_{k=1}^{2N}mathbb{1}_{[kneq i]}</dt><dd><p>exp(text{sim}(z_i,z_k)/tau)right]</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
-<p>The function text{sim} is a similarity metric, and the hyperparameter
+<div class="math">
+<p><span class="math">\ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
+             \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
+                \exp(\text{sim}(z_i,z_k)/\tau)}
+           = -\text{sim}(z_i,z_j)/\tau
+             +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
+                \exp(\text{sim}(z_i,z_k)/\tau)\right]</span></p>
+</div><p>The function text{sim} is a similarity metric, and the hyperparameter
 tau is called temperature determining how peaked the distribution is.
 Since many similarity metrics are bounded, the temperature parameter
 allows us to balance the influence of many dissimilar image patches versus
 one similar patch. The similarity metric that is used in SimCLR is cosine
 similarity, as defined below:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">text</span><span class="p">{</span><span class="n">sim</span><span class="p">}(</span><span class="n">z_i</span><span class="p">,</span><span class="n">z_j</span><span class="p">)</span> <span class="o">=</span> \<span class="n">frac</span><span class="p">{</span><span class="n">z_i</span><span class="o">^</span>\<span class="n">top</span> \<span class="n">cdot</span> <span class="n">z_j</span><span class="p">}{</span><span class="o">||</span><span class="n">z_i</span><span class="o">||</span>\<span class="n">cdot</span><span class="o">||</span><span class="n">z_j</span><span class="o">||</span><span class="p">}</span>
-</pre></div>
-</div>
-<p>The maximum cosine similarity possible is 1, while the minimum is -1. In
+<div class="math">
+<p><span class="math">\text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}</span></p>
+</div><p>The maximum cosine similarity possible is 1, while the minimum is -1. In
 general, we will see that the features of two different images will
 converge to a cosine similarity around zero since the minimum, -1, would
 require z_i and z_j to be in the exact opposite direction in all feature
@@ -361,282 +349,137 @@ images, and a list of tensors containing auxiliary variables.</p>
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p>f</p></td>
-<td><p>(nn.Module) the encoder.</p></td>
+<td><p>a <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> containing the encoder.</p></td>
 </tr>
 <tr class="row-even"><td><p>g</p></td>
-<td><p>(nn.Module) the projection head.</p></td>
-</tr>
-<tr class="row-odd"><td><p>validation_step_outputs</p></td>
-<td><p>(dict) the validation latent space and associated auxiliary variables in ‘z’, and ‘aux’ keys, respectivelly.</p></td>
+<td><p>a <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> containing the projection head.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.configure_optimizers">
 <span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.configure_optimizers" title="Link to this definition">¶</a></dt>
-<dd><p>Choose what optimizers and learning-rate schedulers to use in your optimization. Normally you’d need one.
-But in the case of GANs or similar you might have multiple. Optimization with multiple optimizers only works in
-the manual optimization mode.</p>
-<dl class="simple">
-<dt>Return:</dt><dd><p>Any of these 6 options.</p>
-<ul class="simple">
-<li><p><strong>Single optimizer</strong>.</p></li>
-<li><p><strong>List or Tuple</strong> of optimizers.</p></li>
-<li><p><strong>Two lists</strong> - The first list has multiple optimizers, and the second has multiple LR schedulers
-(or multiple <code class="docutils literal notranslate"><span class="pre">lr_scheduler_config</span></code>).</p></li>
-<li><p><strong>Dictionary</strong>, with an <code class="docutils literal notranslate"><span class="pre">&quot;optimizer&quot;</span></code> key, and (optionally) a <code class="docutils literal notranslate"><span class="pre">&quot;lr_scheduler&quot;</span></code>
-key whose value is a single LR scheduler or <code class="docutils literal notranslate"><span class="pre">lr_scheduler_config</span></code>.</p></li>
-<li><p><strong>None</strong> - Fit will run without any optimizer.</p></li>
-</ul>
-</dd>
-</dl>
-<p>The <code class="docutils literal notranslate"><span class="pre">lr_scheduler_config</span></code> is a dictionary which contains the scheduler and its associated configuration.
-The default configuration is shown below.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lr_scheduler_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="c1"># REQUIRED: The scheduler instance</span>
-    <span class="s2">&quot;scheduler&quot;</span><span class="p">:</span> <span class="n">lr_scheduler</span><span class="p">,</span>
-    <span class="c1"># The unit of the scheduler&#39;s step size, could also be &#39;step&#39;.</span>
-    <span class="c1"># &#39;epoch&#39; updates the scheduler on epoch end whereas &#39;step&#39;</span>
-    <span class="c1"># updates it after a optimizer update.</span>
-    <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="s2">&quot;epoch&quot;</span><span class="p">,</span>
-    <span class="c1"># How many epochs/steps should pass between calls to</span>
-    <span class="c1"># `scheduler.step()`. 1 corresponds to updating the learning</span>
-    <span class="c1"># rate after every epoch/step.</span>
-    <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="c1"># Metric to monitor for schedulers like `ReduceLROnPlateau`</span>
-    <span class="s2">&quot;monitor&quot;</span><span class="p">:</span> <span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
-    <span class="c1"># If set to `True`, will enforce that the value specified &#39;monitor&#39;</span>
-    <span class="c1"># is available when the scheduler is updated, thus stopping</span>
-    <span class="c1"># training if not found. If set to `False`, it will only produce a warning</span>
-    <span class="s2">&quot;strict&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="c1"># If using the `LearningRateMonitor` callback to monitor the</span>
-    <span class="c1"># learning rate progress, this keyword can be used to specify</span>
-    <span class="c1"># a custom logged name</span>
-    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>When there are schedulers in which the <code class="docutils literal notranslate"><span class="pre">.step()</span></code> method is conditioned on a value, such as the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.ReduceLROnPlateau</span></code> scheduler, Lightning requires that the
-<code class="docutils literal notranslate"><span class="pre">lr_scheduler_config</span></code> contains the keyword <code class="docutils literal notranslate"><span class="pre">&quot;monitor&quot;</span></code> set to the metric name that the scheduler
-should be conditioned on.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The ReduceLROnPlateau scheduler requires a monitor</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
-        <span class="s2">&quot;lr_scheduler&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;scheduler&quot;</span><span class="p">:</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="o">...</span><span class="p">),</span>
-            <span class="s2">&quot;monitor&quot;</span><span class="p">:</span> <span class="s2">&quot;metric_to_track&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;indicates how often the metric is updated&quot;</span><span class="p">,</span>
-            <span class="c1"># If &quot;monitor&quot; references validation metrics, then &quot;frequency&quot; should be set to a</span>
-            <span class="c1"># multiple of &quot;trainer.check_val_every_n_epoch&quot;.</span>
-        <span class="p">},</span>
-    <span class="p">}</span>
-
-<span class="c1"># In the case of two optimizers, only one using the ReduceLROnPlateau scheduler</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">optimizer1</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="n">optimizer2</span> <span class="o">=</span> <span class="n">SGD</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="n">scheduler1</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">optimizer1</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-    <span class="n">scheduler2</span> <span class="o">=</span> <span class="n">LambdaLR</span><span class="p">(</span><span class="n">optimizer2</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer1</span><span class="p">,</span>
-            <span class="s2">&quot;lr_scheduler&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;scheduler&quot;</span><span class="p">:</span> <span class="n">scheduler1</span><span class="p">,</span>
-                <span class="s2">&quot;monitor&quot;</span><span class="p">:</span> <span class="s2">&quot;metric_to_track&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer2</span><span class="p">,</span> <span class="s2">&quot;lr_scheduler&quot;</span><span class="p">:</span> <span class="n">scheduler2</span><span class="p">},</span>
-    <span class="p">)</span>
-</pre></div>
-</div>
-<p>Metrics can be made available to monitor by simply logging it using
-<code class="docutils literal notranslate"><span class="pre">self.log('metric_to_track',</span> <span class="pre">metric_val)</span></code> in your <code class="xref py py-class docutils literal notranslate"><span class="pre">LightningModule</span></code>.</p>
-<dl class="simple">
-<dt>Note:</dt><dd><p>Some things to know:</p>
-<ul class="simple">
-<li><p>Lightning calls <code class="docutils literal notranslate"><span class="pre">.backward()</span></code> and <code class="docutils literal notranslate"><span class="pre">.step()</span></code> automatically in case of automatic optimization.</p></li>
-<li><p>If a learning rate scheduler is specified in <code class="docutils literal notranslate"><span class="pre">configure_optimizers()</span></code> with key
-<code class="docutils literal notranslate"><span class="pre">&quot;interval&quot;</span></code> (default “epoch”) in the scheduler configuration, Lightning will call
-the scheduler’s <code class="docutils literal notranslate"><span class="pre">.step()</span></code> method automatically in case of automatic optimization.</p></li>
-<li><p>If you use 16-bit precision (<code class="docutils literal notranslate"><span class="pre">precision=16</span></code>), Lightning will automatically handle the optimizer.</p></li>
-<li><p>If you use <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.optim.LBFGS</span></code>, Lightning handles the closure function automatically for you.</p></li>
-<li><p>If you use multiple optimizers, you will have to switch to ‘manual optimization’ mode and step them
-yourself.</p></li>
-<li><p>If you need to control how often the optimizer steps, override the <code class="xref py py-meth docutils literal notranslate"><span class="pre">optimizer_step()</span></code> hook.</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Declare a <code class="xref py py-class docutils literal notranslate"><span class="pre">AdamW</span></code> optimizer and, optionnaly
+(<code class="docutils literal notranslate"><span class="pre">max_epochs</span></code> is defined), a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">CosineAnnealingLR</span></code> learning-rate
+scheduler.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.on_validation_epoch_end">
-<span class="sig-name descname"><span class="pre">on_validation_epoch_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.on_validation_epoch_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.on_validation_epoch_end" title="Link to this definition">¶</a></dt>
-<dd><p>Called in the validation loop at the very end of the epoch.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.predict_step">
-<span class="sig-name descname"><span class="pre">predict_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.predict_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.predict_step" title="Link to this definition">¶</a></dt>
-<dd><p>Step function called during <code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code>. By default, it calls
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code>. Override to add any processing logic.</p>
-<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_step()</span></code> is used
-to scale inference on multi-devices.</p>
-<p>To prevent an OOM error, it is possible to use <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePredictionWriter</span></code>
-callback to write the predictions to disk or database after each batch or on epoch end.</p>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePredictionWriter</span></code> should be used while using a spawn
-based accelerator. This happens for <code class="docutils literal notranslate"><span class="pre">Trainer(strategy=&quot;ddp_spawn&quot;)</span></code>
-or training on 8 TPU cores with <code class="docutils literal notranslate"><span class="pre">Trainer(accelerator=&quot;tpu&quot;,</span> <span class="pre">devices=8)</span></code> as predictions won’t be returned.</p>
-<dl>
-<dt>Args:</dt><dd><p>batch: The output of your data iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code>.
-batch_idx: The index of this batch.
-dataloader_idx: The index of the dataloader that produced this batch.</p>
-<blockquote>
-<div><p>(only if multiple dataloaders used)</p>
-</div></blockquote>
-</dd>
-<dt>Return:</dt><dd><p>Predicted output (optional).</p>
-</dd>
-</dl>
-<p>Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">LightningModule</span><span class="p">):</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">predict_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
-
-<span class="n">dm</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
-<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span><span class="n">accelerator</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">,</span> <span class="n">devices</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">predictions</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span>
-</pre></div>
-</div>
+<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.info_nce_loss">
+<span class="sig-name descname"><span class="pre">info_nce_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.info_nce_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.info_nce_loss" title="Link to this definition">¶</a></dt>
+<dd><p>Compute and log the InfoNCE loss using
+<a class="reference internal" href="nidl.losses.InfoNCE.html#nidl.losses.InfoNCE" title="nidl.losses.InfoNCE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoNCE</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.training_step">
 <span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.training_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.training_step" title="Link to this definition">¶</a></dt>
-<dd><p>Here you compute and return the training loss and some additional metrics for e.g. the progress bar or
-logger.</p>
-<dl>
-<dt>Args:</dt><dd><p>batch: The output of your data iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code>.
-batch_idx: The index of this batch.
-dataloader_idx: The index of the dataloader that produced this batch.</p>
+<dd><p>Here you compute and return the training loss and some additional
+metrics for e.g. the progress bar or logger.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> : iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
 <blockquote>
-<div><p>(only if multiple dataloaders used)</p>
+<div><p>the current data.</p>
+</div></blockquote>
+<p><strong>batch_idx</strong> : int</p>
+<blockquote>
+<div><p>the index of this batch.</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>the index of the dataloader that produced this batch (only if
+multiple dataloaders are used).</p>
 </div></blockquote>
 </dd>
-<dt>Return:</dt><dd><ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - The loss tensor</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - A dictionary which can include any keys, but must include the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code> in the case of
-automatic optimization.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - In automatic optimization, this will skip to the next batch (but is not supported for
-multi-GPU, TPU, or DeepSpeed). For manual optimization, this has no special meaning, as returning
-the loss is not required.</p></li>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>loss</strong> :  STEP_OUTPUT</p>
+<blockquote>
+<div><p>the computed loss:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - the loss tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - a dictionary which can include any keys, but must
+include the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code> in the case of automatic optimization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - in automatic optimization, this will skip to the
+next batch (but is not supported for multi-GPU, TPU, or
+DeepSpeed). For manual optimization, this has no special
+meaning, as returning the loss is not required.</p></li>
 </ul>
+</div></blockquote>
+<p>To use multiple optimizers, you can switch to ‘manual optimization’</p>
+<p>and control their stepping:</p>
 </dd>
 </dl>
-<p>In this step you’d normally do the forward pass and calculate the loss for a batch.
-You can also do fancier things like multiple forward passes or something model specific.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">batch</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">loss</span>
+<p class="rubric">Notes</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> &gt; 1, the loss returned here will be
+automatically normalized by <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> internally.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multiple optimizers (e.g.: GANs)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="p">,</span> <span class="n">opt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizers</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with encoder</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with decoder</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt2</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>To use multiple optimizers, you can switch to ‘manual optimization’ and control their stepping:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
+</dd></dl>
 
-<span class="c1"># Multiple optimizers (e.g.: GANs)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-    <span class="n">opt1</span><span class="p">,</span> <span class="n">opt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizers</span><span class="p">()</span>
-
-    <span class="c1"># do training_step with encoder</span>
-    <span class="o">...</span>
-    <span class="n">opt1</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-    <span class="c1"># do training_step with decoder</span>
-    <span class="o">...</span>
-    <span class="n">opt2</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-</pre></div>
-</div>
-<dl class="simple">
-<dt>Note:</dt><dd><p>When <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> &gt; 1, the loss returned here will be automatically
-normalized by <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> internally.</p>
-</dd>
-</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.transform_step">
+<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.transform_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.transform_step" title="Link to this definition">¶</a></dt>
+<dd><p>An alias to <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.predict_step" title="nidl.estimators.BaseEstimator.predict_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_step()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.validation_step">
 <span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.validation_step" title="Link to this definition">¶</a></dt>
-<dd><p>Operates on a single batch of data from the validation set. In this step you’d might generate examples or
-calculate anything of interest like accuracy.</p>
-<dl>
-<dt>Args:</dt><dd><p>batch: The output of your data iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code>.
-batch_idx: The index of this batch.
-dataloader_idx: The index of the dataloader that produced this batch.</p>
+<dd><p>Operates on a single batch of data from the validation set. In
+this step you’d might generate examples or calculate anything of
+interest like accuracy.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> : iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
 <blockquote>
-<div><p>(only if multiple dataloaders used)</p>
+<div><p>the current data.</p>
+</div></blockquote>
+<p><strong>batch_idx</strong> : int</p>
+<blockquote>
+<div><p>the index of this batch.</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>the index of the dataloader that produced this batch (only if
+multiple dataloaders are used).</p>
 </div></blockquote>
 </dd>
-<dt>Return:</dt><dd><ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - The loss tensor</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - A dictionary. Can include any keys, but must include the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - Skip to the next batch.</p></li>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>loss</strong> : STEP_OUTPUT</p>
+<blockquote>
+<div><p>the computed loss:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - the loss tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - a dictionary. can include any keys, but must include
+the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - skip to the next batch.</p></li>
 </ul>
+</div></blockquote>
 </dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># if you have one val dataloader:</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span> <span class="o">...</span>
-
-<span class="c1"># if you have multiple val dataloaders:</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> <span class="o">...</span>
-</pre></div>
-</div>
-<p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># CASE 1: A single validation dataset</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">batch</span>
-
-    <span class="c1"># implement your own</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-    <span class="c1"># log 6 example images</span>
-    <span class="c1"># or generated text... or whatever</span>
-    <span class="n">sample_imgs</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span>
-    <span class="n">grid</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">sample_imgs</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="s1">&#39;example_images&#39;</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># calculate acc</span>
-    <span class="n">labels_hat</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">val_acc</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">labels_hat</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">)</span>
-
-    <span class="c1"># log the outputs!</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">log_dict</span><span class="p">({</span><span class="s1">&#39;val_loss&#39;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span> <span class="s1">&#39;val_acc&#39;</span><span class="p">:</span> <span class="n">val_acc</span><span class="p">})</span>
-</pre></div>
-</div>
-<p>If you pass in multiple val dataloaders, <a class="reference internal" href="#nidl.estimators.ssl.SimCLR.validation_step" title="nidl.estimators.ssl.SimCLR.validation_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validation_step()</span></code></a> will have an additional argument. We recommend
-setting the default value of 0 so that you can quickly switch between single and multiple dataloaders.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># CASE 2: multiple validation dataloaders</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="c1"># dataloader_idx tells you which dataset this is.</span>
-    <span class="o">...</span>
-</pre></div>
-</div>
-<dl class="simple">
-<dt>Note:</dt><dd><p>If you don’t need to validate you don’t need to implement this method.</p>
-</dd>
-<dt>Note:</dt><dd><p>When the <a class="reference internal" href="#nidl.estimators.ssl.SimCLR.validation_step" title="nidl.estimators.ssl.SimCLR.validation_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validation_step()</span></code></a> is called, the model has been put in eval mode
-and PyTorch gradients have been disabled. At the end of validation,
-the model goes back to training mode and gradients are enabled.</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
+<p>When the <a class="reference internal" href="#nidl.estimators.ssl.SimCLR.validation_step" title="nidl.estimators.ssl.SimCLR.validation_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validation_step()</span></code></a> is called, the model has been put in
+eval mode and PyTorch gradients have been disabled. At the end of
+validation,  the model goes back to training mode and gradients are
+enabled.</p>
 </dd></dl>
 
 </dd></dl>

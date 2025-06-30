@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.interpolate_data
 
-.. minigallery:: surfify.utils.interpolate_data surfify.utils.sampling.interpolate_data
+.. minigallery:: surfify.utils.sampling.interpolate_data surfify.utils.interpolate_data
     :add-heading: Examples
     :heading-level: -
 

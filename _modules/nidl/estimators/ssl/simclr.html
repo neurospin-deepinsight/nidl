@@ -192,23 +192,27 @@
 <span class="sd">    Aaron van den Oord et al. for contrastive learning. In short, the InfoNCE</span>
 <span class="sd">    loss compares the similarity of z_i and z_j to the similarity of z_i to</span>
 <span class="sd">    any other representation in the batch by performing a softmax over the</span>
-<span class="sd">    similarity values. The loss can be formally written as::</span>
+<span class="sd">    similarity values. The loss can be formally written as:</span>
 
-<span class="sd">    \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{</span>
-<span class="sd">                 \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}</span>
-<span class="sd">                    \exp(\text{sim}(z_i,z_k)/\tau)}</span>
-<span class="sd">               = -\text{sim}(z_i,z_j)/\tau</span>
-<span class="sd">                 +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}</span>
-<span class="sd">                    \exp(\text{sim}(z_i,z_k)/\tau)\right]</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{</span>
+<span class="sd">                     \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}</span>
+<span class="sd">                        \exp(\text{sim}(z_i,z_k)/\tau)}</span>
+<span class="sd">                   = -\text{sim}(z_i,z_j)/\tau</span>
+<span class="sd">                     +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}</span>
+<span class="sd">                        \exp(\text{sim}(z_i,z_k)/\tau)\right]</span>
 
 <span class="sd">    The function \text{sim} is a similarity metric, and the hyperparameter</span>
 <span class="sd">    \tau is called temperature determining how peaked the distribution is.</span>
 <span class="sd">    Since many similarity metrics are bounded, the temperature parameter</span>
 <span class="sd">    allows us to balance the influence of many dissimilar image patches versus</span>
 <span class="sd">    one similar patch. The similarity metric that is used in SimCLR is cosine</span>
-<span class="sd">    similarity, as defined below::</span>
+<span class="sd">    similarity, as defined below:</span>
 
-<span class="sd">    \text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}</span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}</span>
 
 <span class="sd">    The maximum cosine similarity possible is 1, while the minimum is -1. In</span>
 <span class="sd">    general, we will see that the features of two different images will</span>
@@ -242,13 +246,10 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    f: nn.Module</span>
-<span class="sd">        the encoder.</span>
-<span class="sd">    g: nn.Module</span>
-<span class="sd">        the projection head.</span>
-<span class="sd">    validation_step_outputs: dict</span>
-<span class="sd">        the validation latent space and associated auxiliary variables in &#39;z&#39;,</span>
-<span class="sd">        and &#39;aux&#39; keys, respectivelly.</span>
+<span class="sd">    f</span>
+<span class="sd">        a :class:`~torch.nn.Module` containing the encoder.</span>
+<span class="sd">    g</span>
+<span class="sd">        a :class:`~torch.nn.Module` containing the projection head.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -284,6 +285,11 @@
 <div class="viewcode-block" id="SimCLR.configure_optimizers">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.configure_optimizers">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly</span>
+<span class="sd">        (``max_epochs`` is defined), a</span>
+<span class="sd">        :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning-rate</span>
+<span class="sd">        scheduler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">)</span>
@@ -297,10 +303,15 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">optimizer</span><span class="p">]</span></div>
 
 
+<div class="viewcode-block" id="SimCLR.info_nce_loss">
+<a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.info_nce_loss">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">info_nce_loss</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
             <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute and log the InfoNCE loss using</span>
+<span class="sd">        :class:`~nidl.losses.InfoNCE`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Encode all images</span>
         <span class="n">imgs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">imgs</span><span class="p">))</span>
@@ -308,7 +319,8 @@
         <span class="n">nll</span> <span class="o">=</span> <span class="n">InfoNCE</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span><span class="p">)(</span><span class="n">feats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">feats</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="c1"># Logging loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_loss&quot;</span><span class="p">,</span> <span class="n">nll</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nll</span>
+        <span class="k">return</span> <span class="n">nll</span></div>
+
 
 <div class="viewcode-block" id="SimCLR.training_step">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.training_step">[docs]</a>
@@ -328,15 +340,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">info_nce_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SimCLR.on_validation_epoch_end">
-<a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.on_validation_epoch_end">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="SimCLR.predict_step">
-<a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.predict_step">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">predict_step</span><span class="p">(</span>
+<div class="viewcode-block" id="SimCLR.transform_step">
+<a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.transform_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_step</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
             <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>

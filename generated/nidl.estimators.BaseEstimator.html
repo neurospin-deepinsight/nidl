@@ -135,6 +135,54 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -149,7 +197,15 @@
                                     
 						                <li> <a href='#nidl.estimators.BaseEstimator.predict'>Baseestimator.predict()</a> </li>                                    
                                     
+						                <li> <a href='#nidl.estimators.BaseEstimator.predict_step'>Baseestimator.predict_step()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.training_step'>Baseestimator.training_step()</a> </li>                                    
+                                    
 						                <li> <a href='#nidl.estimators.BaseEstimator.transform'>Baseestimator.transform()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.transform_step'>Baseestimator.transform_step()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.validation_step'>Baseestimator.validation_step()</a> </li>                                    
                                     
                                 
                             
@@ -333,14 +389,14 @@ instance you can check the type of the input batches using
 <p class="rubric">Attributes</p>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a href="#id1"><span class="problematic" id="id2">fitted_</span></a></p></td>
-<td><p>(bool) True if the estimator has been fitted, False otherwise.</p></td>
+<tr class="row-odd"><td><p>fitted</p></td>
+<td><p>a boolean that is True if the estimator has been fitted, and is False otherwise.</p></td>
 </tr>
-<tr class="row-even"><td><p><a href="#id3"><span class="problematic" id="id4">trainer_params_</span></a></p></td>
-<td><p>(dict) the trainer parameters.</p></td>
+<tr class="row-even"><td><p>trainer_params</p></td>
+<td><p>a dictionaray with the trainer parameters.</p></td>
 </tr>
 <tr class="row-odd"><td><p>trainer</p></td>
-<td><p>(Trainer) the current trainer.</p></td>
+<td><p>the current lightning trainer.</p></td>
 </tr>
 </tbody>
 </table>
@@ -401,6 +457,110 @@ each step.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.predict_step">
+<span class="sig-name descname"><span class="pre">predict_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.predict_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.predict_step" title="Link to this definition">¶</a></dt>
+<dd><p>Step function called during
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code>. By default,
+it calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code>.
+Override to add any processing logic.</p>
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_step()</span></code> is
+used to scale inference on multi-devices.</p>
+<p>To prevent an OOM error, it is possible to use
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BasePredictionWriter</span></code>
+callback to write the predictions to disk or database after each
+batch or on epoch end.</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePredictionWriter</span></code> should
+be used while using a spawn based accelerator. This happens for
+training strategy <code class="docutils literal notranslate"><span class="pre">strategy=&quot;ddp_spawn&quot;</span></code> or training on 8 TPU cores
+with <code class="docutils literal notranslate"><span class="pre">accelerator=&quot;tpu&quot;,</span> <span class="pre">devices=8</span></code> as predictions won’t be returned.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> : iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
+<blockquote>
+<div><p>the current data.</p>
+</div></blockquote>
+<p><strong>batch_idx</strong> : int</p>
+<blockquote>
+<div><p>the index of this batch.</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>the index of the dataloader that produced this batch (only if
+multiple dataloaders are used).</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> : Any</p>
+<blockquote>
+<div><p>the predicted output.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.training_step">
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.training_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.training_step" title="Link to this definition">¶</a></dt>
+<dd><p>Here you compute and return the training loss and some additional
+metrics for e.g. the progress bar or logger.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> : iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
+<blockquote>
+<div><p>the current data.</p>
+</div></blockquote>
+<p><strong>batch_idx</strong> : int</p>
+<blockquote>
+<div><p>the index of this batch.</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>the index of the dataloader that produced this batch (only if
+multiple dataloaders are used).</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>loss</strong> :  STEP_OUTPUT</p>
+<blockquote>
+<div><p>the computed loss:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - the loss tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - a dictionary which can include any keys, but must
+include the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code> in the case of automatic optimization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - in automatic optimization, this will skip to the
+next batch (but is not supported for multi-GPU, TPU, or
+DeepSpeed). For manual optimization, this has no special
+meaning, as returning the loss is not required.</p></li>
+</ul>
+</div></blockquote>
+<p>To use multiple optimizers, you can switch to ‘manual optimization’</p>
+<p>and control their stepping:</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> &gt; 1, the loss returned here will be
+automatically normalized by <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> internally.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multiple optimizers (e.g.: GANs)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="p">,</span> <span class="n">opt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizers</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with encoder</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with decoder</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt2</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.transform">
 <span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.transform" title="Link to this definition">¶</a></dt>
 <dd><p>The <cite>transform</cite> method for transformer.</p>
@@ -423,6 +583,54 @@ each step.</p></li>
 </div></blockquote>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.transform_step">
+<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.transform_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.transform_step" title="Link to this definition">¶</a></dt>
+<dd><p>An alias to <a class="reference internal" href="#nidl.estimators.BaseEstimator.predict_step" title="nidl.estimators.BaseEstimator.predict_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_step()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.validation_step">
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.validation_step" title="Link to this definition">¶</a></dt>
+<dd><p>Operates on a single batch of data from the validation set. In
+this step you’d might generate examples or calculate anything of
+interest like accuracy.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> : iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
+<blockquote>
+<div><p>the current data.</p>
+</div></blockquote>
+<p><strong>batch_idx</strong> : int</p>
+<blockquote>
+<div><p>the index of this batch.</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>the index of the dataloader that produced this batch (only if
+multiple dataloaders are used).</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>loss</strong> : STEP_OUTPUT</p>
+<blockquote>
+<div><p>the computed loss:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - the loss tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - a dictionary. can include any keys, but must include
+the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - skip to the next batch.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When the <a class="reference internal" href="#nidl.estimators.BaseEstimator.validation_step" title="nidl.estimators.BaseEstimator.validation_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validation_step()</span></code></a> is called, the model has been put in
+eval mode and PyTorch gradients have been disabled. At the end of
+validation,  the model goes back to training mode and gradients are
+enabled.</p>
 </dd></dl>
 
 </dd></dl>

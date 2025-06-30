@@ -9,7 +9,7 @@
 .. autoclass:: surfify.augmentation.utils.Transformer
      :members:
 
-.. minigallery:: surfify.augmentation.utils.Transformer surfify.augmentation.Transformer
+.. minigallery:: surfify.augmentation.Transformer surfify.augmentation.utils.Transformer
     :add-heading: Examples
     :heading-level: -
 

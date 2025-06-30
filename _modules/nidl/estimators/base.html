@@ -144,7 +144,7 @@
 <span class="c1">##########################################################################</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
@@ -154,6 +154,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.trainer.connectors.accelerator_connector</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_PRECISION_INPUT</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.utilities.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">STEP_OUTPUT</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">_estimator_is</span><span class="p">,</span> <span class="n">available_if</span><span class="p">,</span> <span class="n">check_is_fitted</span>
@@ -247,12 +250,13 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fitted_: bool</span>
-<span class="sd">        True if the estimator has been fitted, False otherwise.</span>
-<span class="sd">    trainer_params_: dict</span>
-<span class="sd">        the trainer parameters.</span>
-<span class="sd">    trainer: Trainer</span>
-<span class="sd">        the current trainer.</span>
+<span class="sd">    fitted</span>
+<span class="sd">        a boolean that is True if the estimator has been fitted, and is False</span>
+<span class="sd">        otherwise.</span>
+<span class="sd">    trainer_params</span>
+<span class="sd">        a dictionaray with the trainer parameters.</span>
+<span class="sd">    trainer</span>
+<span class="sd">        the current lightning trainer.</span>
 <span class="sd">        </span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -301,6 +305,14 @@
             <span class="n">precision</span><span class="p">:</span> <span class="n">precision</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted_</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trainer_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span>
 
 <div class="viewcode-block" id="BaseEstimator.fit">
 <a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.fit">[docs]</a>
@@ -393,6 +405,168 @@
         <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">test_dataloader</span><span class="p">,</span> <span class="n">return_predictions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="BaseEstimator.training_step">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.training_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">STEP_OUTPUT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Here you compute and return the training loss and some additional</span>
+<span class="sd">        metrics for e.g. the progress bar or logger.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`</span>
+<span class="sd">            the current data.</span>
+<span class="sd">        batch_idx: int</span>
+<span class="sd">            the index of this batch.</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            the index of the dataloader that produced this batch (only if</span>
+<span class="sd">            multiple dataloaders are used).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        loss:  STEP_OUTPUT</span>
+<span class="sd">            the computed loss:</span>
+
+<span class="sd">            - :class:`~torch.Tensor` - the loss tensor.</span>
+<span class="sd">            - ``dict`` - a dictionary which can include any keys, but must</span>
+<span class="sd">              include the key ``&#39;loss&#39;`` in the case of automatic optimization.</span>
+<span class="sd">            - ``None`` - in automatic optimization, this will skip to the</span>
+<span class="sd">              next batch (but is not supported for multi-GPU, TPU, or</span>
+<span class="sd">              DeepSpeed). For manual optimization, this has no special</span>
+<span class="sd">              meaning, as returning the loss is not required.</span>
+
+<span class="sd">        To use multiple optimizers, you can switch to &#39;manual optimization&#39;</span>
+<span class="sd">        and control their stepping:</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; def __init__(self):</span>
+<span class="sd">        &gt;&gt;&gt;     super().__init__()</span>
+<span class="sd">        &gt;&gt;&gt;     self.automatic_optimization = False</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; # Multiple optimizers (e.g.: GANs)</span>
+<span class="sd">        &gt;&gt;&gt; def training_step(self, batch, batch_idx):</span>
+<span class="sd">        &gt;&gt;&gt;     opt1, opt2 = self.optimizers()</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt;     # do training_step with encoder</span>
+<span class="sd">        &gt;&gt;&gt;     ...</span>
+<span class="sd">        &gt;&gt;&gt;     opt1.step()</span>
+<span class="sd">        &gt;&gt;&gt;     # do training_step with decoder</span>
+<span class="sd">        &gt;&gt;&gt;     ...</span>
+<span class="sd">        &gt;&gt;&gt;     opt2.step()</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        When ``accumulate_grad_batches`` &gt; 1, the loss returned here will be</span>
+<span class="sd">        automatically normalized by ``accumulate_grad_batches`` internally.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">training_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseEstimator.validation_step">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.validation_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">STEP_OUTPUT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Operates on a single batch of data from the validation set. In</span>
+<span class="sd">        this step you&#39;d might generate examples or calculate anything of</span>
+<span class="sd">        interest like accuracy.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`</span>
+<span class="sd">            the current data.</span>
+<span class="sd">        batch_idx: int</span>
+<span class="sd">            the index of this batch.</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            the index of the dataloader that produced this batch (only if</span>
+<span class="sd">            multiple dataloaders are used).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        loss: STEP_OUTPUT</span>
+<span class="sd">            the computed loss:</span>
+
+<span class="sd">            - :class:`~torch.Tensor` - the loss tensor.</span>
+<span class="sd">            - ``dict`` - a dictionary. can include any keys, but must include</span>
+<span class="sd">              the key ``&#39;loss&#39;``.</span>
+<span class="sd">            - ``None`` - skip to the next batch.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If you don&#39;t need to validate you don&#39;t need to implement this method.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        When the :meth:`validation_step` is called, the model has been put in</span>
+<span class="sd">        eval mode and PyTorch gradients have been disabled. At the end of</span>
+<span class="sd">        validation,  the model goes back to training mode and gradients are</span>
+<span class="sd">        enabled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseEstimator.transform_step">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.transform_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_step</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; An alias to :meth:`~nidl.estimators.BaseEstimator.predict_step`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseEstimator.predict_step">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.predict_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_step</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Step function called during</span>
+<span class="sd">        :meth:`~lightning.pytorch.trainer.trainer.Trainer.predict`. By default,</span>
+<span class="sd">        it calls :meth:`~lightning.pytorch.core.LightningModule.forward`.</span>
+<span class="sd">        Override to add any processing logic.</span>
+
+<span class="sd">        The :meth:`~lightning.pytorch.core.LightningModule.predict_step` is</span>
+<span class="sd">        used to scale inference on multi-devices.</span>
+
+<span class="sd">        To prevent an OOM error, it is possible to use</span>
+<span class="sd">        :class:`~lightning.pytorch.callbacks.BasePredictionWriter`</span>
+<span class="sd">        callback to write the predictions to disk or database after each</span>
+<span class="sd">        batch or on epoch end.</span>
+
+<span class="sd">        The :class:`~lightning.pytorch.callbacks.BasePredictionWriter` should</span>
+<span class="sd">        be used while using a spawn based accelerator. This happens for</span>
+<span class="sd">        training strategy ``strategy=&quot;ddp_spawn&quot;`` or training on 8 TPU cores</span>
+<span class="sd">        with ``accelerator=&quot;tpu&quot;, devices=8`` as predictions won&#39;t be returned.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`</span>
+<span class="sd">            the current data.</span>
+<span class="sd">        batch_idx: int</span>
+<span class="sd">            the index of this batch.</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            the index of the dataloader that produced this batch (only if</span>
+<span class="sd">            multiple dataloaders are used).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out: Any</span>
+<span class="sd">            the predicted output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
 </div>
 
 

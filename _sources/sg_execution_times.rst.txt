@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:21.957** total execution time for 6 files **from all galleries**:
+**00:21.919** total execution time for 6 files **from all galleries**:
 
 .. container::
 
@@ -33,20 +33,20 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_augmentation.py` (``../examples/surfify/plot_augmentation.py``)
-     - 00:10.282
-     - 105.8
+     - 00:10.141
+     - 88.1
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_unet_segmentation.py` (``../examples/surfify/plot_unet_segmentation.py``)
-     - 00:05.251
-     - 296.6
+     - 00:05.345
+     - 295.1
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_match_icosahedron.py` (``../examples/surfify/plot_match_icosahedron.py``)
-     - 00:02.438
-     - 79.8
+     - 00:02.469
+     - 68.5
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_spherical_neighbors.py` (``../examples/surfify/plot_spherical_neighbors.py``)
-     - 00:02.269
-     - 196.4
+     - 00:02.285
+     - 196.2
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_project_texture.py` (``../examples/surfify/plot_project_texture.py``)
-     - 00:01.717
-     - 92.8
+     - 00:01.679
+     - 88.5
    * - :ref:`sphx_glr_auto_gallery_simclr_stl10.py` (``../examples/simclr_stl10.py``)
      - 00:00.000
      - 0.0

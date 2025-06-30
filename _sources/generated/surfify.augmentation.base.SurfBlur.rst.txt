@@ -9,7 +9,7 @@
 .. autoclass:: surfify.augmentation.base.SurfBlur
      :members:
 
-.. minigallery:: surfify.augmentation.SurfBlur surfify.augmentation.base.SurfBlur
+.. minigallery:: surfify.augmentation.base.SurfBlur surfify.augmentation.SurfBlur
     :add-heading: Examples
     :heading-level: -
 

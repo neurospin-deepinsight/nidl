@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.number_of_ico_vertices
 
-.. minigallery:: surfify.utils.number_of_ico_vertices surfify.utils.sampling.number_of_ico_vertices
+.. minigallery:: surfify.utils.sampling.number_of_ico_vertices surfify.utils.number_of_ico_vertices
     :add-heading: Examples
     :heading-level: -
 
