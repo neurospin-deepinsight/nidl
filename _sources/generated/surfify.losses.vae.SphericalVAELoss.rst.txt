@@ -9,7 +9,7 @@
 .. autoclass:: surfify.losses.vae.SphericalVAELoss
      :members:
 
-.. minigallery:: surfify.losses.vae.SphericalVAELoss surfify.losses.SphericalVAELoss
+.. minigallery:: surfify.losses.SphericalVAELoss surfify.losses.vae.SphericalVAELoss
     :add-heading: Examples
     :heading-level: -
 

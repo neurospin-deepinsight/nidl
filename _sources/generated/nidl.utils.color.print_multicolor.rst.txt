@@ -8,7 +8,7 @@
 
 .. autofunction:: nidl.utils.color.print_multicolor
 
-.. minigallery:: nidl.utils.color.print_multicolor nidl.utils.print_multicolor
+.. minigallery:: nidl.utils.print_multicolor nidl.utils.color.print_multicolor
     :add-heading: Examples
     :heading-level: -
 

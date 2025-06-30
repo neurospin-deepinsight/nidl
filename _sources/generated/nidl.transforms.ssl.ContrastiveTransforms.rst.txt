@@ -9,7 +9,7 @@
 .. autoclass:: nidl.transforms.ssl.ContrastiveTransforms
      :members:
 
-.. minigallery:: nidl.transforms.ssl.ContrastiveTransforms nidl.transforms.ContrastiveTransforms
+.. minigallery:: nidl.transforms.ContrastiveTransforms nidl.transforms.ssl.ContrastiveTransforms
     :add-heading: Examples
     :heading-level: -
 
