@@ -95,8 +95,8 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
         loss = func.cross_entropy(preds, labels)
         acc = (preds.argmax(dim=-1) == labels).float().mean()
         if mode in ("train", "val"):
-            self.log(mode + "_loss", loss)
-            self.log(mode + "_acc", acc)
+            self.log(mode + "_loss", loss, prog_bar=True)
+            self.log(mode + "_acc", acc, prog_bar=True)
         return preds, loss, labels
 
     def training_step(
