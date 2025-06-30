@@ -53,23 +53,27 @@ class SimCLR(TransformerMixin, BaseEstimator):
     Aaron van den Oord et al. for contrastive learning. In short, the InfoNCE
     loss compares the similarity of z_i and z_j to the similarity of z_i to
     any other representation in the batch by performing a softmax over the
-    similarity values. The loss can be formally written as::
+    similarity values. The loss can be formally written as:
 
-    \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
-                 \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                    \exp(\text{sim}(z_i,z_k)/\tau)}
-               = -\text{sim}(z_i,z_j)/\tau
-                 +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                    \exp(\text{sim}(z_i,z_k)/\tau)\right]
+    .. math::
+
+        \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
+                     \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
+                        \exp(\text{sim}(z_i,z_k)/\tau)}
+                   = -\text{sim}(z_i,z_j)/\tau
+                     +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
+                        \exp(\text{sim}(z_i,z_k)/\tau)\right]
 
     The function \text{sim} is a similarity metric, and the hyperparameter
     \tau is called temperature determining how peaked the distribution is.
     Since many similarity metrics are bounded, the temperature parameter
     allows us to balance the influence of many dissimilar image patches versus
     one similar patch. The similarity metric that is used in SimCLR is cosine
-    similarity, as defined below::
+    similarity, as defined below:
 
-    \text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}
+    .. math::
+
+        \text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}
 
     The maximum cosine similarity possible is 1, while the minimum is -1. In
     general, we will see that the features of two different images will
@@ -103,13 +107,10 @@ class SimCLR(TransformerMixin, BaseEstimator):
 
     Attributes
     ----------
-    f: nn.Module
-        the encoder.
-    g: nn.Module
-        the projection head.
-    validation_step_outputs: dict
-        the validation latent space and associated auxiliary variables in 'z',
-        and 'aux' keys, respectivelly.
+    f
+        a :class:`~torch.nn.Module` containing the encoder.
+    g
+        a :class:`~torch.nn.Module` containing the projection head.
 
     Notes
     -----
@@ -143,6 +144,11 @@ class SimCLR(TransformerMixin, BaseEstimator):
         ])
 
     def configure_optimizers(self):
+        """ Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
+        (``max_epochs`` is defined), a
+        :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning-rate
+        scheduler.
+        """
         optimizer = optim.AdamW(
             self.parameters(), lr=self.hparams.lr,
             weight_decay=self.hparams.weight_decay)
@@ -159,6 +165,9 @@ class SimCLR(TransformerMixin, BaseEstimator):
             self,
             batch: tuple[torch.Tensor, torch.Tensor],
             mode: str):
+        """ Compute and log the InfoNCE loss using
+        :class:`~nidl.losses.InfoNCE`.
+        """
         # Encode all images
         imgs = torch.cat(batch, dim=0)
         feats = self.g(self.f(imgs))
@@ -180,10 +189,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
             batch_idx: int):
         self.info_nce_loss(batch, mode="val")
 
-    def on_validation_epoch_end(self):
-        self.validation_step_outputs.clear()
-
-    def predict_step(
+    def transform_step(
             self,
             batch: torch.Tensor,
             batch_idx: int):

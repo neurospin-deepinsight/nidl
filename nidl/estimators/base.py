@@ -7,7 +7,7 @@
 ##########################################################################
 
 from collections.abc import Sequence
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import pytorch_lightning as pl
 import torch
@@ -17,6 +17,9 @@ from pytorch_lightning.callbacks import Callback
 from pytorch_lightning.strategies import Strategy
 from pytorch_lightning.trainer.connectors.accelerator_connector import (
     _PRECISION_INPUT,
+)
+from pytorch_lightning.utilities.types import (
+    STEP_OUTPUT,
 )
 
 from ..utils.validation import _estimator_is, available_if, check_is_fitted
@@ -108,12 +111,13 @@ class BaseEstimator(pl.LightningModule):
 
     Attributes
     ----------
-    fitted_: bool
-        True if the estimator has been fitted, False otherwise.
-    trainer_params_: dict
-        the trainer parameters.
-    trainer: Trainer
-        the current trainer.
+    fitted
+        a boolean that is True if the estimator has been fitted, and is False
+        otherwise.
+    trainer_params
+        a dictionaray with the trainer parameters.
+    trainer
+        the current lightning trainer.
         
     Notes
     -----
@@ -162,6 +166,14 @@ class BaseEstimator(pl.LightningModule):
             precision: precision,
         }
         self.trainer_params_.update(kwargs)
+
+    @property
+    def fitted(self):
+	    return self.fitted_
+
+    @property
+    def trainer_params(self):
+	    return self.trainer_params_
 
     def fit(
             self,
@@ -246,6 +258,156 @@ class BaseEstimator(pl.LightningModule):
         trainer = pl.Trainer(**self.trainer_params_)
         return torch.cat(trainer.predict(
             self, test_dataloader, return_predictions=True))
+
+    def training_step(
+            self,
+            batch: Any,
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0) -> STEP_OUTPUT:
+        """ Here you compute and return the training loss and some additional
+        metrics for e.g. the progress bar or logger.
+
+        Parameters
+        ----------
+        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`
+            the current data.
+        batch_idx: int
+            the index of this batch.
+        dataloader_idx: int, default=0
+            the index of the dataloader that produced this batch (only if
+            multiple dataloaders are used).
+
+        Returns
+        -------
+        loss:  STEP_OUTPUT
+            the computed loss:
+
+            - :class:`~torch.Tensor` - the loss tensor.
+            - ``dict`` - a dictionary which can include any keys, but must
+              include the key ``'loss'`` in the case of automatic optimization.
+            - ``None`` - in automatic optimization, this will skip to the
+              next batch (but is not supported for multi-GPU, TPU, or
+              DeepSpeed). For manual optimization, this has no special
+              meaning, as returning the loss is not required.
+
+        To use multiple optimizers, you can switch to 'manual optimization'
+        and control their stepping:
+
+        Examples
+        --------
+        >>> def __init__(self):
+        >>>     super().__init__()
+        >>>     self.automatic_optimization = False
+        >>> 
+        >>> 
+        >>> # Multiple optimizers (e.g.: GANs)
+        >>> def training_step(self, batch, batch_idx):
+        >>>     opt1, opt2 = self.optimizers()
+        >>> 
+        >>>     # do training_step with encoder
+        >>>     ...
+        >>>     opt1.step()
+        >>>     # do training_step with decoder
+        >>>     ...
+        >>>     opt2.step()
+
+        Notes
+        -----
+        When ``accumulate_grad_batches`` > 1, the loss returned here will be
+        automatically normalized by ``accumulate_grad_batches`` internally.
+        """
+        return super().training_step(batch, batch_idx, dataloader_idx)
+
+    def validation_step(
+            self,
+            batch: Any,
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0) -> STEP_OUTPUT:
+        """ Operates on a single batch of data from the validation set. In
+        this step you'd might generate examples or calculate anything of
+        interest like accuracy.
+
+        Parameters
+        ----------
+        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`
+            the current data.
+        batch_idx: int
+            the index of this batch.
+        dataloader_idx: int, default=0
+            the index of the dataloader that produced this batch (only if
+            multiple dataloaders are used).
+
+        Returns
+        -------
+        loss: STEP_OUTPUT
+            the computed loss:
+
+            - :class:`~torch.Tensor` - the loss tensor.
+            - ``dict`` - a dictionary. can include any keys, but must include
+              the key ``'loss'``.
+            - ``None`` - skip to the next batch.
+
+        Notes
+        -----
+        If you don't need to validate you don't need to implement this method.
+
+        Notes
+        -----
+        When the :meth:`validation_step` is called, the model has been put in
+        eval mode and PyTorch gradients have been disabled. At the end of
+        validation,  the model goes back to training mode and gradients are
+        enabled.
+        """
+        return super().validation_step(batch, batch_idx, dataloader_idx)
+
+    def transform_step(
+            self,
+            batch: Any,
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0) -> Any:
+        """ An alias to :meth:`~nidl.estimators.BaseEstimator.predict_step`.
+        """
+        return self.predict_step(batch, batch_idx, dataloader_idx)
+
+    def predict_step(
+            self,
+            batch: Any,
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0) -> Any:
+        """ Step function called during
+        :meth:`~lightning.pytorch.trainer.trainer.Trainer.predict`. By default,
+        it calls :meth:`~lightning.pytorch.core.LightningModule.forward`.
+        Override to add any processing logic.
+
+        The :meth:`~lightning.pytorch.core.LightningModule.predict_step` is
+        used to scale inference on multi-devices.
+
+        To prevent an OOM error, it is possible to use
+        :class:`~lightning.pytorch.callbacks.BasePredictionWriter`
+        callback to write the predictions to disk or database after each
+        batch or on epoch end.
+
+        The :class:`~lightning.pytorch.callbacks.BasePredictionWriter` should
+        be used while using a spawn based accelerator. This happens for
+        training strategy ``strategy="ddp_spawn"`` or training on 8 TPU cores
+        with ``accelerator="tpu", devices=8`` as predictions won't be returned.
+
+        Parameters
+        ----------
+        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`
+            the current data.
+        batch_idx: int
+            the index of this batch.
+        dataloader_idx: int, default=0
+            the index of the dataloader that produced this batch (only if
+            multiple dataloaders are used).
+
+        Returns
+        -------
+        out: Any
+            the predicted output.
+        """
+        return super().predict_step(batch, batch_idx, dataloader_idx)
 
 
 class RegressorMixin:
