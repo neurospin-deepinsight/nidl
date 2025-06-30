@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.coord.text2grid
 
-.. minigallery:: surfify.utils.coord.text2grid surfify.utils.text2grid
+.. minigallery:: surfify.utils.text2grid surfify.utils.coord.text2grid
     :add-heading: Examples
     :heading-level: -
 

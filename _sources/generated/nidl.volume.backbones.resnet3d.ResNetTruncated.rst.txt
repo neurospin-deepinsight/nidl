@@ -9,7 +9,7 @@
 .. autoclass:: nidl.volume.backbones.resnet3d.ResNetTruncated
      :members:
 
-.. minigallery:: nidl.volume.backbones.resnet3d.ResNetTruncated nidl.volume.backbones.ResNetTruncated
+.. minigallery:: nidl.volume.backbones.ResNetTruncated nidl.volume.backbones.resnet3d.ResNetTruncated
     :add-heading: Examples
     :heading-level: -
 

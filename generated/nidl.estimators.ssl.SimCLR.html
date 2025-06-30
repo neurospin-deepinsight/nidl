@@ -283,12 +283,12 @@ loss compares the similarity of z_i and z_j to the similarity of z_i to
 any other representation in the batch by performing a softmax over the
 similarity values. The loss can be formally written as:</p>
 <div class="math">
-<p><span class="math">\ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
+<p><img src="../_images/math/7a85bb32c2a48b2cecc525ca341bf85198c5035d.png" alt="\ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
              \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
                 \exp(\text{sim}(z_i,z_k)/\tau)}
            = -\text{sim}(z_i,z_j)/\tau
              +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                \exp(\text{sim}(z_i,z_k)/\tau)\right]</span></p>
+                \exp(\text{sim}(z_i,z_k)/\tau)\right]"/></p>
 </div><p>The function text{sim} is a similarity metric, and the hyperparameter
 tau is called temperature determining how peaked the distribution is.
 Since many similarity metrics are bounded, the temperature parameter
@@ -296,7 +296,7 @@ allows us to balance the influence of many dissimilar image patches versus
 one similar patch. The similarity metric that is used in SimCLR is cosine
 similarity, as defined below:</p>
 <div class="math">
-<p><span class="math">\text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}</span></p>
+<p><img src="../_images/math/18a8ddec389dc33fc5114f51c36d2e38f52adbce.png" alt="\text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}"/></p>
 </div><p>The maximum cosine similarity possible is 1, while the minimum is -1. In
 general, we will see that the features of two different images will
 converge to a cosine similarity around zero since the minimum, -1, would

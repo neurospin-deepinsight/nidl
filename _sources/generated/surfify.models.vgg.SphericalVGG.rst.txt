@@ -9,7 +9,7 @@
 .. autoclass:: surfify.models.vgg.SphericalVGG
      :members:
 
-.. minigallery:: surfify.models.vgg.SphericalVGG surfify.models.SphericalVGG
+.. minigallery:: surfify.models.SphericalVGG surfify.models.vgg.SphericalVGG
     :add-heading: Examples
     :heading-level: -
 
