@@ -21,6 +21,7 @@ from nidl.estimators import (
     BaseEstimator, ClassifierMixin, ClusterMixin, RegressorMixin,
     TransformerMixin)
 from nidl.estimators.ssl import SimCLR
+from nidl.estimators.linear import LogisticRegression
 from nidl.transforms import ContrastiveTransforms
 from nidl.utils import print_multicolor
 
@@ -71,6 +72,15 @@ class TestExperiment(unittest.TestCase):
             }
         }
 
+    def predict_config(self):
+        return {
+            LogisticRegression: {
+                "num_classes": 2,
+                "lr": 5e-4,
+                "weight_decay": 1e-4,
+            }
+        }
+
     def tearDown(self):
         """ Run after each test.
         """
@@ -117,6 +127,22 @@ class TestExperiment(unittest.TestCase):
             z = model.transform(self.x_loader)
             self.assertTrue(
                 z.shape == (self.n_images, self._encoder.latent_size))
+
+    def test_predictor(self):
+        """ Test predictor model (simple check).
+        """
+        for klass, params in self.predict_config().items():
+            print(f"[{print_multicolor(klass.__name__, display=False)}]...")
+            model = klass(
+                model=self._model,
+                random_state=42,
+                limit_train_batches=3,
+                max_epochs=2,
+                **params
+            )
+            model.fit(self.xy_loader)
+            pred = model.predict(self.x_loader)
+            self.assertTrue(pred.shape == (self.n_images, ))
 
 
 class CustomTensorDataset(Dataset):

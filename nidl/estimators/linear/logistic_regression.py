@@ -7,7 +7,7 @@
 ##########################################################################
 
 from collections.abc import Sequence
-from typing import Optional, Union
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -127,14 +127,16 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
     def training_step(
             self,
             batch: tuple[torch.Tensor, Sequence[torch.Tensor]],
-            batch_idx: int):
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0):
         _, loss, _ = self.cross_entropy_loss(batch, mode="train")
         return loss
 
     def validation_step(
             self,
-            batch: tuple[torch.Tensor, Sequence[torch.Tensor]],
-            batch_idx: int):
+            batch: tuple[torch.Tensor, torch.Tensor],
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0):
         preds, loss, labels = self.cross_entropy_loss(batch, mode="val")
         self.validation_step_outputs.setdefault("pred", []).append(preds)
         self.validation_step_outputs.setdefault("label", []).append(labels)
@@ -146,8 +148,8 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
 
     def predict_step(
             self,
-            batch: Union[tuple[torch.Tensor, Sequence[torch.Tensor]],
-                         tuple[torch.Tensor]],
-            batch_idx: int):
+            batch: torch.Tensor,
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0):
         imgs = batch[0]
         return self.model(imgs)
