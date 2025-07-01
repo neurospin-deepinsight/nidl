@@ -116,13 +116,39 @@ class BaseEstimator(pl.LightningModule):
     fitted
         a boolean that is True if the estimator has been fitted, and is False
         otherwise.
-    hparams
+    hparams:
         contains the estimator hyperparameters.
     trainer
         the current lightning trainer.
     trainer_params
         a dictionaray with the trainer parameters.
 
+    Methods
+    -------
+    :meth:`BaseEstimator.fit`
+        the `fit` method.
+    :meth:`BaseEstimator.transform`
+        the `transform` method for transformer.
+    :meth:`BaseEstimator.predict`
+        the `predict` method for regression, classification and clustering.
+    :meth:`BaseEstimator.training_step`
+        compute and return the training loss and some additional
+        metrics.
+        TO BE IMPLEMENTED.
+    :meth:`BaseEstimator.validation_step`
+        compute anything of interest like accuracy on a single batch of data
+        from the validation set.
+        TO BE IMPLEMENTED.
+    :meth:`BaseEstimator.transform_step`
+        transform new data.
+        TO BE IMPLEMENTED.
+    :meth:`BaseEstimator.predict_step`
+        make some predictions on new data.
+        TO BE IMPLEMENTED.
+    :meth:`BaseEstimator.log`
+        log a key, value pair.
+    :meth:`BaseEstimator.log_dict`
+        log a dictionary of values at once.
         
     Notes
     -----
@@ -284,7 +310,7 @@ class BaseEstimator(pl.LightningModule):
 
         Returns
         -------
-        loss:  STEP_OUTPUT
+        loss: STEP_OUTPUT
             the computed loss:
 
             - :class:`~torch.Tensor` - the loss tensor.
@@ -566,7 +592,7 @@ class BaseEstimator(pl.LightningModule):
         >>> values = {'loss': loss, 'acc': acc, ..., 'metric_n': metric_n}
         >>> self.log_dict(values)
         """
-        return super().log(
+        return super().log_dict(
             dictionary=dictionary,
             prog_bar=prog_bar,
             logger=logger,

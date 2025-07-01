@@ -9,10 +9,9 @@
 ##########################################################################
 
 import warnings
-from collections import UserDict
 
 
-class Bunch(UserDict):
+class Bunch(dict):
     """Container object exposing keys as attributes.
 
     Bunch objects are sometimes used as an output for functions and methods.

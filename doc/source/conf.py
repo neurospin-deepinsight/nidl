@@ -81,6 +81,7 @@ sphinx_gallery_conf = {
 
 # Remove some numpy-linked warnings
 numpydoc_show_class_members = False
+numpydoc_class_members_toctree = False
 
 # generate autosummary even if no references
 autosummary_generate = True
