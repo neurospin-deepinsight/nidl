@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.nn.IcoMaxIndexUpSample
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.nn.IcoMaxIndexUpSample
     :add-heading: Examples

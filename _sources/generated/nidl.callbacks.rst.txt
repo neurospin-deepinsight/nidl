@@ -8,7 +8,7 @@ API documentation of *nidl.callbacks*
 nidl.callbacks
 ^^^^^^^^^^^^^^
 
-Module that defines common callbacks.
+Common callbacks.
 
 nidl.callbacks.check_typing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

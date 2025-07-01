@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.nn.IcoSpMaConv
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.nn.IcoSpMaConv
     :add-heading: Examples

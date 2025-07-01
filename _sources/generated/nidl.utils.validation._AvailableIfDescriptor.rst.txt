@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.utils.validation._AvailableIfDescriptor
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.utils.validation._AvailableIfDescriptor
     :add-heading: Examples

@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.estimators.ClassifierMixin
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.estimators.ClassifierMixin
     :add-heading: Examples

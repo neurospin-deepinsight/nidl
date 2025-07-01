@@ -8,8 +8,9 @@
 
 .. autoclass:: nidl.transforms.ssl.ContrastiveTransforms
      :members:
+     :show-inheritance:
 
-.. minigallery:: nidl.transforms.ContrastiveTransforms nidl.transforms.ssl.ContrastiveTransforms
+.. minigallery:: nidl.transforms.ssl.ContrastiveTransforms nidl.transforms.ContrastiveTransforms
     :add-heading: Examples
     :heading-level: -
 

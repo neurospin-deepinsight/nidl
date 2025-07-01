@@ -159,6 +159,25 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LogisticRegression</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; LogisticRegression implementation.</span>
 
+<span class="sd">    This class can also be used in self supervised settings.</span>
+<span class="sd">    After we have trained our encoder via self supervised learning, we can</span>
+<span class="sd">    deploy it on downstream tasks and see how well it performs with little</span>
+<span class="sd">    data. A common setup, which also verifies whether the model has learned</span>
+<span class="sd">    generalized representations, is to perform Logistic Regression on the</span>
+<span class="sd">    features. In other words, we learn a MLP that maps the</span>
+<span class="sd">    representations to a class prediction. If very little data is available,</span>
+<span class="sd">    it might be beneficial to dynamically encode the images during training</span>
+<span class="sd">    so that we can also apply data augmentations. To freeze the input encoder,</span>
+<span class="sd">    consider using :meth:`LogisticRegression.freeze_encoder`. It assumes the</span>
+<span class="sd">    MLP layer is named `fc`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; model = nn.Sequential(OrderedDict([</span>
+<span class="sd">    &gt;&gt;&gt;     (&quot;encoder&quot;, encoder),</span>
+<span class="sd">    &gt;&gt;&gt;     (&quot;fc&quot;, nn.Linear(latent_size, num_classes))</span>
+<span class="sd">    &gt;&gt;&gt; ]))</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    model: nn.Module</span>
@@ -204,6 +223,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span> <span class="o">=</span> <span class="p">{}</span>
 
+<div class="viewcode-block" id="LogisticRegression.freeze_encoder">
+<a class="viewcode-back" href="../../../../generated/nidl.estimators.linear.logistic_regression.LogisticRegression.html#nidl.estimators.linear.LogisticRegression.freeze_encoder">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">freeze_encoder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Freeze the input encoder. Useful for self supervised settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="LogisticRegression.configure_optimizers">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.linear.logistic_regression.LogisticRegression.html#nidl.estimators.linear.LogisticRegression.configure_optimizers">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -239,8 +267,8 @@
         <span class="n">loss</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
         <span class="n">acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">preds</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_loss&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_acc&quot;</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_loss&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_acc&quot;</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">preds</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">labels</span></div>
 
 
@@ -280,7 +308,7 @@
             <span class="n">batch</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
                          <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span>
             <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">imgs</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">imgs</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span></div>
 </div>
 

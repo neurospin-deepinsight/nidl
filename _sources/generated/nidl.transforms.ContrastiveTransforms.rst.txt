@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.transforms.ContrastiveTransforms
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.transforms.ContrastiveTransforms
     :add-heading: Examples

@@ -8,8 +8,9 @@
 
 .. autoclass:: surfify.augmentation.base.SurfNoise
      :members:
+     :show-inheritance:
 
-.. minigallery:: surfify.augmentation.SurfNoise surfify.augmentation.base.SurfNoise
+.. minigallery:: surfify.augmentation.base.SurfNoise surfify.augmentation.SurfNoise
     :add-heading: Examples
     :heading-level: -
 

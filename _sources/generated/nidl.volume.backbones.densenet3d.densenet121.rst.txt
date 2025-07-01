@@ -8,7 +8,7 @@
 
 .. autofunction:: nidl.volume.backbones.densenet3d.densenet121
 
-.. minigallery:: nidl.volume.backbones.densenet121 nidl.volume.backbones.densenet3d.densenet121
+.. minigallery:: nidl.volume.backbones.densenet3d.densenet121 nidl.volume.backbones.densenet121
     :add-heading: Examples
     :heading-level: -
 

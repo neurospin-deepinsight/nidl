@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.estimators.RegressorMixin
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.estimators.RegressorMixin
     :add-heading: Examples

@@ -8,8 +8,9 @@
 
 .. autoclass:: nidl.estimators.base.ClusterMixin
      :members:
+     :show-inheritance:
 
-.. minigallery:: nidl.estimators.ClusterMixin nidl.estimators.base.ClusterMixin
+.. minigallery:: nidl.estimators.base.ClusterMixin nidl.estimators.ClusterMixin
     :add-heading: Examples
     :heading-level: -
 

@@ -63,6 +63,7 @@ A module with common augmentation utility functions.
   **Classes**:
     * `surfify.augmentation.utils.BaseTransformer <surfify.augmentation.utils.BaseTransformer.html>`_
     * `surfify.augmentation.utils.RandomAugmentation <surfify.augmentation.utils.RandomAugmentation.html>`_
+    * `surfify.augmentation.utils.Transform <surfify.augmentation.utils.Transform.html>`_
     * `surfify.augmentation.utils.Transformer <surfify.augmentation.utils.Transformer.html>`_
 
   **Functions**:

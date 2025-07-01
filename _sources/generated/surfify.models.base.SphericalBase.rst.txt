@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.models.base.SphericalBase
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.models.SphericalBase surfify.models.base.SphericalBase
     :add-heading: Examples

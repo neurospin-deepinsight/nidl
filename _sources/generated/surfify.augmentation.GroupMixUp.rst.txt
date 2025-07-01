@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.augmentation.GroupMixUp
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.augmentation.GroupMixUp
     :add-heading: Examples

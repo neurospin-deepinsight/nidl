@@ -105,54 +105,6 @@
                                             
                                             
                                     
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
                                 
                                     
                                         
@@ -168,14 +120,6 @@
                                 
                                 
                                     <li>SECTIONS</li>
-                                    
-						                <li> <a href='#surfify.augmentation.BaseTransformer.Transform'>Basetransformer.transform</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.augmentation.BaseTransformer.Transform.probability'>Basetransformer.transform.probability</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.augmentation.BaseTransformer.Transform.randomize_per_channel'>Basetransformer.transform.randomize_per_channel</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.augmentation.BaseTransformer.Transform.transform'>Basetransformer.transform.transform</a> </li>                                    
                                     
 						                <li> <a href='#surfify.augmentation.BaseTransformer.register'>Basetransformer.register()</a> </li>                                    
                                     
@@ -231,37 +175,14 @@
                     <div class="document">
                         <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/surfify/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
+<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="surfify.augmentation.BaseTransformer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">surfify.augmentation.</span></span><span class="sig-name descname"><span class="pre">BaseTransformer</span></span><a class="reference internal" href="../_modules/surfify/augmentation/utils.html#BaseTransformer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#surfify.augmentation.BaseTransformer" title="Link to this definition">¶</a></dt>
-<dd><p>Class that can be used to register a sequence of transformations.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that can be used to register a sequence of transformations.</p>
 <p>Init class.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="surfify.augmentation.BaseTransformer.Transform">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize_per_channel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surfify.augmentation.BaseTransformer.Transform" title="Link to this definition">¶</a></dt>
-<dd><p>Create new instance of Transform(transform, probability, randomize_per_channel)</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.augmentation.BaseTransformer.Transform.probability">
-<span class="sig-name descname"><span class="pre">probability</span></span><a class="headerlink" href="#surfify.augmentation.BaseTransformer.Transform.probability" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.augmentation.BaseTransformer.Transform.randomize_per_channel">
-<span class="sig-name descname"><span class="pre">randomize_per_channel</span></span><a class="headerlink" href="#surfify.augmentation.BaseTransformer.Transform.randomize_per_channel" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 2</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.augmentation.BaseTransformer.Transform.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><a class="headerlink" href="#surfify.augmentation.BaseTransformer.Transform.transform" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="surfify.augmentation.BaseTransformer.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize_per_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/surfify/augmentation/utils.html#BaseTransformer.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#surfify.augmentation.BaseTransformer.register" title="Link to this definition">¶</a></dt>

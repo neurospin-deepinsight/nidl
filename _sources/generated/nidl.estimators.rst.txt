@@ -8,7 +8,7 @@ API documentation of *nidl.estimators*
 nidl.estimators
 ^^^^^^^^^^^^^^^
 
-Module that defines common estimators.
+Common estimators.
 
 .. rst-class:: documentation-contents
 

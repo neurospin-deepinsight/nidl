@@ -256,7 +256,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    block: BasicBlock or Bottleneck</span>
-<span class="sd">        which convolution block to apply (4 in total). </span>
+<span class="sd">        which convolution block to apply (4 in total).</span>
 <span class="sd">        This should be a class type and not its instance.</span>
 <span class="sd">    layers: (int, int, int, int)</span>
 <span class="sd">        now many layers in each conv block (4 in total).</span>
@@ -264,21 +264,21 @@
 <span class="sd">        now many input channels has the input.</span>
 <span class="sd">    zero_init_residual: bool, default=False</span>
 <span class="sd">        zero-initialize the last BN in each residual branch,</span>
-<span class="sd">        so that the residual branch starts with zeros, and each residual block </span>
-<span class="sd">        behaves like an identity. This improves the model by 0.2~0.3% </span>
+<span class="sd">        so that the residual branch starts with zeros, and each residual block</span>
+<span class="sd">        behaves like an identity. This improves the model by 0.2~0.3%</span>
 <span class="sd">        according to https://arxiv.org/abs/1706.02677.</span>
 <span class="sd">    groups: int, default=1</span>
 <span class="sd">        how many groups to divide the input channels into in grouped 3x3</span>
 <span class="sd">        convolution of Bottleneck block (e.g. in Resnet50).</span>
 <span class="sd">    width_per_group: int, default=64</span>
-<span class="sd">        number of channels per group in the grouped 3x3 convolution of </span>
+<span class="sd">        number of channels per group in the grouped 3x3 convolution of</span>
 <span class="sd">        Bottleneck block (e.g. in ResNet50). Effective width = groups *</span>
 <span class="sd">        width_per_group.</span>
 <span class="sd">    replace_stride_with_dilation: None or [bool, bool, bool], default=None</span>
 <span class="sd">        by default, ResNet reduces spatial resolution of input feature</span>
 <span class="sd">        maps using  stride 2 conv in layers 2, 3, 4. This replaces some layers</span>
 <span class="sd">        with stride=2 by dilation (atrous) conv, preserving spatial</span>
-<span class="sd">        resolution. It is useful for dense tasks such as segmentation. </span>
+<span class="sd">        resolution. It is useful for dense tasks such as segmentation.</span>
 <span class="sd">    norm_layer: None or Type[nn.Module], default=None</span>
 <span class="sd">        which normalization to apply after each layer. If None, nn.BatchNorm3d</span>
 <span class="sd">        is applied.</span>
@@ -288,16 +288,17 @@
 <span class="sd">        the size of the embedding space.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> 
-            <span class="n">block</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BasicBlock</span><span class="p">],</span> <span class="nb">type</span><span class="p">[</span><span class="n">Bottleneck</span><span class="p">]],</span> 
-            <span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
-            <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">block</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BasicBlock</span><span class="p">],</span> <span class="nb">type</span><span class="p">[</span><span class="n">Bottleneck</span><span class="p">]],</span>
+            <span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="n">zero_init_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
-            <span class="n">width_per_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span> 
-            <span class="n">replace_stride_with_dilation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">norm_layer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-            <span class="n">initial_kernel_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> 
+            <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">width_per_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+            <span class="n">replace_stride_with_dilation</span><span class="p">:</span>
+                <span class="n">Union</span><span class="p">[</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">norm_layer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">initial_kernel_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
             <span class="n">n_embedding</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">512</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -319,7 +320,7 @@
                 <span class="sa">f</span><span class="s2">&quot;or a 3-element tuple, got </span><span class="si">{</span><span class="n">replace_stride_with_dilation</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_width</span> <span class="o">=</span> <span class="n">width_per_group</span>
-        <span class="n">initial_stride</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">initial_kernel_size</span><span class="o">==</span><span class="mi">7</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">initial_stride</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">initial_kernel_size</span> <span class="o">==</span> <span class="mi">7</span> <span class="k">else</span> <span class="mi">1</span>
         <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="n">initial_kernel_size</span><span class="o">-</span><span class="n">initial_stride</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv3d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplanes</span><span class="p">,</span>
                                <span class="n">kernel_size</span><span class="o">=</span><span class="n">initial_kernel_size</span><span class="p">,</span>
@@ -419,7 +420,7 @@
 <span class="sd">    depth: int</span>
 <span class="sd">        the model depth in [0, 4].</span>
 <span class="sd">    block: BasicBlock or Bottleneck</span>
-<span class="sd">        which convolution block to apply (4 in total). </span>
+<span class="sd">        which convolution block to apply (4 in total).</span>
 <span class="sd">        This should be a class type and not its instance.</span>
 <span class="sd">    layers: (int, int, int, int)</span>
 <span class="sd">        now many layers in each conv block (4 in total).</span>
@@ -427,21 +428,21 @@
 <span class="sd">        now many input channels has the input.</span>
 <span class="sd">    zero_init_residual: bool, default=False</span>
 <span class="sd">        zero-initialize the last BN in each residual branch,</span>
-<span class="sd">        so that the residual branch starts with zeros, and each residual block </span>
-<span class="sd">        behaves like an identity. This improves the model by 0.2~0.3% </span>
+<span class="sd">        so that the residual branch starts with zeros, and each residual block</span>
+<span class="sd">        behaves like an identity. This improves the model by 0.2~0.3%</span>
 <span class="sd">        according to https://arxiv.org/abs/1706.02677.</span>
 <span class="sd">    groups: int, default=1</span>
 <span class="sd">        how many groups to divide the input channels into in grouped 3x3</span>
 <span class="sd">        convolution of Bottleneck block (e.g. in Resnet50).</span>
 <span class="sd">    width_per_group: int, default=64</span>
-<span class="sd">        number of channels per group in the grouped 3x3 convolution of </span>
+<span class="sd">        number of channels per group in the grouped 3x3 convolution of</span>
 <span class="sd">        Bottleneck block (e.g. in ResNet50). Effective width = groups *</span>
 <span class="sd">        width_per_group.</span>
 <span class="sd">    replace_stride_with_dilation: None or [bool, bool, bool], default=None</span>
 <span class="sd">        by default, ResNet reduces spatial resolution of input feature</span>
 <span class="sd">        maps using  stride 2 conv in layers 2, 3, 4. This replaces some layers</span>
 <span class="sd">        with stride=2 by dilation (atrous) conv, preserving spatial</span>
-<span class="sd">        resolution. It is useful for dense tasks such as segmentation. </span>
+<span class="sd">        resolution. It is useful for dense tasks such as segmentation.</span>
 <span class="sd">    norm_layer: None or Type[nn.Module], default=None</span>
 <span class="sd">        which normalization to apply after each layer. If None, nn.BatchNorm3d</span>
 <span class="sd">        is applied.</span>
@@ -502,9 +503,9 @@
 <div class="viewcode-block" id="_resnet">
 <a class="viewcode-back" href="../../../../generated/nidl.volume.backbones.resnet3d._resnet.html#nidl.volume.backbones._resnet">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_resnet</span><span class="p">(</span>
-        <span class="n">arch</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
-        <span class="n">block</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> 
-        <span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
+        <span class="n">arch</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+        <span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">ResNet</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">layers</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span></div>
@@ -514,10 +515,10 @@
 <div class="viewcode-block" id="_resnet_trunc">
 <a class="viewcode-back" href="../../../../generated/nidl.volume.backbones.resnet3d._resnet_trunc.html#nidl.volume.backbones._resnet_trunc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_resnet_trunc</span><span class="p">(</span>
-        <span class="n">arch</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
-        <span class="n">block</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> 
-        <span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
-        <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+        <span class="n">arch</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+        <span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">ResNetTruncated</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">layers</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span></div>
@@ -530,7 +531,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 3D ResNet-18 architecture adapted from He et al. 2015. See</span>
 <span class="sd">    https://doi.org/10.48550/arXiv.1512.03385 for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_resnet</span><span class="p">(</span><span class="s1">&#39;resnet18&#39;</span><span class="p">,</span> <span class="n">BasicBlock</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_resnet</span><span class="p">(</span><span class="s1">&#39;resnet18&#39;</span><span class="p">,</span> <span class="n">BasicBlock</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
@@ -540,7 +541,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 3D ResNet-50 architecture adapted from He et al. 2015. See</span>
 <span class="sd">    https://doi.org/10.48550/arXiv.1512.03385 for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_resnet</span><span class="p">(</span><span class="s1">&#39;resnet50&#39;</span><span class="p">,</span> <span class="n">Bottleneck</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_resnet</span><span class="p">(</span><span class="s1">&#39;resnet50&#39;</span><span class="p">,</span> <span class="n">Bottleneck</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
@@ -550,7 +551,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 3D truncated ResNet-18 architecture adapted from He et al. 2015. See</span>
 <span class="sd">    https://doi.org/10.48550/arXiv.1512.03385 for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_resnet_trunc</span><span class="p">(</span><span class="s1">&#39;resnet18&#39;</span><span class="p">,</span> <span class="n">BasicBlock</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>  <span class="n">depth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_resnet_trunc</span><span class="p">(</span><span class="s1">&#39;resnet18&#39;</span><span class="p">,</span> <span class="n">BasicBlock</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">depth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
@@ -560,7 +561,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 3D truncated ResNet-50 architecture adapted from He et al. 2015. See</span>
 <span class="sd">    https://doi.org/10.48550/arXiv.1512.03385 for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_resnet_trunc</span><span class="p">(</span><span class="s1">&#39;resnet50&#39;</span><span class="p">,</span> <span class="n">Bottleneck</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="n">depth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_resnet_trunc</span><span class="p">(</span><span class="s1">&#39;resnet50&#39;</span><span class="p">,</span> <span class="n">Bottleneck</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">depth</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 </pre></div>
                     </div>

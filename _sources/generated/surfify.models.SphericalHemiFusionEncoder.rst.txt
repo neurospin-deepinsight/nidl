@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.models.SphericalHemiFusionEncoder
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.models.SphericalHemiFusionEncoder
     :add-heading: Examples

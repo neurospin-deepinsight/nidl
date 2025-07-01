@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.datasets.GenericSurfDataset
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.datasets.GenericSurfDataset
     :add-heading: Examples

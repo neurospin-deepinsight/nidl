@@ -8,8 +8,9 @@
 
 .. autoclass:: nidl.utils.weights.Weights
      :members:
+     :show-inheritance:
 
-.. minigallery:: nidl.utils.Weights nidl.utils.weights.Weights
+.. minigallery:: nidl.utils.weights.Weights nidl.utils.Weights
     :add-heading: Examples
     :heading-level: -
 

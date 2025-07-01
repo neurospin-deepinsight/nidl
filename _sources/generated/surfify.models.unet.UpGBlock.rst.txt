@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.models.unet.UpGBlock
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.models.unet.UpGBlock
     :add-heading: Examples

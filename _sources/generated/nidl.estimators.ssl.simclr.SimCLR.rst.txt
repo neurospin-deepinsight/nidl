@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.estimators.ssl.simclr.SimCLR
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.estimators.ssl.simclr.SimCLR nidl.estimators.ssl.SimCLR
     :add-heading: Examples

@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.nn.IcoPool
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.nn.IcoPool
     :add-heading: Examples

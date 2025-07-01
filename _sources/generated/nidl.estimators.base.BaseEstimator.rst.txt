@@ -8,8 +8,9 @@
 
 .. autoclass:: nidl.estimators.base.BaseEstimator
      :members:
+     :show-inheritance:
 
-.. minigallery:: nidl.estimators.base.BaseEstimator nidl.estimators.BaseEstimator
+.. minigallery:: nidl.estimators.BaseEstimator nidl.estimators.base.BaseEstimator
     :add-heading: Examples
     :heading-level: -
 

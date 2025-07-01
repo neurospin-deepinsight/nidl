@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.utils.Bunch
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.utils.Bunch
     :add-heading: Examples

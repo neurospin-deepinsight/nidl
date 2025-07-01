@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.volume.backbones.DenseNet
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.volume.backbones.DenseNet
     :add-heading: Examples

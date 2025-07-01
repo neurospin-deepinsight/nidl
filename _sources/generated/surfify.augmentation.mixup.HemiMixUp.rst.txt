@@ -8,8 +8,9 @@
 
 .. autoclass:: surfify.augmentation.mixup.HemiMixUp
      :members:
+     :show-inheritance:
 
-.. minigallery:: surfify.augmentation.HemiMixUp surfify.augmentation.mixup.HemiMixUp
+.. minigallery:: surfify.augmentation.mixup.HemiMixUp surfify.augmentation.HemiMixUp
     :add-heading: Examples
     :heading-level: -
 

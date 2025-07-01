@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.augmentation.base.SurfCutOut
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.augmentation.base.SurfCutOut surfify.augmentation.SurfCutOut
     :add-heading: Examples

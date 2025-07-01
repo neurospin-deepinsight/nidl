@@ -275,7 +275,7 @@ certain images? Can we cluster the images? To get an insight into these
 questions, we will implement a popular, simple contrastive learning method,
 SimCLR, and apply it to the STL10 dataset.</p>
 <section id="setup">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
 <p>This notebook requires some packages besides nidl. Let’s first start with
 importing our standard libraries below:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -320,7 +320,7 @@ available.</p>
 </div>
 </section>
 <section id="data-augmentation-for-contrastive-learning">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Data Augmentation for Contrastive Learning<a class="headerlink" href="#data-augmentation-for-contrastive-learning" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Data Augmentation for Contrastive Learning<a class="headerlink" href="#data-augmentation-for-contrastive-learning" title="Link to this heading">¶</a></h2>
 <p>To allow efficient training, we need to prepare the data loading such that
 we sample two different, random augmentations for each image in the batch.
 The easiest way to do this is by creating a transformation that, when being
@@ -370,7 +370,7 @@ distinguish between images.</p>
 </div>
 </section>
 <section id="dataset">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Dataset<a class="headerlink" href="#dataset" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Dataset<a class="headerlink" href="#dataset" title="Link to this heading">¶</a></h2>
 <p>After discussing the data augmentation techniques, we can now focus on the
 dataset. In this tutorial, we will use the STL10 dataset, which, similarly to
 CIFAR10, contains images of 10 classes: airplane, bird, car, cat, deer, dog,
@@ -437,7 +437,7 @@ image pairs sampled with our augmentations:</p>
 </div>
 </section>
 <section id="training">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h2>
 <p>In our experiments, we will use the common ResNet-18 architecture as f(.), and
 we follow the original SimCLR paper setup by defining g(.) as a two-layer MLP
 with ReLU activation in the hidden layer. Note that in the follow-up paper,
@@ -489,7 +489,7 @@ to get good results.</p>
 </div>
 </section>
 <section id="logistic-regression">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Logistic Regression<a class="headerlink" href="#logistic-regression" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Logistic Regression<a class="headerlink" href="#logistic-regression" title="Link to this heading">¶</a></h2>
 <p>After we have trained our model via contrastive learning, we can deploy it
 on downstream tasks and see how well it performs with little data. A common
 setup, which also verifies whether the model has learned generalized
@@ -629,7 +629,7 @@ finetune f(.) in the training process, allowing for the representations to
 adapt more to the specific classification task given.</p>
 </section>
 <section id="baseline">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Baseline<a class="headerlink" href="#baseline" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Baseline<a class="headerlink" href="#baseline" title="Link to this heading">¶</a></h2>
 <p>As a baseline to our results above, we will train a standard ResNet-18
 with random initialization on the labeled training set of STL10. The
 results will give us an # indication of the advantages that contrastive
@@ -729,7 +729,7 @@ performance gains by leveraging large amounts of unlabeled data when
 little labeled data is available.</p>
 </section>
 <section id="conclusion">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
 <p>In this tutorial, we have discussed self-supervised contrastive learning
 and implemented SimCLR as an example method. We have applied it to the
 STL10 dataset and showed that it can learn generalizable representations

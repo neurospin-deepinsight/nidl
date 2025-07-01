@@ -1,7 +1,7 @@
 .. AUTO-GENERATED FILE -- DO NOT EDIT!
 
-API documentation of NIDL
-==========================
+API documentation of ``nidl``
+==============================
 
 This is the classes and functions reference in nidl. Please refer to the gallery for further details, as the class and function raw specifications may not be enough to give full guidelines on their uses.
 
@@ -20,14 +20,14 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     nidl
     </a></h3>
     <blockquote>
-    </blockquote>
+        <p>Deep learning for NeuroImaging in Python.</p>    </blockquote>
     </div>
     <div class='col-md-4'>
     <h3><a href='nidl.callbacks.html'>
     nidl.callbacks
     </a></h3>
     <blockquote>
-        <p>Module that defines common callbacks.</p>    </blockquote>
+        <p>Common callbacks.</p>    </blockquote>
     </div>
     <div class='col-md-4'>
     <h3><a href='nidl.datasets.html'>
@@ -43,7 +43,7 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     nidl.estimators
     </a></h3>
     <blockquote>
-        <p>Module that defines common estimators.</p>    </blockquote>
+        <p>Common estimators.</p>    </blockquote>
     </div>
     <div class='col-md-4'>
     <h3><a href='nidl.estimators.linear.html'>
@@ -66,7 +66,7 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     nidl.losses
     </a></h3>
     <blockquote>
-        <p>Definition of common losses.</p>    </blockquote>
+        <p>Common losses.</p>    </blockquote>
     </div>
     <div class='col-md-4'>
     <h3><a href='nidl.transforms.html'>
@@ -98,6 +98,25 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Definition of common volumic architectures.</p>    </blockquote>
     </div>
+
+    </div>
+    </div>
+    </div>
+
+.. raw:: html
+
+    <h2>Linked plugins</h2>
+
+.. raw:: html
+
+    <!-- Block section -->
+
+    <div class='container-fluid'>
+
+    <div class='float-left'>
+
+    <div class='row'>
+
     <div class='col-md-4'>
     <h3><a href='surfify.html'>
     surfify
@@ -105,9 +124,7 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Helper module for surface integration in PyTorch.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='surfify.augmentation.html'>
     surfify.augmentation
     </a></h3>
@@ -122,16 +139,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
         <p>Utilities to load datasets, including methods to load and fetch popular
     reference datasets. It also features some artificial data generators.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='surfify.losses.html'>
     surfify.losses
     </a></h3>
     <blockquote>
         <p>Common losses.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='surfify.models.html'>
     surfify.models
     </a></h3>
@@ -145,16 +162,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Suface dedicated modules.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='surfify.plotting.html'>
     surfify.plotting
     </a></h3>
     <blockquote>
         <p>Utilities to display datasets.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='surfify.utils.html'>
     surfify.utils
     </a></h3>
@@ -377,6 +394,14 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.volume.backbones.densenet3d.densenet121 <nidl.volume.backbones.densenet3d.densenet121.html>`_
 
     * `surfify <surfify.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `surfify.transforms.RandomCompose <surfify.transforms.RandomCompose.html>`_
+
+          `surfify.preprocessing.StandardScaler <surfify.preprocessing.StandardScaler.html>`_
+
     * `surfify.augmentation <surfify.augmentation.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
@@ -421,6 +446,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.augmentation.utils.BaseTransformer <surfify.augmentation.utils.BaseTransformer.html>`_
 
           `surfify.augmentation.utils.RandomAugmentation <surfify.augmentation.utils.RandomAugmentation.html>`_
+
+          `surfify.augmentation.utils.Transform <surfify.augmentation.utils.Transform.html>`_
 
           `surfify.augmentation.utils.Transformer <surfify.augmentation.utils.Transformer.html>`_
 
@@ -469,6 +496,10 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.models.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
 
+          `surfify.models.SiT <surfify.models.sit.SiT.html>`_
+
+          `surfify.models.SimCLR <surfify.models.simclr.SimCLR.html>`_
+
           `surfify.models.SphericalBase <surfify.models.base.SphericalBase.html>`_
 
           `surfify.models.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
@@ -516,6 +547,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.models.SphericalVGG19 <surfify.models.vgg.SphericalVGG19.html>`_
 
           `surfify.models.SphericalVGG19BN <surfify.models.vgg.SphericalVGG19BN.html>`_
+
+          `surfify.models.base.Ico <surfify.models.base.Ico.html>`_
 
           `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
 
@@ -568,6 +601,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.models.vgg.SphericalVGG19BN <surfify.models.vgg.SphericalVGG19BN.html>`_
 
           `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
+
+          `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
+
+          `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
+
+          `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
+
+          `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
+
+          `surfify.models.simclr.SimCLR <surfify.models.simclr.SimCLR.html>`_
 
           `surfify.models.unet.DownBlock <surfify.models.unet.DownBlock.html>`_
 

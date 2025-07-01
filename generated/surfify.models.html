@@ -159,6 +159,30 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -176,6 +200,10 @@
 						                <li> <a href='#surfify-models-vae'>Surfify.models.vae</a> </li>                                    
                                     
 						                <li> <a href='#surfify-models-vgg'>Surfify.models.vgg</a> </li>                                    
+                                    
+						                <li> <a href='#id1'>Surfify.models.sit</a> </li>                                    
+                                    
+						                <li> <a href='#id2'>Surfify.models.simclr</a> </li>                                    
                                     
 						                <li> <a href='#surfify-models-unet'>Surfify.models.unet</a> </li>                                    
                                     
@@ -232,12 +260,14 @@
                         <section id="api-documentation-of-surfify-models">
 <h1>API documentation of <em>surfify.models</em><a class="headerlink" href="#api-documentation-of-surfify-models" title="Link to this heading">¶</a></h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div>
 <section id="surfify-models">
-<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models<a class="headerlink" href="#surfify-models" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models<a class="headerlink" href="#surfify-models" title="Link to this heading">¶</a></h2>
 <p>Common architectures.</p>
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
 <li><p><a class="reference external" href="surfify.models.vae.HemiFusionDecoder.html">surfify.models.HemiFusionDecoder</a></p></li>
 <li><p><a class="reference external" href="surfify.models.vae.HemiFusionEncoder.html">surfify.models.HemiFusionEncoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.sit.SiT.html">surfify.models.SiT</a></p></li>
+<li><p><a class="reference external" href="surfify.models.simclr.SimCLR.html">surfify.models.SimCLR</a></p></li>
 <li><p><a class="reference external" href="surfify.models.base.SphericalBase.html">surfify.models.SphericalBase</a></p></li>
 <li><p><a class="reference external" href="surfify.models.unet.SphericalGUNet.html">surfify.models.SphericalGUNet</a></p></li>
 <li><p><a class="reference external" href="surfify.models.vgg.SphericalGVGG.html">surfify.models.SphericalGVGG</a></p></li>
@@ -267,18 +297,19 @@
 </dl>
 </section>
 <section id="surfify-models-base">
-<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.base<a class="headerlink" href="#surfify-models-base" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.base<a class="headerlink" href="#surfify-models-base" title="Link to this heading">¶</a></h2>
 <p>A base class for spherical networks that generate the requested icosahedrons
 and related informations.</p>
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.base.Ico.html">surfify.models.base.Ico</a></p></li>
 <li><p><a class="reference external" href="surfify.models.base.SphericalBase.html">surfify.models.base.SphericalBase</a></p></li>
 </ul>
 </dd>
 </dl>
 </section>
 <section id="surfify-models-vae">
-<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.vae<a class="headerlink" href="#surfify-models-vae" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.vae<a class="headerlink" href="#surfify-models-vae" title="Link to this heading">¶</a></h2>
 <p>Cortical Spherical Variational Auto-Encoder (GMVAE) models.</p>
 <p>[1] Representation Learning of Resting State fMRI with Variational
 Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfMRI-VAE">https://github.com/libilab/rsfMRI-VAE</a></p>
@@ -298,7 +329,7 @@ Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfM
 </dl>
 </section>
 <section id="surfify-models-vgg">
-<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.vgg<a class="headerlink" href="#surfify-models-vgg" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.vgg<a class="headerlink" href="#surfify-models-vgg" title="Link to this heading">¶</a></h2>
 <p>Spherical implementation of the torch vision VGG.</p>
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
@@ -328,8 +359,30 @@ Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfM
 </dd>
 </dl>
 </section>
+<section id="id1">
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.sit<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p>The Surface Vision Transformer.</p>
+<dl class="simple documentation-contents">
+<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.sit.Attention.html">surfify.models.sit.Attention</a></p></li>
+<li><p><a class="reference external" href="surfify.models.sit.FeedForward.html">surfify.models.sit.FeedForward</a></p></li>
+<li><p><a class="reference external" href="surfify.models.sit.SiT.html">surfify.models.sit.SiT</a></p></li>
+<li><p><a class="reference external" href="surfify.models.sit.Transformer.html">surfify.models.sit.Transformer</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.simclr<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<dl class="simple documentation-contents">
+<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.simclr.SimCLR.html">surfify.models.simclr.SimCLR</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
 <section id="surfify-models-unet">
-<h2 style='text-decoration: underline overline #aF8A4B;'>surfify.models.unet<a class="headerlink" href="#surfify-models-unet" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.unet<a class="headerlink" href="#surfify-models-unet" title="Link to this heading">¶</a></h2>
 <p>The spherical UNet architecture.</p>
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">

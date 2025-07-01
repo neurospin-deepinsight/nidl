@@ -8,8 +8,9 @@
 
 .. autoclass:: surfify.models.unet.SphericalGUNet
      :members:
+     :show-inheritance:
 
-.. minigallery:: surfify.models.SphericalGUNet surfify.models.unet.SphericalGUNet
+.. minigallery:: surfify.models.unet.SphericalGUNet surfify.models.SphericalGUNet
     :add-heading: Examples
     :heading-level: -
 

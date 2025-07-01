@@ -223,7 +223,7 @@ classification dataset.</p>
 </pre></div>
 </div>
 <section id="inspect-dataset">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Inspect dataset<a class="headerlink" href="#inspect-dataset" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Inspect dataset<a class="headerlink" href="#inspect-dataset" title="Link to this heading">¶</a></h2>
 <p>First we load the classification dataset (with 3 classes) and inspect the
 genrated labels.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">standard_ico</span> <span class="o">=</span> <span class="kc">True</span>
@@ -246,7 +246,7 @@ Data: (40, 3, 642) (642,)
 </div>
 </section>
 <section id="train-the-model">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Train the model<a class="headerlink" href="#train-the-model" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Train the model<a class="headerlink" href="#train-the-model" title="Link to this heading">¶</a></h2>
 <p>We now train the SphericalUNet model using a CrossEntropy loss and a SGD
 optimizer. As it is obvious to segment the input classification dataset
 an accuracy of 100% is expected.</p>
@@ -291,52 +291,52 @@ an accuracy of 100% is expected.</p>
     <span class="mi">100</span> <span class="o">*</span> <span class="n">correct</span><span class="p">,</span> <span class="n">test_loss</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>loss 0: 1.099612  [    0/   40]
-loss 0: 0.859365  [    5/   40]
-loss 0: 0.723355  [   10/   40]
-loss 0: 0.607107  [   15/   40]
-loss 0: 0.487355  [   20/   40]
-loss 0: 0.383208  [   25/   40]
-loss 0: 0.287177  [   30/   40]
-loss 0: 0.207598  [   35/   40]
-loss 5: 0.002522  [    0/   40]
-loss 5: 0.001708  [    5/   40]
-loss 5: 0.001080  [   10/   40]
-loss 5: 0.000831  [   15/   40]
-loss 5: 0.000766  [   20/   40]
-loss 5: 0.000741  [   25/   40]
-loss 5: 0.000704  [   30/   40]
-loss 5: 0.000659  [   35/   40]
-loss 10: 0.000053  [    0/   40]
-loss 10: 0.000093  [    5/   40]
-loss 10: 0.000148  [   10/   40]
-loss 10: 0.000207  [   15/   40]
-loss 10: 0.000245  [   20/   40]
-loss 10: 0.000241  [   25/   40]
-loss 10: 0.000195  [   30/   40]
-loss 10: 0.000133  [   35/   40]
-loss 15: 0.000056  [    0/   40]
-loss 15: 0.000069  [    5/   40]
-loss 15: 0.000085  [   10/   40]
-loss 15: 0.000099  [   15/   40]
-loss 15: 0.000105  [   20/   40]
-loss 15: 0.000097  [   25/   40]
-loss 15: 0.000079  [   30/   40]
-loss 15: 0.000059  [   35/   40]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>loss 0: 1.309021  [    0/   40]
+loss 0: 1.032931  [    5/   40]
+loss 0: 0.804040  [   10/   40]
+loss 0: 0.639833  [   15/   40]
+loss 0: 0.503350  [   20/   40]
+loss 0: 0.389929  [   25/   40]
+loss 0: 0.292739  [   30/   40]
+loss 0: 0.215416  [   35/   40]
+loss 5: 0.005035  [    0/   40]
+loss 5: 0.006457  [    5/   40]
+loss 5: 0.007269  [   10/   40]
+loss 5: 0.007292  [   15/   40]
+loss 5: 0.006508  [   20/   40]
+loss 5: 0.005049  [   25/   40]
+loss 5: 0.003108  [   30/   40]
+loss 5: 0.001256  [   35/   40]
+loss 10: 0.000055  [    0/   40]
+loss 10: 0.000083  [    5/   40]
+loss 10: 0.000127  [   10/   40]
+loss 10: 0.000183  [   15/   40]
+loss 10: 0.000246  [   20/   40]
+loss 10: 0.000298  [   25/   40]
+loss 10: 0.000324  [   30/   40]
+loss 10: 0.000331  [   35/   40]
+loss 15: 0.000231  [    0/   40]
+loss 15: 0.000226  [    5/   40]
+loss 15: 0.000189  [   10/   40]
+loss 15: 0.000138  [   15/   40]
+loss 15: 0.000093  [   20/   40]
+loss 15: 0.000059  [   25/   40]
+loss 15: 0.000039  [   30/   40]
+loss 15: 0.000030  [   35/   40]
 Test Error:
- Accuracy: 100.0%, Avg loss: 0.000010
+ Accuracy: 100.0%, Avg loss: 0.000000
 </pre></div>
 </div>
 </section>
 <section id="inspect-the-predicted-labels">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Inspect the predicted labels<a class="headerlink" href="#inspect-the-predicted-labels" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Inspect the predicted labels<a class="headerlink" href="#inspect-the-predicted-labels" title="Link to this heading">¶</a></h2>
 <p>Finally the predicted labels of the first sample are displayed. As expected
 they corresspond exactly to the ground truth.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plotting</span><span class="o">.</span><span class="n">plot_trisurf</span><span class="p">(</span><span class="n">ico_vertices</span><span class="p">,</span> <span class="n">ico_triangles</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">is_label</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_unet_segmentation_002.png" srcset="../../_images/sphx_glr_plot_unet_segmentation_002.png" alt="plot unet segmentation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.786 seconds)</p>
+<img src="../../_images/sphx_glr_plot_unet_segmentation_002.png" srcset="../../_images/sphx_glr_plot_unet_segmentation_002.png" alt="plot unet segmentation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.502 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  296 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gallery-surfify-plot-unet-segmentation-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

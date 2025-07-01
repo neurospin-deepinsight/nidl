@@ -8,8 +8,9 @@
 
 .. autoclass:: nidl.volume.backbones.densenet3d.DenseNet
      :members:
+     :show-inheritance:
 
-.. minigallery:: nidl.volume.backbones.densenet3d.DenseNet nidl.volume.backbones.DenseNet
+.. minigallery:: nidl.volume.backbones.DenseNet nidl.volume.backbones.densenet3d.DenseNet
     :add-heading: Examples
     :heading-level: -
 

@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.losses.SphericalVAELoss
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.losses.SphericalVAELoss
     :add-heading: Examples

@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.utils.color.Colored
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.utils.color.Colored
     :add-heading: Examples

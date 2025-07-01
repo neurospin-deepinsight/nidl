@@ -155,7 +155,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">surfify.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">neighbors</span><span class="p">,</span> <span class="n">rotate_data</span><span class="p">,</span> <span class="n">find_rotation_interpol_coefs</span><span class="p">)</span>
+    <span class="n">neighbors</span><span class="p">,</span> <span class="n">rotate_data</span><span class="p">,</span> <span class="n">find_rotation_interpol_coefs</span><span class="p">,</span> <span class="n">icosahedron</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">surfify.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">IcoDiNeConv</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">surfify.utils.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_and_store</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomAugmentation</span>
@@ -171,15 +171,18 @@
 <span class="sd">    --------</span>
 <span class="sd">    surfify.utils.neighbors</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">triangles</span><span class="p">,</span> <span class="n">neighs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                 <span class="n">n_patches</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">replacement_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ico_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">triangles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">neighs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_patches</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">replacement_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Init class.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        vertices: array (N, 3)</span>
+<span class="sd">        ico_order: int, default None</span>
+<span class="sd">            the ico order to work with.</span>
+<span class="sd">        vertices: array (N, 3), default None</span>
 <span class="sd">            icosahedron&#39;s vertices.</span>
-<span class="sd">        triangles: array (M, 3)</span>
+<span class="sd">        triangles: array (M, 3), default None</span>
 <span class="sd">            icosahdron&#39;s triangles.</span>
 <span class="sd">        neighs: dict, default None</span>
 <span class="sd">            optionnaly specify the DiNe neighboors of each vertex as build</span>
@@ -202,14 +205,20 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">memory</span> <span class="o">=</span> <span class="n">Memory</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">neighbors_cached</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">triangles</span>
+        <span class="k">if</span> <span class="n">vertices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">triangles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">triangles</span>
+        <span class="k">elif</span> <span class="n">ico_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">icosahedron</span><span class="p">(</span><span class="n">ico_order</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must specify the &#39;ico_order&#39; or the &quot;</span>
+                             <span class="s2">&quot;&#39;vertices&#39; and &#39;triangles&#39; parameters!&quot;</span><span class="p">)</span>
         <span class="n">max_depth</span> <span class="o">=</span> <span class="n">patch_size</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patch_size</span><span class="p">,</span> <span class="n">RandomAugmentation</span><span class="o">.</span><span class="n">Interval</span><span class="p">):</span>
             <span class="n">max_depth</span> <span class="o">=</span> <span class="n">patch_size</span><span class="o">.</span><span class="n">high</span>
         <span class="k">if</span> <span class="n">neighs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">neighs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">neighs</span> <span class="o">=</span> <span class="n">neighbors_cached</span><span class="p">(</span>
-                <span class="n">vertices</span><span class="p">,</span> <span class="n">triangles</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">neighs</span> <span class="o">=</span> <span class="n">neighs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span> <span class="o">=</span> <span class="n">patch_size</span>
@@ -307,17 +316,20 @@
 <span class="sd">    --------</span>
 <span class="sd">    surfify.utils.neighbors, surfify.nn.modules.IcoDiNeConv</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">triangles</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">neighs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">ico_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">triangles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">neighs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cachedir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Init class.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        vertices: array (N, 3)</span>
-<span class="sd">            icosahedron&#39;s vertices.</span>
-<span class="sd">        triangles: array (M, 3)</span>
-<span class="sd">            icosahdron&#39;s triangles.</span>
 <span class="sd">        sigma: float</span>
 <span class="sd">            sigma parameter of the gaussian filter.</span>
+<span class="sd">        ico_order: int, default None</span>
+<span class="sd">            the ico order to work with.</span>
+<span class="sd">        vertices: array (N, 3), default None</span>
+<span class="sd">            icosahedron&#39;s vertices.</span>
+<span class="sd">        triangles: array (M, 3), default None</span>
+<span class="sd">            icosahdron&#39;s triangles.</span>
 <span class="sd">        neighs: dict, default None</span>
 <span class="sd">            optionnaly specify the DiNe neighboors of each vertex as build</span>
 <span class="sd">            with `sufify.utils.neighbors`, ie. a dictionary with vertices row</span>
@@ -329,16 +341,23 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">memory</span> <span class="o">=</span> <span class="n">Memory</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">neighbors_cached</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">triangles</span>
+        <span class="k">if</span> <span class="n">vertices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">triangles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">triangles</span>
+        <span class="k">elif</span> <span class="n">ico_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span> <span class="o">=</span> <span class="n">icosahedron</span><span class="p">(</span><span class="n">ico_order</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must specify the &#39;ico_order&#39; or the &quot;</span>
+                             <span class="s2">&quot;&#39;vertices&#39; and &#39;triangles&#39; parameters!&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
         <span class="n">max_sigma</span> <span class="o">=</span> <span class="n">sigma</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">RandomAugmentation</span><span class="o">.</span><span class="n">Interval</span><span class="p">):</span>
             <span class="n">max_sigma</span> <span class="o">=</span> <span class="n">sigma</span><span class="o">.</span><span class="n">high</span>
         <span class="n">depth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">max_sigma</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">neighs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">neighs</span> <span class="o">=</span> <span class="n">neighbors_cached</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">triangles</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span>
-                                           <span class="n">direct_neighbor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">neighs</span> <span class="o">=</span> <span class="n">neighbors_cached</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangles</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span>
+                <span class="n">direct_neighbor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">neighs</span> <span class="o">=</span> <span class="n">neighs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">neighs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighs</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>

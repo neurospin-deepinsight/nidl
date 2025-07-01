@@ -250,7 +250,7 @@ and a are elevation and azimuth, respectively, and vice versa.</p>
 </pre></div>
 </div>
 <section id="load-data">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Load data<a class="headerlink" href="#load-data" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Load data<a class="headerlink" href="#load-data" title="Link to this heading">¶</a></h2>
 <p>First we load the classification dataset (with 3 classes).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ico_order</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">n_classes</span> <span class="o">=</span> <span class="mi">3</span>
@@ -270,7 +270,7 @@ Labels: (642,)
 </div>
 </section>
 <section id="d-surface-to-2-d-grid-projection">
-<h2 style='text-decoration: underline overline #aF8A4B;'>3-D surface to 2-D grid projection<a class="headerlink" href="#d-surface-to-2-d-grid-projection" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>3-D surface to 2-D grid projection<a class="headerlink" href="#d-surface-to-2-d-grid-projection" title="Link to this heading">¶</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">proj_texture</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">text2grid</span><span class="p">(</span><span class="n">ico_vertices</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Proj texture:&quot;</span><span class="p">,</span> <span class="n">proj_texture</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
@@ -286,7 +286,7 @@ Text(0.5, 1.0, &#39;Nearest&#39;)
 </div>
 </section>
 <section id="d-grid-to-3-d-surface-projection">
-<h2 style='text-decoration: underline overline #aF8A4B;'>2-D grid to 3-D surface projection<a class="headerlink" href="#d-grid-to-3-d-surface-projection" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>2-D grid to 3-D surface projection<a class="headerlink" href="#d-grid-to-3-d-surface-projection" title="Link to this heading">¶</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">texture</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">grid2text</span><span class="p">(</span><span class="n">ico_vertices</span><span class="p">,</span> <span class="n">proj_texture</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Texture:&quot;</span><span class="p">,</span> <span class="n">texture</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="n">plotting</span><span class="o">.</span><span class="n">plot_trisurf</span><span class="p">(</span><span class="n">ico_vertices</span><span class="p">,</span> <span class="n">ico_triangles</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">is_label</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -302,7 +302,7 @@ Text(0.5, 1.0, &#39;Nearest&#39;)
 </div>
 </section>
 <section id="uniformly-distributed-locations">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Uniformly distributed locations<a class="headerlink" href="#uniformly-distributed-locations" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Uniformly distributed locations<a class="headerlink" href="#uniformly-distributed-locations" title="Link to this heading">¶</a></h2>
 <p>Using the sin of the elevation enables us to have resampled locations
 almost uniformly distributed.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">scatter_density</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">labelx</span><span class="p">,</span> <span class="n">labely</span><span class="p">):</span>
@@ -346,7 +346,7 @@ almost uniformly distributed.</p>
 </ul>
 </section>
 <section id="integration-in-deep-neural-network">
-<h2 style='text-decoration: underline overline #aF8A4B;'>Integration in deep neural network<a class="headerlink" href="#integration-in-deep-neural-network" title="Link to this heading">¶</a></h2>
+<h2 style='border-bottom: 1px solid #d3dbd5'>Integration in deep neural network<a class="headerlink" href="#integration-in-deep-neural-network" title="Link to this heading">¶</a></h2>
 <p>Since a spherical patterns are circularly continuous with respect to the
 azimuth, we need to apply circular padding to the boundaries of azimuth for
 the flattened 2-D map but applied zero padding to the boundaries of
@@ -369,7 +369,7 @@ Padd texture: torch.Size([1, 1, 194, 194])
 Conv texture: torch.Size([1, 3, 192, 192])
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.971 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.898 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  89 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-gallery-surfify-plot-project-texture-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

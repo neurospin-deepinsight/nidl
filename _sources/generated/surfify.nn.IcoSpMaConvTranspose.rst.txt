@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.nn.IcoSpMaConvTranspose
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.nn.IcoSpMaConvTranspose
     :add-heading: Examples

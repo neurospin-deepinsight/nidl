@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.utils.io.HidePrints
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.utils.io.HidePrints
     :add-heading: Examples

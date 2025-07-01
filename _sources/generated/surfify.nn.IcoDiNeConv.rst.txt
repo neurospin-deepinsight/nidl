@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.nn.IcoDiNeConv
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.nn.IcoDiNeConv
     :add-heading: Examples

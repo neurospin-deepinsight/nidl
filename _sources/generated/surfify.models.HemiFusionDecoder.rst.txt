@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.models.HemiFusionDecoder
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.models.HemiFusionDecoder
     :add-heading: Examples

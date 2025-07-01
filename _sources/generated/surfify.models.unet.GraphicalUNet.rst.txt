@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.models.unet.GraphicalUNet
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.models.unet.GraphicalUNet
     :add-heading: Examples

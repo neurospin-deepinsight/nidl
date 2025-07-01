@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.datasets.base.BaseNumpyDataset
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.datasets.BaseNumpyDataset nidl.datasets.base.BaseNumpyDataset
     :add-heading: Examples

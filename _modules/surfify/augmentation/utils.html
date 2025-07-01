@@ -154,6 +154,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
 
+<span class="c1"># Global parameters</span>
+<span class="n">Transform</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s2">&quot;Transform&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="s2">&quot;probability&quot;</span><span class="p">,</span> <span class="s2">&quot;randomize_per_channel&quot;</span><span class="p">])</span>
+
 
 <div class="viewcode-block" id="RandomAugmentation">
 <a class="viewcode-back" href="../../../generated/surfify.augmentation.utils.RandomAugmentation.html#surfify.augmentation.RandomAugmentation">[docs]</a>
@@ -255,9 +259,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseTransformer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Class that can be used to register a sequence of transformations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">Transform</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Transform&quot;</span><span class="p">,</span> <span class="p">[</span>
-        <span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="s2">&quot;probability&quot;</span><span class="p">,</span> <span class="s2">&quot;randomize_per_channel&quot;</span><span class="p">])</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Init class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -278,8 +279,8 @@
 <span class="sd">            a parameter to control if the randomization of tranformation</span>
 <span class="sd">            parameters must be applied channel-wise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">trf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span>
-                             <span class="n">randomize_per_channel</span><span class="o">=</span><span class="n">randomize_per_channel</span><span class="p">)</span>
+        <span class="n">trf</span> <span class="o">=</span> <span class="n">Transform</span><span class="p">(</span><span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span>
+                        <span class="n">randomize_per_channel</span><span class="o">=</span><span class="n">randomize_per_channel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trf</span><span class="p">)</span></div>
 
 

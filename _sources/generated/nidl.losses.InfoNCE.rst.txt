@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.losses.InfoNCE
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.losses.InfoNCE
     :add-heading: Examples

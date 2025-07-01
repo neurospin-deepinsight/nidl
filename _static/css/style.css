@@ -256,6 +256,10 @@ img { max-width: 100%; }
 
 /***** Content *****/
 
+.rubric {
+    border-bottom: 1px solid var(--pst-color-border);
+}
+
 .overlay {
     display: none; position: fixed; width: 100vw; height: 100vh; 
     background: rgba(51, 51, 51, 0.7); z-index: 998; opacity: 0; transition: all .5s ease-in-out;

@@ -143,8 +143,8 @@
 <span class="c1"># for details.</span>
 <span class="c1">##########################################################################</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
@@ -156,8 +156,10 @@
     <span class="n">_PRECISION_INPUT</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.utilities.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_METRIC</span><span class="p">,</span>
     <span class="n">STEP_OUTPUT</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetricCollection</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">_estimator_is</span><span class="p">,</span> <span class="n">available_if</span><span class="p">,</span> <span class="n">check_is_fitted</span>
 
@@ -253,10 +255,39 @@
 <span class="sd">    fitted</span>
 <span class="sd">        a boolean that is True if the estimator has been fitted, and is False</span>
 <span class="sd">        otherwise.</span>
-<span class="sd">    trainer_params</span>
-<span class="sd">        a dictionaray with the trainer parameters.</span>
+<span class="sd">    hparams:</span>
+<span class="sd">        contains the estimator hyperparameters.</span>
 <span class="sd">    trainer</span>
 <span class="sd">        the current lightning trainer.</span>
+<span class="sd">    trainer_params</span>
+<span class="sd">        a dictionaray with the trainer parameters.</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    :meth:`BaseEstimator.fit`</span>
+<span class="sd">        the `fit` method.</span>
+<span class="sd">    :meth:`BaseEstimator.transform`</span>
+<span class="sd">        the `transform` method for transformer.</span>
+<span class="sd">    :meth:`BaseEstimator.predict`</span>
+<span class="sd">        the `predict` method for regression, classification and clustering.</span>
+<span class="sd">    :meth:`BaseEstimator.training_step`</span>
+<span class="sd">        compute and return the training loss and some additional</span>
+<span class="sd">        metrics.</span>
+<span class="sd">        TO BE IMPLEMENTED.</span>
+<span class="sd">    :meth:`BaseEstimator.validation_step`</span>
+<span class="sd">        compute anything of interest like accuracy on a single batch of data</span>
+<span class="sd">        from the validation set.</span>
+<span class="sd">        TO BE IMPLEMENTED.</span>
+<span class="sd">    :meth:`BaseEstimator.transform_step`</span>
+<span class="sd">        transform new data.</span>
+<span class="sd">        TO BE IMPLEMENTED.</span>
+<span class="sd">    :meth:`BaseEstimator.predict_step`</span>
+<span class="sd">        make some predictions on new data.</span>
+<span class="sd">        TO BE IMPLEMENTED.</span>
+<span class="sd">    :meth:`BaseEstimator.log`</span>
+<span class="sd">        log a key, value pair.</span>
+<span class="sd">    :meth:`BaseEstimator.log_dict`</span>
+<span class="sd">        log a dictionary of values at once.</span>
 <span class="sd">        </span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -354,7 +385,7 @@
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">(</span><span class="s2">&quot;transformer&quot;</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+            <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; The `transform` method for transformer.</span>
 
 <span class="sd">        In the child class you will need to define:</span>
@@ -383,7 +414,7 @@
     <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">((</span><span class="s2">&quot;regressor&quot;</span><span class="p">,</span> <span class="s2">&quot;classifier&quot;</span><span class="p">,</span> <span class="s2">&quot;clusterer&quot;</span><span class="p">)))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">):</span>
+            <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; The `predict` method for regression, classification and clustering.</span>
 
 <span class="sd">        In the child class you will need to define:</span>
@@ -429,7 +460,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        loss:  STEP_OUTPUT</span>
+<span class="sd">        loss: STEP_OUTPUT</span>
 <span class="sd">            the computed loss:</span>
 
 <span class="sd">            - :class:`~torch.Tensor` - the loss tensor.</span>
@@ -448,12 +479,12 @@
 <span class="sd">        &gt;&gt;&gt; def __init__(self):</span>
 <span class="sd">        &gt;&gt;&gt;     super().__init__()</span>
 <span class="sd">        &gt;&gt;&gt;     self.automatic_optimization = False</span>
-<span class="sd">        &gt;&gt;&gt; </span>
-<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt;</span>
 <span class="sd">        &gt;&gt;&gt; # Multiple optimizers (e.g.: GANs)</span>
 <span class="sd">        &gt;&gt;&gt; def training_step(self, batch, batch_idx):</span>
 <span class="sd">        &gt;&gt;&gt;     opt1, opt2 = self.optimizers()</span>
-<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt;</span>
 <span class="sd">        &gt;&gt;&gt;     # do training_step with encoder</span>
 <span class="sd">        &gt;&gt;&gt;     ...</span>
 <span class="sd">        &gt;&gt;&gt;     opt1.step()</span>
@@ -567,6 +598,179 @@
 <span class="sd">            the predicted output.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseEstimator.log">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.log">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="n">_METRIC</span><span class="p">,</span>
+            <span class="n">prog_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">reduce_fx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+            <span class="n">enable_graph</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">sync_dist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">sync_dist_group</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">add_dataloader_idx</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">metric_attribute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">rank_zero_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Log a key, value pair.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name: str</span>
+<span class="sd">            key to log. Must be identical across all processes if using DDP or</span>
+<span class="sd">            any other distributed strategy.</span>
+<span class="sd">        value: object</span>
+<span class="sd">            value to log. Can be a ``float``, ``Tensor``, or a ``Metric``.</span>
+<span class="sd">        prog_bar: bool, default=False</span>
+<span class="sd">            if ``True`` logs to the progress bar.</span>
+<span class="sd">        logger: bool, default=None</span>
+<span class="sd">            if ``True`` logs to the logger.</span>
+<span class="sd">        on_step: bool, default=None</span>
+<span class="sd">            if ``True`` logs at this step. The default value is determined by</span>
+<span class="sd">            the hook.</span>
+<span class="sd">        on_epoch: bool, default=None</span>
+<span class="sd">            if ``True`` logs epoch accumulated metrics. The default value is</span>
+<span class="sd">            determined by the hook.</span>
+<span class="sd">        reduce_fx: str of callable, default=&#39;mean&#39;</span>
+<span class="sd">            reduction function over step values for end of epoch.</span>
+<span class="sd">            :meth:`torch.mean` by default.</span>
+<span class="sd">        enable_graph: bool, default=False</span>
+<span class="sd">            if ``True``, will not auto detach the graph.</span>
+<span class="sd">        sync_dist: bool, default=False</span>
+<span class="sd">            if ``True``, reduces the metric across devices. Use with care as</span>
+<span class="sd">            this may lead to a significant communication overhead.</span>
+<span class="sd">        sync_dist_group: object, default=None</span>
+<span class="sd">            the DDP group to sync across.</span>
+<span class="sd">        add_dataloader_idx: bool, default=True</span>
+<span class="sd">            if ``True``, appends the index of the current dataloader to</span>
+<span class="sd">            the name (when using multiple dataloaders). If ``False``, user</span>
+<span class="sd">            needs to give unique names for each dataloader to not mix the</span>
+<span class="sd">            values.</span>
+<span class="sd">        batch_size: int, default=None</span>
+<span class="sd">            current batch_size. This will be directly inferred from the</span>
+<span class="sd">            loaded batch, but for some data structures you might need to</span>
+<span class="sd">            explicitly provide it.</span>
+<span class="sd">        metric_attribute: str, default=None</span>
+<span class="sd">            to restore the metric state, Lightning requires the reference of</span>
+<span class="sd">            the :class:`torchmetrics.Metric` in your model. This is found</span>
+<span class="sd">            automatically if it is a model attribute.</span>
+<span class="sd">        rank_zero_only: bool, default=False</span>
+<span class="sd">            tells Lightning if you are calling ``self.log`` from every</span>
+<span class="sd">            process (default) or only from rank 0. If ``True``, you won&#39;t be</span>
+<span class="sd">            able to use this metric as a monitor in callbacks (e.g., early</span>
+<span class="sd">            stopping).</span>
+<span class="sd">            Warning: Improper use can lead to deadlocks!</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; self.log(&#39;train_loss&#39;, loss)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">prog_bar</span><span class="o">=</span><span class="n">prog_bar</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+            <span class="n">on_step</span><span class="o">=</span><span class="n">on_step</span><span class="p">,</span>
+            <span class="n">on_epoch</span><span class="o">=</span><span class="n">on_epoch</span><span class="p">,</span>
+            <span class="n">reduce_fx</span><span class="o">=</span><span class="n">reduce_fx</span><span class="p">,</span>
+            <span class="n">enable_graph</span><span class="o">=</span><span class="n">enable_graph</span><span class="p">,</span>
+            <span class="n">sync_dist</span><span class="o">=</span><span class="n">sync_dist</span><span class="p">,</span>
+            <span class="n">sync_dist_group</span><span class="o">=</span><span class="n">sync_dist_group</span><span class="p">,</span>
+            <span class="n">add_dataloader_idx</span><span class="o">=</span><span class="n">add_dataloader_idx</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">metric_attribute</span><span class="o">=</span><span class="n">metric_attribute</span><span class="p">,</span>
+            <span class="n">rank_zero_only</span><span class="o">=</span><span class="n">rank_zero_only</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseEstimator.log_dict">
+<a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.log_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_dict</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">dictionary</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_METRIC</span><span class="p">],</span> <span class="n">MetricCollection</span><span class="p">],</span>
+            <span class="n">prog_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_epoch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">reduce_fx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+            <span class="n">enable_graph</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">sync_dist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">sync_dist_group</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">add_dataloader_idx</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">rank_zero_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Log a dictionary of values at once.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dictionary: dict</span>
+<span class="sd">            key value pairs. Keys must be identical across all processes if</span>
+<span class="sd">            using DDP or any other distributed strategy.</span>
+<span class="sd">            The values can be a ``float``, ``Tensor``, ``Metric``, or</span>
+<span class="sd">            ``MetricCollection``.</span>
+<span class="sd">        prog_bar: bool, default=False</span>
+<span class="sd">            if ``True`` logs to the progress bar.</span>
+<span class="sd">        logger: bool, default=None</span>
+<span class="sd">            if ``True`` logs to the logger.</span>
+<span class="sd">        on_step: bool, default=None</span>
+<span class="sd">            ``None`` auto-logs for training_step but not validation/test_step.</span>
+<span class="sd">            The default value is determined by the hook.</span>
+<span class="sd">        on_epoch: bool, default=None</span>
+<span class="sd">            ``None`` auto-logs for val/test step but not ``training_step``.</span>
+<span class="sd">            The default value is determined by the hook.</span>
+<span class="sd">        reduce_fx: str of callable, default=&#39;mean&#39;</span>
+<span class="sd">            reduction function over step values for end of epoch.</span>
+<span class="sd">            :meth:`torch.mean` by default.</span>
+<span class="sd">        enable_graph: bool, default=False</span>
+<span class="sd">            if ``True``, will not auto detach the graph.</span>
+<span class="sd">        sync_dist: bool, default=False</span>
+<span class="sd">            if ``True``, reduces the metric across devices. Use with care as</span>
+<span class="sd">            this may lead to a significant communication overhead.</span>
+<span class="sd">        sync_dist_group: object, default=None</span>
+<span class="sd">            the DDP group to sync across.</span>
+<span class="sd">        add_dataloader_idx: bool, default=True</span>
+<span class="sd">            if ``True``, appends the index of the current dataloader to</span>
+<span class="sd">            the name (when using multiple dataloaders). If ``False``, user</span>
+<span class="sd">            needs to give unique names for each dataloader to not mix the</span>
+<span class="sd">            values.</span>
+<span class="sd">        batch_size: int, default=None</span>
+<span class="sd">            current batch_size. This will be directly inferred from the</span>
+<span class="sd">            loaded batch, but for some data structures you might need to</span>
+<span class="sd">            explicitly provide it.</span>
+<span class="sd">        rank_zero_only: bool, default=False</span>
+<span class="sd">            tells Lightning if you are calling ``self.log`` from every</span>
+<span class="sd">            process (default) or only from rank 0. If ``True``, you won&#39;t be</span>
+<span class="sd">            able to use this metric as a monitor in callbacks (e.g., early</span>
+<span class="sd">            stopping).</span>
+<span class="sd">            Warning: Improper use can lead to deadlocks!</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; values = {&#39;loss&#39;: loss, &#39;acc&#39;: acc, ..., &#39;metric_n&#39;: metric_n}</span>
+<span class="sd">        &gt;&gt;&gt; self.log_dict(values)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
+            <span class="n">dictionary</span><span class="o">=</span><span class="n">dictionary</span><span class="p">,</span>
+            <span class="n">prog_bar</span><span class="o">=</span><span class="n">prog_bar</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+            <span class="n">on_step</span><span class="o">=</span><span class="n">on_step</span><span class="p">,</span>
+            <span class="n">on_epoch</span><span class="o">=</span><span class="n">on_epoch</span><span class="p">,</span>
+            <span class="n">reduce_fx</span><span class="o">=</span><span class="n">reduce_fx</span><span class="p">,</span>
+            <span class="n">enable_graph</span><span class="o">=</span><span class="n">enable_graph</span><span class="p">,</span>
+            <span class="n">sync_dist</span><span class="o">=</span><span class="n">sync_dist</span><span class="p">,</span>
+            <span class="n">sync_dist_group</span><span class="o">=</span><span class="n">sync_dist_group</span><span class="p">,</span>
+            <span class="n">add_dataloader_idx</span><span class="o">=</span><span class="n">add_dataloader_idx</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">rank_zero_only</span><span class="o">=</span><span class="n">rank_zero_only</span>
+        <span class="p">)</span></div>
 </div>
 
 
@@ -615,7 +819,7 @@
 <span class="sd">    This mixin sets the estimator type to `transformer` through the</span>
 <span class="sd">    `estimator_type` tag.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_estimator_type</span> <span class="o">=</span> <span class="s2">&quot;transformer&quot;</span>   </div>
+    <span class="n">_estimator_type</span> <span class="o">=</span> <span class="s2">&quot;transformer&quot;</span></div>
 
 </pre></div>
                     </div>

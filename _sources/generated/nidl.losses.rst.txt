@@ -8,7 +8,7 @@ API documentation of *nidl.losses*
 nidl.losses
 ^^^^^^^^^^^
 
-Definition of common losses.
+Common losses.
 
 .. rst-class:: documentation-contents
 

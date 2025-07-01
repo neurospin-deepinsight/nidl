@@ -234,8 +234,9 @@
 
 <span class="sd">    The weights section special case:</span>
 
-<span class="sd">    - model names specified in the form `hf-hub:path/architecture_name@revision`</span>
-<span class="sd">      will be loaded from Hugging Face hub.</span>
+<span class="sd">    - model names specified in the form</span>
+<span class="sd">      `hf-hub:path/architecture_name@revision` will be loaded from Hugging</span>
+<span class="sd">      Face hub.</span>
 <span class="sd">    - model names specifid with a path will be loaded from the local machine.</span>
 
 <span class="sd">    Parameters</span>
@@ -493,7 +494,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Load an interface. </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Load an interface.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -510,7 +511,7 @@
 <span class="sd">    cls: object</span>
 <span class="sd">        a class object.</span>
 <span class="sd">    code: str</span>
-<span class="sd">        the code of the output class object, None in case of issue. </span>
+<span class="sd">        the code of the output class object, None in case of issue.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">root_module_name</span> <span class="o">=</span> <span class="n">module_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>

@@ -54,7 +54,7 @@ def display(vertices, triangles, texture, aug, add_axis=False, alpha=1, *args,
 #
 
 texture = np.array([1, ] * len(vertices))
-aug = SurfCutOut(vertices, triangles, neighs=neighs,
+aug = SurfCutOut(vertices=vertices, triangles=triangles, neighs=neighs,
                  patch_size=interval((2, max_depth), int),
                  n_patches=interval((1, 3), int),
                  sigma=1)
@@ -77,7 +77,8 @@ display(vertices, triangles, texture, aug)
 #
 
 texture = np.random.uniform(0, 2, len(vertices))
-aug = SurfBlur(vertices, triangles, sigma=interval((0.1, 1), float))
+aug = SurfBlur(vertices=vertices, triangles=triangles,
+               sigma=interval((0.1, 1), float))
 display(vertices, triangles, texture, aug)
 
 
@@ -133,11 +134,12 @@ print(neigh_ind)
 #
 
 texture = np.random.uniform(0, 3, len(vertices))
-aug1 = SurfCutOut(vertices, triangles, neighs=neighs,
+aug1 = SurfCutOut(vertices=vertices, triangles=triangles, neighs=neighs,
                   patch_size=interval((1, max_depth), int),
                   n_patches=interval((1, 3), int))
 aug2 = SurfNoise(sigma=interval((1, 3), float))
-aug3 = SurfBlur(vertices, triangles, sigma=interval((0.1, 1), float))
+aug3 = SurfBlur(vertices=vertices, triangles=triangles,
+                sigma=interval((0.1, 1), float))
 trans = Transformer()
 trans.register(aug1, probability=.75)
 trans.register(aug2, probability=.75)

@@ -183,6 +183,30 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -194,6 +218,10 @@
                                     <li>SECTIONS</li>
                                     
 						                <li> <a href='#nidl.estimators.BaseEstimator.fit'>Baseestimator.fit()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.log'>Baseestimator.log()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.BaseEstimator.log_dict'>Baseestimator.log_dict()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.BaseEstimator.predict'>Baseestimator.predict()</a> </li>                                    
                                     
@@ -259,12 +287,13 @@
                     <div class="document">
                         <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/surfify/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
+<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.BaseEstimator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.</span></span><span class="sig-name descname"><span class="pre">BaseEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Callback</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callback</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_val_every_n_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_check_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_checkpointing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_progress_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_model_summary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Accelerator</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Strategy</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">devices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">64</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">32</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">16</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'transformer-engine'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'transformer-engine-float16'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'16-true'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'16-mixed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bf16-true'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bf16-mixed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'32-true'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'64-true'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'64'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'32'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'16'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bf16'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator" title="Link to this definition">¶</a></dt>
-<dd><p>Base class for all estimators in the NIDL framework designed for
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LightningModule</span></code></p>
+<p>Base class for all estimators in the NIDL framework designed for
 scalability.</p>
 <p>Inherits from PyTorch Lightning’s LightningModule.
 This class provides a common interface for training, validation, and
@@ -392,11 +421,46 @@ instance you can check the type of the input batches using
 <tr class="row-odd"><td><p>fitted</p></td>
 <td><p>a boolean that is True if the estimator has been fitted, and is False otherwise.</p></td>
 </tr>
-<tr class="row-even"><td><p>trainer_params</p></td>
-<td><p>a dictionaray with the trainer parameters.</p></td>
+<tr class="row-even"><td><p>hparams:</p></td>
+<td><p>contains the estimator hyperparameters.</p></td>
 </tr>
 <tr class="row-odd"><td><p>trainer</p></td>
 <td><p>the current lightning trainer.</p></td>
+</tr>
+<tr class="row-even"><td><p>trainer_params</p></td>
+<td><p>a dictionaray with the trainer parameters.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.fit" title="nidl.estimators.BaseEstimator.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.fit()</span></code></a></p></td>
+<td><p>the <cite>fit</cite> method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.transform" title="nidl.estimators.BaseEstimator.transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.transform()</span></code></a></p></td>
+<td><p>the <cite>transform</cite> method for transformer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.predict" title="nidl.estimators.BaseEstimator.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.predict()</span></code></a></p></td>
+<td><p>the <cite>predict</cite> method for regression, classification and clustering.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.training_step" title="nidl.estimators.BaseEstimator.training_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.training_step()</span></code></a></p></td>
+<td><p>compute and return the training loss and some additional metrics. TO BE IMPLEMENTED.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.validation_step" title="nidl.estimators.BaseEstimator.validation_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.validation_step()</span></code></a></p></td>
+<td><p>compute anything of interest like accuracy on a single batch of data from the validation set. TO BE IMPLEMENTED.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.transform_step" title="nidl.estimators.BaseEstimator.transform_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.transform_step()</span></code></a></p></td>
+<td><p>transform new data. TO BE IMPLEMENTED.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.predict_step" title="nidl.estimators.BaseEstimator.predict_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.predict_step()</span></code></a></p></td>
+<td><p>make some predictions on new data. TO BE IMPLEMENTED.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.log" title="nidl.estimators.BaseEstimator.log"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.log()</span></code></a></p></td>
+<td><p>log a key, value pair.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nidl.estimators.BaseEstimator.log_dict" title="nidl.estimators.BaseEstimator.log_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.log_dict()</span></code></a></p></td>
+<td><p>log a dictionary of values at once.</p></td>
 </tr>
 </tbody>
 </table>
@@ -432,8 +496,173 @@ at each step.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Metric</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce_fx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_dist_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_zero_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.log" title="Link to this definition">¶</a></dt>
+<dd><p>Log a key, value pair.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> : str</p>
+<blockquote>
+<div><p>key to log. Must be identical across all processes if using DDP or
+any other distributed strategy.</p>
+</div></blockquote>
+<p><strong>value</strong> : object</p>
+<blockquote>
+<div><p>value to log. Can be a <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">Tensor</span></code>, or a <code class="docutils literal notranslate"><span class="pre">Metric</span></code>.</p>
+</div></blockquote>
+<p><strong>prog_bar</strong> : bool, default=False</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> logs to the progress bar.</p>
+</div></blockquote>
+<p><strong>logger</strong> : bool, default=None</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> logs to the logger.</p>
+</div></blockquote>
+<p><strong>on_step</strong> : bool, default=None</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> logs at this step. The default value is determined by
+the hook.</p>
+</div></blockquote>
+<p><strong>on_epoch</strong> : bool, default=None</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> logs epoch accumulated metrics. The default value is
+determined by the hook.</p>
+</div></blockquote>
+<p><strong>reduce_fx</strong> : str of callable, default=’mean’</p>
+<blockquote>
+<div><p>reduction function over step values for end of epoch.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.mean()</span></code> by default.</p>
+</div></blockquote>
+<p><strong>enable_graph</strong> : bool, default=False</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code>, will not auto detach the graph.</p>
+</div></blockquote>
+<p><strong>sync_dist</strong> : bool, default=False</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code>, reduces the metric across devices. Use with care as
+this may lead to a significant communication overhead.</p>
+</div></blockquote>
+<p><strong>sync_dist_group</strong> : object, default=None</p>
+<blockquote>
+<div><p>the DDP group to sync across.</p>
+</div></blockquote>
+<p><strong>add_dataloader_idx</strong> : bool, default=True</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code>, appends the index of the current dataloader to
+the name (when using multiple dataloaders). If <code class="docutils literal notranslate"><span class="pre">False</span></code>, user
+needs to give unique names for each dataloader to not mix the
+values.</p>
+</div></blockquote>
+<p><strong>batch_size</strong> : int, default=None</p>
+<blockquote>
+<div><p>current batch_size. This will be directly inferred from the
+loaded batch, but for some data structures you might need to
+explicitly provide it.</p>
+</div></blockquote>
+<p><strong>metric_attribute</strong> : str, default=None</p>
+<blockquote>
+<div><p>to restore the metric state, Lightning requires the reference of
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">torchmetrics.Metric</span></code> in your model. This is found
+automatically if it is a model attribute.</p>
+</div></blockquote>
+<p><strong>rank_zero_only</strong> : bool, default=False</p>
+<blockquote>
+<div><p>tells Lightning if you are calling <code class="docutils literal notranslate"><span class="pre">self.log</span></code> from every
+process (default) or only from rank 0. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, you won’t be
+able to use this metric as a monitor in callbacks (e.g., early
+stopping).
+Warning: Improper use can lead to deadlocks!</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;train_loss&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.log_dict">
+<span class="sig-name descname"><span class="pre">log_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Metric</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MetricCollection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce_fx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_dist_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_zero_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.log_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.log_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Log a dictionary of values at once.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dictionary</strong> : dict</p>
+<blockquote>
+<div><p>key value pairs. Keys must be identical across all processes if
+using DDP or any other distributed strategy.
+The values can be a <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="docutils literal notranslate"><span class="pre">Metric</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">MetricCollection</span></code>.</p>
+</div></blockquote>
+<p><strong>prog_bar</strong> : bool, default=False</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> logs to the progress bar.</p>
+</div></blockquote>
+<p><strong>logger</strong> : bool, default=None</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> logs to the logger.</p>
+</div></blockquote>
+<p><strong>on_step</strong> : bool, default=None</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">None</span></code> auto-logs for training_step but not validation/test_step.
+The default value is determined by the hook.</p>
+</div></blockquote>
+<p><strong>on_epoch</strong> : bool, default=None</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">None</span></code> auto-logs for val/test step but not <code class="docutils literal notranslate"><span class="pre">training_step</span></code>.
+The default value is determined by the hook.</p>
+</div></blockquote>
+<p><strong>reduce_fx</strong> : str of callable, default=’mean’</p>
+<blockquote>
+<div><p>reduction function over step values for end of epoch.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.mean()</span></code> by default.</p>
+</div></blockquote>
+<p><strong>enable_graph</strong> : bool, default=False</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code>, will not auto detach the graph.</p>
+</div></blockquote>
+<p><strong>sync_dist</strong> : bool, default=False</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code>, reduces the metric across devices. Use with care as
+this may lead to a significant communication overhead.</p>
+</div></blockquote>
+<p><strong>sync_dist_group</strong> : object, default=None</p>
+<blockquote>
+<div><p>the DDP group to sync across.</p>
+</div></blockquote>
+<p><strong>add_dataloader_idx</strong> : bool, default=True</p>
+<blockquote>
+<div><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code>, appends the index of the current dataloader to
+the name (when using multiple dataloaders). If <code class="docutils literal notranslate"><span class="pre">False</span></code>, user
+needs to give unique names for each dataloader to not mix the
+values.</p>
+</div></blockquote>
+<p><strong>batch_size</strong> : int, default=None</p>
+<blockquote>
+<div><p>current batch_size. This will be directly inferred from the
+loaded batch, but for some data structures you might need to
+explicitly provide it.</p>
+</div></blockquote>
+<p><strong>rank_zero_only</strong> : bool, default=False</p>
+<blockquote>
+<div><p>tells Lightning if you are calling <code class="docutils literal notranslate"><span class="pre">self.log</span></code> from every
+process (default) or only from rank 0. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, you won’t be
+able to use this metric as a monitor in callbacks (e.g., early
+stopping).
+Warning: Improper use can lead to deadlocks!</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span> <span class="s1">&#39;acc&#39;</span><span class="p">:</span> <span class="n">acc</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;metric_n&#39;</span><span class="p">:</span> <span class="n">metric_n</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.predict" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.predict" title="Link to this definition">¶</a></dt>
 <dd><p>The <cite>predict</cite> method for regression, classification and clustering.</p>
 <p>In the child class you will need to define:</p>
 <ul class="simple">
@@ -520,7 +749,7 @@ multiple dataloaders are used).</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>loss</strong> :  STEP_OUTPUT</p>
+<dd class="field-even"><p><strong>loss</strong> : STEP_OUTPUT</p>
 <blockquote>
 <div><p>the computed loss:</p>
 <ul class="simple">
@@ -544,12 +773,12 @@ automatically normalized by <code class="docutils literal notranslate"><span cla
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="gp">&gt;&gt;&gt; </span>
-<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multiple optimizers (e.g.: GANs)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="p">,</span> <span class="n">opt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizers</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with encoder</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
@@ -562,7 +791,7 @@ automatically normalized by <code class="docutils literal notranslate"><span cla
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.BaseEstimator.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.transform" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/nidl/estimators/base.html#BaseEstimator.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.BaseEstimator.transform" title="Link to this definition">¶</a></dt>
 <dd><p>The <cite>transform</cite> method for transformer.</p>
 <p>In the child class you will need to define:</p>
 <ul class="simple">

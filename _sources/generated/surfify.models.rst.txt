@@ -15,6 +15,8 @@ Common architectures.
   **Classes**:
     * `surfify.models.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
     * `surfify.models.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
+    * `surfify.models.SiT <surfify.models.sit.SiT.html>`_
+    * `surfify.models.SimCLR <surfify.models.simclr.SimCLR.html>`_
     * `surfify.models.SphericalBase <surfify.models.base.SphericalBase.html>`_
     * `surfify.models.SphericalGUNet <surfify.models.unet.SphericalGUNet.html>`_
     * `surfify.models.SphericalGVGG <surfify.models.vgg.SphericalGVGG.html>`_
@@ -49,6 +51,7 @@ and related informations.
 .. rst-class:: documentation-contents
 
   **Classes**:
+    * `surfify.models.base.Ico <surfify.models.base.Ico.html>`_
     * `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
 
 surfify.models.vae
@@ -100,6 +103,29 @@ Spherical implementation of the torch vision VGG.
 
   **Functions**:
     * `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
+
+surfify.models.sit
+^^^^^^^^^^^^^^^^^^
+
+The Surface Vision Transformer.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
+    * `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
+    * `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
+    * `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
+
+surfify.models.simclr
+^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.models.simclr.SimCLR <surfify.models.simclr.SimCLR.html>`_
 
 surfify.models.unet
 ^^^^^^^^^^^^^^^^^^^

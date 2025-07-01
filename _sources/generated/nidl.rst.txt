@@ -8,7 +8,7 @@ API documentation of *nidl*
 nidl
 ^^^^
 
-
+Deep learning for NeuroImaging in Python.
 
 nidl.experiment
 ^^^^^^^^^^^^^^^

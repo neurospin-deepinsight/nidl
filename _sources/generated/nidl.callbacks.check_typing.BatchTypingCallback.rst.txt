@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.callbacks.check_typing.BatchTypingCallback
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.callbacks.check_typing.BatchTypingCallback
     :add-heading: Examples

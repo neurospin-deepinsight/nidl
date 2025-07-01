@@ -8,8 +8,9 @@
 
 .. autoclass:: surfify.models.vae.SphericalHemiFusionDecoder
      :members:
+     :show-inheritance:
 
-.. minigallery:: surfify.models.SphericalHemiFusionDecoder surfify.models.vae.SphericalHemiFusionDecoder
+.. minigallery:: surfify.models.vae.SphericalHemiFusionDecoder surfify.models.SphericalHemiFusionDecoder
     :add-heading: Examples
     :heading-level: -
 

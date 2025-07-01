@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.nn.IcoUpConv
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.nn.IcoUpConv
     :add-heading: Examples

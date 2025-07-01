@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.models.SphericalVAE
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.models.SphericalVAE
     :add-heading: Examples

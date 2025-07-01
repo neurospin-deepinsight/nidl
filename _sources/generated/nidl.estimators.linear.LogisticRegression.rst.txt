@@ -8,6 +8,7 @@
 
 .. autoclass:: nidl.estimators.linear.LogisticRegression
      :members:
+     :show-inheritance:
 
 .. minigallery:: nidl.estimators.linear.LogisticRegression
     :add-heading: Examples

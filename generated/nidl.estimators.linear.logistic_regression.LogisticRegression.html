@@ -171,6 +171,18 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -196,6 +208,8 @@
 						                <li> <a href='#nidl.estimators.linear.logistic_regression.LogisticRegression.configure_optimizers'>Logisticregression.configure_optimizers()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.linear.logistic_regression.LogisticRegression.cross_entropy_loss'>Logisticregression.cross_entropy_loss()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.estimators.linear.logistic_regression.LogisticRegression.freeze_encoder'>Logisticregression.freeze_encoder()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.linear.logistic_regression.LogisticRegression.on_validation_epoch_end'>Logisticregression.on_validation_epoch_end()</a> </li>                                    
                                     
@@ -259,12 +273,24 @@
                     <div class="document">
                         <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/surfify/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
+<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.linear.logistic_regression.LogisticRegression">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.linear.logistic_regression.</span></span><span class="sig-name descname"><span class="pre">LogisticRegression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/linear/logistic_regression.html#LogisticRegression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.linear.logistic_regression.LogisticRegression" title="Link to this definition">¶</a></dt>
-<dd><p>LogisticRegression implementation.</p>
+<dd><p>Bases: <a class="reference internal" href="nidl.estimators.base.ClassifierMixin.html#nidl.estimators.base.ClassifierMixin" title="nidl.estimators.base.ClassifierMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.base.BaseEstimator.html#nidl.estimators.base.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
+<p>LogisticRegression implementation.</p>
+<p>This class can also be used in self supervised settings.
+After we have trained our encoder via self supervised learning, we can
+deploy it on downstream tasks and see how well it performs with little
+data. A common setup, which also verifies whether the model has learned
+generalized representations, is to perform Logistic Regression on the
+features. In other words, we learn a MLP that maps the
+representations to a class prediction. If very little data is available,
+it might be beneficial to dynamically encode the images during training
+so that we can also apply data augmentations. To freeze the input encoder,
+consider using <a class="reference internal" href="#nidl.estimators.linear.logistic_regression.LogisticRegression.freeze_encoder" title="nidl.estimators.linear.logistic_regression.LogisticRegression.freeze_encoder"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LogisticRegression.freeze_encoder()</span></code></a>. It assumes the
+MLP layer is named <cite>fc</cite>.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> : nn.Module</p>
@@ -304,6 +330,13 @@
 <p class="rubric">Notes</p>
 <p>A batch of data must contains two elements: a tensor with images, and a
 tensor with the variable to predict.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">([</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">(</span><span class="s2">&quot;encoder&quot;</span><span class="p">,</span> <span class="n">encoder</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">(</span><span class="s2">&quot;fc&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">latent_size</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]))</span>
+</pre></div>
+</div>
 <p class="rubric">Attributes</p>
 <table class="docutils align-default">
 <tbody>
@@ -329,6 +362,12 @@ scheduler.</p>
 <span class="sig-name descname"><span class="pre">cross_entropy_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/linear/logistic_regression.html#LogisticRegression.cross_entropy_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.linear.logistic_regression.LogisticRegression.cross_entropy_loss" title="Link to this definition">¶</a></dt>
 <dd><p>Compute and log the InfoNCE loss using
 <code class="xref py py-func docutils literal notranslate"><span class="pre">cross_entropy()</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.linear.logistic_regression.LogisticRegression.freeze_encoder">
+<span class="sig-name descname"><span class="pre">freeze_encoder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/linear/logistic_regression.html#LogisticRegression.freeze_encoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.linear.logistic_regression.LogisticRegression.freeze_encoder" title="Link to this definition">¶</a></dt>
+<dd><p>Freeze the input encoder. Useful for self supervised settings.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -401,7 +440,7 @@ multiple dataloaders are used).</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>loss</strong> :  STEP_OUTPUT</p>
+<dd class="field-even"><p><strong>loss</strong> : STEP_OUTPUT</p>
 <blockquote>
 <div><p>the computed loss:</p>
 <ul class="simple">
@@ -425,12 +464,12 @@ automatically normalized by <code class="docutils literal notranslate"><span cla
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="gp">&gt;&gt;&gt; </span>
-<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multiple optimizers (e.g.: GANs)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="p">,</span> <span class="n">opt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizers</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with encoder</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>

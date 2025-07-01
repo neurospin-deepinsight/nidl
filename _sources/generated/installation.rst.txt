@@ -2,9 +2,9 @@
 
 .. _install_guid:
 
-=================
-Installing `nidl`
-=================
+===================
+Installing ``nidl``
+===================
 
 This tutorial will walk you through the process of intalling NIDL...
 
@@ -25,9 +25,6 @@ Installing a stable version
 
 >>> pip install nidl
 
-**Install the package with the root privilege**
-
->>> sudo pip install nidl
 
 
 .. _install_development:

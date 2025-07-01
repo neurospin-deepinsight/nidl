@@ -8,8 +8,9 @@
 
 .. autoclass:: surfify.nn.modules.IcoGenericUpConv
      :members:
+     :show-inheritance:
 
-.. minigallery:: surfify.nn.modules.IcoGenericUpConv surfify.nn.IcoGenericUpConv
+.. minigallery:: surfify.nn.IcoGenericUpConv surfify.nn.modules.IcoGenericUpConv
     :add-heading: Examples
     :heading-level: -
 

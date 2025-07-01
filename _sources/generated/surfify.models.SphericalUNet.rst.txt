@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.models.SphericalUNet
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.models.SphericalUNet
     :add-heading: Examples

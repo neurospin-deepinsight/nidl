@@ -8,6 +8,7 @@
 
 .. autoclass:: surfify.augmentation.SurfBlur
      :members:
+     :show-inheritance:
 
 .. minigallery:: surfify.augmentation.SurfBlur
     :add-heading: Examples

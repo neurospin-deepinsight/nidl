@@ -182,7 +182,7 @@
 <span class="sd">    split: str, default &#39;train&#39;</span>
 <span class="sd">        define the split to be considered.</span>
 <span class="sd">    targets: str or list of str, default=None</span>
-<span class="sd">        the dataset will also return these tabular data. </span>
+<span class="sd">        the dataset will also return these tabular data.</span>
 <span class="sd">    target_mapping: dict, default None</span>
 <span class="sd">        optionaly, define a dictionary specifying different replacement values</span>
 <span class="sd">        for different existing values. See pandas DataFrame.replace</span>
@@ -238,7 +238,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">info_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">participant_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;participant_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_df</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                <span class="s2">&quot;A &#39;participant_id&#39; is mandatory in the participants file.&quot;</span><span class="p">)</span>         
+                <span class="s2">&quot;A &#39;participant_id&#39; is mandatory in the participants file.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_df</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;participant_id&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">split_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">split_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;participant_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_df</span><span class="p">:</span>
@@ -300,7 +300,7 @@
 <span class="sd">    split: str, default &#39;train&#39;</span>
 <span class="sd">        define the split to be considered.</span>
 <span class="sd">    targets: str or list of str, default=None</span>
-<span class="sd">        the dataset will also return these tabular data. </span>
+<span class="sd">        the dataset will also return these tabular data.</span>
 <span class="sd">    target_mapping: dict, default None</span>
 <span class="sd">        optionaly, define a dictionary specifying different replacement values</span>
 <span class="sd">        for different existing values. See pandas DataFrame.replace</span>
@@ -384,7 +384,7 @@
 <span class="sd">    split: str, default &#39;train&#39;</span>
 <span class="sd">        define the split to be considered.</span>
 <span class="sd">    targets: str or list of str, default=None</span>
-<span class="sd">        the dataset will also return these tabular data. </span>
+<span class="sd">        the dataset will also return these tabular data.</span>
 <span class="sd">    target_mapping: dict, default None</span>
 <span class="sd">        optionaly, define a dictionary specifying different replacement values</span>
 <span class="sd">        for different existing values. See pandas DataFrame.replace</span>

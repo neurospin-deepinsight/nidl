@@ -105,102 +105,6 @@
                                             
                                             
                                     
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
                                 
                                     
                                         
@@ -216,22 +120,6 @@
                                 
                                 
                                     <li>SECTIONS</li>
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico'>Sphericalbase.ico</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico.conv_neighbor_indices'>Sphericalbase.ico.conv_neighbor_indices</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico.down_indices'>Sphericalbase.ico.down_indices</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico.neighbor_indices'>Sphericalbase.ico.neighbor_indices</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico.order'>Sphericalbase.ico.order</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico.triangles'>Sphericalbase.ico.triangles</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico.up_indices'>Sphericalbase.ico.up_indices</a> </li>                                    
-                                    
-						                <li> <a href='#surfify.models.SphericalBase.Ico.vertices'>Sphericalbase.ico.vertices</a> </li>                                    
                                     
 						                <li> <a href='#surfify.models.SphericalBase.build_ico_info'>Sphericalbase.build_ico_info()</a> </li>                                    
                                     
@@ -287,12 +175,13 @@
                     <div class="document">
                         <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/surfify/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
+<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="surfify.models.SphericalBase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">surfify.models.</span></span><span class="sig-name descname"><span class="pre">SphericalBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DiNe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dine_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repa_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repa_zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_repa_zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_ico</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/surfify/models/base.html#SphericalBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#surfify.models.SphericalBase" title="Link to this definition">¶</a></dt>
-<dd><p>Spherical network base information.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Spherical network base information.</p>
 <p>Use either RePa - Rectangular Patch convolution method or DiNe - Direct
 Neighbor convolution method.</p>
 <p class="rubric">Examples</p>
@@ -347,54 +236,6 @@ tesselation is used by default.</p>
 </div></blockquote>
 </dd>
 </dl>
-<dl class="py class">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Ico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triangles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">down_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_neighbor_indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surfify.models.SphericalBase.Ico" title="Link to this definition">¶</a></dt>
-<dd><p>Create new instance of Ico(order, vertices, triangles, neighbor_indices, down_indices, up_indices, conv_neighbor_indices)</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico.conv_neighbor_indices">
-<span class="sig-name descname"><span class="pre">conv_neighbor_indices</span></span><a class="headerlink" href="#surfify.models.SphericalBase.Ico.conv_neighbor_indices" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 6</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico.down_indices">
-<span class="sig-name descname"><span class="pre">down_indices</span></span><a class="headerlink" href="#surfify.models.SphericalBase.Ico.down_indices" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 4</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico.neighbor_indices">
-<span class="sig-name descname"><span class="pre">neighbor_indices</span></span><a class="headerlink" href="#surfify.models.SphericalBase.Ico.neighbor_indices" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 3</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico.order">
-<span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#surfify.models.SphericalBase.Ico.order" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico.triangles">
-<span class="sig-name descname"><span class="pre">triangles</span></span><a class="headerlink" href="#surfify.models.SphericalBase.Ico.triangles" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 2</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico.up_indices">
-<span class="sig-name descname"><span class="pre">up_indices</span></span><a class="headerlink" href="#surfify.models.SphericalBase.Ico.up_indices" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 5</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="surfify.models.SphericalBase.Ico.vertices">
-<span class="sig-name descname"><span class="pre">vertices</span></span><a class="headerlink" href="#surfify.models.SphericalBase.Ico.vertices" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="surfify.models.SphericalBase.build_ico_info">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_ico_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DiNe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dine_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repa_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repa_zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_repa_zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_ico</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cachedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/surfify/models/base.html#SphericalBase.build_ico_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#surfify.models.SphericalBase.build_ico_info" title="Link to this definition">¶</a></dt>
