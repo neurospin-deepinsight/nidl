@@ -180,21 +180,21 @@ class BaseEstimator(pl.LightningModule):
         self.save_hyperparameters(ignore=ignore)
         self.fitted_ = False
         self.trainer_params_ = {
-            callbacks: callbacks,
-            check_val_every_n_epoch: check_val_every_n_epoch,
-            val_check_interval: val_check_interval,
-            max_epochs: max_epochs,
-            min_epochs: min_epochs,
-            max_steps: max_steps,
-            min_steps: min_steps,
-            enable_checkpointing: enable_checkpointing,
-            enable_progress_bar: enable_progress_bar,
-            enable_model_summary: enable_model_summary,
-            accelerator: accelerator,
-            strategy: strategy,
-            devices: devices,
-            num_nodes: num_nodes,
-            precision: precision,
+            "callbacks": callbacks,
+            "check_val_every_n_epoch": check_val_every_n_epoch,
+            "val_check_interval": val_check_interval,
+            "max_epochs": max_epochs,
+            "min_epochs": min_epochs,
+            "max_steps": max_steps,
+            "min_steps": min_steps,
+            "enable_checkpointing": enable_checkpointing,
+            "enable_progress_bar": enable_progress_bar,
+            "enable_model_summary": enable_model_summary,
+            "accelerator": accelerator,
+            "strategy": strategy,
+            "devices": devices,
+            "num_nodes": num_nodes,
+            "precision": precision,
         }
         self.trainer_params_.update(kwargs)
 
@@ -391,14 +391,15 @@ class BaseEstimator(pl.LightningModule):
         """
         return super().validation_step(batch, batch_idx, dataloader_idx)
 
+    @available_if(_estimator_is("transformer"))
     def transform_step(
             self,
             batch: Any,
             batch_idx: int,
             dataloader_idx: Optional[int] = 0) -> Any:
-        """ An alias to :meth:`~nidl.estimators.BaseEstimator.predict_step`.
+        """ Define a transform step.
         """
-        return self.predict_step(batch, batch_idx, dataloader_idx)
+        raise NotImplementedError
 
     def predict_step(
             self,
@@ -438,7 +439,10 @@ class BaseEstimator(pl.LightningModule):
         out: Any
             the predicted output.
         """
-        return super().predict_step(batch, batch_idx, dataloader_idx)
+        if _estimator_is("transformer"):
+            return self.transform_step(batch, batch_idx, dataloader_idx)
+        else:
+            return super().predict_step(batch, batch_idx, dataloader_idx)
 
     def log(
             self,

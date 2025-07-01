@@ -169,10 +169,12 @@ class SimCLR(TransformerMixin, BaseEstimator):
         :class:`~nidl.losses.InfoNCE`.
         """
         # Encode all images
+        n_samples = len(batch[0])
         imgs = torch.cat(batch, dim=0)
         feats = self.g(self.f(imgs))
         # Calculate loss
-        nll = InfoNCE(self.hparams.temperature)(feats[0], feats[1])
+        nll = InfoNCE(self.hparams.temperature)(
+            feats[:n_samples], feats[n_samples:])
         # Logging loss
         self.log(mode + "_loss", nll, prog_bar=True)
         return nll
@@ -180,18 +182,20 @@ class SimCLR(TransformerMixin, BaseEstimator):
     def training_step(
             self,
             batch: tuple[torch.Tensor, torch.Tensor],
-            batch_idx: int):
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0):
         return self.info_nce_loss(batch, mode="train")
 
     def validation_step(
             self,
             batch: tuple[torch.Tensor, torch.Tensor],
-            batch_idx: int):
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0):
         self.info_nce_loss(batch, mode="val")
 
     def transform_step(
             self,
             batch: torch.Tensor,
-            batch_idx: int):
-        imgs = batch[0]
-        return self.f(imgs)
+            batch_idx: int,
+            dataloader_idx: Optional[int] = 0):
+        return self.f(batch)
