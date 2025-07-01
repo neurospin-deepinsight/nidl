@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.models.vae.HemiFusionDecoder surfify.models.HemiFusionDecoder
+.. minigallery:: surfify.models.HemiFusionDecoder surfify.models.vae.HemiFusionDecoder
     :add-heading: Examples
     :heading-level: -
 

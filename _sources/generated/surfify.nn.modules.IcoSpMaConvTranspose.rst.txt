@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.nn.modules.IcoSpMaConvTranspose surfify.nn.IcoSpMaConvTranspose
+.. minigallery:: surfify.nn.IcoSpMaConvTranspose surfify.nn.modules.IcoSpMaConvTranspose
     :add-heading: Examples
     :heading-level: -
 
