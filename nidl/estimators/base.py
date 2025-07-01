@@ -6,8 +6,8 @@
 # for details.
 ##########################################################################
 
-from collections.abc import Sequence
-from typing import Any, Optional, Union
+from collections.abc import Mapping, Sequence
+from typing import Any, Callable, Optional, Union
 
 import pytorch_lightning as pl
 import torch
@@ -19,8 +19,10 @@ from pytorch_lightning.trainer.connectors.accelerator_connector import (
     _PRECISION_INPUT,
 )
 from pytorch_lightning.utilities.types import (
+    _METRIC,
     STEP_OUTPUT,
 )
+from torchmetrics import MetricCollection
 
 from ..utils.validation import _estimator_is, available_if, check_is_fitted
 
@@ -114,10 +116,13 @@ class BaseEstimator(pl.LightningModule):
     fitted
         a boolean that is True if the estimator has been fitted, and is False
         otherwise.
-    trainer_params
-        a dictionaray with the trainer parameters.
+    hparams
+        contains the estimator hyperparameters.
     trainer
         the current lightning trainer.
+    trainer_params
+        a dictionaray with the trainer parameters.
+
         
     Notes
     -----
@@ -210,7 +215,7 @@ class BaseEstimator(pl.LightningModule):
     @available_if(_estimator_is("transformer"))
     def transform(
             self,
-            test_dataloader: data.DataLoader):
+            test_dataloader: data.DataLoader) -> Any:
         """ The `transform` method for transformer.
 
         In the child class you will need to define:
@@ -236,7 +241,7 @@ class BaseEstimator(pl.LightningModule):
     @available_if(_estimator_is(("regressor", "classifier", "clusterer")))
     def predict(
             self,
-            test_dataloader: data.DataLoader):
+            test_dataloader: data.DataLoader) -> Any:
         """ The `predict` method for regression, classification and clustering.
 
         In the child class you will need to define:
@@ -298,12 +303,12 @@ class BaseEstimator(pl.LightningModule):
         >>> def __init__(self):
         >>>     super().__init__()
         >>>     self.automatic_optimization = False
-        >>> 
-        >>> 
+        >>>
+        >>>
         >>> # Multiple optimizers (e.g.: GANs)
         >>> def training_step(self, batch, batch_idx):
         >>>     opt1, opt2 = self.optimizers()
-        >>> 
+        >>>
         >>>     # do training_step with encoder
         >>>     ...
         >>>     opt1.step()
@@ -409,6 +414,173 @@ class BaseEstimator(pl.LightningModule):
         """
         return super().predict_step(batch, batch_idx, dataloader_idx)
 
+    def log(
+            self,
+            name: str,
+            value: _METRIC,
+            prog_bar: bool = False,
+            logger: Optional[bool] = None,
+            on_step: Optional[bool] = None,
+            on_epoch: Optional[bool] = None,
+            reduce_fx: Union[str, Callable] = "mean",
+            enable_graph: bool = False,
+            sync_dist: bool = False,
+            sync_dist_group: Optional[Any] = None,
+            add_dataloader_idx: bool = True,
+            batch_size: Optional[int] = None,
+            metric_attribute: Optional[str] = None,
+            rank_zero_only: bool = False,
+        ) -> None:
+        """ Log a key, value pair.
+
+        Parameters
+        ----------
+        name: str
+            key to log. Must be identical across all processes if using DDP or
+            any other distributed strategy.
+        value: object
+            value to log. Can be a ``float``, ``Tensor``, or a ``Metric``.
+        prog_bar: bool, default=False
+            if ``True`` logs to the progress bar.
+        logger: bool, default=None
+            if ``True`` logs to the logger.
+        on_step: bool, default=None
+            if ``True`` logs at this step. The default value is determined by
+            the hook.
+        on_epoch: bool, default=None
+            if ``True`` logs epoch accumulated metrics. The default value is
+            determined by the hook.
+        reduce_fx: str of callable, default='mean'
+            reduction function over step values for end of epoch.
+            :meth:`torch.mean` by default.
+        enable_graph: bool, default=False
+            if ``True``, will not auto detach the graph.
+        sync_dist: bool, default=False
+            if ``True``, reduces the metric across devices. Use with care as
+            this may lead to a significant communication overhead.
+        sync_dist_group: object, default=None
+            the DDP group to sync across.
+        add_dataloader_idx: bool, default=True
+            if ``True``, appends the index of the current dataloader to
+            the name (when using multiple dataloaders). If ``False``, user
+            needs to give unique names for each dataloader to not mix the
+            values.
+        batch_size: int, default=None
+            current batch_size. This will be directly inferred from the
+            loaded batch, but for some data structures you might need to
+            explicitly provide it.
+        metric_attribute: str, default=None
+            to restore the metric state, Lightning requires the reference of
+            the :class:`torchmetrics.Metric` in your model. This is found
+            automatically if it is a model attribute.
+        rank_zero_only: bool, default=False
+            tells Lightning if you are calling ``self.log`` from every
+            process (default) or only from rank 0. If ``True``, you won't be
+            able to use this metric as a monitor in callbacks (e.g., early
+            stopping).
+            Warning: Improper use can lead to deadlocks!
+
+        Examples
+        --------
+        >>> self.log('train_loss', loss)
+        """
+        return super().log(
+            name=name,
+            value=value,
+            prog_bar=prog_bar,
+            logger=logger,
+            on_step=on_step,
+            on_epoch=on_epoch,
+            reduce_fx=reduce_fx,
+            enable_graph=enable_graph,
+            sync_dist=sync_dist,
+            sync_dist_group=sync_dist_group,
+            add_dataloader_idx=add_dataloader_idx,
+            batch_size=batch_size,
+            metric_attribute=metric_attribute,
+            rank_zero_only=rank_zero_only
+        )
+
+    def log_dict(
+            self,
+            dictionary: Union[Mapping[str, _METRIC], MetricCollection],
+            prog_bar: bool = False,
+            logger: Optional[bool] = None,
+            on_step: Optional[bool] = None,
+            on_epoch: Optional[bool] = None,
+            reduce_fx: Union[str, Callable] = "mean",
+            enable_graph: bool = False,
+            sync_dist: bool = False,
+            sync_dist_group: Optional[Any] = None,
+            add_dataloader_idx: bool = True,
+            batch_size: Optional[int] = None,
+            rank_zero_only: bool = False,
+        ) -> None:
+        """ Log a dictionary of values at once.
+
+        Parameters
+        ----------
+        dictionary: dict
+            key value pairs. Keys must be identical across all processes if
+            using DDP or any other distributed strategy.
+            The values can be a ``float``, ``Tensor``, ``Metric``, or
+            ``MetricCollection``.
+        prog_bar: bool, default=False
+            if ``True`` logs to the progress bar.
+        logger: bool, default=None
+            if ``True`` logs to the logger.
+        on_step: bool, default=None
+            ``None`` auto-logs for training_step but not validation/test_step.
+            The default value is determined by the hook.
+        on_epoch: bool, default=None
+            ``None`` auto-logs for val/test step but not ``training_step``.
+            The default value is determined by the hook.
+        reduce_fx: str of callable, default='mean'
+            reduction function over step values for end of epoch.
+            :meth:`torch.mean` by default.
+        enable_graph: bool, default=False
+            if ``True``, will not auto detach the graph.
+        sync_dist: bool, default=False
+            if ``True``, reduces the metric across devices. Use with care as
+            this may lead to a significant communication overhead.
+        sync_dist_group: object, default=None
+            the DDP group to sync across.
+        add_dataloader_idx: bool, default=True
+            if ``True``, appends the index of the current dataloader to
+            the name (when using multiple dataloaders). If ``False``, user
+            needs to give unique names for each dataloader to not mix the
+            values.
+        batch_size: int, default=None
+            current batch_size. This will be directly inferred from the
+            loaded batch, but for some data structures you might need to
+            explicitly provide it.
+        rank_zero_only: bool, default=False
+            tells Lightning if you are calling ``self.log`` from every
+            process (default) or only from rank 0. If ``True``, you won't be
+            able to use this metric as a monitor in callbacks (e.g., early
+            stopping).
+            Warning: Improper use can lead to deadlocks!
+
+        Examples
+        --------
+        >>> values = {'loss': loss, 'acc': acc, ..., 'metric_n': metric_n}
+        >>> self.log_dict(values)
+        """
+        return super().log(
+            dictionary=dictionary,
+            prog_bar=prog_bar,
+            logger=logger,
+            on_step=on_step,
+            on_epoch=on_epoch,
+            reduce_fx=reduce_fx,
+            enable_graph=enable_graph,
+            sync_dist=sync_dist,
+            sync_dist_group=sync_dist_group,
+            add_dataloader_idx=add_dataloader_idx,
+            batch_size=batch_size,
+            rank_zero_only=rank_zero_only
+        )
+
 
 class RegressorMixin:
     """ Mixin class for all regression estimators in nidl.
@@ -443,4 +615,4 @@ class TransformerMixin:
     This mixin sets the estimator type to `transformer` through the
     `estimator_type` tag.
     """
-    _estimator_type = "transformer"   
+    _estimator_type = "transformer"

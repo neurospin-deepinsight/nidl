@@ -53,6 +53,7 @@ jobs:
             ln -s $PWD/plugins/$name/examples $PWD/examples/$name
             ls -l ./examples
             ls ./examples/$name
+            sed -i '1d' ./examples/$name/README.txt
             python -m pip install git+https://github.com/neurospin-deepinsight/$name
             PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH
@@ -123,6 +124,7 @@ jobs:
         do
             git clone https://github.com/neurospin-deepinsight/$name ./plugins/$name
             ln -s $PWD/plugins/$name/examples $PWD/examples/$name
+            sed -i '1d' ./examples/$name/README.txt
             python -m pip install git+https://github.com/neurospin-deepinsight/$name
             PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
             echo $PLUGPATH

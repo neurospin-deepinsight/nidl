@@ -9,9 +9,10 @@
 ##########################################################################
 
 import warnings
+from collections import UserDict
 
 
-class Bunch(dict):
+class Bunch(UserDict):
     """Container object exposing keys as attributes.
 
     Bunch objects are sometimes used as an output for functions and methods.
@@ -48,9 +49,12 @@ class Bunch(dict):
             )
         return super().__getitem__(key)
 
-    def _set_deprecated(self, value, *, new_key, deprecated_key, warning_message):
-        """Set key in dictionary to be deprecated with its warning message."""
-        self.__dict__["_deprecated_key_to_warnings"][deprecated_key] = warning_message
+    def _set_deprecated(self, value, *, new_key, deprecated_key,
+                        warning_message):
+        """ Set key in dictionary to be deprecated with its warning message.
+        """
+        self.__dict__["_deprecated_key_to_warnings"][
+            deprecated_key] = warning_message
         self[new_key] = self[deprecated_key] = value
 
     def __setattr__(self, key, value):

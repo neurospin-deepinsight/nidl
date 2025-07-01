@@ -26,7 +26,7 @@ class AlexNet(nn.Module):
         the number of input channels.
     """
     def __init__(
-            self, 
+            self,
             n_embedding: int = 128,
             n_channels: int = 1):
         super().__init__()

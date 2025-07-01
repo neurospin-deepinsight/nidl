@@ -43,7 +43,7 @@ class BaseDataset(Dataset):
     split: str, default 'train'
         define the split to be considered.
     targets: str or list of str, default=None
-        the dataset will also return these tabular data. 
+        the dataset will also return these tabular data.
     target_mapping: dict, default None
         optionaly, define a dictionary specifying different replacement values
         for different existing values. See pandas DataFrame.replace
@@ -99,7 +99,7 @@ class BaseDataset(Dataset):
         self.info_df = pd.read_csv(participant_file, sep="\t")
         if "participant_id" not in self.info_df:
             raise KeyError(
-                "A 'participant_id' is mandatory in the participants file.")         
+                "A 'participant_id' is mandatory in the participants file.")
         self.info_df = self.info_df.astype({"participant_id": "str"})
         self.split_df = pd.read_csv(split_file, sep="\t")
         if "participant_id" not in self.split_df:
@@ -158,7 +158,7 @@ class BaseNumpyDataset(BaseDataset):
     split: str, default 'train'
         define the split to be considered.
     targets: str or list of str, default=None
-        the dataset will also return these tabular data. 
+        the dataset will also return these tabular data.
     target_mapping: dict, default None
         optionaly, define a dictionary specifying different replacement values
         for different existing values. See pandas DataFrame.replace
@@ -236,7 +236,7 @@ class BaseImageDataset(BaseDataset):
     split: str, default 'train'
         define the split to be considered.
     targets: str or list of str, default=None
-        the dataset will also return these tabular data. 
+        the dataset will also return these tabular data.
     target_mapping: dict, default None
         optionaly, define a dictionary specifying different replacement values
         for different existing values. See pandas DataFrame.replace

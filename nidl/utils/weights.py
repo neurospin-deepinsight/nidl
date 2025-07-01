@@ -56,7 +56,7 @@ class Weights:
                 data_dir, hf_id, filepath, hf_revision)
         elif self.dtype == "ns-hub":
             ns_id, _ = self.hub_split(name)
-            self.weight_file = self.ns_download(data_dir, ns_id, filepath)            
+            self.weight_file = self.ns_download(data_dir, ns_id, filepath)
         else:
             self.weight_file = Path(self.name)
         assert self.weight_file.is_file(), (

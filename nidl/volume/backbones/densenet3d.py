@@ -26,31 +26,31 @@ class DenseNet(nn.Module):
         how many layers in each pooling block (4 blocks in total).
     num_init_features: int, default=64
         number of filters to learn in the first convolution layer.
-    bn_size: int, default=4 
+    bn_size: int, default=4
         multiplicative factor for number of bottleneck layers
         (i.e. bn_size * k features in the bottleneck layer).
     in_channels: int, default=1
         how many input channels has the input.
-    n_embedding: int, default=512 
+    n_embedding: int, default=512
         the size of the embedding space.
-    memory_efficient: bool, default=False 
-        if True, uses checkpointing. Much more memory efficient, 
+    memory_efficient: bool, default=False
+        if True, uses checkpointing. Much more memory efficient,
         but slower. See <https://arxiv.org/pdf/1707.06990.pdf>.
     """
     def __init__(
-            self, 
-            growth_rate: int = 32, 
+            self,
+            growth_rate: int = 32,
             block_config: tuple[int, int, int, int] = (3, 12, 24, 16),
-            num_init_features: int = 64, 
-            bn_size: int = 4, 
-            in_channels: int = 1, 
+            num_init_features: int = 64,
+            bn_size: int = 4,
+            in_channels: int = 1,
             n_embedding: int = 512,
             memory_efficient: bool = False):
         super().__init__()
         # First convolution
         self.features = nn.Sequential(OrderedDict([
-            ('conv0', nn.Conv3d(in_channels, num_init_features, kernel_size=7, stride=2,
-                                padding=3, bias=False)),
+            ('conv0', nn.Conv3d(in_channels, num_init_features, kernel_size=7,
+                                stride=2, padding=3, bias=False)),
             ('norm0', nn.BatchNorm3d(num_init_features)),
             ('relu0', nn.ReLU(inplace=True)),
             ('pool0', nn.MaxPool3d(kernel_size=3, stride=2, padding=1)),
@@ -109,8 +109,8 @@ class _DenseLayer(nn.Sequential):
         self.add_module('norm1', nn.BatchNorm3d(num_input_features))
         self.add_module('relu1', nn.ReLU(inplace=True)),
         self.add_module('conv1', nn.Conv3d(num_input_features, bn_size *
-                                           growth_rate, kernel_size=1, stride=1,
-                                           bias=False))
+                                           growth_rate, kernel_size=1,
+                                           stride=1, bias=False))
         self.add_module('norm2', nn.BatchNorm3d(bn_size * growth_rate))
         self.add_module('relu2', nn.ReLU(inplace=True))
         self.add_module('conv2', nn.Conv3d(bn_size * growth_rate, growth_rate,

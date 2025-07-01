@@ -105,7 +105,7 @@ class ResNet(nn.Module):
     Parameters
     ----------
     block: BasicBlock or Bottleneck
-        which convolution block to apply (4 in total). 
+        which convolution block to apply (4 in total).
         This should be a class type and not its instance.
     layers: (int, int, int, int)
         now many layers in each conv block (4 in total).
@@ -113,21 +113,21 @@ class ResNet(nn.Module):
         now many input channels has the input.
     zero_init_residual: bool, default=False
         zero-initialize the last BN in each residual branch,
-        so that the residual branch starts with zeros, and each residual block 
-        behaves like an identity. This improves the model by 0.2~0.3% 
+        so that the residual branch starts with zeros, and each residual block
+        behaves like an identity. This improves the model by 0.2~0.3%
         according to https://arxiv.org/abs/1706.02677.
     groups: int, default=1
         how many groups to divide the input channels into in grouped 3x3
         convolution of Bottleneck block (e.g. in Resnet50).
     width_per_group: int, default=64
-        number of channels per group in the grouped 3x3 convolution of 
+        number of channels per group in the grouped 3x3 convolution of
         Bottleneck block (e.g. in ResNet50). Effective width = groups *
         width_per_group.
     replace_stride_with_dilation: None or [bool, bool, bool], default=None
         by default, ResNet reduces spatial resolution of input feature
         maps using  stride 2 conv in layers 2, 3, 4. This replaces some layers
         with stride=2 by dilation (atrous) conv, preserving spatial
-        resolution. It is useful for dense tasks such as segmentation. 
+        resolution. It is useful for dense tasks such as segmentation.
     norm_layer: None or Type[nn.Module], default=None
         which normalization to apply after each layer. If None, nn.BatchNorm3d
         is applied.
@@ -137,16 +137,17 @@ class ResNet(nn.Module):
         the size of the embedding space.
     """
     def __init__(
-            self, 
-            block: Union[type[BasicBlock], type[Bottleneck]], 
-            layers: tuple[int, int, int, int], 
-            in_channels: int = 1, 
+            self,
+            block: Union[type[BasicBlock], type[Bottleneck]],
+            layers: tuple[int, int, int, int],
+            in_channels: int = 1,
             zero_init_residual: bool = False,
-            groups: int = 1, 
-            width_per_group: int = 64, 
-            replace_stride_with_dilation: Union[None, tuple[bool, bool, bool]] = None,
-            norm_layer: Union[None, type[nn.Module]] = None, 
-            initial_kernel_size: int = 7, 
+            groups: int = 1,
+            width_per_group: int = 64,
+            replace_stride_with_dilation:
+                Union[ tuple[bool, bool, bool], None] = None,
+            norm_layer: Union[type[nn.Module], None] = None,
+            initial_kernel_size: int = 7,
             n_embedding: int = 512):
         super().__init__()
 
@@ -168,7 +169,7 @@ class ResNet(nn.Module):
                 f"or a 3-element tuple, got {replace_stride_with_dilation}.")
         self.groups = groups
         self.base_width = width_per_group
-        initial_stride = 2 if initial_kernel_size==7 else 1
+        initial_stride = 2 if initial_kernel_size == 7 else 1
         padding = (initial_kernel_size-initial_stride+1) // 2
         self.conv1 = nn.Conv3d(in_channels, self.inplanes,
                                kernel_size=initial_kernel_size,
@@ -262,7 +263,7 @@ class ResNetTruncated(ResNet):
     depth: int
         the model depth in [0, 4].
     block: BasicBlock or Bottleneck
-        which convolution block to apply (4 in total). 
+        which convolution block to apply (4 in total).
         This should be a class type and not its instance.
     layers: (int, int, int, int)
         now many layers in each conv block (4 in total).
@@ -270,21 +271,21 @@ class ResNetTruncated(ResNet):
         now many input channels has the input.
     zero_init_residual: bool, default=False
         zero-initialize the last BN in each residual branch,
-        so that the residual branch starts with zeros, and each residual block 
-        behaves like an identity. This improves the model by 0.2~0.3% 
+        so that the residual branch starts with zeros, and each residual block
+        behaves like an identity. This improves the model by 0.2~0.3%
         according to https://arxiv.org/abs/1706.02677.
     groups: int, default=1
         how many groups to divide the input channels into in grouped 3x3
         convolution of Bottleneck block (e.g. in Resnet50).
     width_per_group: int, default=64
-        number of channels per group in the grouped 3x3 convolution of 
+        number of channels per group in the grouped 3x3 convolution of
         Bottleneck block (e.g. in ResNet50). Effective width = groups *
         width_per_group.
     replace_stride_with_dilation: None or [bool, bool, bool], default=None
         by default, ResNet reduces spatial resolution of input feature
         maps using  stride 2 conv in layers 2, 3, 4. This replaces some layers
         with stride=2 by dilation (atrous) conv, preserving spatial
-        resolution. It is useful for dense tasks such as segmentation. 
+        resolution. It is useful for dense tasks such as segmentation.
     norm_layer: None or Type[nn.Module], default=None
         which normalization to apply after each layer. If None, nn.BatchNorm3d
         is applied.
@@ -333,19 +334,19 @@ def conv1x1(in_planes, out_planes, stride=1):
                      bias=False)
 
 def _resnet(
-        arch: str, 
-        block: nn.Module, 
-        layers: tuple[int, int, int, int], 
+        arch: str,
+        block: nn.Module,
+        layers: tuple[int, int, int, int],
         **kwargs):
     model = ResNet(block, layers, **kwargs)
     return model
 
 
 def _resnet_trunc(
-        arch: str, 
-        block: nn.Module, 
-        layers: tuple[int, int, int, int], 
-        depth: int, 
+        arch: str,
+        block: nn.Module,
+        layers: tuple[int, int, int, int],
+        depth: int,
         **kwargs):
     model = ResNetTruncated(block, layers, depth=depth, **kwargs)
     return model
@@ -355,25 +356,25 @@ def resnet18(**kwargs):
     """ 3D ResNet-18 architecture adapted from He et al. 2015. See
     https://doi.org/10.48550/arXiv.1512.03385 for details.
     """
-    return _resnet('resnet18', BasicBlock, (2, 2, 2, 2),  **kwargs)
+    return _resnet('resnet18', BasicBlock, (2, 2, 2, 2), **kwargs)
 
 
 def resnet50(**kwargs):
     """ 3D ResNet-50 architecture adapted from He et al. 2015. See
     https://doi.org/10.48550/arXiv.1512.03385 for details.
     """
-    return _resnet('resnet50', Bottleneck, (3, 4, 6, 3),  **kwargs)
+    return _resnet('resnet50', Bottleneck, (3, 4, 6, 3), **kwargs)
 
 
 def resnet18_trunc(depth:int, **kwargs):
     """ 3D truncated ResNet-18 architecture adapted from He et al. 2015. See
     https://doi.org/10.48550/arXiv.1512.03385 for details.
     """
-    return _resnet_trunc('resnet18', BasicBlock, (2, 2, 2, 2),  depth, **kwargs)
+    return _resnet_trunc('resnet18', BasicBlock, (2, 2, 2, 2), depth, **kwargs)
 
 
 def resnet50_trunc(depth: int, **kwargs):
     """ 3D truncated ResNet-50 architecture adapted from He et al. 2015. See
     https://doi.org/10.48550/arXiv.1512.03385 for details.
     """
-    return _resnet_trunc('resnet50', Bottleneck, (3, 4, 6, 3),  depth, **kwargs)
+    return _resnet_trunc('resnet50', Bottleneck, (3, 4, 6, 3), depth, **kwargs)

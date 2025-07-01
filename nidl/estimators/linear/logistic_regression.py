@@ -20,6 +20,25 @@ from ..base import BaseEstimator, ClassifierMixin
 class LogisticRegression(ClassifierMixin, BaseEstimator):
     """ LogisticRegression implementation.
 
+    This class can also be used in self supervised settings.
+    After we have trained our encoder via self supervised learning, we can
+    deploy it on downstream tasks and see how well it performs with little
+    data. A common setup, which also verifies whether the model has learned
+    generalized representations, is to perform Logistic Regression on the
+    features. In other words, we learn a MLP that maps the
+    representations to a class prediction. If very little data is available,
+    it might be beneficial to dynamically encode the images during training
+    so that we can also apply data augmentations. To freeze the input encoder,
+    consider using :meth:`LogisticRegression.freeze_encoder`. It assumes the
+    MLP layer is named `fc`.
+
+    Examples
+    --------
+    >>> model = nn.Sequential(OrderedDict([
+    >>>     ("encoder", encoder),
+    >>>     ("fc", nn.Linear(latent_size, num_classes))
+    >>> ]))
+
     Parameters
     ----------
     model: nn.Module
@@ -64,6 +83,12 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
                          **kwargs)
         self.model = model
         self.validation_step_outputs = {}
+
+    def freeze_encoder(self):
+        """ Freeze the input encoder. Useful for self supervised settings.
+        """
+        self.model.requires_grad_(False)
+        self.model.fc.requires_grad_(True)
 
     def configure_optimizers(self):
         """ Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
@@ -124,5 +149,5 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
             batch: Union[tuple[torch.Tensor, Sequence[torch.Tensor]],
                          tuple[torch.Tensor]],
             batch_idx: int):
-        imgs = batch[0] 
+        imgs = batch[0]
         return self.model(imgs)

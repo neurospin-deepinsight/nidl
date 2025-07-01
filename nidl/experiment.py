@@ -95,8 +95,9 @@ def fetch_experiment(
 
     The weights section special case:
 
-    - model names specified in the form `hf-hub:path/architecture_name@revision`
-      will be loaded from Hugging Face hub.
+    - model names specified in the form
+      `hf-hub:path/architecture_name@revision` will be loaded from Hugging
+      Face hub.
     - model names specifid with a path will be loaded from the local machine.
 
     Parameters
@@ -342,7 +343,7 @@ def load_interface(
         name: str,
         params: dict,
         version: Optional[str]):
-    """ Load an interface. 
+    """ Load an interface.
 
     Parameters
     ----------
@@ -359,7 +360,7 @@ def load_interface(
     cls: object
         a class object.
     code: str
-        the code of the output class object, None in case of issue. 
+        the code of the output class object, None in case of issue.
     """
     module_name, class_name = name.rsplit(".", 1)
     root_module_name = module_name.split(".")[0]

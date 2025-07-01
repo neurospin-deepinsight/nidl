@@ -12,7 +12,7 @@ import torch.nn.functional as func
 
 
 class InfoNCE(nn.Module):
-    """ Normalized temperature cross-entropy loss derived from Chen et al., 
+    """ Normalized temperature cross-entropy loss derived from Chen et al.,
     ICML 2020. See https://doi.org/10.48550/arXiv.2002.05709 for details.
 
     Parameters
@@ -57,7 +57,7 @@ class InfoNCE(nn.Module):
         pos_mask = self_mask.roll(shifts=cos_sim.shape[0] // 2, dims=0)
         # InfoNCE loss
         cos_sim = cos_sim / self.temperature
-        nll = -cos_sim[pos_mask] + torch.logsumexp(cos_sim, dim=-1) 
+        nll = -cos_sim[pos_mask] + torch.logsumexp(cos_sim, dim=-1)
         return nll.mean()
 
     def __repr__(self):

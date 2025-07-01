@@ -75,6 +75,10 @@ extend-select = [
     "RUF",
 ]
 ignore = [
+    "RUF052",   # Local dummy variable `_*` is accessed
+    "FURB101",  # `open` and `read` should be replaced by `Path(path).read_text()`
+    "FURB103",  # `open` and `write` should be replaced by `Path(logfile).write_text(code)`
+    "RUF059",   # Unpacked variable `loss` is never used
 ]
 
 [tool.ruff]
