@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.number_of_neighbors
 
-.. minigallery:: surfify.utils.number_of_neighbors surfify.utils.sampling.number_of_neighbors
+.. minigallery:: surfify.utils.sampling.number_of_neighbors surfify.utils.number_of_neighbors
     :add-heading: Examples
     :heading-level: -
 

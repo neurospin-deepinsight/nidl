@@ -8,7 +8,7 @@
 
 .. autofunction:: nidl.volume.backbones.resnet3d.resnet18
 
-.. minigallery:: nidl.volume.backbones.resnet3d.resnet18 nidl.volume.backbones.resnet18
+.. minigallery:: nidl.volume.backbones.resnet18 nidl.volume.backbones.resnet3d.resnet18
     :add-heading: Examples
     :heading-level: -
 

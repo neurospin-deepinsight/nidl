@@ -319,21 +319,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save_hyperparameters</span><span class="p">(</span><span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitted_</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">callbacks</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
-            <span class="n">check_val_every_n_epoch</span><span class="p">:</span> <span class="n">check_val_every_n_epoch</span><span class="p">,</span>
-            <span class="n">val_check_interval</span><span class="p">:</span> <span class="n">val_check_interval</span><span class="p">,</span>
-            <span class="n">max_epochs</span><span class="p">:</span> <span class="n">max_epochs</span><span class="p">,</span>
-            <span class="n">min_epochs</span><span class="p">:</span> <span class="n">min_epochs</span><span class="p">,</span>
-            <span class="n">max_steps</span><span class="p">:</span> <span class="n">max_steps</span><span class="p">,</span>
-            <span class="n">min_steps</span><span class="p">:</span> <span class="n">min_steps</span><span class="p">,</span>
-            <span class="n">enable_checkpointing</span><span class="p">:</span> <span class="n">enable_checkpointing</span><span class="p">,</span>
-            <span class="n">enable_progress_bar</span><span class="p">:</span> <span class="n">enable_progress_bar</span><span class="p">,</span>
-            <span class="n">enable_model_summary</span><span class="p">:</span> <span class="n">enable_model_summary</span><span class="p">,</span>
-            <span class="n">accelerator</span><span class="p">:</span> <span class="n">accelerator</span><span class="p">,</span>
-            <span class="n">strategy</span><span class="p">:</span> <span class="n">strategy</span><span class="p">,</span>
-            <span class="n">devices</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
-            <span class="n">num_nodes</span><span class="p">:</span> <span class="n">num_nodes</span><span class="p">,</span>
-            <span class="n">precision</span><span class="p">:</span> <span class="n">precision</span><span class="p">,</span>
+            <span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
+            <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="n">check_val_every_n_epoch</span><span class="p">,</span>
+            <span class="s2">&quot;val_check_interval&quot;</span><span class="p">:</span> <span class="n">val_check_interval</span><span class="p">,</span>
+            <span class="s2">&quot;max_epochs&quot;</span><span class="p">:</span> <span class="n">max_epochs</span><span class="p">,</span>
+            <span class="s2">&quot;min_epochs&quot;</span><span class="p">:</span> <span class="n">min_epochs</span><span class="p">,</span>
+            <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="n">max_steps</span><span class="p">,</span>
+            <span class="s2">&quot;min_steps&quot;</span><span class="p">:</span> <span class="n">min_steps</span><span class="p">,</span>
+            <span class="s2">&quot;enable_checkpointing&quot;</span><span class="p">:</span> <span class="n">enable_checkpointing</span><span class="p">,</span>
+            <span class="s2">&quot;enable_progress_bar&quot;</span><span class="p">:</span> <span class="n">enable_progress_bar</span><span class="p">,</span>
+            <span class="s2">&quot;enable_model_summary&quot;</span><span class="p">:</span> <span class="n">enable_model_summary</span><span class="p">,</span>
+            <span class="s2">&quot;accelerator&quot;</span><span class="p">:</span> <span class="n">accelerator</span><span class="p">,</span>
+            <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="n">strategy</span><span class="p">,</span>
+            <span class="s2">&quot;devices&quot;</span><span class="p">:</span> <span class="n">devices</span><span class="p">,</span>
+            <span class="s2">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="n">num_nodes</span><span class="p">,</span>
+            <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="n">precision</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trainer_params_</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -547,14 +547,15 @@
 
 <div class="viewcode-block" id="BaseEstimator.transform_step">
 <a class="viewcode-back" href="../../../generated/nidl.estimators.base.BaseEstimator.html#nidl.estimators.BaseEstimator.transform_step">[docs]</a>
+    <span class="nd">@available_if</span><span class="p">(</span><span class="n">_estimator_is</span><span class="p">(</span><span class="s2">&quot;transformer&quot;</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform_step</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
             <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
             <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; An alias to :meth:`~nidl.estimators.BaseEstimator.predict_step`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Define a transform step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 <div class="viewcode-block" id="BaseEstimator.predict_step">
@@ -597,7 +598,10 @@
 <span class="sd">        out: Any</span>
 <span class="sd">            the predicted output.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">_estimator_is</span><span class="p">(</span><span class="s2">&quot;transformer&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseEstimator.log">

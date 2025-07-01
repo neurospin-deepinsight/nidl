@@ -313,10 +313,12 @@
 <span class="sd">        :class:`~nidl.losses.InfoNCE`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Encode all images</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">imgs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">imgs</span><span class="p">))</span>
         <span class="c1"># Calculate loss</span>
-        <span class="n">nll</span> <span class="o">=</span> <span class="n">InfoNCE</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span><span class="p">)(</span><span class="n">feats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">feats</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">nll</span> <span class="o">=</span> <span class="n">InfoNCE</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span><span class="p">)(</span>
+            <span class="n">feats</span><span class="p">[:</span><span class="n">n_samples</span><span class="p">],</span> <span class="n">feats</span><span class="p">[</span><span class="n">n_samples</span><span class="p">:])</span>
         <span class="c1"># Logging loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_loss&quot;</span><span class="p">,</span> <span class="n">nll</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">nll</span></div>
@@ -327,7 +329,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
-            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_nce_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span></div>
 
 
@@ -336,7 +339,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
-            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info_nce_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span></div>
 
 
@@ -345,9 +349,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">transform_step</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">imgs</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span></div>
+            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.backbones.resnet3d.ResNet nidl.volume.backbones.ResNet
+.. minigallery:: nidl.volume.backbones.ResNet nidl.volume.backbones.resnet3d.ResNet
     :add-heading: Examples
     :heading-level: -
 
