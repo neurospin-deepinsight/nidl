@@ -6,7 +6,7 @@
 # for details.
 ##########################################################################
 
-""" Definition of common losses.
+""" Common losses.
 """
 
 from .infonce import InfoNCE

@@ -6,4 +6,8 @@
 # for details.
 ##########################################################################
 
+"""
+Deep learning for NeuroImaging in Python.
+"""
+
 from .info import __version__

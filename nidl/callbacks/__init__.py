@@ -6,5 +6,5 @@
 # for details.
 ##########################################################################
 
-""" Module that defines common callbacks.
+""" Common callbacks.
 """

@@ -6,7 +6,7 @@
 # for details.
 ##########################################################################
 
-""" Module that defines common estimators.
+""" Common estimators.
 """
 
 from .base import (

@@ -61,7 +61,8 @@ jobs:
     - name: Compute documentation
       run: |
         mkdir -p tmp/doc
-        sphinxdoc -v 2 -p . -n '*nidl' -o tmp/doc
+        DIR=$(pwd)
+        sphinxdoc -v 2 -p . -n '*nidl' -o $DIR/tmp/doc
         cd tmp/doc
         make raw-html
         ls source/_static
@@ -130,7 +131,8 @@ jobs:
     - name: Compute documentation
       run: |
         mkdir -p tmp/doc
-        sphinxdoc -v 2 -p . -n '*nidl' -o tmp/doc
+        DIR=$(pwd)
+        sphinxdoc -v 2 -p . -n '*nidl' -o $DIR/tmp/doc
         cd tmp/doc
         make raw-html
         ls source/_static
