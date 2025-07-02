@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.augmentation.mixup.HemiMixUp surfify.augmentation.HemiMixUp
+.. minigallery:: surfify.augmentation.HemiMixUp surfify.augmentation.mixup.HemiMixUp
     :add-heading: Examples
     :heading-level: -
 

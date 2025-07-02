@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.plotting.surface.plot_trisurf
 
-.. minigallery:: surfify.plotting.surface.plot_trisurf surfify.plotting.plot_trisurf
+.. minigallery:: surfify.plotting.plot_trisurf surfify.plotting.surface.plot_trisurf
     :add-heading: Examples
     :heading-level: -
 

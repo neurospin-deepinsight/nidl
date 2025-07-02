@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.order_of_ico_from_vertices
 
-.. minigallery:: surfify.utils.sampling.order_of_ico_from_vertices surfify.utils.order_of_ico_from_vertices
+.. minigallery:: surfify.utils.order_of_ico_from_vertices surfify.utils.sampling.order_of_ico_from_vertices
     :add-heading: Examples
     :heading-level: -
 

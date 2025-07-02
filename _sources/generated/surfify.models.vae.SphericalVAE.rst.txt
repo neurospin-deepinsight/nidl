@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.models.vae.SphericalVAE surfify.models.SphericalVAE
+.. minigallery:: surfify.models.SphericalVAE surfify.models.vae.SphericalVAE
     :add-heading: Examples
     :heading-level: -
 
