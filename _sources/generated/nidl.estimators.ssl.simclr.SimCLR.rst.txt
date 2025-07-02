@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.ssl.simclr.SimCLR nidl.estimators.ssl.SimCLR
+.. minigallery:: nidl.estimators.ssl.SimCLR nidl.estimators.ssl.simclr.SimCLR
     :add-heading: Examples
     :heading-level: -
 
