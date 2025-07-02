@@ -179,17 +179,13 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.volume.backbones.ResNetTruncated">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.volume.backbones.</span></span><span class="sig-name descname"><span class="pre">ResNetTruncated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/volume/backbones/resnet3d.html#ResNetTruncated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.volume.backbones.ResNetTruncated" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.volume.backbones.</span></span><span class="sig-name descname"><span class="pre">ResNetTruncated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/volume/backbones/resnet3d.html#ResNetTruncated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.volume.backbones.ResNetTruncated" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.volume.backbones.resnet3d.ResNet.html#nidl.volume.backbones.resnet3d.ResNet" title="nidl.volume.backbones.resnet3d.ResNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResNet</span></code></a></p>
 <p>3D truncated ResNet-18 architecture adapted from He et al. 2015. See
 <a class="reference external" href="https://doi.org/10.48550/arXiv.1512.03385">https://doi.org/10.48550/arXiv.1512.03385</a> for details.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>depth</strong> : int</p>
-<blockquote>
-<div><p>the model depth in [0, 4].</p>
-</div></blockquote>
-<p><strong>block</strong> : BasicBlock or Bottleneck</p>
+<dd class="field-odd"><p><strong>block</strong> : BasicBlock or Bottleneck</p>
 <blockquote>
 <div><p>which convolution block to apply (4 in total).
 This should be a class type and not its instance.</p>
@@ -197,6 +193,10 @@ This should be a class type and not its instance.</p>
 <p><strong>layers</strong> : (int, int, int, int)</p>
 <blockquote>
 <div><p>now many layers in each conv block (4 in total).</p>
+</div></blockquote>
+<p><strong>depth</strong> : int, default=0</p>
+<blockquote>
+<div><p>the model depth in [0, 4].</p>
 </div></blockquote>
 <p><strong>in_channels</strong> : int, default=1</p>
 <blockquote>

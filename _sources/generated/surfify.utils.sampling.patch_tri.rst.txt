@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.patch_tri
 
-.. minigallery:: surfify.utils.patch_tri surfify.utils.sampling.patch_tri
+.. minigallery:: surfify.utils.sampling.patch_tri surfify.utils.patch_tri
     :add-heading: Examples
     :heading-level: -
 

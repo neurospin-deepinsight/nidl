@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.nn.modules.IcoDiNeConv surfify.nn.IcoDiNeConv
+.. minigallery:: surfify.nn.IcoDiNeConv surfify.nn.modules.IcoDiNeConv
     :add-heading: Examples
     :heading-level: -
 

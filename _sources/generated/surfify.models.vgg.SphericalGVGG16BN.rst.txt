@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.models.SphericalGVGG16BN surfify.models.vgg.SphericalGVGG16BN
+.. minigallery:: surfify.models.vgg.SphericalGVGG16BN surfify.models.SphericalGVGG16BN
     :add-heading: Examples
     :heading-level: -
 
