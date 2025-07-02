@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.models.unet.SphericalGUNet surfify.models.SphericalGUNet
+.. minigallery:: surfify.models.SphericalGUNet surfify.models.unet.SphericalGUNet
     :add-heading: Examples
     :heading-level: -
 

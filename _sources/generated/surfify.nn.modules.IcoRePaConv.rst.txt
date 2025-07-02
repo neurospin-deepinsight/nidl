@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.nn.modules.IcoRePaConv surfify.nn.IcoRePaConv
+.. minigallery:: surfify.nn.IcoRePaConv surfify.nn.modules.IcoRePaConv
     :add-heading: Examples
     :heading-level: -
 

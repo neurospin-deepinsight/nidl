@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.backbones.ResNetTruncated nidl.volume.backbones.resnet3d.ResNetTruncated
+.. minigallery:: nidl.volume.backbones.resnet3d.ResNetTruncated nidl.volume.backbones.ResNetTruncated
     :add-heading: Examples
     :heading-level: -
 

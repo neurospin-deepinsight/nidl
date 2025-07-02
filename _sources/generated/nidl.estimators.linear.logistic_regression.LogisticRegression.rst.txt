@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.linear.logistic_regression.LogisticRegression nidl.estimators.linear.LogisticRegression
+.. minigallery:: nidl.estimators.linear.LogisticRegression nidl.estimators.linear.logistic_regression.LogisticRegression
     :add-heading: Examples
     :heading-level: -
 

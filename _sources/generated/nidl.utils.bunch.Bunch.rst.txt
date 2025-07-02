@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.utils.Bunch nidl.utils.bunch.Bunch
+.. minigallery:: nidl.utils.bunch.Bunch nidl.utils.Bunch
     :add-heading: Examples
     :heading-level: -
 
