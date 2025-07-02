@@ -179,7 +179,7 @@ class ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool3d(kernel_size=3, stride=2, padding=1)
 
-        channels = [64, 128, 256, 512]
+        channels = [64 * 2 ** idx for idx in range(4)]
 
         self.layer1 = self._make_layer(block, channels[0], layers[0])
         self.layer2 = self._make_layer(block, channels[1], layers[1], stride=2,
@@ -189,6 +189,9 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, channels[3], layers[3], stride=2,
                                        dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool3d(1)
+        if block == Bottleneck:
+            channels = [64] + [(64 * block.expansion) * 2 ** idx
+                               for idx in range(1, 4)]
         self.embedding = nn.Linear(channels[3], n_embedding)
 
         for m in self.modules():
@@ -260,13 +263,13 @@ class ResNetTruncated(ResNet):
 
     Parameters
     ----------
-    depth: int
-        the model depth in [0, 4].
     block: BasicBlock or Bottleneck
         which convolution block to apply (4 in total).
         This should be a class type and not its instance.
     layers: (int, int, int, int)
         now many layers in each conv block (4 in total).
+    depth: int, default=0
+        the model depth in [0, 4].
     in_channels: int, default=1
         now many input channels has the input.
     zero_init_residual: bool, default=False
@@ -296,8 +299,8 @@ class ResNetTruncated(ResNet):
     """
     def __init__(
             self,
-            depth: int,
             *args,
+            depth: int = 0,
             **kwargs):
         super().__init__(*args, **kwargs)
         if depth < 0 or depth > 4:

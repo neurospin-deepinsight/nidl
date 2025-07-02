@@ -195,12 +195,9 @@ class BaseNumpyDataset(BaseDataset):
         subject = self._df.iloc[idx].participant_id
         data_idx = self.info_df.loc[
             self.info_df.participant_id == subject].index.item()
-        if self._targets is None:
-            return [arr[data_idx] for arr in self._data], None
-        else:
-            return ([arr[data_idx] for arr in self._data],
-                    (self._targets[idx]
-                     if self._targets is not None else None))
+        return ([arr[data_idx] for arr in self._data],
+                (self._targets[idx]
+                 if self._targets is not None else None))
 
     @abc.abstractmethod
     def __getitem__(self, idx):
@@ -266,7 +263,7 @@ class BaseImageDataset(BaseDataset):
             withdraw_subjects=withdraw_subjects)
 
         if not isinstance(subject_in_patterns, (list, tuple)):
-            subject_in_patterns = [subject_in_patterns]
+            subject_in_patterns = [subject_in_patterns] * len(patterns)
         assert len(patterns) == len(subject_in_patterns)
 
         self.subject_in_patterns = subject_in_patterns

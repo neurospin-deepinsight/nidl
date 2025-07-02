@@ -126,7 +126,7 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
 
     def training_step(
             self,
-            batch: tuple[torch.Tensor, Sequence[torch.Tensor]],
+            batch: tuple[torch.Tensor, torch.Tensor],
             batch_idx: int,
             dataloader_idx: Optional[int] = 0):
         _, loss, _ = self.cross_entropy_loss(batch, mode="train")

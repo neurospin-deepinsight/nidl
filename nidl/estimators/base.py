@@ -6,6 +6,7 @@
 # for details.
 ##########################################################################
 
+import abc
 from collections.abc import Mapping, Sequence
 from typing import Any, Callable, Optional, Union
 
@@ -392,15 +393,19 @@ class BaseEstimator(pl.LightningModule):
         return super().validation_step(batch, batch_idx, dataloader_idx)
 
     @available_if(_estimator_is("transformer"))
+    @abc.abstractmethod
     def transform_step(
             self,
             batch: Any,
             batch_idx: int,
             dataloader_idx: Optional[int] = 0) -> Any:
         """ Define a transform step.
-        """
-        raise NotImplementedError
 
+        Share the same API as :meth:`BaseEstimator.predict_step`.
+        """
+
+    @available_if(_estimator_is(("transformer", "regressor", "classifier",
+                                 "clusterer")))
     def predict_step(
             self,
             batch: Any,

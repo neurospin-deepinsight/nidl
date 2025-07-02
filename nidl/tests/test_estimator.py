@@ -8,8 +8,6 @@
 
 from collections import OrderedDict
 
-import os
-import glob
 import unittest
 
 import torch
@@ -26,15 +24,12 @@ from nidl.transforms import ContrastiveTransforms
 from nidl.utils import print_multicolor
 
 
-class TestExperiment(unittest.TestCase):
-    """ Test experiement.
+class TestEstimators(unittest.TestCase):
+    """ Test estimators.
     """
     def setUp(self):
         """ Setup test.
         """
-        self.dirname = os.path.abspath(os.path.dirname(__file__))
-        self.configs = glob.glob(os.path.join(
-            self.dirname, "configs", "*.toml"))
         self._encoder = nn.Linear(5 * 5, 10)
         self._encoder.latent_size = 10
         self._fc = nn.Linear(self._encoder.latent_size, 2)

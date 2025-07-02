@@ -22,16 +22,16 @@ class AlexNet(nn.Module):
     ----------
     n_embedding: int, default=128
         the size of the embedding space.
-    n_channels: int, default=1
+    in_channels: int, default=1
         the number of input channels.
     """
     def __init__(
             self,
             n_embedding: int = 128,
-            n_channels: int = 1):
+            in_channels: int = 1):
         super().__init__()
         self.features = nn.Sequential(
-            nn.Conv3d(n_channels, 64, kernel_size=5, stride=2, padding=0),
+            nn.Conv3d(in_channels, 64, kernel_size=5, stride=2, padding=0),
             nn.BatchNorm3d(64),
             nn.ReLU(inplace=True),
             nn.MaxPool3d(kernel_size=3, stride=3),
