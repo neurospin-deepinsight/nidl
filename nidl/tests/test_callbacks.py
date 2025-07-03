@@ -8,13 +8,19 @@
 
 from collections import OrderedDict
 
+import os
+import tempfile
 import unittest
+import pandas as pd
 
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 
+from pytorch_lightning.loggers import CSVLogger
+
 from nidl.callbacks.check_typing import BatchTypingCallback
+from nidl.callbacks.profiling import ProfilingCallback
 from nidl.estimators.linear import LogisticRegression
 from nidl.utils import print_multicolor
 
@@ -53,21 +59,28 @@ class TestCallbacks(unittest.TestCase):
     def test_callbacks(self):
         """ Test callbacks (simple check).
         """
-        model = LogisticRegression(
-            model=self._model,
-            random_state=42,
-            limit_train_batches=3,
-            max_epochs=2,
-            num_classes=2,
-            lr=5e-4,
-            weight_decay=1e-4,
-            callbacks=[
-                BatchTypingCallback(),
-            ]
-        )
-        model.fit(self.xy_loader)
-        pred = model.predict(self.x_loader)
-        self.assertTrue(pred.shape == (self.n_images, ))
+        with tempfile.TemporaryDirectory() as logdir:
+            logger = CSVLogger(save_dir=logdir)
+            model = LogisticRegression(
+                model=self._model,
+                random_state=42,
+                limit_train_batches=3,
+                max_epochs=2,
+                num_classes=2,
+                lr=5e-4,
+                weight_decay=1e-4,
+                callbacks=[
+                    BatchTypingCallback(),
+                    ProfilingCallback(),
+                ],
+                logger=logger,
+                log_every_n_steps=1,
+            )
+            model.fit(self.xy_loader)
+            exp = logger.experiment
+            print_log(exp)
+            pred = model.predict(self.x_loader)
+            self.assertTrue(pred.shape == (self.n_images, ))
 
 
 class CustomTensorDataset(Dataset):
@@ -90,6 +103,16 @@ class CustomTensorDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
+
+
+def print_log(exp):
+    """ Print experiment log content: hparams and metrics.
+    """
+    print(f"{os.path.basename(exp.log_dir)}...")
+    print(exp.hparams)
+    metrics = pd.read_csv(exp.metrics_file_path, sep=",")
+    print(list(metrics))
+    print(metrics)
 
 
 if __name__ == "__main__":
