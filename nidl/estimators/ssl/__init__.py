@@ -10,3 +10,4 @@
 """
 
 from .simclr import SimCLR
+from .yaware import yAwareContrastiveLearning
