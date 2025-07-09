@@ -7,9 +7,6 @@
 ##########################################################################
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as func
-
 
 class BarlowTwins(nn.Module):
     """ Redundancy-reduction loss derived from Zbontar et al.,
