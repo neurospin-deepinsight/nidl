@@ -65,11 +65,22 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
     validation_step_outputs
         a dictionnary with the validation predictions and associated labels
         in the 'pred', and 'label' keys, respectivelly.
+    return_predictions
+        False when the predict step needs to return the embeddings rather than
+        the predictions. Needs an `encoder` layer.
+        Default True.
 
     Notes
     -----
     A batch of data must contains two elements: a tensor with images, and a
     tensor with the variable to predict.
+
+    Raises
+    ------
+    AttributeError
+        when a `fc` layer is missing and you try to freeze the encoder weights,
+        or during the prediction step when you ask for the embeddings
+        and an `encoder` layer is missing.
     """
     def __init__(
             self,
@@ -83,10 +94,29 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
                          **kwargs)
         self.model = model
         self.validation_step_outputs = {}
+        self.return_predictions_ = True
+
+    @property
+    def return_predictions(self):
+        return self.return_predictions_
+
+    @return_predictions.setter
+    def return_predictions(self, value):
+        if not value and not hasattr(self.model, "encoder"):
+            raise AttributeError(
+                "To return the embeddings a layer named `encoder` is "
+                "expected."
+            )
+        self.return_predictions_ = value
 
     def freeze_encoder(self):
         """ Freeze the input encoder. Useful for self supervised settings.
         """
+        if not hasattr(self.model, "fc"):
+            raise AttributeError(
+                "To freeze the input encoder, it assumes the MLP layer is "
+                "named `fc`."
+            )
         self.model.requires_grad_(False)
         self.model.fc.requires_grad_(True)
 
@@ -151,5 +181,7 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
             batch: torch.Tensor,
             batch_idx: int,
             dataloader_idx: Optional[int] = 0):
-        imgs = batch[0]
-        return self.model(imgs)
+        if self.return_predictions_:
+            return self.model(batch)
+        else:
+            return self.model.encoder(batch)
