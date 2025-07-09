@@ -6,8 +6,7 @@
 # for details.
 ##########################################################################
 
-""" Self-supervised estimators.
-"""
+"""Self-supervised estimators."""
 
 from .simclr import SimCLR
-from .yaware import yAwareContrastiveLearning
+from .yaware import YAwareContrastiveLearning
