@@ -25,7 +25,8 @@ dependencies = [
     "torchvision",
     "toml",
     "python-typex",
-    "pandas"
+    "pandas",
+    "scikit-learn"
 ]
 dynamic = ["version"]
 
