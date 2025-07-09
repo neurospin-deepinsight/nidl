@@ -16,57 +16,111 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
 from nidl.estimators import (
-    BaseEstimator, ClassifierMixin, ClusterMixin, RegressorMixin,
-    TransformerMixin)
-from nidl.estimators.ssl import SimCLR
+    BaseEstimator,
+    ClassifierMixin,
+    ClusterMixin,
+    RegressorMixin,
+    TransformerMixin,
+)
+from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
+from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
 from nidl.estimators.linear import LogisticRegression
 from nidl.transforms import ContrastiveTransforms
 from nidl.utils import print_multicolor
 
 
 class TestEstimators(unittest.TestCase):
-    """ Test estimators.
-    """
+    """Test estimators."""
+
     def setUp(self):
-        """ Setup test.
-        """
+        """Setup test."""
         self._encoder = nn.Linear(5 * 5, 10)
         self._encoder.latent_size = 10
         self._fc = nn.Linear(self._encoder.latent_size, 2)
-        self._model =  nn.Sequential(OrderedDict([
-            ("encoder", self._encoder),
-            ("fc", self._fc)
-        ]))
+        self._model = nn.Sequential(
+            OrderedDict([("encoder", self._encoder), ("fc", self._fc)])
+        )
         self.n_images = 20
         self.fake_data = torch.rand(self.n_images, 5 * 5)
-        self.fake_labels = torch.randint(1, (self.n_images, ))
-        ssl_transforms = transforms.Compose([
-            lambda x: x + torch.rand(x.size())
-        ])
+        self.fake_labels = torch.randint(1, (self.n_images,))
+        ssl_transforms = transforms.Compose([lambda x: x + torch.rand(x.size())])
         ssl_dataset = CustomTensorDataset(
-            self.fake_data,
+            self.fake_data, transform=ContrastiveTransforms(ssl_transforms, n_views=2)
+        )
+        x_dataset = CustomTensorDataset(self.fake_data)
+        xy_dataset = CustomTensorDataset(self.fake_data, labels=self.fake_labels)
+        xxy_dataset = CustomTensorDataset(
+            self.fake_data, labels=self.fake_labels, 
             transform=ContrastiveTransforms(ssl_transforms, n_views=2)
         )
-        x_dataset = CustomTensorDataset(
-            self.fake_data
-        )
-        xy_dataset = CustomTensorDataset(
-            self.fake_data,
-            labels=self.fake_labels
-        )
         self.ssl_loader = DataLoader(ssl_dataset, batch_size=2, shuffle=False)
+        self.weakly_sup_loader = DataLoader(xxy_dataset, batch_size=2, shuffle=False)
         self.x_loader = DataLoader(x_dataset, batch_size=2, shuffle=False)
         self.xy_loader = DataLoader(xy_dataset, batch_size=2, shuffle=False)
 
     def ssl_config(self):
-        return {
-            SimCLR: {
-                "lr": 5e-4,
-                "temperature": 0.07,
-                "weight_decay": 1e-4,
-            }
-        }
-
+        return (
+            (
+                SimCLR,
+                {
+                    "encoder": self._encoder,
+                    "hidden_dims": [self._encoder.latent_size, 3],
+                    "lr": 5e-4,
+                    "temperature": 0.07,
+                    "weight_decay": 1e-4,
+                    "max_epochs": 2,
+                    "random_state": 42,
+                    "limit_train_batches": 3,
+                },
+            ),
+            (
+                YAwareContrastiveLearning,
+                {
+                    "encoder": self._encoder,
+                    "projection_head_kwargs": {
+                        "input_dim": self._encoder.latent_size,
+                        "output_dim": 3,
+                    },
+                    "temperature": 0.07,
+                    "learning_rate": 1e-4,
+                    "max_epochs": 2,
+                    "limit_train_batches": 3,
+                },
+            ),
+            (
+                YAwareContrastiveLearning,
+                {
+                    "encoder": self._encoder,
+                    "projection_head": SimCLRProjectionHead(
+                        input_dim=self._encoder.latent_size, output_dim=3
+                    ),
+                    "temperature": 0.1,
+                    "learning_rate": 5e-4,
+                    "optimizer_kwargs": {"weight_decay": 1e-4},
+                    "max_epochs": 2,
+                    "limit_train_batches": 3
+                },
+            ),
+        )
+    
+    def test_weakly_sup_config(self):
+        return (
+            (
+                YAwareContrastiveLearning,
+                {
+                    "encoder": self._encoder,
+                    "projection_head_kwargs": {
+                        "input_dim": self._encoder.latent_size,
+                        "output_dim": 10,
+                    },
+                    "temperature": 0.07,
+                    "learning_rate": 1e-4,
+                    "max_epochs": 2,
+                    "limit_train_batches": 3,
+                },
+            ),
+        )
+    
     def predict_config(self):
         return {
             LogisticRegression: {
@@ -77,21 +131,23 @@ class TestEstimators(unittest.TestCase):
         }
 
     def tearDown(self):
-        """ Run after each test.
-        """
+        """Run after each test."""
         pass
 
     def test_mixin(self):
-        """ Test Mixin types.
-        """
+        """Test Mixin types."""
         mro = BaseEstimator.__mro__
         print(f"[{print_multicolor(repr(mro[:1]), display=False)}]...")
         obj = BaseEstimator()
         self.assertTrue(hasattr(obj, "fit"))
         self.assertFalse(hasattr(obj, "transform"))
         self.assertFalse(hasattr(obj, "predict"))
-        for mixin_klass in (ClassifierMixin, ClusterMixin, RegressorMixin,
-                            TransformerMixin):
+        for mixin_klass in (
+            ClassifierMixin,
+            ClusterMixin,
+            RegressorMixin,
+            TransformerMixin,
+        ):
             _klass = type("Estimator", (mixin_klass, BaseEstimator), {})
             mro = _klass.__mro__
             print(f"[{print_multicolor(repr(mro[:3]), display=False)}]...")
@@ -106,26 +162,35 @@ class TestEstimators(unittest.TestCase):
                 self.assertFalse(hasattr(obj, "transform"))
 
     def test_ssl(self):
-        """ Test self supervised model (simple check).
-        """
-        for klass, params in self.ssl_config().items():
+        """Test self supervised model (simple check)."""
+        for klass, params in self.ssl_config():
             print(f"[{print_multicolor(klass.__name__, display=False)}]...")
-            model = klass(
-                encoder=self._encoder,
-                hidden_dims=[self._encoder.latent_size , 3],
-                random_state=42,
-                limit_train_batches=3,
-                max_epochs=2,
-                **params
-            )
+            model = klass(**params)
             model.fit(self.ssl_loader)
             z = model.transform(self.x_loader)
             self.assertTrue(
-                z.shape == (self.n_images, self._encoder.latent_size))
+                z.shape == (self.n_images, self._encoder.latent_size),
+                msg="Shape mismatch for transformed data: "
+                    f"{z.shape} != {(self.n_images, self._encoder.latent_size)}",
+            )
+
+    def test_weakly_sup(self):
+        """Test weakly supervised model (simple check)."""
+        for klass, params in self.test_weakly_sup_config():
+            print(f"[{print_multicolor(klass.__name__, display=False)}]...")
+            model = klass(
+                **params,
+            )
+            model.fit(self.weakly_sup_loader)
+            z = model.transform(self.x_loader)
+            self.assertTrue(
+                z.shape == (self.n_images, self._encoder.latent_size),
+                msg="Shape mismatch for transformed data: "
+                    f"{z.shape} != {(self.n_images, self._encoder.latent_size)}",
+            )
 
     def test_predictor(self):
-        """ Test predictor model (simple check).
-        """
+        """Test predictor model (simple check)."""
         for klass, params in self.predict_config().items():
             print(f"[{print_multicolor(klass.__name__, display=False)}]...")
             model = klass(
@@ -133,16 +198,16 @@ class TestEstimators(unittest.TestCase):
                 random_state=42,
                 limit_train_batches=3,
                 max_epochs=2,
-                **params
+                **params,
             )
             model.fit(self.xy_loader)
             pred = model.predict(self.x_loader)
-            self.assertTrue(pred.shape == (self.n_images, 2))
+            self.assertTrue(pred.shape == (self.n_images,))
 
 
 class CustomTensorDataset(Dataset):
-    """TensorDataset with support of transforms.
-    """
+    """TensorDataset with support of transforms."""
+
     def __init__(self, data, labels=None, transform=None):
         self.data = data
         self.labels = labels

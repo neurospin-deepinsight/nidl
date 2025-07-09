@@ -1,29 +1,34 @@
-from typing import List, Optional, Tuple
+from typing import Optional
+
 import torch
 import torch.nn as nn
 
 
 class ProjectionHead(nn.Module):
-    """Base class for all projection and prediction heads in self-supervised estimators.
+    """Base class for all projection and prediction heads in self-supervised
+    estimators.
 
 
     Parameters
     ----------
-    blocks: list of tuple of (int, int, Optional[nn.Module], Optional[nn.Module])
+    blocks: list of tuple (int, int, Optional[nn.Module], Optional[nn.Module])
         List of tuples, each denoting one block of the projection head MLP.
-        Each tuple reads `(in_features, out_features, batch_norm_layer, non_linearity_layer)`.
+        Each tuple reads `(in_features, out_features, batch_norm_layer,
+        non_linearity_layer)`.
         Each block applies:
-          i) a linear layer with `in_features` and `out_features` (with bias if `batch_norm_layer` is None)
-          ii) a batch normalization layer as defined by `batch_norm_layer` (optional)
+          i) a linear layer with `in_features` and `out_features` (with bias if
+            `batch_norm_layer` is None)
+          ii) a batch normalization layer as defined by `batch_norm_layer`
+            (optional)
           iii) a non-linearity as defined by `non_linearity_layer` (optional)
-    
+
     Attributes
     ----------
     layers: nn.Sequential
         a list of :class:`~torch.nn.Module` to apply
-    
+
     Examples
-    --------        
+    --------
     >>> # the following projection head has two blocks
     >>> # the first block uses batch norm an a ReLU non-linearity
     >>> # the second block is a simple linear layer
@@ -34,10 +39,12 @@ class ProjectionHead(nn.Module):
     """
 
     def __init__(
-            self,
-            blocks: List[Tuple[int, int, Optional[nn.Module], Optional[nn.Module]]]
+        self,
+        blocks: list[
+            tuple[int, int, Optional[nn.Module], Optional[nn.Module]]
+        ],
     ):
-        super(ProjectionHead, self).__init__()
+        super().__init__()
 
         layers = []
         for input_dim, output_dim, batch_norm, non_linearity in blocks:
@@ -50,36 +57,36 @@ class ProjectionHead(nn.Module):
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor):
-        """Computes one forward pass through the projection head.
-
-        Args:
-            x:
-                Input of shape bsz x num_ftrs.
-
-        """
+        """Computes one forward pass through the projection head."""
         return self.layers(x)
 
 
 class SimCLRProjectionHead(ProjectionHead):
     """Projection head used for SimCLR.
 
-    "We use a MLP with one hidden layer to obtain zi = g(h) = W_2 * σ(W_1 * h)
-    where σ is a ReLU non-linearity." [1]
+    "We use a MLP with one hidden layer to obtain
+    :math: `zi = g(h) = W_2 * \sigma (W_1 * h)` where :math: `\sigma`
+    is a ReLU non-linearity." [1]
 
     [1] SimCLR, 2020, https://arxiv.org/abs/2002.05709
 
     """
-    def __init__(self,
-                 input_dim: int = 2048,
-                 hidden_dim: int = 2048,
-                 output_dim: int = 128):
-        super(SimCLRProjectionHead, self).__init__([
-            (input_dim, hidden_dim, None, nn.ReLU()),
-            (hidden_dim, output_dim, None, None),
-        ])
+
+    def __init__(
+        self,
+        input_dim: int = 2048,
+        hidden_dim: int = 2048,
+        output_dim: int = 128,
+    ):
+        super().__init__(
+            [
+                (input_dim, hidden_dim, None, nn.ReLU()),
+                (hidden_dim, output_dim, None, None),
+            ]
+        )
 
 
-class yAwareProjectionHead(ProjectionHead):
+class YAwareProjectionHead(ProjectionHead):
     """Projection head used for yAware.
 
     "[...] zθ2 is a vanilla multilayer perceptron as in [SimCLR, 2020]" [1]
@@ -87,12 +94,16 @@ class yAwareProjectionHead(ProjectionHead):
     [1] yAware, 2021, https://arxiv.org/abs/2106.08808
 
     """
-    def __init__(self,
-                 input_dim: int = 2048,
-                 hidden_dim: int = 512,
-                 output_dim: int = 128):
-        super(yAwareProjectionHead, self).__init__([
-            (input_dim, hidden_dim, None, nn.ReLU()),
-            (hidden_dim, output_dim, None, None),
-        ])
 
+    def __init__(
+        self,
+        input_dim: int = 2048,
+        hidden_dim: int = 512,
+        output_dim: int = 128,
+    ):
+        super().__init__(
+            [
+                (input_dim, hidden_dim, None, nn.ReLU()),
+                (hidden_dim, output_dim, None, None),
+            ]
+        )

@@ -6,8 +6,7 @@
 # for details.
 ##########################################################################
 
-""" Common losses.
-"""
+"""Common losses."""
 
 from .infonce import InfoNCE
-
+from .yaware_infonce import YAwareInfoNCE

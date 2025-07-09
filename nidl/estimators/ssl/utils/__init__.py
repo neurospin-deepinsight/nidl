@@ -1,4 +1,5 @@
 from .projection_heads import (
-    ProjectionHead, SimCLRProjectionHead,
-    yAwareProjectionHead
+    ProjectionHead,
+    SimCLRProjectionHead,
+    YAwareProjectionHead,
 )
