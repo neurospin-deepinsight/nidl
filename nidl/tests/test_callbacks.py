@@ -10,10 +10,13 @@ from collections import OrderedDict
 
 import unittest
 
+import numpy as np
+
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 
+from nidl.callbacks.caching import CachingCallback
 from nidl.callbacks.check_typing import BatchTypingCallback
 from nidl.estimators.linear import LogisticRegression
 from nidl.utils import print_multicolor
@@ -63,11 +66,24 @@ class TestCallbacks(unittest.TestCase):
             weight_decay=1e-4,
             callbacks=[
                 BatchTypingCallback(),
+                CachingCallback(train_dataloader=self.x_loader,
+                                validation_dataloader=None,
+                                test_dataloader=None,
+                                frequency=1,
+                                model_attr="model.encoder",
+                                auxiliaries=self.fake_labels),
             ]
         )
-        model.fit(self.xy_loader)
+        model.fit(self.xy_loader, val_dataloader=self.xy_loader)
+        self.assertTrue(model.embeddings.last_epoch == 1)
+        self.assertTrue(
+            np.allclose(model.embeddings.auxiliaries, self.fake_labels))
+        self.assertTrue(model.embeddings.train.shape == (
+            self.n_images, self._encoder.latent_size))
+        self.assertTrue(model.embeddings.validation is None)
+        self.assertTrue(model.embeddings.test is None)
         pred = model.predict(self.x_loader)
-        self.assertTrue(pred.shape == (self.n_images, ))
+        self.assertTrue(pred.shape == (self.n_images, 2))
 
 
 class CustomTensorDataset(Dataset):
