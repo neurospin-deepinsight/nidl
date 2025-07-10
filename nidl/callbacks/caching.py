@@ -39,13 +39,18 @@ class CachingCallback(pl.Callback):
         some auxiliary variables that will be shared.
     frequency: int, default=1
         when to update the caching, by default after each validation loop.
+    model_attr: str, default='model'
+        the attribute name on your estimator containg the model to inspect.
+        For recursion, use the '.' as a separator. For example if you only
+        want to access the model encoder you may specify 'model.encoder'.
 
     Attributes
     ----------
     embeddings: nidl.utils.Bunch
         contains the the different latent representations in the `train`,
         `validation` and `test` keys as well as the last upadate epoch number
-        in `last_epoch`. This attributes is also made availabel from the
+        in `last_epoch`. The input auxiliaries are also available in
+        `auxiliaries`. This attributes is made available from the
         input estimator.
 
     Notes
@@ -61,9 +66,9 @@ class CachingCallback(pl.Callback):
         if the input module is an estimator that do not dervies from a valid
         mixin type.
     AttributeError
-        when a `fc` layer is missing and you try to freeze the encoder weights,
-        or during the prediction step when you ask for the embeddings
-        and an `encoder` layer is missing.
+        when the `model_attr` layer is missing or when one data loader
+        is shuffled (for this we check if the name of the sampler contains
+        the 'random' string).
     """
     def __init__(
             self,
@@ -77,6 +82,13 @@ class CachingCallback(pl.Callback):
         self.train_dataloader = train_dataloader
         self.validation_dataloader = validation_dataloader
         self.test_dataloader = test_dataloader
+        for loader in ():
+            name = loader.sampler.__class__.__name__
+            if "random" in name.lower():
+                raise AttributeError(
+                    f"From the data loader name '{name}' we detected that it "
+                    "may be shuffled."
+                )
         self.frequency = frequency
         self.model_attr = model_attr
         self.embeddings = Bunch(auxiliaries=auxiliaries)
@@ -97,6 +109,7 @@ class CachingCallback(pl.Callback):
             return
         if pl_module.current_epoch % self.frequency != 0:
             return
+        self.embeddings["last_epoch"] = pl_module.current_epoch
         model = self.get_module(pl_module)
         if model is None:
             raise AttributeError(

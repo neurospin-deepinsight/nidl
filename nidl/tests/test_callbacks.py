@@ -75,6 +75,7 @@ class TestCallbacks(unittest.TestCase):
             ]
         )
         model.fit(self.xy_loader, val_dataloader=self.xy_loader)
+        self.assertTrue(model.embeddings.last_epoch == 1)
         self.assertTrue(
             np.allclose(model.embeddings.auxiliaries, self.fake_labels))
         self.assertTrue(model.embeddings.train.shape == (
