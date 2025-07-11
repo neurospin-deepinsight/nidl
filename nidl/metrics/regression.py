@@ -15,7 +15,8 @@ from sklearn.metrics import (
     r2_score,
     root_mean_squared_error,
 )
-from sklearn.metrics._regression import _check_reg_targets_with_floating_dtype
+
+from ._regression import _check_reg_targets_with_floating_dtype
 
 """Sets of functions to compute regression metrics to evaluate the
 performance of a regressor."""
@@ -69,7 +70,7 @@ def pearson_r(
     """
     _, y_true, y_pred, sample_weight, multioutput = (
         _check_reg_targets_with_floating_dtype(
-            y_true, y_pred, sample_weight, multioutput, xp=np
+            y_true, y_pred, sample_weight, multioutput
         )
     )
     # If weights are None or all zeros, assume uniform weights
