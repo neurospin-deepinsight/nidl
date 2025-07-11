@@ -33,7 +33,7 @@ class TestCallbacks(unittest.TestCase):
         """
         self._encoder = nn.Linear(5 * 5, 10)
         self._encoder.latent_size = 10
-        self._fc = nn.Linear(self._encoder.latent_size, 2)
+        self._fc = nn.Linear(self._encoder.latent_size, 3)
         self._model =  nn.Sequential(OrderedDict([
             ("encoder", self._encoder),
             ("fc", self._fc)
@@ -98,7 +98,10 @@ class TestCallbacks(unittest.TestCase):
         )
         model.fit(self.xy_loader)
         pred = model.predict(self.x_loader)
-        self.assertTrue(pred.shape == (self.n_images, ))
+        self.assertTrue(pred.shape == (self.n_images, 3), 
+                         msg="Predicted shape mismatch: "
+                            f"expected {(self.n_images, 3)}, "
+                            f"got {pred.shape}")
     
     def test_ridgecv_reg_probing_callback(self):
         """ Test RidgeCV regression probing callback. """
