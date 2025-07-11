@@ -7,6 +7,8 @@
 ##########################################################################
 
 import torch
+import torch.nn as nn
+
 
 class BarlowTwins(nn.Module):
     """ Redundancy-reduction loss derived from Zbontar et al.,
@@ -45,17 +47,17 @@ class BarlowTwins(nn.Module):
         # normalize repr. along the batch dimension
         # beware: normalization is not robust to batch of size 1
         # if it happens, it will return a nan loss
-        z1_norm = (z1 - z1.mean(0)) / z1.std(0) # NxD
-        z2_norm = (z2 - z2.mean(0)) / z2.std(0) # NxD
+        z1_norm = (z1 - z1.mean(0)) / z1.std(0)  # NxD
+        z2_norm = (z2 - z2.mean(0)) / z2.std(0)  # NxD
 
         N = z1.size(0)
         D = z1.size(1)
         lbd = self.lambd / D
 
         # cross-correlation matrix
-        c = torch.mm(z1_norm.T, z2_norm) / N # DxD
+        c = torch.mm(z1_norm.T, z2_norm) / N  # DxD
         # loss
-        c_diff = (c - torch.eye(D,device=self.device)).pow(2) # DxD
+        c_diff = (c - torch.eye(D, device=self.device)).pow(2)  # DxD
         # multiply off-diagonal elems of c_diff by lambd
         c_diff[~torch.eye(D, dtype=bool)] *= lbd
         loss_invariance = c_diff[torch.eye(D, dtype=bool)].sum()
@@ -66,4 +68,3 @@ class BarlowTwins(nn.Module):
 
     def __repr__(self):
         return f"{type(self).__name__}(lambd={self.lambd})"
-    
