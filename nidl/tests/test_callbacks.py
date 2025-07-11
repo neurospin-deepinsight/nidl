@@ -81,24 +81,24 @@ class TestCallbacks(unittest.TestCase):
         """
         pass
 
-    # def test_batch_typing_callbacks(self):
-    #     """ Test callbacks (simple check).
-    #     """
-    #     model = LogisticRegression(
-    #         model=self._model,
-    #         random_state=42,
-    #         limit_train_batches=3,
-    #         max_epochs=2,
-    #         num_classes=2,
-    #         lr=5e-4,
-    #         weight_decay=1e-4,
-    #         callbacks=[
-    #             BatchTypingCallback(),
-    #         ]
-    #     )
-    #     model.fit(self.xy_loader)
-    #     pred = model.predict(self.x_loader)
-    #     self.assertTrue(pred.shape == (self.n_images, ))
+    def test_batch_typing_callbacks(self):
+        """ Test callbacks (simple check).
+        """
+        model = LogisticRegression(
+            model=self._model,
+            random_state=None,
+            limit_train_batches=3,
+            max_epochs=2,
+            num_classes=3,
+            lr=5e-4,
+            weight_decay=1e-4,
+            callbacks=[
+                BatchTypingCallback(),
+            ]
+        )
+        model.fit(self.xy_loader)
+        pred = model.predict(self.x_loader)
+        self.assertTrue(pred.shape == (self.n_images, ))
     
     def test_ridgecv_reg_probing_callback(self):
         """ Test RidgeCV regression probing callback. """

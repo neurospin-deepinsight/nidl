@@ -23,7 +23,7 @@ dependencies = [
     "toml",
     "python-typex",
     "pandas",
-    "scikit-learn"
+    "scikit-learn >= 1.7"
 ]
 dynamic = ["version"]
 
