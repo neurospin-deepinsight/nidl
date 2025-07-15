@@ -102,5 +102,8 @@ celerybeat-schedule
 venv/
 ENV/
 
+# vscode
+.vscode
+
+# pytorch-lightning
 lightning_logs/
-.vscode/

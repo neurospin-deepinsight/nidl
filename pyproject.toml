@@ -7,7 +7,9 @@ name = "nidl"
 readme = "README.rst"
 requires-python = ">=3.9"
 authors = [
-    {name = "nidl developers", email = "antoine.grigis@cea.fr"},
+    {name = "Antoine Grigis", email = "antoine.grigis@cea.fr"},
+    {name = "Benoit Dufumier", email="benoit.dufumier@cea.fr"},
+    {name = "Joël Chavas", email="joel.chavas@cea.fr"}
 ]
 license = {text = "CeCILL-B"}
 classifiers = [
@@ -20,6 +22,7 @@ classifiers = [
 dependencies = [
     "torch >=2.1.0, <2.8.0",
     "pytorch-lightning",
+    "torchvision",
     "toml",
     "python-typex",
     "pandas",
@@ -82,7 +85,7 @@ ignore = [
     "RUF059",   # Unpacked variable `loss` is never used
     "FURB189",  # Subclassing `dict` can be error prone, use `collections.UserDict` instead
     "N803",     # Argument name should be lowercase
-    "N806",      # Variable in function should be lowercase
+    "N806",     # Variable in function should be lowercase
     "D100",    # Missing docstring in public module
     "D102",    # Missing docstring in public method
     "D104",    # Missing docstring in public package
