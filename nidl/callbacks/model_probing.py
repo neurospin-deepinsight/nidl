@@ -244,7 +244,7 @@ class RidgeCVCallback(ModelProbing):
        - median absolute error
        - root mean squared error
        - mean squared error
-       - r2 score
+       - R² score
        - pearsonr
        - explained variance score
 
@@ -345,17 +345,20 @@ class RidgeCVCallback(ModelProbing):
 class KNeighborsRegressorCVCallback(ModelProbing):
     """Perform KNN regression on top of an embedding model.
 
-    Concretely this callback:
-      1) Embeds the input data through the torch model
-      2) Performs n-fold CV to find the best `n_neighbors` neighbors
-      3) Log the main regression metrics by regressor and averaged, including:
-            * mean absolute error
-            * median absolute error
-            * root mean squared error
-            * mean squared error
-            * r2 score
-            * pearsonr
-            * explained variance score
+    Concretely, this callback:
+
+    1. Embeds the input data through the torch model.
+    2. Performs n-fold cross-validation to find the best `n_neighbors`.
+    3. Logs the main regression metrics by regressor and averaged, including:
+
+       - mean absolute error
+       - median absolute error
+       - root mean squared error
+       - mean squared error
+       - R² score
+       - Pearson correlation coefficient
+       - explained variance score
+
 
     Parameters
     ----------
