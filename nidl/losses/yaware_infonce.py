@@ -75,16 +75,17 @@ class KernelMetric(BaseEstimator):
         self.is_fitted = False
 
         # Get covariance factor from bandwidth estimator
-        if self.bandwidth == "scott":
-            self.covariance_factor = self.scotts_factor
-        elif self.bandwidth == "silverman":
-            self.covariance_factor = self.silverman_factor
+        if isinstance(self.bandwidth, str):
+            if self.bandwidth == "scott":
+                self.covariance_factor = self.scotts_factor
+            elif self.bandwidth == "silverman":
+                self.covariance_factor = self.silverman_factor
         elif isinstance(self.bandwidth, (float, int, list, np.ndarray)):
             pass  # scalar bandwidth, no covariance factor needed
         else:
             raise ValueError(
                 "`bandwidth` should be a string ('scott' or 'silverman'), "
-                "a scalar (float or int), or a list of floats, got "
+                "a scalar (float or int), a list of floats or array got "
                 f"{type(self.bandwidth)}"
             )
 
@@ -140,13 +141,40 @@ class KernelMetric(BaseEstimator):
                 self.sqr_bandwidth_,
             )
         else:
-            self.sqr_bandwidth_ = np.sqrt(self.bandwidth)
-            self.inv_sqr_bandwidth_ = np.divide(
-                1.0,
-                self.sqr_bandwidth_,
-                out=np.zeros_like(self.sqr_bandwidth_),
-                where=self.sqr_bandwidth_ != 0,
-            )
+            # simple case: diagonal matrix
+            if np.allclose(
+                self.bandwidth, np.diag(np.diagonal(self.bandwidth))
+            ):
+                self.sqr_bandwidth_ = np.sqrt(self.bandwidth)
+                self.inv_sqr_bandwidth_ = np.divide(
+                    1.0,
+                    self.sqr_bandwidth_,
+                    out=np.zeros_like(self.sqr_bandwidth_),
+                    where=self.sqr_bandwidth_ != 0,
+                )
+            else:  # harder case
+                M = self.bandwidth  # short name
+                # Check symmetry
+                if not np.allclose(M, M.T, atol=1e-8):
+                    raise ValueError("`bandwidth` is not symmetric")
+                # Eigen decomposition
+                eigvals, eigvecs = np.linalg.eigh(M)
+
+                # Check positive definiteness
+                if np.any(eigvals <= 0):
+                    raise ValueError("`bandwidth` is not positive definite")
+
+                # Compute sqrt and inverse sqrt of eigenvalues
+                sqrt_eigvals = np.sqrt(eigvals)
+                invsqrt_eigvals = 1.0 / sqrt_eigvals
+
+                # Reconstruct matrices
+                self.sqr_bandwidth_ = (
+                    eigvecs @ np.diag(sqrt_eigvals) @ eigvecs.T
+                )
+                self.inv_sqr_bandwidth_ = (
+                    eigvecs @ np.diag(invsqrt_eigvals) @ eigvecs.T
+                )
 
     def _check_bandwidth(self, bandwidth, X):
         if isinstance(bandwidth, str):

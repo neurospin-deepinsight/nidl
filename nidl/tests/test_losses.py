@@ -8,6 +8,7 @@
 
 import unittest
 
+import numpy as np
 import torch
 
 from nidl.losses import (
@@ -45,7 +46,6 @@ class TestLosses(unittest.TestCase):
                         f"got {loss_low} vs {loss_high}"
                     )
                     assert loss_low >= 0, "InfoNCE loss should be positive."
-
     
     def test_yaware(self):
         """ Test y-Aware loss is computed correctly.
@@ -73,7 +73,8 @@ class TestLosses(unittest.TestCase):
         z1 = torch.rand(10, 2)
         z2 = torch.rand(10, 2)
         labels = torch.rand(10, 3)
-        for bandwidth in ["scott", "silverman", [1, 2, 3], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]]:
+        covar = (labels.T @ labels).numpy()
+        for bandwidth in ["scott", "silverman", covar]:
             kernel = KernelMetric(bandwidth=bandwidth)
             loss = YAwareInfoNCE(bandwidth=kernel)
             with self.assertRaises(ValueError): # kernel not fitted
@@ -81,10 +82,22 @@ class TestLosses(unittest.TestCase):
             kernel.fit(labels)
             kernel_loss = loss(z1, z2, labels)
             assert  kernel_loss >= 0, "y-Aware InfoNCE loss should be positive."
-            if not isinstance(bandwidth, str):
+            if not isinstance(bandwidth, str): # SDP matrix as bandwidth
                 loss = YAwareInfoNCE(bandwidth=bandwidth)
                 assert loss(z1, z2, labels) == kernel_loss
-        
+                assert np.allclose(kernel.inv_sqr_bandwidth_ @ \
+                                   kernel.inv_sqr_bandwidth_ @ kernel.bandwidth, np.eye(3), atol=1e-6)
+                assert np.allclose(kernel.inv_sqr_bandwidth_ @ kernel.sqr_bandwidth_, np.eye(3), atol=1e-6)
+                assert np.allclose(kernel.sqr_bandwidth_ @ kernel.sqr_bandwidth_, kernel.bandwidth, atol=1e-6)
+        with self.assertRaises(ValueError):
+            # no SDP bandwidth
+            loss = YAwareInfoNCE(bandwidth=[[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+            loss(z1, z2, labels)
+        with self.assertRaises(ValueError):
+            # negative values
+            loss = YAwareInfoNCE(bandwidth=-np.eye(3))
+            loss(z1, z2, labels)
+
     def test_eq_yaware_infonce(self):
         """ Test that YAwareInfoNCE is equal to InfoNCE when no labels are provided.
         """
