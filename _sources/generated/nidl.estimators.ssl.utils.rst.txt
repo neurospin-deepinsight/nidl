@@ -1,0 +1,31 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.estimators.ssl.utils*
+=================================================
+
+nidl.estimators.ssl.utils
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.estimators.ssl.utils.ProjectionHead <nidl.estimators.ssl.utils.projection_heads.ProjectionHead.html>`_
+    * `nidl.estimators.ssl.utils.SimCLRProjectionHead <nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead.html>`_
+    * `nidl.estimators.ssl.utils.YAwareProjectionHead <nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead.html>`_
+
+nidl.estimators.ssl.utils.projection_heads
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.estimators.ssl.utils.projection_heads.ProjectionHead <nidl.estimators.ssl.utils.projection_heads.ProjectionHead.html>`_
+    * `nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead <nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead.html>`_
+    * `nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead <nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead.html>`_
+

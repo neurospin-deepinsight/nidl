@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.LogisticRegressionCVCallback nidl.callbacks.model_probing.LogisticRegressionCVCallback
+.. minigallery:: nidl.callbacks.model_probing.LogisticRegressionCVCallback nidl.callbacks.LogisticRegressionCVCallback
     :add-heading: Examples
     :heading-level: -
 

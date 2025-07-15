@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.datasets._generic.GenericSurfDataset surfify.datasets.GenericSurfDataset
+.. minigallery:: surfify.datasets.GenericSurfDataset surfify.datasets._generic.GenericSurfDataset
     :add-heading: Examples
     :heading-level: -
 

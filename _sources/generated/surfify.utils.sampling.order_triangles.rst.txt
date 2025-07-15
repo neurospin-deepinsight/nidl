@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.order_triangles
 
-.. minigallery:: surfify.utils.order_triangles surfify.utils.sampling.order_triangles
+.. minigallery:: surfify.utils.sampling.order_triangles surfify.utils.order_triangles
     :add-heading: Examples
     :heading-level: -
 

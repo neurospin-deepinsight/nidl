@@ -62,6 +62,13 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
     </div>
     <div class='row'>    <div class='col-md-4'>
+    <h3><a href='nidl.estimators.ssl.utils.html'>
+    nidl.estimators.ssl.utils
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+    <div class='col-md-4'>
     <h3><a href='nidl.losses.html'>
     nidl.losses
     </a></h3>
@@ -75,16 +82,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
     </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.transforms.html'>
     nidl.transforms
     </a></h3>
     <blockquote>
         <p>Common transformations.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.utils.html'>
     nidl.utils
     </a></h3>
@@ -98,7 +105,9 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Definition of common architectures.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.volume.backbones.html'>
     nidl.volume.backbones
     </a></h3>
@@ -106,8 +115,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
         <p>Definition of common volumic architectures.</p>    </blockquote>
     </div>
 
-    </div>
-    <div class='row'>
     </div>
     </div>
     </div>
@@ -295,7 +302,28 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.estimators.ssl.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
 
+          `nidl.estimators.ssl.YAwareContrastiveLearning <nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html>`_
+
+          `nidl.estimators.ssl.yaware.YAwareContrastiveLearning <nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html>`_
+
           `nidl.estimators.ssl.simclr.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
+
+    * `nidl.estimators.ssl.utils <nidl.estimators.ssl.utils.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.estimators.ssl.utils.ProjectionHead <nidl.estimators.ssl.utils.projection_heads.ProjectionHead.html>`_
+
+          `nidl.estimators.ssl.utils.SimCLRProjectionHead <nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead.html>`_
+
+          `nidl.estimators.ssl.utils.YAwareProjectionHead <nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead.html>`_
+
+          `nidl.estimators.ssl.utils.projection_heads.ProjectionHead <nidl.estimators.ssl.utils.projection_heads.ProjectionHead.html>`_
+
+          `nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead <nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead.html>`_
+
+          `nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead <nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead.html>`_
 
     * `nidl.losses <nidl.losses.html>`_
         .. hidden-technical-block::
@@ -304,7 +332,17 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.losses.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
 
+          `nidl.losses.KernelMetric <nidl.losses.yaware_infonce.KernelMetric.html>`_
+
+          `nidl.losses.YAwareInfoNCE <nidl.losses.yaware_infonce.YAwareInfoNCE.html>`_
+
           `nidl.losses.infonce.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
+
+          `nidl.losses.yaware_infonce.KernelMetric <nidl.losses.yaware_infonce.KernelMetric.html>`_
+
+          `nidl.losses.yaware_infonce.PairwiseCosineSimilarity <nidl.losses.yaware_infonce.PairwiseCosineSimilarity.html>`_
+
+          `nidl.losses.yaware_infonce.YAwareInfoNCE <nidl.losses.yaware_infonce.YAwareInfoNCE.html>`_
 
     * `nidl.metrics <nidl.metrics.html>`_
         .. hidden-technical-block::
