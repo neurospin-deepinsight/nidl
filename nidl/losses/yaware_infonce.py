@@ -18,7 +18,7 @@ class KernelMetric(BaseEstimator):
     \( x1, ..., xn \):
     .. math::
 
-        W_{i,j} = K\\left( H^{-\\frac{1}{2}}} (xi-xj) \\right)
+        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (xi-xj) \\right)
 
     with K a kernel such that:
 
@@ -284,7 +284,7 @@ class YAwareInfoNCE(nn.Module):
 
     .. math::
 
-        W_{i,j} = K\\left( H^{-\\frac{1}{2}}} (y_i-y_j) \\right)
+        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (y_i-y_j) \\right)
 
     Parameters
     ----------
