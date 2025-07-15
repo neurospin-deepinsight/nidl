@@ -54,6 +54,19 @@ and related informations.
     * `surfify.models.base.Ico <surfify.models.base.Ico.html>`_
     * `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
 
+surfify.models.sit
+^^^^^^^^^^^^^^^^^^
+
+The Surface Vision Transformer.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
+    * `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
+    * `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
+    * `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
+
 surfify.models.vae
 ^^^^^^^^^^^^^^^^^^
 
@@ -103,19 +116,6 @@ Spherical implementation of the torch vision VGG.
 
   **Functions**:
     * `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
-
-surfify.models.sit
-^^^^^^^^^^^^^^^^^^
-
-The Surface Vision Transformer.
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
-    * `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
-    * `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
-    * `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
 
 surfify.models.simclr
 ^^^^^^^^^^^^^^^^^^^^^

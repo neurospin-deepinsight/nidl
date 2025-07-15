@@ -10,6 +10,30 @@ nidl.callbacks
 
 Common callbacks.
 
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.callbacks.BatchTypingCallback <nidl.callbacks.check_typing.BatchTypingCallback.html>`_
+    * `nidl.callbacks.KNeighborsClassifierCVCallback <nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html>`_
+    * `nidl.callbacks.KNeighborsRegressorCVCallback <nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html>`_
+    * `nidl.callbacks.LogisticRegressionCVCallback <nidl.callbacks.model_probing.LogisticRegressionCVCallback.html>`_
+    * `nidl.callbacks.ModelProbing <nidl.callbacks.model_probing.ModelProbing.html>`_
+    * `nidl.callbacks.RidgeCVCallback <nidl.callbacks.model_probing.RidgeCVCallback.html>`_
+
+nidl.callbacks.model_probing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.callbacks.model_probing.KNeighborsClassifierCVCallback <nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html>`_
+    * `nidl.callbacks.model_probing.KNeighborsRegressorCVCallback <nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html>`_
+    * `nidl.callbacks.model_probing.LogisticRegressionCVCallback <nidl.callbacks.model_probing.LogisticRegressionCVCallback.html>`_
+    * `nidl.callbacks.model_probing.ModelProbing <nidl.callbacks.model_probing.ModelProbing.html>`_
+    * `nidl.callbacks.model_probing.RidgeCVCallback <nidl.callbacks.model_probing.RidgeCVCallback.html>`_
+
 nidl.callbacks.check_typing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -87,7 +87,7 @@
                             <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
                             
                             <li>API</li>
-                            <li><a href="../../../../generated/nidl.html">nidl</a></li><li><a href="../../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../../generated/nidl.transforms.html">nidl.transforms</a></li><li><a href="../../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../../generated/surfify.html">surfify</a></li><li><a href="../../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../../generated/surfify.utils.html">surfify.utils</a></li>
+                            <li><a href="../../../../generated/nidl.html">nidl</a></li><li><a href="../../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../../generated/nidl.metrics.html">nidl.metrics</a></li><li><a href="../../../../generated/nidl.transforms.html">nidl.transforms</a></li><li><a href="../../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../../generated/surfify.html">surfify</a></li><li><a href="../../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../../generated/surfify.utils.html">surfify.utils</a></li>
 						</ul>
 					</li> -->
 				</ul>
@@ -158,7 +158,7 @@
 <div class="viewcode-block" id="SimCLR">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimCLR</span><span class="p">(</span><span class="n">TransformerMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; SimCLR implementation.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;SimCLR implementation.</span>
 
 <span class="sd">    At each iteration, we get for every data x two differently augmented</span>
 <span class="sd">    versions, which we refer to as x_i and x_j. Both of these images are</span>
@@ -256,48 +256,66 @@
 <span class="sd">    A batch of data must contains two elements: two tensors with contrasted</span>
 <span class="sd">    images, and a list of tensors containing auxiliary variables.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">encoder</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
-            <span class="n">hidden_dims</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-            <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;encoder&quot;</span><span class="p">],</span>
-                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">encoder</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+        <span class="n">hidden_dims</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;encoder&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="p">(</span>
-            <span class="s2">&quot;The temperature must be a positive float!&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;The temperature must be a positive float!&quot;</span>
+        <span class="p">)</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">encoder</span><span class="p">,</span> <span class="s2">&quot;latent_size&quot;</span><span class="p">),</span> <span class="p">(</span>
             <span class="s2">&quot;The encoder must store the size of the encoded one-dimensional &quot;</span>
-            <span class="s2">&quot;feature vector in a `latent_size` parameter!&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;feature vector in a `latent_size` parameter!&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">encoder</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">MLP</span><span class="p">(</span>
-            <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">latent_size</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="o">=</span><span class="n">hidden_dims</span><span class="p">,</span>
-            <span class="n">activation_layer</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.</span>
+            <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">latent_size</span><span class="p">,</span>
+            <span class="n">hidden_channels</span><span class="o">=</span><span class="n">hidden_dims</span><span class="p">,</span>
+            <span class="n">activation_layer</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span>
+            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="p">[</span>
-            <span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">children</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">)</span>
-        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span>
+                <span class="n">layer</span>
+                <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">children</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="SimCLR.configure_optimizers">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.configure_optimizers">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly</span>
 <span class="sd">        (``max_epochs`` is defined), a</span>
 <span class="sd">        :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning-rate</span>
 <span class="sd">        scheduler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
-            <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="p">,</span> <span class="s2">&quot;max_epochs&quot;</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+            <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="p">,</span> <span class="s2">&quot;max_epochs&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
             <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">CosineAnnealingLR</span><span class="p">(</span>
-                <span class="n">optimizer</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span><span class="p">,</span>
-                <span class="n">eta_min</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span> <span class="o">/</span> <span class="mi">50</span><span class="p">))</span>
+                <span class="n">optimizer</span><span class="p">,</span>
+                <span class="n">T_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span><span class="p">,</span>
+                <span class="n">eta_min</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span> <span class="o">/</span> <span class="mi">50</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">optimizer</span><span class="p">],</span> <span class="p">[</span><span class="n">lr_scheduler</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">optimizer</span><span class="p">]</span></div>
@@ -306,10 +324,9 @@
 <div class="viewcode-block" id="SimCLR.info_nce_loss">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.info_nce_loss">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">info_nce_loss</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
-            <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute and log the InfoNCE loss using</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute and log the InfoNCE loss using</span>
 <span class="sd">        :class:`~nidl.losses.InfoNCE`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Encode all images</span>
@@ -318,7 +335,8 @@
         <span class="n">feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">imgs</span><span class="p">))</span>
         <span class="c1"># Calculate loss</span>
         <span class="n">nll</span> <span class="o">=</span> <span class="n">InfoNCE</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span><span class="p">)(</span>
-            <span class="n">feats</span><span class="p">[:</span><span class="n">n_samples</span><span class="p">],</span> <span class="n">feats</span><span class="p">[</span><span class="n">n_samples</span><span class="p">:])</span>
+            <span class="n">feats</span><span class="p">[:</span><span class="n">n_samples</span><span class="p">],</span> <span class="n">feats</span><span class="p">[</span><span class="n">n_samples</span><span class="p">:]</span>
+        <span class="p">)</span>
         <span class="c1"># Logging loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_loss&quot;</span><span class="p">,</span> <span class="n">nll</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">nll</span></div>
@@ -327,30 +345,33 @@
 <div class="viewcode-block" id="SimCLR.training_step">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.training_step">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
-            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+        <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_nce_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimCLR.validation_step">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.validation_step">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
-            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+        <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info_nce_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SimCLR.transform_step">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.transform_step">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform_step</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-            <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span></div>
 </div>
 

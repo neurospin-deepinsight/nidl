@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.nn.IcoPool surfify.nn.modules.IcoPool
+.. minigallery:: surfify.nn.modules.IcoPool surfify.nn.IcoPool
     :add-heading: Examples
     :heading-level: -
 

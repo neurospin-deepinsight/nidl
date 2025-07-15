@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.models.SiT surfify.models.sit.SiT
+.. minigallery:: surfify.models.sit.SiT surfify.models.SiT
     :add-heading: Examples
     :heading-level: -
 

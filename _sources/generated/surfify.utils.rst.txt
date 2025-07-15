@@ -41,22 +41,6 @@ Suface utilities.
     * `surfify.utils.text2grid <surfify.utils.coord.text2grid.html>`_
     * `surfify.utils.text2ico <surfify.utils.coord.text2ico.html>`_
 
-surfify.utils.coord
-^^^^^^^^^^^^^^^^^^^
-
-Coordinate system tools.
-
-.. rst-class:: documentation-contents
-
-  **Functions**:
-    * `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
-    * `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
-    * `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
-    * `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
-    * `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
-    * `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
-    * `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
-
 surfify.utils.io
 ^^^^^^^^^^^^^^^^
 
@@ -77,6 +61,22 @@ Spherical i/o utilities.
     * `surfify.utils.io.volume_from_cifti <surfify.utils.io.volume_from_cifti.html>`_
     * `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
     * `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
+
+surfify.utils.coord
+^^^^^^^^^^^^^^^^^^^
+
+Coordinate system tools.
+
+.. rst-class:: documentation-contents
+
+  **Functions**:
+    * `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
+    * `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
+    * `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
+    * `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
+    * `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
+    * `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
+    * `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
 
 surfify.utils.sampling
 ^^^^^^^^^^^^^^^^^^^^^^

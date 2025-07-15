@@ -87,7 +87,7 @@
                             <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
                             
                             <li>API</li>
-                            <li><a href="../../../generated/nidl.html">nidl</a></li><li><a href="../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../generated/nidl.transforms.html">nidl.transforms</a></li><li><a href="../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../generated/surfify.html">surfify</a></li><li><a href="../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../generated/surfify.utils.html">surfify.utils</a></li>
+                            <li><a href="../../../generated/nidl.html">nidl</a></li><li><a href="../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../generated/nidl.metrics.html">nidl.metrics</a></li><li><a href="../../../generated/nidl.transforms.html">nidl.transforms</a></li><li><a href="../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../generated/surfify.html">surfify</a></li><li><a href="../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../generated/surfify.utils.html">surfify.utils</a></li>
 						</ul>
 					</li> -->
 				</ul>
@@ -148,7 +148,7 @@
 
 
 <div class="viewcode-block" id="BatchTypingCallback">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.check_typing.BatchTypingCallback">[docs]</a>
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.BatchTypingCallback">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BatchTypingCallback</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">Callback</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; This callback allows you to check the batch format based on the</span>
 <span class="sd">    method signature.</span>
@@ -163,27 +163,27 @@
 <span class="sd">        If a type is not handled by the code.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="BatchTypingCallback.on_train_batch_start">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.check_typing.BatchTypingCallback.on_train_batch_start">[docs]</a>
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.BatchTypingCallback.on_train_batch_start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_train_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
         <span class="n">check_type</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">training_step</span><span class="p">,</span> <span class="s2">&quot;batch&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BatchTypingCallback.on_validation_batch_start">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.check_typing.BatchTypingCallback.on_validation_batch_start">[docs]</a>
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.BatchTypingCallback.on_validation_batch_start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span>
                                   <span class="n">dataloader_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="n">check_type</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">validation_step</span><span class="p">,</span> <span class="s2">&quot;batch&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BatchTypingCallback.on_test_batch_start">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.check_typing.BatchTypingCallback.on_test_batch_start">[docs]</a>
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.BatchTypingCallback.on_test_batch_start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_test_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span>
                             <span class="n">dataloader_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="n">check_type</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">test_step</span><span class="p">,</span> <span class="s2">&quot;batch&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BatchTypingCallback.on_predict_batch_start">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.check_typing.BatchTypingCallback.on_predict_batch_start">[docs]</a>
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.check_typing.BatchTypingCallback.html#nidl.callbacks.BatchTypingCallback.on_predict_batch_start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_predict_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span>
                                <span class="n">dataloader_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="n">check_type</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">predict_step</span><span class="p">,</span> <span class="s2">&quot;batch&quot;</span><span class="p">)</span></div>

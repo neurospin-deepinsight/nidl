@@ -69,22 +69,29 @@ This is the classes and functions reference in nidl. Please refer to the gallery
         <p>Common losses.</p>    </blockquote>
     </div>
     <div class='col-md-4'>
+    <h3><a href='nidl.metrics.html'>
+    nidl.metrics
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+    <div class='col-md-4'>
     <h3><a href='nidl.transforms.html'>
     nidl.transforms
     </a></h3>
     <blockquote>
         <p>Common transformations.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.utils.html'>
     nidl.utils
     </a></h3>
     <blockquote>
         <p>Various utilities to help with development.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.volume.html'>
     nidl.volume
     </a></h3>
@@ -99,6 +106,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
         <p>Definition of common volumic architectures.</p>    </blockquote>
     </div>
 
+    </div>
+    <div class='row'>
     </div>
     </div>
     </div>
@@ -206,6 +215,28 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           :label: [+ show/hide members]
           :starthidden: true
 
+          `nidl.callbacks.BatchTypingCallback <nidl.callbacks.check_typing.BatchTypingCallback.html>`_
+
+          `nidl.callbacks.KNeighborsClassifierCVCallback <nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html>`_
+
+          `nidl.callbacks.KNeighborsRegressorCVCallback <nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html>`_
+
+          `nidl.callbacks.LogisticRegressionCVCallback <nidl.callbacks.model_probing.LogisticRegressionCVCallback.html>`_
+
+          `nidl.callbacks.ModelProbing <nidl.callbacks.model_probing.ModelProbing.html>`_
+
+          `nidl.callbacks.RidgeCVCallback <nidl.callbacks.model_probing.RidgeCVCallback.html>`_
+
+          `nidl.callbacks.model_probing.KNeighborsClassifierCVCallback <nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html>`_
+
+          `nidl.callbacks.model_probing.KNeighborsRegressorCVCallback <nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html>`_
+
+          `nidl.callbacks.model_probing.LogisticRegressionCVCallback <nidl.callbacks.model_probing.LogisticRegressionCVCallback.html>`_
+
+          `nidl.callbacks.model_probing.ModelProbing <nidl.callbacks.model_probing.ModelProbing.html>`_
+
+          `nidl.callbacks.model_probing.RidgeCVCallback <nidl.callbacks.model_probing.RidgeCVCallback.html>`_
+
           `nidl.callbacks.check_typing.BatchTypingCallback <nidl.callbacks.check_typing.BatchTypingCallback.html>`_
 
     * `nidl.datasets <nidl.datasets.html>`_
@@ -275,6 +306,25 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.losses.infonce.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
 
+    * `nidl.metrics <nidl.metrics.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.metrics.pearson_r <nidl.metrics.regression.pearson_r.html>`_
+
+          `nidl.metrics.regression_report <nidl.metrics.regression.regression_report.html>`_
+
+          `nidl.metrics._regression._check_reg_targets <nidl.metrics._regression._check_reg_targets.html>`_
+
+          `nidl.metrics._regression._check_reg_targets_with_floating_dtype <nidl.metrics._regression._check_reg_targets_with_floating_dtype.html>`_
+
+          `nidl.metrics._regression._find_matching_floating_dtype <nidl.metrics._regression._find_matching_floating_dtype.html>`_
+
+          `nidl.metrics.regression.pearson_r <nidl.metrics.regression.pearson_r.html>`_
+
+          `nidl.metrics.regression.regression_report <nidl.metrics.regression.regression_report.html>`_
+
     * `nidl.transforms <nidl.transforms.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
@@ -294,8 +344,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.utils.Weights <nidl.utils.weights.Weights.html>`_
 
           `nidl.utils.print_multicolor <nidl.utils.color.print_multicolor.html>`_
-
-          `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
 
           `nidl.utils.color.Colored <nidl.utils.color.Colored.html>`_
 
@@ -329,6 +377,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
 
+          `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
+
     * `nidl.volume <nidl.volume.html>`_
     * `nidl.volume.backbones <nidl.volume.backbones.html>`_
         .. hidden-technical-block::
@@ -352,6 +402,20 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.volume.backbones.resnet50 <nidl.volume.backbones.resnet3d.resnet50.html>`_
 
           `nidl.volume.backbones.resnet50_trunc <nidl.volume.backbones.resnet3d.resnet50_trunc.html>`_
+
+          `nidl.volume.backbones.densenet3d.DenseNet <nidl.volume.backbones.densenet3d.DenseNet.html>`_
+
+          `nidl.volume.backbones.densenet3d._DenseBlock <nidl.volume.backbones.densenet3d._DenseBlock.html>`_
+
+          `nidl.volume.backbones.densenet3d._DenseLayer <nidl.volume.backbones.densenet3d._DenseLayer.html>`_
+
+          `nidl.volume.backbones.densenet3d._Transition <nidl.volume.backbones.densenet3d._Transition.html>`_
+
+          `nidl.volume.backbones.densenet3d._bn_function_factory <nidl.volume.backbones.densenet3d._bn_function_factory.html>`_
+
+          `nidl.volume.backbones.densenet3d._densenet <nidl.volume.backbones.densenet3d._densenet.html>`_
+
+          `nidl.volume.backbones.densenet3d.densenet121 <nidl.volume.backbones.densenet3d.densenet121.html>`_
 
           `nidl.volume.backbones.alexnet3d.AlexNet <nidl.volume.backbones.alexnet3d.AlexNet.html>`_
 
@@ -379,28 +443,14 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.volume.backbones.resnet3d.resnet50_trunc <nidl.volume.backbones.resnet3d.resnet50_trunc.html>`_
 
-          `nidl.volume.backbones.densenet3d.DenseNet <nidl.volume.backbones.densenet3d.DenseNet.html>`_
-
-          `nidl.volume.backbones.densenet3d._DenseBlock <nidl.volume.backbones.densenet3d._DenseBlock.html>`_
-
-          `nidl.volume.backbones.densenet3d._DenseLayer <nidl.volume.backbones.densenet3d._DenseLayer.html>`_
-
-          `nidl.volume.backbones.densenet3d._Transition <nidl.volume.backbones.densenet3d._Transition.html>`_
-
-          `nidl.volume.backbones.densenet3d._bn_function_factory <nidl.volume.backbones.densenet3d._bn_function_factory.html>`_
-
-          `nidl.volume.backbones.densenet3d._densenet <nidl.volume.backbones.densenet3d._densenet.html>`_
-
-          `nidl.volume.backbones.densenet3d.densenet121 <nidl.volume.backbones.densenet3d.densenet121.html>`_
-
     * `surfify <surfify.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
           :starthidden: true
 
-          `surfify.transforms.RandomCompose <surfify.transforms.RandomCompose.html>`_
-
           `surfify.preprocessing.StandardScaler <surfify.preprocessing.StandardScaler.html>`_
+
+          `surfify.transforms.RandomCompose <surfify.transforms.RandomCompose.html>`_
 
     * `surfify.augmentation <surfify.augmentation.html>`_
         .. hidden-technical-block::
@@ -552,6 +602,14 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
 
+          `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
+
+          `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
+
+          `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
+
+          `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
+
           `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
 
           `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
@@ -602,14 +660,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
 
-          `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
-
-          `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
-
-          `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
-
-          `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
-
           `surfify.models.simclr.SimCLR <surfify.models.simclr.SimCLR.html>`_
 
           `surfify.models.unet.DownBlock <surfify.models.unet.DownBlock.html>`_
@@ -651,8 +701,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.nn.IcoUpSample <surfify.nn.modules.IcoUpSample.html>`_
 
-          `surfify.nn.functional.circular_pad <surfify.nn.functional.circular_pad.html>`_
-
           `surfify.nn.modules.IcoDiNeConv <surfify.nn.modules.IcoDiNeConv.html>`_
 
           `surfify.nn.modules.IcoFixIndexUpSample <surfify.nn.modules.IcoFixIndexUpSample.html>`_
@@ -672,6 +720,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.nn.modules.IcoUpConv <surfify.nn.modules.IcoUpConv.html>`_
 
           `surfify.nn.modules.IcoUpSample <surfify.nn.modules.IcoUpSample.html>`_
+
+          `surfify.nn.functional.circular_pad <surfify.nn.functional.circular_pad.html>`_
 
     * `surfify.plotting <surfify.plotting.html>`_
         .. hidden-technical-block::
@@ -741,20 +791,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `surfify.utils.text2ico <surfify.utils.coord.text2ico.html>`_
 
-          `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
-
-          `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
-
-          `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
-
-          `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
-
-          `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
-
-          `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
-
-          `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
-
           `surfify.utils.io.HidePrints <surfify.utils.io.HidePrints.html>`_
 
           `surfify.utils.io.compute_and_store <surfify.utils.io.compute_and_store.html>`_
@@ -774,6 +810,20 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
 
           `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
+
+          `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
+
+          `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
+
+          `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
+
+          `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
+
+          `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
+
+          `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
+
+          `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
 
           `surfify.utils.sampling._patch_tri_iter <surfify.utils.sampling._patch_tri_iter.html>`_
 

@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.find_rotation_interpol_coefs
 
-.. minigallery:: surfify.utils.sampling.find_rotation_interpol_coefs surfify.utils.find_rotation_interpol_coefs
+.. minigallery:: surfify.utils.find_rotation_interpol_coefs surfify.utils.sampling.find_rotation_interpol_coefs
     :add-heading: Examples
     :heading-level: -
 

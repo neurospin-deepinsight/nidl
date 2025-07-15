@@ -24,16 +24,6 @@ Suface dedicated modules.
     * `surfify.nn.IcoUpConv <surfify.nn.modules.IcoUpConv.html>`_
     * `surfify.nn.IcoUpSample <surfify.nn.modules.IcoUpSample.html>`_
 
-surfify.nn.functional
-^^^^^^^^^^^^^^^^^^^^^
-
-Suface utilities.
-
-.. rst-class:: documentation-contents
-
-  **Functions**:
-    * `surfify.nn.functional.circular_pad <surfify.nn.functional.circular_pad.html>`_
-
 surfify.nn.modules
 ^^^^^^^^^^^^^^^^^^
 
@@ -52,4 +42,14 @@ Module that provides spherical layers.
     * `surfify.nn.modules.IcoSpMaConvTranspose <surfify.nn.modules.IcoSpMaConvTranspose.html>`_
     * `surfify.nn.modules.IcoUpConv <surfify.nn.modules.IcoUpConv.html>`_
     * `surfify.nn.modules.IcoUpSample <surfify.nn.modules.IcoUpSample.html>`_
+
+surfify.nn.functional
+^^^^^^^^^^^^^^^^^^^^^
+
+Suface utilities.
+
+.. rst-class:: documentation-contents
+
+  **Functions**:
+    * `surfify.nn.functional.circular_pad <surfify.nn.functional.circular_pad.html>`_
 

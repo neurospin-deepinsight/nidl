@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.neighbors_rec
 
-.. minigallery:: surfify.utils.sampling.neighbors_rec surfify.utils.neighbors_rec
+.. minigallery:: surfify.utils.neighbors_rec surfify.utils.sampling.neighbors_rec
     :add-heading: Examples
     :heading-level: -
 
