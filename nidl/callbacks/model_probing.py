@@ -232,18 +232,24 @@ class RidgeCVCallback(ModelProbing):
     """Perform Ridge regression on top of an embedding model.
 
     Concretely this callback:
-      1) Embeds the input data through the estimator
-      2) Performs n-fold CV to find the best l2 regularization strength
-      3) Log the main regression metrics by regressor and averaged, including:
-            * mean absolute error
-            * median absolute error
-            * root mean squared error
-            * mean squared error
-            * r2 score
-            * pearsonr
-            * explained variance score
-        If multiple regressors are given (multivariate regression), metrics
-        are computed per regressor and averaged.
+
+    1) Embeds the input data through the estimator.
+
+    2) Performs n-fold CV to find the best L2 regularization strength.
+
+    3) Logs the main regression metrics by regressor and averaged,
+       including:
+
+       - mean absolute error
+       - median absolute error
+       - root mean squared error
+       - mean squared error
+       - r2 score
+       - pearsonr
+       - explained variance score
+
+       If multiple regressors are given (multivariate regression),
+       metrics are computed per regressor and averaged.
 
     Parameters
     ----------
@@ -470,15 +476,19 @@ class LogisticRegressionCVCallback(ModelProbing):
     """Performs logistic regression on top of an embedding model.
 
     Concretely this callback:
-        1) Embeds the input data through the torch model
-        2) Performs n-fold CV to find the best l2 regularization strength
-        3) Logs the main classification metrics for each class and averaged
-           across classes (weighted by class support and unweighted):
-            * precision
-            * recall
-            * f1-score
-            * support
-            * accuracy (global)
+
+    1) Embeds the input data through the torch model.
+
+    2) Performs n-fold CV to find the best L2 regularization strength.
+
+    3) Logs the main classification metrics for each class and averaged
+       across classes (weighted by class support and unweighted):
+
+       - precision
+       - recall
+       - f1-score
+       - support
+       - accuracy (global)
 
     Please check this `User Guide <https://scikit-learn.org/stable/modules/model_evaluation.html#classification-report>`_
     for more details on the classification metrics reported.
@@ -626,20 +636,23 @@ class LogisticRegressionCVCallback(ModelProbing):
 
 class KNeighborsClassifierCVCallback(ModelProbing):
     """Performs KNN classification on top of an embedding model.
-
     Concretely this callback:
-        1) Embeds the input data through the torch model
-        2) Performs n-fold CV to find the best `n_neighbors` neighbors
-        3) Logs the main classification metrics for each class and averaged
-           across classes (weighted by class support and unweighted):
-            * precision
-            * recall
-            * f1-score
-            * support
-            * accuracy (global)
+
+    1) Embeds the input data through the torch model.
+
+    2) Performs n-fold CV to find the best `n_neighbors` neighbors.
+
+    3) Logs the main classification metrics for each class and averaged
+       across classes (weighted by class support and unweighted):
+
+       - precision
+       - recall
+       - f1-score
+       - support
+       - accuracy (global)
         
-        Please check this `User Guide <https://scikit-learn.org/stable/modules/model_evaluation.html#classification-report>`_
-        for more details on the classification metrics reported.
+    Please check this `User Guide <https://scikit-learn.org/stable/modules/model_evaluation.html#classification-report>`_
+    for more details on the classification metrics reported.
 
     Parameters
     ----------

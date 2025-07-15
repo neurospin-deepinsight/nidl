@@ -30,8 +30,8 @@ def pearson_r(
     force_finite=False,
 ):
     """Pearson correlation coefficient between 2 arrays y_true, y_pred.
-    This score is symmetric between y_true and y_pred and is always between 1 (
-    perfect correlation) and -1 (perfect anti-correlation).
+    This score is symmetric between y_true and y_pred and is always between 1
+    (perfect correlation) and -1 (perfect anti-correlation).
 
     Parameters
     ----------
@@ -43,16 +43,17 @@ def pearson_r(
 
     sample_weight : array-like of shape (n_samples,), default=None
         Sample weights for weighted Pearson's correlation.
-    
-    multioutput : {'raw_values', 'uniform_average'}, \
-            array-like of shape (n_outputs,) or None, default='uniform_average'
-        Defines aggregating of multiple output scores. Array-like value
-        defines weights used to average scores.
-        'raw_values' :
-            Returns a full set of scores in case of multioutput input.
-        'uniform_average' :
-            Scores of all outputs are averaged with uniform weight.
 
+    multioutput : {'raw_values', 'uniform_average'} or array-like of shape \
+(n_outputs,), optional
+        Defines aggregating of multiple output scores.
+
+        - 'raw_values': Returns a full set of scores in case of multioutput
+          input.
+        - 'uniform_average': Scores of all outputs are averaged with uniform
+          weight.
+        - array-like: Defines weights used to average scores.
+    
     force_finite : bool, default=False
         Flag indicating if ``NaN`` and ``-Inf`` scores resulting from constant
         data should be replaced with real numbers (``1.0`` if prediction is
@@ -60,7 +61,7 @@ def pearson_r(
         Default is ``False`` since Pearson's correlation is not defined
         for constant data (zero variance).
 
-        
+
     Returns
     -------
     pearson_r: float or array of floats
