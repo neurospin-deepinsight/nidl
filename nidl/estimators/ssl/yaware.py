@@ -6,10 +6,8 @@ import torch
 import torch.nn as nn
 from pytorch_lightning.utilities.types import LRSchedulerPLType
 from torch.optim import Optimizer
-from torchvision.ops import MLP
 
 from ...losses import YAwareInfoNCE
-from ...volume.backbones import AlexNet, densenet121, resnet18, resnet50
 from ..base import BaseEstimator, TransformerMixin
 from .utils.projection_heads import YAwareProjectionHead
 
@@ -17,150 +15,148 @@ from .utils.projection_heads import YAwareProjectionHead
 class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     """y-Aware Contrastive Learning implementation [1]
 
-    y-Aware Contrastive Learning is a self-supervised learning framework
-    for learning visual representations with auxiliary variables.
-    It leverages contrastive learning by maximizing the agreement between
-    differently augmented views of images with similar auxiliary variables
-    while minimizing agreement between different images. The framework
-    consists of:
+    y-Aware Contrastive Learning is a self-supervised learning framework for
+    learning visual representations with auxiliary variables. It leverages
+    contrastive learning by maximizing the agreement between differently
+    augmented views of images with similar auxiliary variables while minimizing
+    agreement between different images. The framework consists of:
 
     1) Data Augmentation - Generates two augmented views of an image.
     2) Kernel - Similarity function between auxiliary variables.
-    2) Encoder (Backbone Network) - Maps images to feature embeddings
-        (e.g., 3D-ResNet).
-    3) Projection Head - Maps features to a latent space for contrastive
-        loss optimization.
-    4) Contrastive Loss (y-Aware) - Encourages augmented views of i) the
-        same image and ii) images with close auxiliary variables to be
-        closer while pushing dissimilar ones apart.
+    3) Encoder (Backbone Network) - Maps images to feature embeddings
+       (e.g., 3D-ResNet).
+    4) Projection Head - Maps features to a latent space for contrastive
+       loss optimization.
+    5) Contrastive Loss (y-Aware) - Encourages augmented views of
+       i) the same image and ii) images with close auxiliary variables
+       to be closer while pushing dissimilar ones apart.
 
+    References
+    ----------
     [1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI
         Classification, Dufumier et al., MICCAI 2021
 
     Parameters
     ----------
-    encoder: str in {'alexnet_3d', 'resnet18_3d', 'resnet50_3d', \
-            'densenet121_3d', 'mlp'} or nn.Module or class, \
-            default='resnet18_3d'
-        Which DNN architecture to use for encoding the input.
-        If not in default backbones, a PyTorch :class:`~torch.nn.Module`
-        is expected. In general, the uninstantiated class should be passed,
-        although instantiated modules will also work.
-        By default, a 3D ResNet-18 model is used with 512-d output.
+    encoder : nn.Module or class
+        Which deep architecture to use for encoding the input. If not in
+        default backbones, a PyTorch :class:`~torch.nn.Module` is expected.
+        In general, the uninstantiated class should be passed, although
+        instantiated modules will also work. By default, a 3D ResNet-18
+        model is used with 512-d output.
 
-    encoder_kwargs: dictionary or None, default=None
-        It specifies the options for building the encoder (depends on each
-        architecture).
+    encoder_kwargs : dict or None, default=None
+        Options for building the encoder (depends on each architecture).
         Examples:
-            * encoder='mlp', encoder_kwargs={"in_channels": 10,
-              "hidden_channels": [4, 3, 2]}
-              builds an MLP with 3 hidden layers, the input dimension
-              being 10 and output dimension 2.
-            * encoder='resnet18_3d', encoder_kwargs={"n_embedding": 10}
-              builds a ResNet-18 model with 10 output dimension.
 
-    projection_head: str in {'yaware'} or nn.Module or class or None, \
-        default='yaware'
-        Which projection head to use for the model.
-        If None, no projection head is used and the the encoder output is
-        directly used for loss computation. If not in the default heads,
-        a PyTorch :class:`~torch.nn.Module` is expected. In general, the
-        uninstantiated class should be passed, although instantiated
-        modules will also work.
-        By default, a 2-layer MLP with ReLU activation, 512-d hidden units
-        and 128-d output dimensions is used.
+        - encoder=torchvision.ops.MLP, encoder_kwargs={"in_channels": 10,
+          "hidden_channels": [4, 3, 2]} builds an MLP with 3 hidden layers,
+          input dim 10, output dim 2.
+        - encoder=nidl.volume.backbones.resnet3d.resnet18,
+          encoder_kwargs={"n_embedding": 10} builds a ResNet-18 model with
+          10 output dimension.
 
-    projection_head_kwargs: dictionary or None, default=None
-        It specifies the arguments for building the projection head.
-        By default, input dimension is set to 512-d and output dimension
-        is set to 128-d. This can be changed by passing a dictionary
-        with the keys 'input_dim' and 'output_dim' to this argument.
-        'input_dim' must be equal to the output dimension of the encoder.
+        Ignored if `encoder` is instantiated.
 
-    temperature: float, default=0.1
-        Temperature value in y-Aware InfoNCE loss.
-        Small values implies more uniformity between samples' embeddings
-        whereas high values imposes clustered embedding more sensitive to
-        augmentations.
+    projection_head : nn.Module or class or None, default=YAwareProjectionHead
+        Which projection head to use for the model. If None, no projection head
+        is used and the encoder output is directly used for loss computation.
+        Otherwise, a :class:`~torch.nn.Module` is expected. In general,
+        the uninstantiated class should be passed, although instantiated
+        modules will also work. By default, a 2-layer MLP with ReLU activation,
+        2048-d hidden units, and 128-d output dimensions is used.
 
-    kernel: str in {'gaussian', 'epanechnikov', 'exponential', 'linear', \
-        'cosine'}, default="gaussian"
-        Kernel used as similarity function between auxiliary variables.
+    projection_head_kwargs : dict or None, default=None
+        Arguments for building the projection head. By default, input dimension
+        is 2048-d and output dimension is 128-d. These can be changed by
+        passing a dictionary with keys 'input_dim' and 'output_dim'.
+        'input_dim' must be equal to the encoder's output dimension.
+        Ignored if `projection_head` is instantiated.
 
-    bandwidth: str in {'scott', 'silverman'} or float or list of float,
+    temperature : float, default=0.1
+        Temperature value in y-Aware InfoNCE loss. Small values imply more
+        uniformity between samples' embeddings, whereas high values impose
+        clustered embedding more sensitive to augmentations.
+
+    kernel : {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, \
+        default="gaussian"
+        Kernel used as the similarity function between auxiliary variables.
+        Default is 'gaussian'.
+
+    bandwidth : {'scott', 'silverman'} or float or list of float, \
         default="scott"
-        The method used to calculate the bandwidth in kernel:
-        * If `bandwidth` is str, must be scott's or 'silverman's for
-          automatic bandwidth estimation (see Rosenblatt, M. (1956) or
-          Parzen, E. (1962))
-        * If `bandwidth` is float, it sets the bandwidth to H=diag(scalar)
-        * If `bandwidth` is a list, it sets the bandwidth to H=diag(list)
-          and it must be of length equal to the number of features in the
-          auxiliary variables 'y'.
+        Method used to calculate the bandwidth in the kernel:
 
-    optimizer: str in {'sgd', 'adam', 'adamW'} or Optimizer or class, \
-        default='adam'
-        The optimizer to use for training the model. It can be a string:
-        'sgd': stochastic gradient descent (with eventually momentum)
-        'adam' (default): stochastic first order gradient-based optimizer
-        'adamW': Adam optimizer with decoupled weight decay
-            regularization (see ''Decoupled Weight Decay Regularization,
-            Loshchilov and Hutter, ICLR 2019'')
-        or an instantiated object of type `torch.optim.Optimizer` or a
-        class inheriting from it.
+        - If str: must be 'scott' or 'silverman' for automatic bandwidth
+          estimation.
+        - If float: sets bandwidth to H = diag(scalar).
+        - If list of float: sets bandwidth to H = diag(list), where the length
+          must equal the number of features in the auxiliary variables ``y``.
 
-    optimizer_kwargs: dictionary or None, default=None
-        Arguments to give to optimizer ('adam' by default).
-        By default, it is set to:
-        {'betas': (0.9, 0.99), 'weight_decay': 5e-05}
-        where 'betas' is a tuple of two floats, the
-        exponential decay rates for the first and second moment estimates
-        in Adam optimizer. It can be changed by passing a dictionary with
-        the keys 'betas' and 'weight_decay' to this argument.
+        Default is 'scott'.
 
-    learning_rate: float, default=1e-4
-        The initial learning rate used.
+    optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
+        default="adam"
+        Optimizer for training the model. Can be:
 
-    lr_scheduler: LRSchedulerPLType or class or None, default=None
-        The learning rate scheduler to use.
+        - A string:
+        
+            - 'sgd': Stochastic Gradient Descent (with optional momentum).
+            - 'adam': First-order gradient-based optimizer (default).
+            - 'adamW': Adam with decoupled weight decay regularization
+              (see "Decoupled Weight Decay Regularization", Loshchilov and
+              Hutter, ICLR 2019).
+              
+        - An instance or subclass of ``torch.optim.Optimizer``.
 
-    lr_scheduler_kwargs: dictionary or None, default=None
-        Additional keyword arguments for the learning rate scheduler.
-        If `lr_scheduler` is an instantiated object, these kwargs are
-        ignored.
+    optimizer_kwargs : dict or None, default=None
+        Arguments for the optimizer ('adam' by default). By default:
+        {'betas': (0.9, 0.99), 'weight_decay': 5e-05} where 'betas' are the
+        exponential decay rates for first and second moment estimates.
 
-    **kwargs: dict, optional
+        Ignored if `optimizer` is instantiated.
+
+    learning_rate : float, default=1e-4
+        Initial learning rate.
+
+    lr_scheduler : LRSchedulerPLType or class or None, default=None
+        Learning rate scheduler to use.
+
+    lr_scheduler_kwargs : dict or None, default=None
+        Additional keyword arguments for the scheduler.
+
+        Ignored if `lr_scheduler` is instantiated.
+
+    **kwargs : dict, optional
         Additional keyword arguments for the BaseEstimator class, such as
         `max_epochs`, `max_steps`, `num_sanity_val_steps`,
         `check_val_every_n_epoch`, `callbacks`, etc.
 
     Attributes
     ----------
-    encoder: torch.nn.Module
-        Deep neural network trained to map input data to low-dimensional
-        vectors.
+    encoder : torch.nn.Module
+        Deep neural network mapping input data to low-dimensional vectors.
 
-    projection_head: torch.nn.Module
-        Projection head that maps the output of the encoder to a latent
-        space for contrastive loss optimization.
+    projection_head : torch.nn.Module
+        Maps encoder output to latent space for contrastive loss optimization.
 
-    loss: yAwareInfoNCE
-        The yAwareInfoNCE loss function used for training the model.
+    loss : yAwareInfoNCE
+        The yAwareInfoNCE loss function used for training.
 
-    optimizer: torch.optim.Optimizer
-        The optimizer used for training the model.
+    optimizer : torch.optim.Optimizer
+        Optimizer used for training.
 
-    lr_scheduler: LRSchedulerPLType or None
-        The learning rate scheduler used for training the model.
+    lr_scheduler : LRSchedulerPLType or None
+        Learning rate scheduler used for training.
     """
 
     def __init__(
         self,
-        encoder: Union[str, nn.Module, type[nn.Module]] = "alexnet_3d",
+        encoder: Union[nn.Module, type[nn.Module]],
         encoder_kwargs: Optional[dict[str, Any]] = None,
         projection_head: Union[
-            str, nn.Module, type[nn.Module], None
-        ] = "yaware",
+            nn.Module, type[nn.Module], None
+        ] = YAwareProjectionHead,
         projection_head_kwargs: Optional[dict[str, Any]] = None,
         temperature: float = 0.1,
         kernel: str = "gaussian",
@@ -176,8 +172,6 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     ):
         if optimizer_kwargs is None:
             optimizer_kwargs = {"betas": (0.9, 0.99), "weight_decay": 5e-05}
-        if projection_head_kwargs is None:
-            projection_head_kwargs = {"input_dim": 128}
         ignore = []
         if isinstance(encoder, nn.Module):
             ignore.append("encoder")
@@ -295,6 +289,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         batch: Any
             Parse a batch input and return V1, V2, and y.
             The batch can be either:
+
             - (V1, V2): two views of the same sample.
             - ((V1, V2), y): two views and an auxiliary label or variable.
 
@@ -393,23 +388,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         encoder: Union[str, nn.Module, type[nn.Module]],
         encoder_kwargs: dict[str, Any],
     ) -> nn.Module:
-        known_encoders = {
-            "alexnet_3d": AlexNet,
-            "resnet18_3d": resnet18,
-            "resnet50_3d": resnet50,
-            "densenet121_3d": densenet121,
-            "mlp": MLP,
-        }
-
-        if isinstance(encoder, str):
-            if encoder not in known_encoders:
-                raise ValueError(
-                    f"Encoder '{encoder}' is not implemented. "
-                    f"Please use one of the available encoders: "
-                    f"{', '.join(known_encoders.keys())}"
-                )
-            encoder = known_encoders[encoder](**encoder_kwargs)
-        elif isinstance(encoder, nn.Module):
+        if isinstance(encoder, nn.Module):
             if encoder_kwargs is not None and len(encoder_kwargs) > 0:
                 logging.getLogger(__name__).warning(
                     "encoder is already instantiated, ignoring "
@@ -429,20 +408,8 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         projection_head: Union[str, nn.Module, type[nn.Module]],
         projection_head_kwargs: dict[str, Any],
     ) -> nn.Module:
-        known_heads = {"yaware": YAwareProjectionHead}
-
         if projection_head is None:
             projection_head = nn.Identity()
-        elif isinstance(projection_head, str):
-            if projection_head not in known_heads:
-                raise ValueError(
-                    f"Projection head '{projection_head}' is not implemented. "
-                    f"Please use one of the available heads: "
-                    f"{', '.join(known_heads.keys())}"
-                )
-            projection_head = known_heads[projection_head](
-                **projection_head_kwargs
-            )
         elif isinstance(projection_head, nn.Module):
             if (
                 projection_head_kwargs is not None

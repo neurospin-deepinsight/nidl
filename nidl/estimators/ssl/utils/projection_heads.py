@@ -8,24 +8,23 @@ class ProjectionHead(nn.Module):
     """Base class for all projection and prediction heads in self-supervised
     estimators.
 
-
     Parameters
     ----------
-    blocks: list of tuple (int, int, Optional[nn.Module], Optional[nn.Module])
+    blocks : list of tuple (int, int, Optional[nn.Module], Optional[nn.Module])
         List of tuples, each denoting one block of the projection head MLP.
         Each tuple reads `(in_features, out_features, batch_norm_layer,
-        non_linearity_layer)`.
-        Each block applies:
-          i) a linear layer with `in_features` and `out_features` (with bias if
-            `batch_norm_layer` is None)
-          ii) a batch normalization layer as defined by `batch_norm_layer`
+        non_linearity_layer)`. Each block applies:
+
+        1) a linear layer with `in_features` and `out_features` (with bias if
+           `batch_norm_layer` is None)
+        2) a batch normalization layer as defined by `batch_norm_layer`
             (optional)
-          iii) a non-linearity as defined by `non_linearity_layer` (optional)
+        3) a non-linearity as defined by `non_linearity_layer` (optional)
 
     Attributes
     ----------
-    layers: nn.Sequential
-        a list of :class:`~torch.nn.Module` to apply
+    layers : nn.Sequential
+        List of :class:`~torch.nn.Module` to apply.
 
     Examples
     --------
@@ -36,6 +35,7 @@ class ProjectionHead(nn.Module):
     >>>     (256, 256, nn.BatchNorm1d(256), nn.ReLU()),
     >>>     (256, 128, None, None)
     >>> ])
+
     """
 
     def __init__(

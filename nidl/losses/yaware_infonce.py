@@ -25,17 +25,18 @@ class YAwareInfoNCE(nn.Module):
 
     bandwidth: Union[str, float, int, List[float]], default="scott"
         The method used to calculate the estimator bandwidth:
+
         - If `bandwidth` is str, it uses either Scott's or Silverman's method
-            to automatically computes the bandwidth based on a scaled version
-            of the auxiliary variables covariance matrix.
-            TODO: Currently, the bandwidth is estimated only using the first
-            batch of data for fast computation. This is very suboptimal and
-            it should be computed on the whole training set.
+          to automatically computes the bandwidth based on a scaled version
+          of the auxiliary variables covariance matrix.
+          TODO: Currently, the bandwidth is estimated only using the first
+          batch of data for fast computation. This is very suboptimal and
+          it should be computed on the whole training set.
         - If `bandwidth` is scalar (int or float), it sets the bandwidth to
-            H=diag(scalar)
+          H=diag(scalar)
         - If `bandwidth` is a list of float, it sets the bandwidth to
-            H=diag(sequence) and it must be of length equal to the number of
-            features in X.
+          H=diag(sequence) and it must be of length equal to the number of
+          features in X.
 
     temperature: float, default=0.1
         Temperature used to scale the dot-product between embedded vectors
@@ -168,15 +169,24 @@ class KernelMetric(BaseEstimator):
     xn:
     .. math::
 
-        S_{i,j} = K(H^{-1/2} (xi-xj))
+        S_{i,j} = K\\left( H^{-\\frac{1}{2}}} (xi-xj) \\right)
 
-    with K a kernel such that (1) K(x) >= 0, (2) int K(x) dx = 1,
-    (3) K(x) = K(-x) and H is the bandwidth in the KDE estimation of p(X).
+    with K a kernel such that:
+
+    1) \( K(x) \geq 0 \),
+    2) \( \int K(x) \, dx = 1 \),
+    3) \( K(x) = K(-x) \),
+
+    and \( H \) is the bandwidth in the KDE estimation of \( p(X) \).
+
     H is symmetric definite positive and it can be automatically computed based
     on Scott's method or Silverman's method if required.
     In that case, the bandwidth is computed as a scaled version of the
     covariance matrix of the data. If the bandwidth is set to a scalar,
-    it is used as a diagonal matrix H = diag(scalar).
+    it is used as a diagonal matrix:
+    .. math::
+
+        H = \mathrm{diag}(\text{scalar})
 
     [1] Rosenblatt, M. (1956). "Remarks on some nonparametric estimates of a
         density function". Annals of Mathematical Statistics.
@@ -192,25 +202,15 @@ class KernelMetric(BaseEstimator):
 
     bandwidth: str or int or float or list of float, default="scott"
         The method used to calculate the estimator bandwidth:
-        - If `bandwidth` is str, must be 'scott' or 'silverman'.
-            Bandwidth is a scaled version of the data covariance matrix,
-            preserving only the diagonal terms.
-        - If `bandwidth` is scalar (float or int), it sets the bandwidth to
-            H=diag([bandwidth for _ in range(n_features)])
-        - If `bandwidth` is a list of float, it sets the bandwidth to
-            H=diag(bandwidth) and it must be of length equal to the number of
-            features in X.
 
-    Attributes
-    ----------
-    d_: int
-        Data dimensionality seen during fit.
-    n_: int
-        Number of samples seen during fit.
-    sqr_bandwidth_: ndarray of shape (d_, d_)
-        Square root of the bandwidth computed during fit.
-    inv_sqr_bandwidth_: ndarray of shape (d_, d_)
-        Inverse of scaled square root of the bandwidth computed during fit.
+        - If `bandwidth` is str, must be 'scott' or 'silverman'.
+          Bandwidth is a scaled version of the data covariance matrix,
+          preserving only the diagonal terms.
+        - If `bandwidth` is scalar (float or int), it sets the bandwidth to
+          H=diag([bandwidth for _ in range(n_features)])
+        - If `bandwidth` is a list of float, it sets the bandwidth to
+          H=diag(bandwidth) and it must be of length equal to the number of
+          features in X.
 
     """
 
@@ -317,8 +317,9 @@ class KernelMetric(BaseEstimator):
 
     def scotts_factor(self):
         """Compute Scott's factor.
+
         Returns
-        -------
+        ----------
         s : float
             Scott's factor.
         """
@@ -327,8 +328,9 @@ class KernelMetric(BaseEstimator):
 
     def silverman_factor(self):
         """Compute the Silverman factor.
+
         Returns
-        -------
+        ----------
         s : float
             The silverman factor.
         """
@@ -398,10 +400,7 @@ class KernelMetric(BaseEstimator):
 
 
 def get_kernel_distance(k: np.ndarray):
-    """Estimate the kernel distance from a kernel matrix K
-    :param K: array with shape (n_samples, n_samples)
-    :return: distance matrix with shape (n_samples, n_samples)
-    """
+    """Estimate the kernel distance from a kernel matrix K."""
     diag_k = np.diag(k)
     squared_dist_k = np.maximum(
         diag_k[:, np.newaxis] + diag_k[np.newaxis, :] - 2 * k, 0
