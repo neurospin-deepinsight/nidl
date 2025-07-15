@@ -19,7 +19,7 @@ from ..base import BaseEstimator, TransformerMixin
 
 
 class SimCLR(TransformerMixin, BaseEstimator):
-    r""" SimCLR implementation.
+    r"""SimCLR implementation.
 
     At each iteration, we get for every data x two differently augmented
     versions, which we refer to as x_i and x_j. Both of these images are
@@ -117,55 +117,72 @@ class SimCLR(TransformerMixin, BaseEstimator):
     A batch of data must contains two elements: two tensors with contrasted
     images, and a list of tensors containing auxiliary variables.
     """
+
     def __init__(
-            self,
-            encoder: nn.Module,
-            hidden_dims: Sequence[str],
-            lr: float,
-            temperature: float,
-            weight_decay: float,
-            random_state: Optional[int] = None,
-            **kwargs):
-        super().__init__(random_state=random_state, ignore=["encoder"],
-                         **kwargs)
+        self,
+        encoder: nn.Module,
+        hidden_dims: Sequence[str],
+        lr: float,
+        temperature: float,
+        weight_decay: float,
+        random_state: Optional[int] = None,
+        **kwargs,
+    ):
+        super().__init__(
+            random_state=random_state, ignore=["encoder"], **kwargs
+        )
         assert self.hparams.temperature > 0.0, (
-            "The temperature must be a positive float!")
+            "The temperature must be a positive float!"
+        )
         assert hasattr(encoder, "latent_size"), (
             "The encoder must store the size of the encoded one-dimensional "
-            "feature vector in a `latent_size` parameter!")
+            "feature vector in a `latent_size` parameter!"
+        )
         self.f = encoder
         self.g = torchvision.ops.MLP(
-            in_channels=self.f.latent_size, hidden_channels=hidden_dims,
-            activation_layer=nn.ReLU, inplace=True, bias=True, dropout=0.
+            in_channels=self.f.latent_size,
+            hidden_channels=hidden_dims,
+            activation_layer=nn.ReLU,
+            inplace=True,
+            bias=True,
+            dropout=0.0,
         )
-        self.g = nn.Sequential(*[
-            layer for layer in self.g.children()
-            if not isinstance(layer, nn.Dropout)
-        ])
+        self.g = nn.Sequential(
+            *[
+                layer
+                for layer in self.g.children()
+                if not isinstance(layer, nn.Dropout)
+            ]
+        )
 
     def configure_optimizers(self):
-        """ Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
+        """Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
         (``max_epochs`` is defined), a
         :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning-rate
         scheduler.
         """
         optimizer = optim.AdamW(
-            self.parameters(), lr=self.hparams.lr,
-            weight_decay=self.hparams.weight_decay)
-        if (hasattr(self.hparams, "max_epochs") and
-                self.hparams.max_epochs is not None):
+            self.parameters(),
+            lr=self.hparams.lr,
+            weight_decay=self.hparams.weight_decay,
+        )
+        if (
+            hasattr(self.hparams, "max_epochs")
+            and self.hparams.max_epochs is not None
+        ):
             lr_scheduler = optim.lr_scheduler.CosineAnnealingLR(
-                optimizer, T_max=self.hparams.max_epochs,
-                eta_min=(self.hparams.lr / 50))
+                optimizer,
+                T_max=self.hparams.max_epochs,
+                eta_min=(self.hparams.lr / 50),
+            )
             return [optimizer], [lr_scheduler]
         else:
             return [optimizer]
 
     def info_nce_loss(
-            self,
-            batch: tuple[torch.Tensor, torch.Tensor],
-            mode: str):
-        """ Compute and log the InfoNCE loss using
+        self, batch: tuple[torch.Tensor, torch.Tensor], mode: str
+    ):
+        """Compute and log the InfoNCE loss using
         :class:`~nidl.losses.InfoNCE`.
         """
         # Encode all images
@@ -174,28 +191,32 @@ class SimCLR(TransformerMixin, BaseEstimator):
         feats = self.g(self.f(imgs))
         # Calculate loss
         nll = InfoNCE(self.hparams.temperature)(
-            feats[:n_samples], feats[n_samples:])
+            feats[:n_samples], feats[n_samples:]
+        )
         # Logging loss
         self.log(mode + "_loss", nll, prog_bar=True)
         return nll
 
     def training_step(
-            self,
-            batch: tuple[torch.Tensor, torch.Tensor],
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
+        self,
+        batch: tuple[torch.Tensor, torch.Tensor],
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
         return self.info_nce_loss(batch, mode="train")
 
     def validation_step(
-            self,
-            batch: tuple[torch.Tensor, torch.Tensor],
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
+        self,
+        batch: tuple[torch.Tensor, torch.Tensor],
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
         self.info_nce_loss(batch, mode="val")
 
     def transform_step(
-            self,
-            batch: torch.Tensor,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
+        self,
+        batch: torch.Tensor,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
         return self.f(batch)

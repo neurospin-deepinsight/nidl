@@ -18,7 +18,7 @@ from ..base import BaseEstimator, ClassifierMixin
 
 
 class LogisticRegression(ClassifierMixin, BaseEstimator):
-    """ LogisticRegression implementation.
+    """LogisticRegression implementation.
 
     This class can also be used in self supervised settings.
     After we have trained our encoder via self supervised learning, we can
@@ -71,48 +71,56 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
     A batch of data must contains two elements: a tensor with images, and a
     tensor with the variable to predict.
     """
+
     def __init__(
-            self,
-            model: nn.Module,
-            num_classes: int,
-            lr: float,
-            weight_decay: float,
-            random_state: Optional[int] = None,
-            **kwargs):
-        super().__init__(random_state=random_state, ignore=["model"],
-                         **kwargs)
+        self,
+        model: nn.Module,
+        num_classes: int,
+        lr: float,
+        weight_decay: float,
+        random_state: Optional[int] = None,
+        **kwargs,
+    ):
+        super().__init__(random_state=random_state, ignore=["model"], **kwargs)
         self.model = model
         self.validation_step_outputs = {}
 
     def freeze_encoder(self):
-        """ Freeze the input encoder. Useful for self supervised settings.
-        """
+        """Freeze the input encoder. Useful for self supervised settings."""
         self.model.requires_grad_(False)
         self.model.fc.requires_grad_(True)
 
     def configure_optimizers(self):
-        """ Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
+        """Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
         (``max_epochs`` is defined), a
         :class:`~torch.optim.lr_scheduler.MultiStepLR` learning-rate
         scheduler.
         """
         optimizer = optim.AdamW(
-            self.parameters(), lr=self.hparams.lr,
-            weight_decay=self.hparams.weight_decay)
-        if (hasattr(self.hparams, "max_epochs") and
-                self.hparams.max_epochs is not None):
+            self.parameters(),
+            lr=self.hparams.lr,
+            weight_decay=self.hparams.weight_decay,
+        )
+        if (
+            hasattr(self.hparams, "max_epochs")
+            and self.hparams.max_epochs is not None
+        ):
             lr_scheduler = optim.lr_scheduler.MultiStepLR(
-                optimizer, milestones=[int(self.hparams.max_epochs * 0.6),
-                int(self.hparams.max_epochs * 0.8)], gamma=0.1)
+                optimizer,
+                milestones=[
+                    int(self.hparams.max_epochs * 0.6),
+                    int(self.hparams.max_epochs * 0.8),
+                ],
+                gamma=0.1,
+            )
             return [optimizer], [lr_scheduler]
         else:
             return [optimizer]
 
     def cross_entropy_loss(
-            self,
-            batch: tuple[torch.Tensor, Sequence[torch.Tensor]],
-            mode: str):
-        """ Compute and log the InfoNCE loss using
+        self, batch: tuple[torch.Tensor, Sequence[torch.Tensor]], mode: str
+    ):
+        """Compute and log the InfoNCE loss using
         :func:`~torch.nn.functional.cross_entropy`.
         """
         imgs, labels = batch
@@ -125,31 +133,32 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
         return preds, loss, labels
 
     def training_step(
-            self,
-            batch: tuple[torch.Tensor, torch.Tensor],
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
+        self,
+        batch: tuple[torch.Tensor, torch.Tensor],
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
         _, loss, _ = self.cross_entropy_loss(batch, mode="train")
         return loss
 
     def validation_step(
-            self,
-            batch: tuple[torch.Tensor, torch.Tensor],
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
+        self,
+        batch: tuple[torch.Tensor, torch.Tensor],
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
         preds, loss, labels = self.cross_entropy_loss(batch, mode="val")
         self.validation_step_outputs.setdefault("pred", []).append(preds)
         self.validation_step_outputs.setdefault("label", []).append(labels)
 
     def on_validation_epoch_end(self):
-        """ Clean the validation cache at each epoch ends.
-        """
+        """Clean the validation cache at each epoch ends."""
         self.validation_step_outputs.clear()
 
     def predict_step(
-            self,
-            batch: torch.Tensor,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
-        imgs = batch[0]
-        return self.model(imgs)
+        self,
+        batch: torch.Tensor,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
+        return self.model(batch)

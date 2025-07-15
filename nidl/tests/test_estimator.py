@@ -137,7 +137,7 @@ class TestEstimators(unittest.TestCase):
             )
             model.fit(self.xy_loader)
             pred = model.predict(self.x_loader)
-            self.assertTrue(pred.shape == (self.n_images, ))
+            self.assertTrue(pred.shape == (self.n_images, 2))
 
 
 class CustomTensorDataset(Dataset):
