@@ -25,6 +25,7 @@ from nidl.estimators import (
 from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
 from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
 from nidl.estimators.linear import LogisticRegression
+from nidl.losses.yaware_infonce import KernelMetric
 from nidl.transforms import ContrastiveTransforms
 from nidl.utils import print_multicolor
 
@@ -87,6 +88,23 @@ class TestEstimators(unittest.TestCase):
                     "limit_train_batches": 3,
                 },
             ),
+                        (
+                YAwareContrastiveLearning,
+                {
+                    "encoder": self._encoder,
+                    "projection_head": SimCLRProjectionHead(
+                        input_dim=self._encoder.latent_size, output_dim=3
+                    ),
+                    "projection_head_kwargs": { # ignored
+                        "input_dim": self._encoder.latent_size,
+                        "output_dim": 3,
+                    },
+                    "temperature": 0.07,
+                    "learning_rate": 1e-4,
+                    "max_epochs": 2,
+                    "limit_train_batches": 3,
+                },
+            ),
             (
                 YAwareContrastiveLearning,
                 {
@@ -104,6 +122,8 @@ class TestEstimators(unittest.TestCase):
         )
     
     def test_weakly_sup_config(self):
+        kernel_metric = KernelMetric(bandwidth="silverman")
+        kernel_metric.fit(self.fake_labels.numpy())
         return (
             (
                 YAwareContrastiveLearning,
@@ -113,6 +133,22 @@ class TestEstimators(unittest.TestCase):
                         "input_dim": self._encoder.latent_size,
                         "output_dim": 10,
                     },
+                    "bandwidth": 2,
+                    "temperature": 0.07,
+                    "learning_rate": 1e-4,
+                    "max_epochs": 2,
+                    "limit_train_batches": 3,
+                },
+            ),
+                        (
+                YAwareContrastiveLearning,
+                {
+                    "encoder": self._encoder,
+                    "projection_head_kwargs": {
+                        "input_dim": self._encoder.latent_size,
+                        "output_dim": 10,
+                    },
+                    "bandwidth": kernel_metric,
                     "temperature": 0.07,
                     "learning_rate": 1e-4,
                     "max_epochs": 2,
@@ -202,7 +238,7 @@ class TestEstimators(unittest.TestCase):
             )
             model.fit(self.xy_loader)
             pred = model.predict(self.x_loader)
-            self.assertTrue(pred.shape == (self.n_images,))
+            self.assertTrue(pred.shape == (self.n_images, 2))
 
 
 class CustomTensorDataset(Dataset):

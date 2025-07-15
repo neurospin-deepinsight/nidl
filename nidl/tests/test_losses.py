@@ -13,6 +13,7 @@ import torch
 from nidl.losses import (
     InfoNCE,
     YAwareInfoNCE,
+    KernelMetric
 )
 
 class TestLosses(unittest.TestCase):
@@ -49,7 +50,6 @@ class TestLosses(unittest.TestCase):
     def test_yaware(self):
         """ Test y-Aware loss is computed correctly.
         """
-        torch.manual_seed(42)  # For reproducibility
         for temperature in [0.1, 1.0, 5.0]:
             for batch_size in [1, 10]:
                 for n_embedding in [1, 10]:
@@ -69,6 +69,21 @@ class TestLosses(unittest.TestCase):
                             f"got {loss_low} vs {loss_high}"
                         )
                         assert loss_low >= 0, "y-Aware InfoNCE loss should be positive."
+        # Test bandwidth computation
+        z1 = torch.rand(10, 2)
+        z2 = torch.rand(10, 2)
+        labels = torch.rand(10, 3)
+        for bandwidth in ["scott", "silverman", [1, 2, 3], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]]:
+            kernel = KernelMetric(bandwidth=bandwidth)
+            loss = YAwareInfoNCE(bandwidth=kernel)
+            with self.assertRaises(ValueError): # kernel not fitted
+                loss(z1, z2, labels)
+            kernel.fit(labels)
+            kernel_loss = loss(z1, z2, labels)
+            assert  kernel_loss >= 0, "y-Aware InfoNCE loss should be positive."
+            if not isinstance(bandwidth, str):
+                loss = YAwareInfoNCE(bandwidth=bandwidth)
+                assert loss(z1, z2, labels) == kernel_loss
         
     def test_eq_yaware_infonce(self):
         """ Test that YAwareInfoNCE is equal to InfoNCE when no labels are provided.

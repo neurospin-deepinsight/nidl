@@ -2,12 +2,13 @@ import logging
 from collections.abc import Sequence
 from typing import Any, Optional, Union
 
+import numpy as np
 import torch
 import torch.nn as nn
 from pytorch_lightning.utilities.types import LRSchedulerPLType
 from torch.optim import Optimizer
 
-from ...losses import YAwareInfoNCE
+from ...losses import KernelMetric, YAwareInfoNCE
 from ..base import BaseEstimator, TransformerMixin
 from .utils.projection_heads import YAwareProjectionHead
 
@@ -39,11 +40,10 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     Parameters
     ----------
     encoder : nn.Module or class
-        Which deep architecture to use for encoding the input. If not in
-        default backbones, a PyTorch :class:`~torch.nn.Module` is expected.
+        Which deep architecture to use for encoding the input.
+        A PyTorch :class:`~torch.nn.Module` is expected.
         In general, the uninstantiated class should be passed, although
-        instantiated modules will also work. By default, a 3D ResNet-18
-        model is used with 512-d output.
+        instantiated modules will also work.
 
     encoder_kwargs : dict or None, default=None
         Options for building the encoder (depends on each architecture).
@@ -80,20 +80,23 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
 
     kernel : {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, \
         default="gaussian"
-        Kernel used as the similarity function between auxiliary variables.
-        Default is 'gaussian'.
+        Kernel used as a similarity function between auxiliary variables.
 
-    bandwidth : {'scott', 'silverman'} or float or list of float, \
-        default="scott"
-        Method used to calculate the bandwidth in the kernel:
+    bandwidth : Union[float, int, List[float], array, KernelMetric], \
+        default=1.0
+        The method used to calculate the bandwidth ("sigma" in [1]) between
+        auxiliary variables:
 
-        - If str: must be 'scott' or 'silverman' for automatic bandwidth
-          estimation.
-        - If float: sets bandwidth to H = diag(scalar).
-        - If list of float: sets bandwidth to H = diag(list), where the length
-          must equal the number of features in the auxiliary variables ``y``.
-
-        Default is 'scott'.
+        - If `bandwidth` is a scalar (int or float), it sets the bandwidth to
+          a diagnonal matrix with equal values.
+        - If `bandwidth` is a 1d array, it sets the bandwidth to a
+          diagonal matrix and it must be of size equal to the number of
+          features in `y`.
+        - If bandwidth is a 2d array, it must be of shape
+          `(n_features, n_features)` where `n_features` is the number of
+          features in `y`.
+        - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`
+          method to compute the similarity matrix between auxiliary variables.
 
     optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
         default="adam"
@@ -160,7 +163,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         projection_head_kwargs: Optional[dict[str, Any]] = None,
         temperature: float = 0.1,
         kernel: str = "gaussian",
-        bandwidth: Union[str, float, list[float]] = "scott",
+        bandwidth: Union[float, list[float], np.ndarray, KernelMetric] = 1.0,
         optimizer: Union[str, Optimizer, type[Optimizer]] = "adam",
         optimizer_kwargs: Optional[dict[str, Any]] = None,
         learning_rate: float = 1e-4,
@@ -435,9 +438,10 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         self,
         temperature: float,
         kernel: str,
-        bandwidth: Union[str, float, list[float]],
+        bandwidth: Union[float, list[float], np.ndarray],
     ) -> nn.Module:
-        """Builds the InfoNCE loss function with the specified temperature.
+        """Builds the y-Aware InfoNCE loss function with the
+        specified temperature, kernel and bandwidth.
 
         Parameters
         ----------
@@ -447,7 +451,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}
             Kernel used as similarity function between auxiliary variables.
 
-        bandwidth: str in {'scott', 'silverman'} or float or list of float
+        bandwidth: float, list of float, array or KernelMetric
             The method used to calculate the bandwidth in kernel.
 
         Returns
