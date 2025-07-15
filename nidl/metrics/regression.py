@@ -29,8 +29,7 @@ def pearson_r(
     multioutput="uniform_average",
     force_finite=False,
 ):
-    """
-    Pearson correlation coefficient between 2 arrays y_true, y_pred.
+    """Pearson correlation coefficient between 2 arrays y_true, y_pred.
     This score is symmetric between y_true and y_pred and is always between 1 (
     perfect correlation) and -1 (perfect anti-correlation).
 
@@ -63,10 +62,11 @@ def pearson_r(
 
         
     Returns
-    ----------
+    -------
     pearson_r: float or array of floats
         The correlation score or ndarray of scores if 'multioutput' is
         'raw_values'.
+
     """
     _, y_true, y_pred, sample_weight, multioutput = (
         _check_reg_targets_with_floating_dtype(
@@ -143,8 +143,6 @@ def regression_report(
     output_dict=False,
 ):
     """Build a text report showing the main regression metrics.
-    It can handle multiouput regression, and returns a dictionary
-    with the following keys:
 
     Parameters
     ----------
@@ -200,7 +198,7 @@ def regression_report(
                  }
             }
 
-        The reported average is uniformly computed as the arithmetic mean
+        The reported average is computed as the arithmetic mean
         across all regressors. If only one regressor is available, only the
         'regressor 0' is returned as 'average' would result in the same
         results.
@@ -219,7 +217,6 @@ def regression_report(
         average     1.42   1.55   1.74   3.26  -1.64  0.68  0.15
 
     """
-
     headers = [
         "MAE",
         "MedAE",

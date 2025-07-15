@@ -25,8 +25,7 @@ from nidl.utils.validation import _estimator_is
 
 
 class ModelProbing(ABC, pl.Callback):
-    """
-    This callback implements the basic logic of embedding model's probing:
+    """Callback implementing the basic logic of embedding model's probing.
 
     1) Embeds the input data (training+test) through the estimator using
        `transform_step` method.
@@ -96,12 +95,11 @@ class ModelProbing(ABC, pl.Callback):
 
     @abstractmethod
     def fit(self, X, y):
-        """Fit the probe on (X, y), the embeddings and labels of the
-        training data."""
+        """Fit the probe on the embeddings and labels of the training data."""
 
     @abstractmethod
     def predict(self, X):
-        """Predict the probe on new data X"""
+        """Predict the probe on new data X."""
 
     @abstractmethod
     def log_metrics(self, pl_module, y_pred, y_true):
@@ -109,11 +107,12 @@ class ModelProbing(ABC, pl.Callback):
 
     def linear_probing(self, pl_module: BaseEstimator):
         """Perform the linear probing on the given estimator.
+
         This method performs the following steps:
         1) Extracts the features from the training and test dataloaders
         2) Fits the probe on the training features and labels
         3) Makes predictions on the test features
-        4) Computes and logs the metrics
+        4) Computes and logs the metrics.
 
         Parameters
         ----------
@@ -124,6 +123,7 @@ class ModelProbing(ABC, pl.Callback):
         ------
         ValueError: If the pl_module does not inherit from BaseEstimator or
         from TransformerMixin.
+
         """
         if not isinstance(pl_module, BaseEstimator) or not _estimator_is(
             "transformer"
@@ -159,11 +159,12 @@ class ModelProbing(ABC, pl.Callback):
         self.log_metrics(pl_module, y_pred, y_test)
 
     def extract_features(self, pl_module, dataloader):
-        """Extract features from a given dataloader with the current
-        BaseEstimator. By default, it uses the `transform_step` logic applied
-        on each batch to get the embeddings with the labels.
-        The input dataloader should yield batches of the form
-        (X, y) where X is the input data and y is the label.
+        """Extract features from a dataloader with the BaseEstimator.
+
+        By default, it uses the `transform_step` logic applied on each batch to
+        get the embeddings with the labels.
+        The input dataloader should yield batches of the form (X, y) where X
+        is the input data and y is the label.
 
         Parameters
         ----------
@@ -172,14 +173,15 @@ class ModelProbing(ABC, pl.Callback):
 
         dataloader: torch.utils.data.DataLoader
             The dataloader to extract features from. It should yield batches of
-            the form (X, y) where X is the input data and y is the label
+            the form (X, y) where X is the input data and y is the label.
 
         Returns
         -------
         tuple of (X, y)
             Tuple of numpy arrays (X, y) where X is the extracted features
-            and y is the corresponding labels."""
+            and y is the corresponding labels.
 
+        """
         is_training = pl_module.training  # Save state
 
         pl_module.eval()
@@ -388,6 +390,7 @@ class KNeighborsRegressorCVCallback(ModelProbing):
     kwargs: dict
         Additional keyword arguments to pass to the `ModelProbing` constructor
         (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).
+
     """
 
     def __init__(
@@ -464,8 +467,7 @@ class KNeighborsRegressorCVCallback(ModelProbing):
 
 
 class LogisticRegressionCVCallback(ModelProbing):
-    """
-    Performs logistic regression (classification) on top of an embedding model.
+    """Performs logistic regression on top of an embedding model.
 
     Concretely this callback:
         1) Embeds the input data through the torch model
@@ -583,6 +585,7 @@ class LogisticRegressionCVCallback(ModelProbing):
 
         y : array-like of shape (n_samples,)
             Target vector relative to X.
+
         """
         return self.probe.fit(X, y)
 
@@ -622,8 +625,7 @@ class LogisticRegressionCVCallback(ModelProbing):
 
 
 class KNeighborsClassifierCVCallback(ModelProbing):
-    """
-    Performs KNN classification on top of an embedding model.
+    """Performs KNN classification on top of an embedding model.
 
     Concretely this callback:
         1) Embeds the input data through the torch model
@@ -678,6 +680,7 @@ class KNeighborsClassifierCVCallback(ModelProbing):
     kwargs: dict
         Additional keyword arguments to pass to the `ModelProbing` constructor
         (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).
+
     """
 
     def __init__(
@@ -722,7 +725,8 @@ class KNeighborsClassifierCVCallback(ModelProbing):
         y : {array-like, sparse matrix} of shape (n_samples,) or \
                 (n_samples, n_outputs)
             Target values.
-    """
+
+        """
         return self.probe.fit(X, y)
 
     def predict(self, X):
