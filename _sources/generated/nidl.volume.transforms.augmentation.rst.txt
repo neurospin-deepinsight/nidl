@@ -1,0 +1,12 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.volume.transforms.augmentation*
+===========================================================
+
+nidl.volume.transforms.augmentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+

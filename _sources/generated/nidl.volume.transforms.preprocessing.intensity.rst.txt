@@ -1,0 +1,38 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.volume.transforms.preprocessing.intensity*
+======================================================================
+
+nidl.volume.transforms.preprocessing.intensity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.preprocessing.intensity.RobustRescaling <nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling.html>`_
+    * `nidl.volume.transforms.preprocessing.intensity.ZNormalization <nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization.html>`_
+
+nidl.volume.transforms.preprocessing.intensity.rescale
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling <nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling.html>`_
+
+nidl.volume.transforms.preprocessing.intensity.z_normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization <nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization.html>`_
+

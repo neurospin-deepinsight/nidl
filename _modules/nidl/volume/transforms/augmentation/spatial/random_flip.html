@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../../../../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/style.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../../../../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../../../../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../../../../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../../../../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../../../../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../../../../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../../../../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../../../../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../../../../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../../../../../../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../../../../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../../../../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                            <li>API</li>
+                            <li><a href="../../../../../../generated/nidl.html">nidl</a></li><li><a href="../../../../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../../../../generated/nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="../../../../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../../../../generated/nidl.metrics.html">nidl.metrics</a></li><li><a href="../../../../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="../../../../../../generated/surfify.html">surfify</a></li><li><a href="../../../../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../../../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../../../../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <h1>Source code for nidl.volume.transforms.augmentation.spatial.random_flip</h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div><div class="highlight"><pre>
+<span></span><span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2025</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nibabel.orientations</span><span class="w"> </span><span class="kn">import</span> <span class="n">aff2axcodes</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">...volume_transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeTransformInput</span><span class="p">,</span> <span class="n">VolumeTransform</span>
+
+
+<div class="viewcode-block" id="RandomFlip">
+<a class="viewcode-back" href="../../../../../../generated/nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html#nidl.volume.transforms.augmentation.spatial.RandomFlip">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RandomFlip</span><span class="p">(</span><span class="n">VolumeTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reverse the order of elements in a 3d volume along the given axes.</span>
+
+<span class="sd">    It handles a :class:`np.ndarray` or :class:`torch.Tensor` as input and</span>
+<span class="sd">    returns a consistent output (same type and shape). Input shape must be</span>
+<span class="sd">    :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axes: int, str or tuple of int or str, default=0</span>
+<span class="sd">        Index in (0, 1, 2) or tuple of indices of the spatial dimension along</span>
+<span class="sd">        which the input volume might be flipped. Anatomical labels could be</span>
+<span class="sd">        used as well such as &quot;LR&quot; (Left-Right), &quot;AP&quot; (Antero-Posterior) or &quot;IS&quot;</span>
+<span class="sd">        (Inferior-Posterior). In that case, RAS-formatted affine matrix</span>
+<span class="sd">        specifying volume orientation must be provided when the transformation</span>
+<span class="sd">        is called. Check `Nibabel documentation on image orientation</span>
+<span class="sd">        &lt;https://nipy.org/nibabel/coordinate_systems.html&gt;`_.</span>
+
+<span class="sd">    flip_probability: float, default=1.0</span>
+<span class="sd">        Per-axis probability to flip the volume.</span>
+
+<span class="sd">    kwargs: dict</span>
+<span class="sd">        Keyword arguments given to base :class:`nidl.transforms.Transform`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Current implementation always returns a new tensor/array without sharing</span>
+<span class="sd">    memory with the input data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">flip_probability</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_axes</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flip_probability</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_probability</span><span class="p">(</span><span class="n">flip_probability</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RandomFlip.apply_transform">
+<a class="viewcode-back" href="../../../../../../generated/nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html#nidl.volume.transforms.augmentation.spatial.RandomFlip.apply_transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">TypeTransformInput</span><span class="p">,</span>
+        <span class="n">affine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeTransformInput</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flip the volume along random axes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: np.ndarray or torch.Tensor</span>
+<span class="sd">            Input volume with shape :math:`(C, H, W, D)` or :math:`(H, W, D)`.</span>
+<span class="sd">            Channel dimension will never be flipped.</span>
+
+<span class="sd">        affine: np.ndarray of shape (4, 4) or None, default=None</span>
+<span class="sd">            Affine transformation matrix of the input data in RAS format</span>
+<span class="sd">            defining orientation of the input image. This is typically given</span>
+<span class="sd">            by Nibabel in this format. This is used only if anatomical labels</span>
+<span class="sd">            are provided in the flipped axes (&quot;LR&quot;, &quot;AP&quot; or &quot;IS&quot;) and ignored</span>
+<span class="sd">            otherwise.</span>
+<span class="sd">            If None, the identity matrix is used, assuming RAS orientation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: np.ndarray or torch.Tensor</span>
+<span class="sd">            Flipped volume with same type and shape as the input.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">flipped_axis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flip_probability</span> <span class="o">&gt;</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">flipped_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">get_index_from_anat_label</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">affine</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">flipped_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">flipped_axis</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">flipped_axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">flipped_axis</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="n">flipped_axis</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># copy data for consistency between NumPy and Torch</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">flipped_axis</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="RandomFlip.get_index_from_anat_label">
+<a class="viewcode-back" href="../../../../../../generated/nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html#nidl.volume.transforms.augmentation.spatial.RandomFlip.get_index_from_anat_label">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_index_from_anat_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">affine</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the axis index corresponding to a given anatomical label.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : {&#39;LR&#39;, &#39;AP&#39;, &#39;IS&#39;}</span>
+<span class="sd">            Anatomical axis label:</span>
+
+<span class="sd">            - &#39;LR&#39; for Left-Right (X axis)</span>
+<span class="sd">            - &#39;AP&#39; for Anterior-Posterior (Y axis)</span>
+<span class="sd">            - &#39;IS&#39; for Inferior-Superior (Z axis)</span>
+
+<span class="sd">        affine : np.ndarray</span>
+<span class="sd">            4x4 affine matrix defining the orientation of the volume.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The index (0, 1, or 2) in voxel space corresponding to the</span>
+<span class="sd">            requested anatomical axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">anat_to_physical</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;LR&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;AP&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;IS&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">anat_to_physical</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid axis &#39;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">&#39;. Must be one of &#39;LR&#39;, &#39;AP&#39;, &#39;IS&#39;.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">desired</span> <span class="o">=</span> <span class="n">anat_to_physical</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">axcodes</span> <span class="o">=</span> <span class="n">aff2axcodes</span><span class="p">(</span><span class="n">affine</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axcodes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">desired</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">i</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not find anatomical axis &#39;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">&#39; in affine matrix.&quot;</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">str</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes</span><span class="p">,)</span>
+        <span class="n">axes_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axes_tuple</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">axis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axes must be 0, 1 or 2, got </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">axis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;AP&quot;</span><span class="p">,</span> <span class="s2">&quot;IS&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Axes must be in &#39;LR&#39;, &#39;AP&#39; or &#39;IS&#39;, got </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axes must be int or str, got </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">axes_tuple</span></div>
+
+</pre></div>
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../../../../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../../../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../../../../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../../../../../_static/js/wow.min.js"></script>
+        <script src="../../../../../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../../../../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../../../../../_static/js/scripts.js"></script>
+        <script src="../../../../../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../../../../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../../../../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../../../../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>

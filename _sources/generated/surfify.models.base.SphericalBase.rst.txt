@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.models.base.SphericalBase surfify.models.SphericalBase
+.. minigallery:: surfify.models.SphericalBase surfify.models.base.SphericalBase
     :add-heading: Examples
     :heading-level: -
 

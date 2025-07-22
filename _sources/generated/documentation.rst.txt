@@ -85,13 +85,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
     </div>
     <div class='row'>    <div class='col-md-4'>
-    <h3><a href='nidl.transforms.html'>
-    nidl.transforms
-    </a></h3>
-    <blockquote>
-        <p>Common transformations.</p>    </blockquote>
-    </div>
-    <div class='col-md-4'>
     <h3><a href='nidl.utils.html'>
     nidl.utils
     </a></h3>
@@ -105,14 +98,67 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Definition of common architectures.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.volume.backbones.html'>
     nidl.volume.backbones
     </a></h3>
     <blockquote>
         <p>Definition of common volumic architectures.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='nidl.volume.transforms.html'>
+    nidl.volume.transforms
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='nidl.volume.transforms.augmentation.html'>
+    nidl.volume.transforms.augmentation
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='nidl.volume.transforms.augmentation.intensity.html'>
+    nidl.volume.transforms.augmentation.intensity
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='nidl.volume.transforms.augmentation.spatial.html'>
+    nidl.volume.transforms.augmentation.spatial
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='nidl.volume.transforms.preprocessing.html'>
+    nidl.volume.transforms.preprocessing
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='nidl.volume.transforms.preprocessing.intensity.html'>
+    nidl.volume.transforms.preprocessing.intensity
+    </a></h3>
+    <blockquote>
+    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='nidl.volume.transforms.preprocessing.spatial.html'>
+    nidl.volume.transforms.preprocessing.spatial
+    </a></h3>
+    <blockquote>
+    </blockquote>
     </div>
 
     </div>
@@ -216,6 +262,12 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.experiment.load_interface <nidl.experiment.load_interface.html>`_
 
           `nidl.experiment.update_params <nidl.experiment.update_params.html>`_
+
+          `nidl.transforms.Identity <nidl.transforms.Identity.html>`_
+
+          `nidl.transforms.MultiViewsTransform <nidl.transforms.MultiViewsTransform.html>`_
+
+          `nidl.transforms.Transform <nidl.transforms.Transform.html>`_
 
     * `nidl.callbacks <nidl.callbacks.html>`_
         .. hidden-technical-block::
@@ -363,15 +415,6 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.metrics.regression.regression_report <nidl.metrics.regression.regression_report.html>`_
 
-    * `nidl.transforms <nidl.transforms.html>`_
-        .. hidden-technical-block::
-          :label: [+ show/hide members]
-          :starthidden: true
-
-          `nidl.transforms.ContrastiveTransforms <nidl.transforms.ssl.ContrastiveTransforms.html>`_
-
-          `nidl.transforms.ssl.ContrastiveTransforms <nidl.transforms.ssl.ContrastiveTransforms.html>`_
-
     * `nidl.utils <nidl.utils.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
@@ -480,6 +523,79 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.volume.backbones.resnet3d.resnet50 <nidl.volume.backbones.resnet3d.resnet50.html>`_
 
           `nidl.volume.backbones.resnet3d.resnet50_trunc <nidl.volume.backbones.resnet3d.resnet50_trunc.html>`_
+
+    * `nidl.volume.transforms <nidl.volume.transforms.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.volume.transforms.volume_transform.VolumeTransform <nidl.volume.transforms.volume_transform.VolumeTransform.html>`_
+
+    * `nidl.volume.transforms.augmentation <nidl.volume.transforms.augmentation.html>`_
+    * `nidl.volume.transforms.augmentation.intensity <nidl.volume.transforms.augmentation.intensity.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.volume.transforms.augmentation.intensity.RandomGaussianBlur <nidl.volume.transforms.augmentation.intensity.random_blur.RandomGaussianBlur.html>`_
+
+          `nidl.volume.transforms.augmentation.intensity.RandomGaussianNoise <nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise.html>`_
+
+          `nidl.volume.transforms.augmentation.intensity.random_blur.RandomGaussianBlur <nidl.volume.transforms.augmentation.intensity.random_blur.RandomGaussianBlur.html>`_
+
+          `nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise <nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise.html>`_
+
+    * `nidl.volume.transforms.augmentation.spatial <nidl.volume.transforms.augmentation.spatial.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.volume.transforms.augmentation.spatial.RandomErasing <nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html>`_
+
+          `nidl.volume.transforms.augmentation.spatial.RandomFlip <nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html>`_
+
+          `nidl.volume.transforms.augmentation.spatial.RandomResizedCrop <nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop.html>`_
+
+          `nidl.volume.transforms.augmentation.spatial.RandomRotation <nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation.html>`_
+
+          `nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing <nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html>`_
+
+          `nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation <nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation.html>`_
+
+          `nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip <nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html>`_
+
+          `nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop <nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop.html>`_
+
+    * `nidl.volume.transforms.preprocessing <nidl.volume.transforms.preprocessing.html>`_
+    * `nidl.volume.transforms.preprocessing.intensity <nidl.volume.transforms.preprocessing.intensity.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.volume.transforms.preprocessing.intensity.RobustRescaling <nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling.html>`_
+
+          `nidl.volume.transforms.preprocessing.intensity.ZNormalization <nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization.html>`_
+
+          `nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling <nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling.html>`_
+
+          `nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization <nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization.html>`_
+
+    * `nidl.volume.transforms.preprocessing.spatial <nidl.volume.transforms.preprocessing.spatial.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.volume.transforms.preprocessing.spatial.CropOrPad <nidl.volume.transforms.preprocessing.spatial.crop_or_pad.CropOrPad.html>`_
+
+          `nidl.volume.transforms.preprocessing.spatial.Resample <nidl.volume.transforms.preprocessing.spatial.resample.Resample.html>`_
+
+          `nidl.volume.transforms.preprocessing.spatial.Resize <nidl.volume.transforms.preprocessing.spatial.resize.Resize.html>`_
+
+          `nidl.volume.transforms.preprocessing.spatial.resample.Resample <nidl.volume.transforms.preprocessing.spatial.resample.Resample.html>`_
+
+          `nidl.volume.transforms.preprocessing.spatial.crop_or_pad.CropOrPad <nidl.volume.transforms.preprocessing.spatial.crop_or_pad.CropOrPad.html>`_
+
+          `nidl.volume.transforms.preprocessing.spatial.resize.Resize <nidl.volume.transforms.preprocessing.spatial.resize.Resize.html>`_
 
     * `surfify <surfify.html>`_
         .. hidden-technical-block::

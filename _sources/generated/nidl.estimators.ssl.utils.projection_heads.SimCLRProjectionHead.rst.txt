@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead nidl.estimators.ssl.utils.SimCLRProjectionHead
+.. minigallery:: nidl.estimators.ssl.utils.SimCLRProjectionHead nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead
     :add-heading: Examples
     :heading-level: -
 

@@ -1,0 +1,38 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.volume.transforms.augmentation.intensity*
+=====================================================================
+
+nidl.volume.transforms.augmentation.intensity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.intensity.RandomGaussianBlur <nidl.volume.transforms.augmentation.intensity.random_blur.RandomGaussianBlur.html>`_
+    * `nidl.volume.transforms.augmentation.intensity.RandomGaussianNoise <nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise.html>`_
+
+nidl.volume.transforms.augmentation.intensity.random_blur
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.intensity.random_blur.RandomGaussianBlur <nidl.volume.transforms.augmentation.intensity.random_blur.RandomGaussianBlur.html>`_
+
+nidl.volume.transforms.augmentation.intensity.random_noise
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise <nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise.html>`_
+

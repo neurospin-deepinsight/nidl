@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../../../../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/style.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../../../../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../../../../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../../../../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../../../../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../../../../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../../../../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../../../../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../../../../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../../../../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../../../../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../../../../../../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../../../../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../../../../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                            <li>API</li>
+                            <li><a href="../../../../../../generated/nidl.html">nidl</a></li><li><a href="../../../../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../../../../generated/nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="../../../../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../../../../generated/nidl.metrics.html">nidl.metrics</a></li><li><a href="../../../../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="../../../../../../generated/nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="../../../../../../generated/surfify.html">surfify</a></li><li><a href="../../../../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../../../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../../../../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <h1>Source code for nidl.volume.transforms.augmentation.spatial.random_erasing</h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div><div class="highlight"><pre>
+<span></span><span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2025</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numbers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">...volume_transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeTransformInput</span><span class="p">,</span> <span class="n">VolumeTransform</span>
+
+
+<div class="viewcode-block" id="RandomErasing">
+<a class="viewcode-back" href="../../../../../../generated/nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html#nidl.volume.transforms.augmentation.spatial.RandomErasing">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RandomErasing</span><span class="p">(</span><span class="n">VolumeTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Randomly erases boxes in a 3d volume.</span>
+
+<span class="sd">    Randomly selects one or multiple boxes in input data and erases their</span>
+<span class="sd">    values (i.e. random erasing [1]_, very similar to cutout [2]_ but with</span>
+<span class="sd">    arbitrary aspect ratio). It is an extension of</span>
+<span class="sd">    :class:`torchvision.transforms.RandomErasing` to the 3d case and it can</span>
+<span class="sd">    eventually erase multiple random boxes. It handles :class:`np.ndarray` or</span>
+<span class="sd">    :class:`torch.Tensor` as input and returns a consistent output (same type</span>
+<span class="sd">    and shape).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scale: tuple of (float, float), default=(0.02, 0.33)</span>
+<span class="sd">        Range of proportion of erased area against input data.</span>
+
+<span class="sd">    ratio: tuple of (float, float), default=(1.0, 3.0)</span>
+<span class="sd">        Range of aspect ratio of erased area (min, max).</span>
+
+<span class="sd">    num_iterations: int, default=1</span>
+<span class="sd">        Number of erased areas.</span>
+
+<span class="sd">    value: float, &quot;mean&quot; or &quot;random&quot;, default=0.0</span>
+<span class="sd">        Erasing value. If &quot;random&quot;, erases each voxel with random values</span>
+<span class="sd">        normally distributed. If &quot;mean&quot;, replaces each voxel with the mean</span>
+<span class="sd">        value of the erased area, preserving the global statistics.</span>
+
+<span class="sd">    inplace: bool, default=False</span>
+<span class="sd">        If true, makes the transformation inplace, i.e. it modifies</span>
+<span class="sd">        the input data directly.</span>
+
+<span class="sd">    kwargs: dict</span>
+<span class="sd">        Additional keyword arguments given to</span>
+<span class="sd">        :class:`nidl.transforms.Transform`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    In 3d, we define the &quot;aspect ratio&quot; as the ratio between each dimension</span>
+<span class="sd">    size relatively to their geometric mean. It is a simple generalization</span>
+<span class="sd">    from 2d to nd and we don&#39;t particularize any dimension. The aspect ratio</span>
+<span class="sd">    is sampled three times for a 3d volume (one for each dimension).</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Zhong, Z., Zheng, L., Kang, G., Li, S., &amp; Yang, Y. (2020).</span>
+<span class="sd">           Random Erasing Data Augmentation.</span>
+<span class="sd">           In AAAI Conference on Artificial Intelligence.</span>
+<span class="sd">           https://arxiv.org/abs/1708.04896</span>
+
+<span class="sd">    .. [2] DeVries, T., &amp; Taylor, G. W. (2017).</span>
+<span class="sd">           Improved Regularization of Convolutional Neural Networks with Cutout</span>
+<span class="sd">           https://arxiv.org/abs/1708.04552</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">),</span>
+        <span class="n">ratio</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="n">num_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_range</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">check_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">check_max</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_range</span><span class="p">(</span><span class="n">ratio</span><span class="p">,</span> <span class="n">check_min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_iterations</span> <span class="o">=</span> <span class="n">num_iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span> <span class="o">=</span> <span class="n">inplace</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_3d_box</span><span class="p">(</span><span class="n">in_shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">ratio</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">slice</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomly sample a 3d box to erase from input.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">try_sample_box</span><span class="p">(</span><span class="n">ratio</span><span class="p">):</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">in_shape</span><span class="p">)</span>
+            <span class="c1"># Sample a target volume</span>
+            <span class="n">target_volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">scale</span><span class="p">)</span> <span class="o">*</span> <span class="n">volume</span>
+            <span class="c1"># Sample one aspect ratio per dimension</span>
+            <span class="n">log_ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ratio</span><span class="p">))</span>
+            <span class="n">sampled_ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">log_ratio</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+            <span class="c1"># Normalize aspect ratios to keep geometric mean = 1</span>
+            <span class="n">sampled_ar</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">cbrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">sampled_ar</span><span class="p">))</span>
+
+            <span class="n">box</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of slices</span>
+            <span class="n">cbrt_volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cbrt</span><span class="p">(</span><span class="n">target_volume</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ar</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sampled_ar</span><span class="p">,</span> <span class="n">in_shape</span><span class="p">):</span>
+                <span class="n">box_size</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">cbrt_volume</span> <span class="o">*</span> <span class="n">ar</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">box_size</span> <span class="o">&gt;</span> <span class="n">size</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="n">box_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">box</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">box_size</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">box</span>
+
+        <span class="c1"># Sample boxes until it fits into the volume.</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="n">box</span> <span class="o">=</span> <span class="n">try_sample_box</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">box</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">box</span>
+        <span class="c1"># If not possible, fallback to unit ratio.</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">try_sample_box</span><span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">box</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># If not possible, returns empty box.</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">in_shape</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">box</span>
+
+<div class="viewcode-block" id="RandomErasing.apply_transform">
+<a class="viewcode-back" href="../../../../../../generated/nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html#nidl.volume.transforms.augmentation.spatial.RandomErasing.apply_transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TypeTransformInput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeTransformInput</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Randomly erase boxes in the data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: np.ndarray or torch.Tensor</span>
+<span class="sd">            The input data with shape :math:`(C, H, W, D)` or</span>
+<span class="sd">            :math:`(H, W, D)`. Erased boxes are equal the same across channels.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: np.ndarray or torch.Tensor</span>
+<span class="sd">            Data with erased boxes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_iterations</span><span class="p">):</span>
+            <span class="n">in_shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>  <span class="c1"># remove channel</span>
+                <span class="n">in_shape</span> <span class="o">=</span> <span class="n">in_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">box_to_erase</span> <span class="o">=</span> <span class="n">RandomErasing</span><span class="o">.</span><span class="n">_sample_3d_box</span><span class="p">(</span>
+                <span class="n">in_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">box_to_erase</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+
+            <span class="n">slicer</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">box_to_erase</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">slicer</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">slicer</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">slicer</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+                <span class="n">region</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">slicer</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">slicer</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn_like</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">slicer</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">region</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`value` must be scalar (int or float), &#39;mean&#39; or&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; &#39;random&#39;, got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+</div>
+
+</pre></div>
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../../../../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../../../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../../../../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../../../../../_static/js/wow.min.js"></script>
+        <script src="../../../../../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../../../../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../../../../../_static/js/scripts.js"></script>
+        <script src="../../../../../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../../../../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../../../../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../../../../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>

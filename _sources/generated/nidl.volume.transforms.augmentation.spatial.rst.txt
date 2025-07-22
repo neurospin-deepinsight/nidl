@@ -1,0 +1,60 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.volume.transforms.augmentation.spatial*
+===================================================================
+
+nidl.volume.transforms.augmentation.spatial
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.spatial.RandomErasing <nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html>`_
+    * `nidl.volume.transforms.augmentation.spatial.RandomFlip <nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html>`_
+    * `nidl.volume.transforms.augmentation.spatial.RandomResizedCrop <nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop.html>`_
+    * `nidl.volume.transforms.augmentation.spatial.RandomRotation <nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation.html>`_
+
+nidl.volume.transforms.augmentation.spatial.random_erasing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing <nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html>`_
+
+nidl.volume.transforms.augmentation.spatial.random_rotation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation <nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation.html>`_
+
+nidl.volume.transforms.augmentation.spatial.random_flip
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip <nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html>`_
+
+nidl.volume.transforms.augmentation.spatial.random_resized_crop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop <nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop.html>`_
+

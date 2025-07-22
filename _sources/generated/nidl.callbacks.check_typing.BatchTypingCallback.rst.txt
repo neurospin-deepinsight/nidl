@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.BatchTypingCallback nidl.callbacks.check_typing.BatchTypingCallback
+.. minigallery:: nidl.callbacks.check_typing.BatchTypingCallback nidl.callbacks.BatchTypingCallback
     :add-heading: Examples
     :heading-level: -
 
