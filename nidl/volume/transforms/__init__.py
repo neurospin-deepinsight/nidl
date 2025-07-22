@@ -6,7 +6,3 @@
 # for details.
 ##########################################################################
 
-""" Common transformations.
-"""
-
-from .ssl import ContrastiveTransforms
