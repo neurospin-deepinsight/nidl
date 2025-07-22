@@ -23,7 +23,18 @@ if "PYTHONPATH" in env:
     env["PYTHONPATH"] = env["PYTHONPATH"] + ":" + installdir
 else:
     env["PYTHONPATH"] = installdir
-cmd = ["sphinxdoc", "-v 2", "-p", installdir, "-n", "*nidl", "-o", "..", "-i", "nidl"]
+cmd = [
+    "sphinxdoc",
+    "-v 2",
+    "-p",
+    installdir,
+    "-n",
+    "*nidl",
+    "-o",
+    "..",
+    "-i",
+    "nidl",
+]
 subprocess.check_call(cmd, env=env)
 sys.path.insert(0, installdir)
 
@@ -85,6 +96,9 @@ sphinx_gallery_conf = {
 # Remove some numpy-linked warnings
 numpydoc_show_class_members = False
 numpydoc_class_members_toctree = False
+
+# Remove sklearn-linked warnings in surfify
+suppress_warnings = ["ref.term"]
 
 # generate autosummary even if no references
 autosummary_generate = True
@@ -257,7 +271,13 @@ htmlhelp_basename = "nidl"
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
-    ("index", "nidl.tex", "nidl Documentation", """nidl developers""", "manual"),
+    (
+        "index",
+        "nidl.tex",
+        "nidl Documentation",
+        """nidl developers""",
+        "manual",
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
