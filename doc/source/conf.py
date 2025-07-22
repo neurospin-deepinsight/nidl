@@ -97,9 +97,6 @@ sphinx_gallery_conf = {
 numpydoc_show_class_members = False
 numpydoc_class_members_toctree = False
 
-# Remove sklearn-linked warnings in surfify
-suppress_warnings = ["ref.term"]
-
 # generate autosummary even if no references
 autosummary_generate = True
 
