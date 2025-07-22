@@ -26,7 +26,7 @@ from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
 from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
 from nidl.estimators.linear import LogisticRegression
 from nidl.losses.yaware_infonce import KernelMetric
-from nidl.transforms import ContrastiveTransforms
+from nidl.transforms import MultiViewsTransform
 from nidl.utils import print_multicolor
 
 
@@ -46,13 +46,13 @@ class TestEstimators(unittest.TestCase):
         self.fake_labels = torch.randint(1, (self.n_images,))
         ssl_transforms = transforms.Compose([lambda x: x + torch.rand(x.size())])
         ssl_dataset = CustomTensorDataset(
-            self.fake_data, transform=ContrastiveTransforms(ssl_transforms, n_views=2)
+            self.fake_data, transform=MultiViewsTransform(ssl_transforms, n_views=2)
         )
         x_dataset = CustomTensorDataset(self.fake_data)
         xy_dataset = CustomTensorDataset(self.fake_data, labels=self.fake_labels)
         xxy_dataset = CustomTensorDataset(
             self.fake_data, labels=self.fake_labels, 
-            transform=ContrastiveTransforms(ssl_transforms, n_views=2)
+            transform=MultiViewsTransform(ssl_transforms, n_views=2)
         )
         self.ssl_loader = DataLoader(ssl_dataset, batch_size=2, shuffle=False)
         self.weakly_sup_loader = DataLoader(xxy_dataset, batch_size=2, shuffle=False)

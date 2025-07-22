@@ -15,7 +15,7 @@ from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
-from nidl.transforms import ContrastiveTransforms
+from nidl.transforms import MultiViewsTransform
 from nidl.callbacks.check_typing import BatchTypingCallback
 from nidl.callbacks.model_probing import LogisticRegressionCVCallback, \
     KNeighborsClassifierCVCallback, KNeighborsRegressorCVCallback, \
@@ -66,7 +66,7 @@ class TestCallbacks(unittest.TestCase):
         )
         ssl_dataset = CustomTensorDataset(
             self.fake_data,
-            transform=ContrastiveTransforms(ssl_transforms, n_views=2)
+            transform=MultiViewsTransform(ssl_transforms, n_views=2)
         )
         self.x_loader = DataLoader(x_dataset, batch_size=2, shuffle=False)
         self.xy_loader = DataLoader(xy_dataset, batch_size=2, shuffle=False)
