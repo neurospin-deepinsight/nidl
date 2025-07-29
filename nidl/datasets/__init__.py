@@ -6,7 +6,7 @@
 # for details.
 ##########################################################################
 
-""" Common datasets.
-"""
+"""Common datasets."""
 
 from .base import BaseImageDataset, BaseNumpyDataset
+from .openbhb import OpenBHB
