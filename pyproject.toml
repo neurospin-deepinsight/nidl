@@ -36,6 +36,7 @@ dynamic = ["version"]
 plugins = [
     "surfify",
 ]
+openbhb = ["huggingface_hub"]
 
 [project.urls]
 Source = "https://github.com/neurospin-deppinsight/nidl"
