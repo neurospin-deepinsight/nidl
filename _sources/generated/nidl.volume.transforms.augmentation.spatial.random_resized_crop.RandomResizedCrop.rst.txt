@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop nidl.volume.transforms.augmentation.spatial.RandomResizedCrop
+.. minigallery:: nidl.volume.transforms.augmentation.spatial.RandomResizedCrop nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop
     :add-heading: Examples
     :heading-level: -
 

@@ -281,9 +281,9 @@ evaluation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.833 seconds)
+   **Total running time of the script:** (0 minutes 1.694 seconds)
 
-**Estimated memory usage:**  90 MB
+**Estimated memory usage:**  87 MB
 
 
 .. _sphx_glr_download_auto_gallery_surfify_plot_project_texture.py:

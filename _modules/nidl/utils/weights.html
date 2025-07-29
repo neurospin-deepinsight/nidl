@@ -147,10 +147,6 @@
 <span class="sd">Various utilities to download model weights.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">urlparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">urlrequest</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -163,7 +159,7 @@
 <div class="viewcode-block" id="Weights">
 <a class="viewcode-back" href="../../../generated/nidl.utils.weights.Weights.html#nidl.utils.Weights">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Weights</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A class to handle (retrieve and apply) model weights.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class to handle (retrieve and apply) model weights.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -177,14 +173,11 @@
 <span class="sd">    filepath: str</span>
 <span class="sd">        the path of the file in the repo.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">HF_URL</span> <span class="o">=</span> <span class="s2">&quot;https://huggingface.co&quot;</span>
     <span class="n">NS_URL</span> <span class="o">=</span> <span class="s2">&quot;http://nsap.intra.cea.fr/neurospin-hub/&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">data_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-            <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
@@ -192,21 +185,21 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;hf-hub&quot;</span><span class="p">:</span>
             <span class="n">hf_id</span><span class="p">,</span> <span class="n">hf_revision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hub_split</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weight_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hf_download</span><span class="p">(</span>
-                <span class="n">data_dir</span><span class="p">,</span> <span class="n">hf_id</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">hf_revision</span><span class="p">)</span>
+                <span class="n">data_dir</span><span class="p">,</span> <span class="n">hf_id</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">hf_revision</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;ns-hub&quot;</span><span class="p">:</span>
             <span class="n">ns_id</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hub_split</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weight_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns_download</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">ns_id</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weight_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Invalid weights &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_file</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid weights &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_file</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Weights.load_pretrained">
 <a class="viewcode-back" href="../../../generated/nidl.utils.weights.Weights.html#nidl.utils.Weights.load_pretrained">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_pretrained</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Load the model weights.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the model weights.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -222,10 +215,8 @@
 <div class="viewcode-block" id="Weights.hub_split">
 <a class="viewcode-back" href="../../../generated/nidl.utils.weights.Weights.html#nidl.utils.Weights.hub_split">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">hub_split</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="p">,</span>
-            <span class="n">hub_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Interpret the input hub name specified in the form</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hub_split</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hub_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpret the input hub name specified in the form</span>
 <span class="sd">        `hf-hub:path/architecture_name@revision` or</span>
 <span class="sd">        `ns-hub:path/architecture_name`.</span>
 
@@ -244,7 +235,8 @@
         <span class="n">split</span> <span class="o">=</span> <span class="n">hub_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">split</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span>
             <span class="s2">&quot;Hub name should be of the form &quot;</span>
-            <span class="s2">&quot;`hub:path/architecture_name@revision`&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;`hub:path/architecture_name@revision`&quot;</span>
+        <span class="p">)</span>
         <span class="n">hub_id</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">hub_revision</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">hub_id</span><span class="p">,</span> <span class="n">hub_revision</span></div>
@@ -254,13 +246,14 @@
 <a class="viewcode-back" href="../../../generated/nidl.utils.weights.Weights.html#nidl.utils.Weights.hf_download">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hf_download</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="p">,</span>
-            <span class="n">data_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-            <span class="n">hf_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">hf_revision</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">force_download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Download a given file if not already present.</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">data_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">hf_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">hf_revision</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">force_download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a given file if not already present.</span>
 
 <span class="sd">        Downloads always resume when possible. If you want to force a new</span>
 <span class="sd">        download, use `force_download=True`.</span>
@@ -284,44 +277,37 @@
 <span class="sd">        weight_file: Path</span>
 <span class="sd">            local path to the model weights.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">split_id</span> <span class="o">=</span> <span class="n">hf_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-        <span class="n">weight_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">split_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">split_id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">filepath</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">force_download</span> <span class="ow">and</span> <span class="n">weight_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">weight_file</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;lfs&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Make sure git-lfs is installed: &quot;</span>
-                          <span class="s2">&quot;https://git-lfs.com&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-        <span class="n">weight_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">hf_revision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">HF_URL</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hf_id</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">hf_revision</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">HF_URL</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hf_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;clone&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">]</span>
-        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
-            <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">)</span>
-            <span class="n">regex</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="s2">&quot;*&quot;</span> <span class="o">/</span> <span class="n">filepath</span>
-            <span class="n">_file</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">regex</span><span class="p">))</span>
-            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Can&#39;t find &#39;</span><span class="si">{</span><span class="n">regex</span><span class="si">}</span><span class="s2">&#39; weights in repo!&quot;</span><span class="p">)</span>
-            <span class="n">_file</span> <span class="o">=</span> <span class="n">_file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">_file</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">weight_file</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">weight_file</span></div>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <span class="n">hf_hub_download</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;File &#39;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&#39; cannot be downloaded from Hugging Face &quot;</span>
+                <span class="s2">&quot;because the &#39;huggingface_hub&#39; package is not installed. &quot;</span>
+                <span class="s2">&quot;Please run &#39;pip install huggingface_hub&#39; first.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span>
+            <span class="n">hf_hub_download</span><span class="p">(</span>
+                <span class="n">repo_id</span><span class="o">=</span><span class="n">hf_id</span><span class="p">,</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span>
+                <span class="n">revision</span><span class="o">=</span><span class="n">hf_revision</span><span class="p">,</span>
+                <span class="n">repo_type</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span>
+                <span class="n">local_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data_dir</span><span class="p">),</span>
+                <span class="n">force_download</span><span class="o">=</span><span class="n">force_download</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Weights.ns_download">
 <a class="viewcode-back" href="../../../generated/nidl.utils.weights.Weights.html#nidl.utils.Weights.ns_download">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ns_download</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="p">,</span>
-            <span class="n">data_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-            <span class="n">ns_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">force_download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Download a given file if not already present.</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">data_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">ns_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">force_download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a given file if not already present.</span>
 
 <span class="sd">        Downloads always resume when possible. If you want to force a new</span>
 <span class="sd">        download, use `force_download=True`.</span>
@@ -354,8 +340,10 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&lt;name=self.name,&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;data_dir=self.data_dir,filepath=self.filepath&gt;&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&lt;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;data_dir=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="si">}</span><span class="s2">,filepath=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="p">)</span></div>
 
 </pre></div>
                     </div>

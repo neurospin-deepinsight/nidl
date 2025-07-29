@@ -128,7 +128,7 @@ the associated projection on the sphere.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.375 seconds)
+   **Total running time of the script:** (0 minutes 2.247 seconds)
 
 **Estimated memory usage:**  196 MB
 

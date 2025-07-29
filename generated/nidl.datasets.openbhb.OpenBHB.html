@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../_static/css/animate.css">
+        <link rel="stylesheet" href="../_static/css/style.css">
+        <link rel="stylesheet" href="../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+                    
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                                
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
+                                
+                                
+                                    <li>SECTIONS</li>
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.download_dataset_split'>Openbhb.download_dataset_split()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.download_file'>Openbhb.download_file()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.get_cat12_template'>Openbhb.get_cat12_template()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.get_fs_labels'>Openbhb.get_fs_labels()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.get_fs_roi_feature_names'>Openbhb.get_fs_roi_feature_names()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.get_fs_xhemi_feature_names'>Openbhb.get_fs_xhemi_feature_names()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.get_neuromorphometrics_atlas'>Openbhb.get_neuromorphometrics_atlas()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.get_quasiraw_template'>Openbhb.get_quasiraw_template()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.get_vbm_roi_labels'>Openbhb.get_vbm_roi_labels()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.datasets.openbhb.OpenBHB.make_dataset'>Openbhb.make_dataset()</a> </li>                                    
+                                    
+                                
+                            
+                            <li>API</li>
+                            <li><a href="nidl.html">nidl</a></li><li><a href="nidl.callbacks.html">nidl.callbacks</a></li><li><a href="nidl.datasets.html">nidl.datasets</a></li><li><a href="nidl.estimators.html">nidl.estimators</a></li><li><a href="nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="nidl.losses.html">nidl.losses</a></li><li><a href="nidl.metrics.html">nidl.metrics</a></li><li><a href="nidl.utils.html">nidl.utils</a></li><li><a href="nidl.volume.html">nidl.volume</a></li><li><a href="nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="surfify.html">surfify</a></li><li><a href="surfify.augmentation.html">surfify.augmentation</a></li><li><a href="surfify.datasets.html">surfify.datasets</a></li><li><a href="surfify.losses.html">surfify.losses</a></li><li><a href="surfify.models.html">surfify.models</a></li><li><a href="surfify.nn.html">surfify.nn</a></li><li><a href="surfify.plotting.html">surfify.plotting</a></li><li><a href="surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.datasets.openbhb.</span></span><span class="sig-name descname"><span class="pre">OpenBHB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'vbm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'age'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streaming</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_transforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+<p>OpenBHB dataset <a class="reference internal" href="#r2" id="id1"><span>[R2]</span></a>.</p>
+<p>The Open Big Healthy Brains (OpenBHB) dataset is a large multi-site brain
+MRI dataset consisting of 3227 training samples and 757 validation samples.
+It aggregates T1-weighted (T1w) MRI scans from 10 public datasets:</p>
+<ul class="simple">
+<li><p>IXI</p></li>
+<li><p>ABIDE I</p></li>
+<li><p>ABIDE II</p></li>
+<li><p>CoRR</p></li>
+<li><p>GSP</p></li>
+<li><p>Localizer</p></li>
+<li><p>MPI-Leipzig</p></li>
+<li><p>NAR</p></li>
+<li><p>NPC</p></li>
+<li><p>RBP</p></li>
+</ul>
+<p>These scans were acquired across 93 centers worldwide (North America,
+Europe, and China). Only healthy controls aged between 6 and 88 years
+are included, with balanced representation of males and females.</p>
+<p>All T1w MRI scans have been uniformly preprocessed using CAT12 (SPM),
+FreeSurfer, and Quasi-Raw (in-house minimal preprocessing). Both
+Voxel-Based Morphometry (VBM) and Surface-Based Morphometry (SBM) features
+are available.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The entire OpenBHB takes ~350GB of disk. We recommend enabling
+<cite>streaming=True</cite> if you intend to use only a small portion of the
+dataset.</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>root</strong> : str</p>
+<blockquote>
+<div><p>Path to the root data directory where the dataset is stored.</p>
+</div></blockquote>
+<p><strong>modality</strong> : str or tuple of str</p>
+<blockquote>
+<div><p>Which modality to load for each brain image. If a tuple (multimodal
+OpenBHB), a dictionary is returned from <cite>__getitem__</cite> with modality
+names as keys and corresponding NumPy arrays as values.</p>
+<p>Available modalities:</p>
+<ul class="simple">
+<li><p>“vbm”: Whole-brain voxel-based morphometry 3D T1w image,
+shape <cite>(121, 145, 121)</cite></p></li>
+<li><p>“quasiraw”: Whole-brain T1w image with minimal preprocessing,
+shape <cite>(182, 218, 182)</cite></p></li>
+<li><p>“vbm_roi”: Gray matter volume per region (Neuromorphometrics atlas,
+142 regions by hemisphere), shape <cite>(1, 284)</cite></p></li>
+<li><p>“fs_desikan_roi”: FreeSurfer surface-based features computed on the
+Desikan atlas (34 regions by hemisphere), shape <cite>(7, 68)</cite></p></li>
+<li><p>“fs_destrieux_roi”: FreeSurfer surface-based features computed on the
+Destrieux atlas (74 regions by hemisphere), shape <cite>(7, 148)</cite></p></li>
+<li><p>“fs_xhemi”: FreeSurfer surface-based features (curvature, sulcal
+depth, cortical thickness) computed on the <cite>fsaverage7</cite> mesh
+(163842 vertices by hemisphere), shape <cite>(8, 163842)</cite></p></li>
+</ul>
+</div></blockquote>
+<p><strong>target</strong> : {‘age’, ‘sex’, ‘site’}, list of str, or None</p>
+<blockquote>
+<div><p>Target(s) to return with each image. If string, returns the target as
+float (for ‘age’), int (for ‘site’) or string (for ‘sex’). If <cite>target</cite>
+is a list of strings, returns multiple targets as dictionary:
+{&lt;target&gt;: &lt;value&gt;}. If None, no target is returned.</p>
+</div></blockquote>
+<p><strong>split</strong> : {‘train’, ‘val’, ‘internal_val’, ‘external_val’}</p>
+<blockquote>
+<div><p>Dataset split to use. The ‘val’ split is the union of:</p>
+<ul class="simple">
+<li><p>‘internal_val’: Images acquired with the same MRI scanner as training
+data (in-domain)</p></li>
+<li><p>‘external_val’: Images acquired with different MRI scanners
+(out-of-domain)</p></li>
+</ul>
+</div></blockquote>
+<p><strong>streaming</strong> : bool, default=True</p>
+<blockquote>
+<div><p>If True, data are downloaded lazily from Hugging Face on demand (when
+accessed via <cite>__getitem__</cite>). If False, the entire split is downloaded
+at initialization for the requested modality.</p>
+</div></blockquote>
+<p><strong>max_workers</strong> : int, default=1</p>
+<blockquote>
+<div><p>Number of concurrent threads to download files on the Hugging Face,
+1 thread = 1 file download.
+Warning: setting <cite>max_workers</cite> &gt; 1 can raise Hugging Face 429 errors
+(too many requests). We recommend keeping this value low.</p>
+</div></blockquote>
+<p><strong>transforms</strong> : callable or None, default=None</p>
+<blockquote>
+<div><p>A function/transform that takes in a brain image and returns a
+transformed version. Input depends on <cite>modality</cite> and can be a 3D image,
+1D vector, or dict.</p>
+</div></blockquote>
+<p><strong>target_transforms</strong> : callable or None, default=None</p>
+<blockquote>
+<div><p>A function/transform applied to the target(s).</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The data are downloaded exclusively from the <a class="reference external" href="https://huggingface.co/datasets/benoit-dufumier/openBHB">OpenBHB repository</a> in the
+HuggingFace either on-the-fly (lazy download) or during initialization
+(immediate download) if there are not already there.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Dufumier, B., Grigis, A., Victor, J., Ambroise, C., Frouin, V. &amp;
+Duchesnay, E. (2022). OpenBHB: a Large-Scale Multi-Site Brain MRI
+Data-set for Age Prediction and Debiasing.
+NeuroImage, 254, 119121. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2022.119637">https://doi.org/10.1016/j.neuroimage.2022.119637</a></p>
+</div>
+</div>
+<p class="rubric">Examples</p>
+<p>Load the VBM modality from the training split and get the age target:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">OpenBHB</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">root</span><span class="o">=</span><span class="s1">&#39;data/openbhb&#39;</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="s1">&#39;vbm&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;age&#39;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="p">,</span> <span class="n">age</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(1, 121, 145, 121)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+<span class="go">34.0</span>
+</pre></div>
+</div>
+<p>Load multiple modalities and multiple targets:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">OpenBHB</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">root</span><span class="o">=</span><span class="s1">&#39;data/openbhb&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">modality</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;vbm&#39;</span><span class="p">,</span> <span class="s1">&#39;quasiraw&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">target</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;site&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">split</span><span class="o">=</span><span class="s1">&#39;val&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;vbm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(1, 121, 145, 121)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;quasiraw&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(1, 182, 218, 182)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+<span class="go">{&#39;age&#39;: 19.0, &#39;sex&#39;: &#39;female&#39;, &#39;site&#39;: 0}</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.download_dataset_split">
+<span class="sig-name descname"><span class="pre">download_dataset_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">incremental</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.download_dataset_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.download_dataset_split" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch a split of the dataset from Hugging Face if not present.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>split</strong> : {‘train’, ‘val’, ‘internal_val’, ‘external_val’}</p>
+<blockquote>
+<div><p>Split to download if not present.</p>
+</div></blockquote>
+<p><strong>modality</strong> : tuple of str</p>
+<blockquote>
+<div><p>Modalities to download (“vbm”, “vbm_roi”, “quasiraw”, “fs_xhemi”,
+“fs_desikan_roi” or “fs_destrieux_roi”)</p>
+</div></blockquote>
+<p><strong>samples</strong> : list of tuple</p>
+<blockquote>
+<div><p>List of paths to the data in the current split. This should have
+been generated by <cite>make_dataset</cite>.</p>
+</div></blockquote>
+<p><strong>incremental</strong> : bool, default=True</p>
+<blockquote>
+<div><p>If True, only missing files in the data split are downloaded.
+Otherwise, all data in the split are downloaded and local data
+are eventually replaced.</p>
+</div></blockquote>
+<p><strong>max_workers</strong> : int, default=8</p>
+<blockquote>
+<div><p>Number of concurrent threads to download files (1 thread = 1 file
+download).</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.download_file">
+<span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.download_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.download_file" title="Link to this definition">¶</a></dt>
+<dd><p>Download a single file from the OpenBHB repository on the HF.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.get_cat12_template">
+<span class="sig-name descname"><span class="pre">get_cat12_template</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.get_cat12_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.get_cat12_template" title="Link to this definition">¶</a></dt>
+<dd><p>Get the CAT12 gray matter tissue probability map as NIfTI image.</p>
+<p>This method retrieves the CAT12 gray matter (GM) tissue probability map
+(TPM) registered to MNI152 space.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nii</strong> : nibabel.Nifti1Image, shape (121, 145, 121)</p>
+<blockquote>
+<div><p>A 3D NIfTI image containing the CAT12 gray matter TPM.</p>
+</div></blockquote>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabel.load</span></code></dt><dd><p>Function used to load the NIfTI image.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The template file is expected at:
+<cite>&lt;root&gt;/resource/cat12vbm_space-MNI152_desc-gm_TPM.nii.gz</cite>. If the file
+is not available locally, it will be downloaded from the Hugging Face.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.get_fs_labels">
+<span class="sig-name descname"><span class="pre">get_fs_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atlas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'destrieux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.get_fs_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.get_fs_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Get region names on the given atlas where “fs_destrieux_roi” (for
+“destrieux” atlas) or “fs_desikan_roi” (for “desikan” atlas) features
+have been computed in OpenBHB.</p>
+<p>The names are extracted from the resource file.</p>
+<p>First 74 (resp. 38) regions are from the left hemisphere, last 74
+(resp. 38) are from the right hemisphere for the Destrieux
+(resp. Desikan).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symmetric</strong> : bool</p>
+<blockquote>
+<div><p>If True, removes “lh-” and “rh-” from labels indicating right and
+left hemisphere. Final length is divided by two.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>labels</strong> : list of string</p>
+<blockquote>
+<div><p>List of region names on the given atlas.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The resource file is expected at: <cite>&lt;root&gt;/resource/resources.json</cite>. If
+it is not present locally, it is automatically downloaded from the
+Hugging Face.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.get_fs_roi_feature_names">
+<span class="sig-name descname"><span class="pre">get_fs_roi_feature_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.get_fs_roi_feature_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.get_fs_roi_feature_names" title="Link to this definition">¶</a></dt>
+<dd><p>Get the 7 feature names corresponding to “fs_destrieux_roi” and
+“fs_desikan_roi” data.</p>
+<p>The feature names are extracted from the resource file.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>features</strong> : list of string</p>
+<blockquote>
+<div><p>List of 7 feature names corresponding to “fs_destrieux_roi” and
+“fs_desikan_roi” data in OpenBHB.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The resource file is expected at: <cite>&lt;root&gt;/resource/resources.json</cite>. If
+it is not present locally, it is automatically downloaded from the
+Hugging Face.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.get_fs_xhemi_feature_names">
+<span class="sig-name descname"><span class="pre">get_fs_xhemi_feature_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.get_fs_xhemi_feature_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.get_fs_xhemi_feature_names" title="Link to this definition">¶</a></dt>
+<dd><p>Get the 8 feature names corresponding to “fs_xhemi” data.</p>
+<p>The feature names are extracted from the resource file. If it is not
+present locally, it is automatically downloaded from the Hugging Face.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>features</strong> : list of string</p>
+<blockquote>
+<div><p>List of 8 feature names corresponding to “fs_xhemi”.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The resource file is expected at: <cite>&lt;root&gt;/resource/resources.json</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.get_neuromorphometrics_atlas">
+<span class="sig-name descname"><span class="pre">get_neuromorphometrics_atlas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.get_neuromorphometrics_atlas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.get_neuromorphometrics_atlas" title="Link to this definition">¶</a></dt>
+<dd><p>Get the Neuromorphometrics gray matter atlas and its region names.</p>
+<p>This method loads the Neuromorphometrics gray matter atlas as a NIfTI
+image, along with the associated region names (abbreviations).</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+<blockquote>
+<div><p>A dictionary containing:</p>
+<ul class="simple">
+<li><p><cite>data</cite> : <code class="xref py py-class docutils literal notranslate"><span class="pre">nibabel.Nifti1Image</span></code>, the atlas image.</p></li>
+<li><p><cite>labels</cite> : list of region names (string) corresponding to
+integer labels in the atlas.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabel.load</span></code></dt><dd><p>Function used to load the NIfTI image.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Expects the following files under the resource directory:</p>
+<ul class="simple">
+<li><p><cite>&lt;root&gt;/resource/neuromorphometrics.nii</cite> : NIfTI atlas file</p></li>
+<li><p><cite>&lt;root&gt;/resource/neuromorphometrics.csv</cite> : CSV with region names.</p></li>
+</ul>
+<p>If the files are not found locally, they will be downloaded from the
+Hugging Face.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.get_quasiraw_template">
+<span class="sig-name descname"><span class="pre">get_quasiraw_template</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.get_quasiraw_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.get_quasiraw_template" title="Link to this definition">¶</a></dt>
+<dd><p>Get the quasi-raw MNI152 brain template as a NIfTI image.</p>
+<p>This method retrieves the quasi-raw T1-weighted brain template in
+MNI152 space.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nii</strong> : nibabel.Nifti1Image, shape (182, 218, 182)</p>
+<blockquote>
+<div><p>A 3D NIfTI image containing the quasi-raw MNI152 brain template.</p>
+</div></blockquote>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabel.load</span></code></dt><dd><p>Function used to load the NIfTI image.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The template file is expected at:
+<cite>&lt;root&gt;/resource/quasiraw_space-MNI152_desc-brain_T1w.nii.gz</cite>. If the
+file is not present locally, it is automatically downloaded from the
+Hugging Face.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.get_vbm_roi_labels">
+<span class="sig-name descname"><span class="pre">get_vbm_roi_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.get_vbm_roi_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.get_vbm_roi_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Get region names on the Neuromorphometrics atlas where “vbm_roi”
+features are computed in OpenBHB.</p>
+<p>The names are extracted from the resource file. If it is not present
+locally, it is automatically downloaded from the Hugging Face.</p>
+<p>First 142 features are GM volumes, last 142 are CSF volumes.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>labels</strong> : list of string</p>
+<blockquote>
+<div><p>List of region names on the Neuromorphometrics atlas where
+“vbm_roi” features have been computed.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The resource file is expected at: <cite>&lt;root&gt;/resource/resources.json</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.datasets.openbhb.OpenBHB.make_dataset">
+<span class="sig-name descname"><span class="pre">make_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/datasets/openbhb.html#OpenBHB.make_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.datasets.openbhb.OpenBHB.make_dataset" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a list of sample file paths and their corresponding targets
+for a given dataset split.</p>
+<p>This method constructs file paths for each participant listed in
+<cite>participants.tsv</cite> according to the specified <cite>split</cite>. It supports
+both unimodal and multimodal configurations, depending on the
+<cite>modality</cite> attribute.</p>
+<p>Each returned sample is a tuple of the form:</p>
+<ul class="simple">
+<li><p>(str, target): if <cite>modality</cite> is a single string</p></li>
+<li><p>(tuple of str, target): if <cite>modality</cite> is a tuple of strings</p></li>
+</ul>
+<p>If <cite>target</cite> is None, the sample tuple excludes the target and only
+contains the path or tuple of paths.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>split</strong> : {‘train’, ‘val’, ‘internal_val’, ‘external_val’}</p>
+<blockquote>
+<div><p>Which participants to include in the dataset.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>samples</strong> : list of tuple</p>
+<blockquote>
+<div><p>List of samples in the form (path(s), target), where:</p>
+<ul class="simple">
+<li><p>path(s) is either a single file path (str) or a tuple of file
+paths (if multiple modalities are used).</p></li>
+<li><p>target is the associated value from the participants metadata
+(e.g., age, sex, site), or None if <cite>target</cite> is not set.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Expects the following file under the root directory:
+<cite>&lt;root&gt;/participants.tsv</cite>. If not present, it is downloaded
+automatically from the Hugging Face.</p>
+</dd></dl>
+
+</dd></dl>
+
+
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../_static/js/wow.min.js"></script>
+        <script src="../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../_static/js/scripts.js"></script>
+        <script src="../_static/js/jquery.mosaic.js"></script>
+        <script src="../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>

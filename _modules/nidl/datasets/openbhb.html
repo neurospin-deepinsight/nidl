@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../../_static/css/style.css">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../../../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                            <li>API</li>
+                            <li><a href="../../../generated/nidl.html">nidl</a></li><li><a href="../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../generated/nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../generated/nidl.metrics.html">nidl.metrics</a></li><li><a href="../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../generated/nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="../../../generated/surfify.html">surfify</a></li><li><a href="../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <h1>Source code for nidl.datasets.openbhb</h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">nibabel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<div class="viewcode-block" id="OpenBHB">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OpenBHB</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;OpenBHB dataset [1]_.</span>
+
+<span class="sd">    The Open Big Healthy Brains (OpenBHB) dataset is a large multi-site brain</span>
+<span class="sd">    MRI dataset consisting of 3227 training samples and 757 validation samples.</span>
+<span class="sd">    It aggregates T1-weighted (T1w) MRI scans from 10 public datasets:</span>
+
+<span class="sd">    - IXI</span>
+<span class="sd">    - ABIDE I</span>
+<span class="sd">    - ABIDE II</span>
+<span class="sd">    - CoRR</span>
+<span class="sd">    - GSP</span>
+<span class="sd">    - Localizer</span>
+<span class="sd">    - MPI-Leipzig</span>
+<span class="sd">    - NAR</span>
+<span class="sd">    - NPC</span>
+<span class="sd">    - RBP</span>
+
+<span class="sd">    These scans were acquired across 93 centers worldwide (North America,</span>
+<span class="sd">    Europe, and China). Only healthy controls aged between 6 and 88 years</span>
+<span class="sd">    are included, with balanced representation of males and females.</span>
+
+<span class="sd">    All T1w MRI scans have been uniformly preprocessed using CAT12 (SPM),</span>
+<span class="sd">    FreeSurfer, and Quasi-Raw (in-house minimal preprocessing). Both</span>
+<span class="sd">    Voxel-Based Morphometry (VBM) and Surface-Based Morphometry (SBM) features</span>
+<span class="sd">    are available.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        The entire OpenBHB takes ~350GB of disk. We recommend enabling</span>
+<span class="sd">        `streaming=True` if you intend to use only a small portion of the</span>
+<span class="sd">        dataset.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str</span>
+<span class="sd">        Path to the root data directory where the dataset is stored.</span>
+
+<span class="sd">    modality : str or tuple of str</span>
+<span class="sd">        Which modality to load for each brain image. If a tuple (multimodal</span>
+<span class="sd">        OpenBHB), a dictionary is returned from `__getitem__` with modality</span>
+<span class="sd">        names as keys and corresponding NumPy arrays as values.</span>
+
+<span class="sd">        Available modalities:</span>
+
+<span class="sd">        - &quot;vbm&quot;: Whole-brain voxel-based morphometry 3D T1w image,</span>
+<span class="sd">          shape `(121, 145, 121)`</span>
+<span class="sd">        - &quot;quasiraw&quot;: Whole-brain T1w image with minimal preprocessing,</span>
+<span class="sd">          shape `(182, 218, 182)`</span>
+<span class="sd">        - &quot;vbm_roi&quot;: Gray matter volume per region (Neuromorphometrics atlas,</span>
+<span class="sd">          142 regions by hemisphere), shape `(1, 284)`</span>
+<span class="sd">        - &quot;fs_desikan_roi&quot;: FreeSurfer surface-based features computed on the</span>
+<span class="sd">          Desikan atlas (34 regions by hemisphere), shape `(7, 68)`</span>
+<span class="sd">        - &quot;fs_destrieux_roi&quot;: FreeSurfer surface-based features computed on the</span>
+<span class="sd">          Destrieux atlas (74 regions by hemisphere), shape `(7, 148)`</span>
+<span class="sd">        - &quot;fs_xhemi&quot;: FreeSurfer surface-based features (curvature, sulcal</span>
+<span class="sd">          depth, cortical thickness) computed on the `fsaverage7` mesh</span>
+<span class="sd">          (163842 vertices by hemisphere), shape `(8, 163842)`</span>
+
+<span class="sd">    target : {&#39;age&#39;, &#39;sex&#39;, &#39;site&#39;}, list of str, or None</span>
+<span class="sd">        Target(s) to return with each image. If string, returns the target as</span>
+<span class="sd">        float (for &#39;age&#39;), int (for &#39;site&#39;) or string (for &#39;sex&#39;). If `target`</span>
+<span class="sd">        is a list of strings, returns multiple targets as dictionary:</span>
+<span class="sd">        {&lt;target&gt;: &lt;value&gt;}. If None, no target is returned.</span>
+
+<span class="sd">    split : {&#39;train&#39;, &#39;val&#39;, &#39;internal_val&#39;, &#39;external_val&#39;}</span>
+<span class="sd">        Dataset split to use. The &#39;val&#39; split is the union of:</span>
+
+<span class="sd">        - &#39;internal_val&#39;: Images acquired with the same MRI scanner as training</span>
+<span class="sd">          data (in-domain)</span>
+<span class="sd">        - &#39;external_val&#39;: Images acquired with different MRI scanners</span>
+<span class="sd">          (out-of-domain)</span>
+
+<span class="sd">    streaming : bool, default=True</span>
+<span class="sd">        If True, data are downloaded lazily from Hugging Face on demand (when</span>
+<span class="sd">        accessed via `__getitem__`). If False, the entire split is downloaded</span>
+<span class="sd">        at initialization for the requested modality.</span>
+
+<span class="sd">    max_workers: int, default=1</span>
+<span class="sd">        Number of concurrent threads to download files on the Hugging Face,</span>
+<span class="sd">        1 thread = 1 file download.</span>
+<span class="sd">        Warning: setting `max_workers` &gt; 1 can raise Hugging Face 429 errors</span>
+<span class="sd">        (too many requests). We recommend keeping this value low.</span>
+
+<span class="sd">    transforms : callable or None, default=None</span>
+<span class="sd">        A function/transform that takes in a brain image and returns a</span>
+<span class="sd">        transformed version. Input depends on `modality` and can be a 3D image,</span>
+<span class="sd">        1D vector, or dict.</span>
+
+<span class="sd">    target_transforms : callable or None, default=None</span>
+<span class="sd">        A function/transform applied to the target(s).</span>
+
+
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Load the VBM modality from the training split and get the age target:</span>
+
+<span class="sd">    &gt;&gt;&gt; dataset = OpenBHB(</span>
+<span class="sd">    ...    root=&#39;data/openbhb&#39;, modality=&#39;vbm&#39;, target=&#39;age&#39;,</span>
+<span class="sd">    ...    split=&#39;train&#39;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; image, age = dataset[0]</span>
+<span class="sd">    &gt;&gt;&gt; print(image.shape)</span>
+<span class="sd">    (1, 121, 145, 121)</span>
+<span class="sd">    &gt;&gt;&gt; print(age)</span>
+<span class="sd">    34.0</span>
+
+<span class="sd">    Load multiple modalities and multiple targets:</span>
+
+<span class="sd">    &gt;&gt;&gt; dataset = OpenBHB(</span>
+<span class="sd">    ...     root=&#39;data/openbhb&#39;,</span>
+<span class="sd">    ...     modality=(&#39;vbm&#39;, &#39;quasiraw&#39;),</span>
+<span class="sd">    ...     target=[&#39;age&#39;, &#39;sex&#39;, &#39;site&#39;],</span>
+<span class="sd">    ...     split=&#39;val&#39;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; data, targets = dataset[10]</span>
+<span class="sd">    &gt;&gt;&gt; print(data[&#39;vbm&#39;].shape)</span>
+<span class="sd">    (1, 121, 145, 121)</span>
+<span class="sd">    &gt;&gt;&gt; print(data[&#39;quasiraw&#39;].shape)</span>
+<span class="sd">    (1, 182, 218, 182)</span>
+<span class="sd">    &gt;&gt;&gt; print(targets)</span>
+<span class="sd">    {&#39;age&#39;: 19.0, &#39;sex&#39;: &#39;female&#39;, &#39;site&#39;: 0}</span>
+
+
+<span class="sd">    Notes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    The data are downloaded exclusively from the `OpenBHB repository</span>
+<span class="sd">    &lt;https://huggingface.co/datasets/benoit-dufumier/openBHB&gt;`_ in the</span>
+<span class="sd">    HuggingFace either on-the-fly (lazy download) or during initialization</span>
+<span class="sd">    (immediate download) if there are not already there.</span>
+
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Dufumier, B., Grigis, A., Victor, J., Ambroise, C., Frouin, V. &amp;</span>
+<span class="sd">           Duchesnay, E. (2022). OpenBHB: a Large-Scale Multi-Site Brain MRI</span>
+<span class="sd">           Data-set for Age Prediction and Debiasing.</span>
+<span class="sd">           NeuroImage, 254, 119121. https://doi.org/10.1016/j.neuroimage.2022.119637</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">REPO_ID</span> <span class="o">=</span> <span class="s2">&quot;benoit-dufumier/openBHB&quot;</span>
+    <span class="n">REVISION</span> <span class="o">=</span> <span class="s2">&quot;4806b5b36bd0982452c871f240cfc26e6934690c&quot;</span>  <span class="c1"># commit ID</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">modality</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;vbm&quot;</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span>
+        <span class="n">streaming</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">transforms</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">target_transforms</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_root</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_modality</span><span class="p">(</span><span class="n">modality</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_target</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_split</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">streaming</span> <span class="o">=</span> <span class="n">streaming</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">transforms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_transforms</span> <span class="o">=</span> <span class="n">target_transforms</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_dataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">streaming</span><span class="p">:</span>  <span class="c1"># fetch all data split if not there</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_dataset_split</span><span class="p">(</span>
+                <span class="n">split</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">,</span>
+                <span class="n">modality</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">,</span>
+                <span class="n">samples</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span>
+                <span class="n">incremental</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="OpenBHB.download_file">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.download_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a single file from the OpenBHB repository on the HF.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <span class="n">hf_hub_download</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;File &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; cannot be downloaded from Hugging Face &quot;</span>
+                <span class="s2">&quot;because the &#39;huggingface_hub&#39; package is not installed. &quot;</span>
+                <span class="s2">&quot;Please run &#39;pip install huggingface_hub&#39; first.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="k">return</span> <span class="n">hf_hub_download</span><span class="p">(</span>
+            <span class="n">repo_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">REPO_ID</span><span class="p">,</span>
+            <span class="n">revision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">REVISION</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+            <span class="n">repo_type</span><span class="o">=</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+            <span class="n">local_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.download_dataset_split">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.download_dataset_split">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download_dataset_split</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">modality</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">incremental</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch a split of the dataset from Hugging Face if not present.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        split: {&#39;train&#39;, &#39;val&#39;, &#39;internal_val&#39;, &#39;external_val&#39;}</span>
+<span class="sd">            Split to download if not present.</span>
+
+<span class="sd">        modality : tuple of str</span>
+<span class="sd">            Modalities to download (&quot;vbm&quot;, &quot;vbm_roi&quot;, &quot;quasiraw&quot;, &quot;fs_xhemi&quot;,</span>
+<span class="sd">            &quot;fs_desikan_roi&quot; or &quot;fs_destrieux_roi&quot;)</span>
+
+<span class="sd">        samples: list of tuple</span>
+<span class="sd">            List of paths to the data in the current split. This should have</span>
+<span class="sd">            been generated by `make_dataset`.</span>
+
+<span class="sd">        incremental: bool, default=True</span>
+<span class="sd">            If True, only missing files in the data split are downloaded.</span>
+<span class="sd">            Otherwise, all data in the split are downloaded and local data</span>
+<span class="sd">            are eventually replaced.</span>
+
+<span class="sd">        max_workers: int, default=8</span>
+<span class="sd">            Number of concurrent threads to download files (1 thread = 1 file</span>
+<span class="sd">            download).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">img_regex</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;vbm_roi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-*cat12vbm_desc-gm_ROI.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;vbm&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-*cat12vbm_desc-gm_T1w.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;quasiraw&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-*quasiraw_T1w.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_xhemi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-*xhemi_T1w.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_desikan_roi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-*desikan_ROI.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_destrieux_roi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-*destrieux_ROI.npy&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span> <span class="k">else</span> <span class="s2">&quot;val&quot;</span>
+        <span class="n">allow_patterns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">/derivatives/sub-*/ses-*/</span><span class="si">{</span><span class="n">img_regex</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">modality</span>
+        <span class="p">]</span>
+        <span class="n">ignore_patterns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">len_all</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">incremental</span><span class="p">:</span>
+            <span class="c1"># Ignore already downloaded files.</span>
+            <span class="k">for</span> <span class="n">paths</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">paths</span> <span class="o">=</span> <span class="p">(</span><span class="n">paths</span><span class="p">,)</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+                    <span class="n">len_all</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                        <span class="n">ignore_patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">incremental</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ignore_patterns</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">len_all</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <span class="n">snapshot_download</span>
+            <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Split &#39;</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">&#39; cannot be downloaded from Hugging Face &quot;</span>
+                    <span class="s2">&quot;because the &#39;huggingface_hub&#39; package is not installed. &quot;</span>
+                    <span class="s2">&quot;Please run &#39;pip install huggingface_hub&#39; first.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="n">snapshot_download</span><span class="p">(</span>
+                <span class="n">repo_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">REPO_ID</span><span class="p">,</span>
+                <span class="n">revision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">REVISION</span><span class="p">,</span>
+                <span class="n">repo_type</span><span class="o">=</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+                <span class="n">local_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                <span class="n">allow_patterns</span><span class="o">=</span><span class="n">allow_patterns</span><span class="p">,</span>
+                <span class="n">ignore_patterns</span><span class="o">=</span><span class="n">ignore_patterns</span><span class="p">,</span>
+                <span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_or_download_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="c1"># Download the file from HF</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;participants.tsv&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="s2">&quot;resources.json&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+<div class="viewcode-block" id="OpenBHB.make_dataset">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.make_dataset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a list of sample file paths and their corresponding targets</span>
+<span class="sd">        for a given dataset split.</span>
+
+<span class="sd">        This method constructs file paths for each participant listed in</span>
+<span class="sd">        `participants.tsv` according to the specified `split`. It supports</span>
+<span class="sd">        both unimodal and multimodal configurations, depending on the</span>
+<span class="sd">        `modality` attribute.</span>
+
+<span class="sd">        Each returned sample is a tuple of the form:</span>
+
+<span class="sd">        - (str, target): if `modality` is a single string</span>
+<span class="sd">        - (tuple of str, target): if `modality` is a tuple of strings</span>
+
+<span class="sd">        If `target` is None, the sample tuple excludes the target and only</span>
+<span class="sd">        contains the path or tuple of paths.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        split: {&#39;train&#39;, &#39;val&#39;, &#39;internal_val&#39;, &#39;external_val&#39;}</span>
+<span class="sd">            Which participants to include in the dataset.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        samples: list of tuple</span>
+<span class="sd">            List of samples in the form (path(s), target), where:</span>
+
+<span class="sd">            - path(s) is either a single file path (str) or a tuple of file</span>
+<span class="sd">              paths (if multiple modalities are used).</span>
+<span class="sd">            - target is the associated value from the participants metadata</span>
+<span class="sd">              (e.g., age, sex, site), or None if `target` is not set.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        Expects the following file under the root directory:</span>
+<span class="sd">        `&lt;root&gt;/participants.tsv`. If not present, it is downloaded</span>
+<span class="sd">        automatically from the Hugging Face.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">participants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_participants</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
+            <span class="c1"># Training subset</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">participants</span><span class="o">.</span><span class="n">split</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;val&quot;</span><span class="p">:</span>
+            <span class="c1"># Validation subset</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">participants</span><span class="o">.</span><span class="n">split</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;internal_test&quot;</span><span class="p">,</span> <span class="s2">&quot;external_test&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;internal_val&quot;</span><span class="p">:</span>
+            <span class="c1"># Subset of validation</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">participants</span><span class="o">.</span><span class="n">split</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="s2">&quot;internal_test&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;external_val&quot;</span><span class="p">:</span>
+            <span class="c1"># Another subset of validation</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">participants</span><span class="o">.</span><span class="n">split</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="s2">&quot;external_test&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unkown split: </span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">participants</span> <span class="o">=</span> <span class="n">participants</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="n">img_paths</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;vbm_roi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-</span><span class="si">%i</span><span class="s2">_preproc-cat12vbm_desc-gm_ROI.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;vbm&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-</span><span class="si">%i</span><span class="s2">_preproc-cat12vbm_desc-gm_T1w.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;quasiraw&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-</span><span class="si">%i</span><span class="s2">_preproc-quasiraw_T1w.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_xhemi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-</span><span class="si">%i</span><span class="s2">_preproc-freesurfer_desc-xhemi_T1w.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_desikan_roi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-</span><span class="si">%i</span><span class="s2">_preproc-freesurfer_desc-desikan_ROI.npy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_destrieux_roi&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-</span><span class="si">%i</span><span class="s2">_preproc-freesurfer_desc-destrieux_ROI&quot;</span>
+            <span class="s2">&quot;.npy&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span> <span class="k">else</span> <span class="s2">&quot;val&quot;</span>
+
+        <span class="c1"># Determine target columns and convert to NumPy</span>
+        <span class="n">target_cols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">target_cols</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">target_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid target type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;site&quot;</span> <span class="ow">in</span> <span class="n">target_cols</span><span class="p">:</span>
+                <span class="n">participants</span><span class="p">[</span><span class="s2">&quot;site&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">participants</span><span class="p">[</span><span class="s2">&quot;siteXacq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">participants</span><span class="p">[[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">target_cols</span><span class="p">]]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span>
+            <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="n">target_cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">entry</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">target_cols</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">:</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                    <span class="n">split</span><span class="p">,</span>
+                    <span class="s2">&quot;derivatives&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ses-1&quot;</span><span class="p">,</span>
+                    <span class="n">img_paths</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span> <span class="o">%</span> <span class="nb">id</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># one modality</span>
+                <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># multi-modal openBHB</span>
+                <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sample</span><span class="p">),</span> <span class="n">target</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">samples</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.get_neuromorphometrics_atlas">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.get_neuromorphometrics_atlas">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_neuromorphometrics_atlas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the Neuromorphometrics gray matter atlas and its region names.</span>
+
+<span class="sd">        This method loads the Neuromorphometrics gray matter atlas as a NIfTI</span>
+<span class="sd">        image, along with the associated region names (abbreviations).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary containing:</span>
+
+<span class="sd">            - `data` : :class:`nibabel.Nifti1Image`, the atlas image.</span>
+<span class="sd">            - `labels` : list of region names (string) corresponding to</span>
+<span class="sd">              integer labels in the atlas.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        Expects the following files under the resource directory:</span>
+
+<span class="sd">        - `&lt;root&gt;/resource/neuromorphometrics.nii` : NIfTI atlas file</span>
+<span class="sd">        - `&lt;root&gt;/resource/neuromorphometrics.csv` : CSV with region names.</span>
+
+<span class="sd">        If the files are not found locally, they will be downloaded from the</span>
+<span class="sd">        Hugging Face.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nibabel.load : Function used to load the NIfTI image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">niipath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="s2">&quot;neuromorphometrics.nii&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">labelpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="s2">&quot;neuromorphometrics.csv&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">nii</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">niipath</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">labelpath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">nii</span><span class="p">,</span> <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="s2">&quot;ROIabbr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)}</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.get_cat12_template">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.get_cat12_template">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cat12_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the CAT12 gray matter tissue probability map as NIfTI image.</span>
+
+<span class="sd">        This method retrieves the CAT12 gray matter (GM) tissue probability map</span>
+<span class="sd">        (TPM) registered to MNI152 space.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nii : nibabel.Nifti1Image, shape (121, 145, 121)</span>
+<span class="sd">            A 3D NIfTI image containing the CAT12 gray matter TPM.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        The template file is expected at:</span>
+<span class="sd">        `&lt;root&gt;/resource/cat12vbm_space-MNI152_desc-gm_TPM.nii.gz`. If the file</span>
+<span class="sd">        is not available locally, it will be downloaded from the Hugging Face.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nibabel.load : Function used to load the NIfTI image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nii</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                    <span class="s2">&quot;resource&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;cat12vbm_space-MNI152_desc-gm_TPM.nii.gz&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">nii</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.get_quasiraw_template">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.get_quasiraw_template">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_quasiraw_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the quasi-raw MNI152 brain template as a NIfTI image.</span>
+
+<span class="sd">        This method retrieves the quasi-raw T1-weighted brain template in</span>
+<span class="sd">        MNI152 space.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nii : nibabel.Nifti1Image, shape (182, 218, 182)</span>
+<span class="sd">            A 3D NIfTI image containing the quasi-raw MNI152 brain template.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        The template file is expected at:</span>
+<span class="sd">        `&lt;root&gt;/resource/quasiraw_space-MNI152_desc-brain_T1w.nii.gz`. If the</span>
+<span class="sd">        file is not present locally, it is automatically downloaded from the</span>
+<span class="sd">        Hugging Face.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nibabel.load : Function used to load the NIfTI image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nii</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                    <span class="s2">&quot;resource&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;quasiraw_space-MNI152_desc-brain_T1w.nii.gz&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">nii</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.get_fs_labels">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.get_fs_labels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fs_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;destrieux&quot;</span><span class="p">,</span> <span class="n">symmetric</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get region names on the given atlas where &quot;fs_destrieux_roi&quot; (for</span>
+<span class="sd">        &quot;destrieux&quot; atlas) or &quot;fs_desikan_roi&quot; (for &quot;desikan&quot; atlas) features</span>
+<span class="sd">        have been computed in OpenBHB.</span>
+
+<span class="sd">        The names are extracted from the resource file.</span>
+
+<span class="sd">        First 74 (resp. 38) regions are from the left hemisphere, last 74</span>
+<span class="sd">        (resp. 38) are from the right hemisphere for the Destrieux</span>
+<span class="sd">        (resp. Desikan).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symmetric: bool</span>
+<span class="sd">            If True, removes &quot;lh-&quot; and &quot;rh-&quot; from labels indicating right and</span>
+<span class="sd">            left hemisphere. Final length is divided by two.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels: list of string</span>
+<span class="sd">            List of region names on the given atlas.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        The resource file is expected at: `&lt;root&gt;/resource/resources.json`. If</span>
+<span class="sd">        it is not present locally, it is automatically downloaded from the</span>
+<span class="sd">        Hugging Face.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">atlas</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;destrieux&quot;</span><span class="p">,</span> <span class="s2">&quot;desikan&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`atlas` should be in &#39;destrieux&#39; or &#39;desikan&#39;, got </span><span class="si">{</span><span class="n">atlas</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">n_regions</span> <span class="o">=</span> <span class="mi">74</span> <span class="k">if</span> <span class="n">atlas</span> <span class="o">==</span> <span class="s2">&quot;destrieux&quot;</span> <span class="k">else</span> <span class="mi">34</span>
+        <span class="n">resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">()</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">resource</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atlas</span><span class="si">}</span><span class="s2">_roi&quot;</span><span class="p">][</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">label</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">[:</span><span class="n">n_regions</span><span class="p">]</span>
+            <span class="p">]</span>  <span class="c1"># rm &#39;lh-&#39; or &#39;rh-&#39;</span>
+        <span class="k">return</span> <span class="n">labels</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.get_vbm_roi_labels">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.get_vbm_roi_labels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_vbm_roi_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get region names on the Neuromorphometrics atlas where &quot;vbm_roi&quot;</span>
+<span class="sd">        features are computed in OpenBHB.</span>
+
+<span class="sd">        The names are extracted from the resource file. If it is not present</span>
+<span class="sd">        locally, it is automatically downloaded from the Hugging Face.</span>
+
+<span class="sd">        First 142 features are GM volumes, last 142 are CSF volumes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels: list of string</span>
+<span class="sd">            List of region names on the Neuromorphometrics atlas where</span>
+<span class="sd">            &quot;vbm_roi&quot; features have been computed.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        The resource file is expected at: `&lt;root&gt;/resource/resources.json`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">resource</span><span class="p">[</span><span class="s2">&quot;vbm_roi&quot;</span><span class="p">][</span><span class="s2">&quot;features&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.get_fs_roi_feature_names">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.get_fs_roi_feature_names">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fs_roi_feature_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the 7 feature names corresponding to &quot;fs_destrieux_roi&quot; and</span>
+<span class="sd">        &quot;fs_desikan_roi&quot; data.</span>
+
+<span class="sd">        The feature names are extracted from the resource file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        features: list of string</span>
+<span class="sd">            List of 7 feature names corresponding to &quot;fs_destrieux_roi&quot; and</span>
+<span class="sd">            &quot;fs_desikan_roi&quot; data in OpenBHB.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        The resource file is expected at: `&lt;root&gt;/resource/resources.json`. If</span>
+<span class="sd">        it is not present locally, it is automatically downloaded from the</span>
+<span class="sd">        Hugging Face.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">resource</span><span class="p">[</span><span class="s2">&quot;destrieux_roi&quot;</span><span class="p">][</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="OpenBHB.get_fs_xhemi_feature_names">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.openbhb.OpenBHB.html#nidl.datasets.OpenBHB.get_fs_xhemi_feature_names">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fs_xhemi_feature_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the 8 feature names corresponding to &quot;fs_xhemi&quot; data.</span>
+
+<span class="sd">        The feature names are extracted from the resource file. If it is not</span>
+<span class="sd">        present locally, it is automatically downloaded from the Hugging Face.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        features: list of string</span>
+<span class="sd">            List of 8 feature names corresponding to &quot;fs_xhemi&quot;.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        The resource file is expected at: `&lt;root&gt;/resource/resources.json`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resource</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">resource</span><span class="p">[</span><span class="s2">&quot;xhemi&quot;</span><span class="p">][</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve one sample (and optionally its target) from the dataset.</span>
+
+<span class="sd">        This method loads the sample located at the given index, applies any</span>
+<span class="sd">        specified input and target transformations, and returns the processed</span>
+<span class="sd">        data. If the dataset is configured with multiple modalities, the sample</span>
+<span class="sd">        will be a dictionary of arrays.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        idx : int</span>
+<span class="sd">            Index of the sample to retrieve.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sample : array or dict of array</span>
+<span class="sd">            The loaded sample. If unimodal, this is a single NumPy array of</span>
+<span class="sd">            shape:</span>
+
+<span class="sd">            - `(1, 121, 145, 121)` if  `modality == &quot;vbm&quot;`</span>
+<span class="sd">            - `(1, 182, 218, 182)` if `modality == &quot;quasiraw&quot;`</span>
+<span class="sd">            - `(1, 284)` if `modality == &quot;vbm_roi&quot;`</span>
+<span class="sd">            - `(7, 68)` if `modality == &quot;fs_desikan_roi&quot;`</span>
+<span class="sd">            - `(7, 148)` if `modality == &quot;fs_destrieux_roi&quot;`</span>
+<span class="sd">            - `(8, 163842)` if `modality == &quot;fs_xhemi&quot;`</span>
+
+<span class="sd">        target : optional</span>
+<span class="sd">            The target associated with the sample, after applying</span>
+<span class="sd">            `self.target_transforms`, if provided. This is only returned if</span>
+<span class="sd">            `self.target` is not None.</span>
+<span class="sd">            If `self.target` is a single string (&quot;age&quot;, &quot;sex&quot;, or &quot;site&quot;), the</span>
+<span class="sd">            target is returned as a single value.</span>
+<span class="sd">            If `self.target` is a list or tuple of strings, the target is</span>
+<span class="sd">            returned as a dictionary mapping each target name to its value:</span>
+<span class="sd">            `{&lt;target&gt;: &lt;value&gt;}`.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        - If `self.target` is None, only the `sample` is returned.</span>
+<span class="sd">        - If `self.transforms` or `self.target_transforms` are specified, they</span>
+<span class="sd">          are applied to the sample and target respectively.</span>
+<span class="sd">        - The sample path and target are retrieved from `self.samples`, which</span>
+<span class="sd">          should be constructed by `make_dataset`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sample_path</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_sample</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_transforms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_transforms</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sample</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sample</span><span class="p">,</span> <span class="n">target</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">sample_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
+            <span class="c1"># Returns a simple array</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Returns a dict {&lt;modality&gt;: array}</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sample_path</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_or_download_file</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">mod</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">,</span> <span class="n">sample_path</span><span class="p">)</span>
+            <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="c1"># eventually parse &quot;~&quot; or $HOME</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># check if exists, otherwise create it</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_modality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modality</span><span class="p">):</span>
+        <span class="n">valid_modalities</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;vbm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;vbm_roi&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;quasiraw&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_desikan_roi&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_destrieux_roi&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fs_xhemi&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">modality</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">modality</span> <span class="o">=</span> <span class="p">(</span><span class="n">modality</span><span class="p">,)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">modality</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">modality</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">modality</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`modality` must be str or tuple of str, got </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">modality</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`modality` cannot be an empty tuple&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">modality</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mod</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_modalities</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`modality` must be in </span><span class="si">{</span><span class="n">valid_modalities</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">modality</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
+        <span class="n">valid_splits</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;internal_val&quot;</span><span class="p">,</span> <span class="s2">&quot;external_val&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">split</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_splits</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`split` must be in </span><span class="si">{</span><span class="n">valid_splits</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">split</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">valid_targets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">target</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_targets</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`target` must be str in </span><span class="si">{</span><span class="n">valid_targets</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">target</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`target` must be str, tuple of str or None, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`target` must be a non-empty list or None.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_targets</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`target` must be in </span><span class="si">{</span><span class="n">valid_targets</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;openBHB_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modalities</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;openBHB_</span><span class="si">{</span><span class="n">modalities</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+</pre></div>
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../../_static/js/wow.min.js"></script>
+        <script src="../../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../../_static/js/scripts.js"></script>
+        <script src="../../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>

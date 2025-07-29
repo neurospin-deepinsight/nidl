@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.preprocessing.spatial.crop_or_pad.CropOrPad nidl.volume.transforms.preprocessing.spatial.CropOrPad
+.. minigallery:: nidl.volume.transforms.preprocessing.spatial.CropOrPad nidl.volume.transforms.preprocessing.spatial.crop_or_pad.CropOrPad
     :add-heading: Examples
     :heading-level: -
 

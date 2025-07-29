@@ -15,6 +15,17 @@ Common datasets.
   **Classes**:
     * `nidl.datasets.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
     * `nidl.datasets.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
+    * `nidl.datasets.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
+
+nidl.datasets.openbhb
+^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.datasets.openbhb.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
 
 nidl.datasets.base
 ^^^^^^^^^^^^^^^^^^

@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.ssl.utils.YAwareProjectionHead nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead
+.. minigallery:: nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead nidl.estimators.ssl.utils.YAwareProjectionHead
     :add-heading: Examples
     :heading-level: -
 

@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.ssl.yaware.YAwareContrastiveLearning nidl.estimators.ssl.YAwareContrastiveLearning
+.. minigallery:: nidl.estimators.ssl.YAwareContrastiveLearning nidl.estimators.ssl.yaware.YAwareContrastiveLearning
     :add-heading: Examples
     :heading-level: -
 

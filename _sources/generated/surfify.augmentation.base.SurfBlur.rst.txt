@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.augmentation.base.SurfBlur surfify.augmentation.SurfBlur
+.. minigallery:: surfify.augmentation.SurfBlur surfify.augmentation.base.SurfBlur
     :add-heading: Examples
     :heading-level: -
 

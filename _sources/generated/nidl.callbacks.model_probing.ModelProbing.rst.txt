@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.model_probing.ModelProbing nidl.callbacks.ModelProbing
+.. minigallery:: nidl.callbacks.ModelProbing nidl.callbacks.model_probing.ModelProbing
     :add-heading: Examples
     :heading-level: -
 

@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.augmentation.utils.apply_chained_transforms
 
-.. minigallery:: surfify.augmentation.utils.apply_chained_transforms surfify.augmentation.apply_chained_transforms
+.. minigallery:: surfify.augmentation.apply_chained_transforms surfify.augmentation.utils.apply_chained_transforms
     :add-heading: Examples
     :heading-level: -
 

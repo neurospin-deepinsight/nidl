@@ -307,6 +307,10 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.datasets.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
 
+          `nidl.datasets.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
+
+          `nidl.datasets.openbhb.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
+
           `nidl.datasets.base.BaseDataset <nidl.datasets.base.BaseDataset.html>`_
 
           `nidl.datasets.base.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_

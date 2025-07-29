@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.downsample_data
 
-.. minigallery:: surfify.utils.sampling.downsample_data surfify.utils.downsample_data
+.. minigallery:: surfify.utils.downsample_data surfify.utils.sampling.downsample_data
     :add-heading: Examples
     :heading-level: -
 
