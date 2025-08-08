@@ -613,4 +613,16 @@ class LabelCachingTransformerWrapper(TransformerMixin, BaseEstimator):
 
     def get_labels(self):
         """Get the cached labels."""
-        return torch.cat(self._cached_labels, dim=0)
+        local_labels = torch.cat(self._cached_labels, dim=0)
+
+        # If single GPU or no trainer, just return local labels
+        if not hasattr(self, "trainer") or self.trainer.world_size == 1:
+            return local_labels
+
+        # Use Lightning's all_gather to collect labels from all ranks
+        all_labels = self.trainer.strategy.all_gather(local_labels)
+
+        # all_labels is a tensor stacked across new first dim
+        # flatten first two dims to (world_size * batch_size, ...)
+        all_labels = all_labels.view(-1, *all_labels.shape[2:])
+        return all_labels
