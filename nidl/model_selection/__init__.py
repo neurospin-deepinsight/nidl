@@ -6,4 +6,4 @@
 # for details.
 ##########################################################################
 
-from .multitask_probing import MultitaskProbingCV
+from .multitask_probing import MultiTaskProbingCV

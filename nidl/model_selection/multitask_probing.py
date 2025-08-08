@@ -51,7 +51,7 @@ class MultiTaskProbingCV(BaseEstimator):
         the same type. If a list of str in {"classification", "regression"},
         it defines the list of individual task.
 
-    task_names: list of str or None, default=None
+    task_names: str or list of str or None, default=None
         List of unique task names that will be reported in the `cv_results_`.
         It should have the same length as `tasks` (if list).
         If None, ["task1", "task2", ...] are used.
@@ -120,6 +120,10 @@ class MultiTaskProbingCV(BaseEstimator):
         cross-validation splits. If `cv` is an iterable yielding (train, test)
         indices, they are defined over the filtered data. Indices returned by
         `cv_results_` are defined over the original data.
+
+    kwargs: dict
+        Additional keyword arguments passed to the parent class
+        :class:`nidl.estimators.BaseEstimator`.
 
     Attributes
     ----------
@@ -197,8 +201,10 @@ class MultiTaskProbingCV(BaseEstimator):
         ] = None,
         n_jobs: Union[int, None] = None,
         allow_nan: bool = False,
+        **kwargs,
     ):
-        self.estimator = self._parse_estimator(estimator)
+        super().__init__(**kwargs)
+        self.estimator = estimator
         self.tasks = self._parse_tasks(tasks)
         self.task_names = self._parse_task_names(task_names, self.tasks)
         self.cv = self._parse_cv(cv)
@@ -211,7 +217,15 @@ class MultiTaskProbingCV(BaseEstimator):
         self.n_jobs = n_jobs
         self.allow_nan = allow_nan
 
-    def fit(self, train_dataloader: data.DataLoader):
+        self.features_extractor = LabelCachingTransformerWrapper(
+            self.estimator
+        )
+
+    def fit(
+        self,
+        train_dataloader: data.DataLoader,
+        val_dataloader: Optional[data.DataLoader] = None,
+    ):
         """Fit the probes on the training data embedding.
 
         Parameters
@@ -225,21 +239,22 @@ class MultiTaskProbingCV(BaseEstimator):
               shape `(n_samples, n_targets)` for multi-task dataset. In that
               case, `n_targets` should be equal to the number of tasks.
 
+        val_dataloader: torch.utils.data.DataLoader or None, default=None
+            Ignored.
+
         Returns
         ----------
         self: object
             The fitted estimator.
 
         """
-        X, y = self.extract_features(self.estimator, train_dataloader)
+        X, y = self.extract_features(train_dataloader)
         X = check_array(
             X, ensure_2d=True, dtype="numeric", force_all_finite=True
         )
         y = self._check_y(y, force_all_finite=(not self.allow_nan))
 
         n_tasks = y.shape[1]
-        tasks = self._get_tasks(n_tasks)
-        task_names = self._get_task_names(n_tasks)
 
         # Iterate over each task: should it be in parallel?
         self.cv_results_ = {}
@@ -247,6 +262,8 @@ class MultiTaskProbingCV(BaseEstimator):
         self.scorers_ = {}
         self.n_splits_ = {}
         self.n_tasks_ = n_tasks
+        tasks = self._get_tasks(n_tasks)
+        task_names = self._get_task_names(n_tasks)
 
         for i, (task, task_name) in enumerate(zip(tasks, task_names)):
             if task == "classification":
@@ -287,7 +304,9 @@ class MultiTaskProbingCV(BaseEstimator):
                     relative_indices = self.cv_results_[task_name]["indices"][
                         split
                     ]
-                    absolute_indices = indices[relative_indices]
+                    absolute_indices = tuple(
+                        indices[rel_idx] for rel_idx in relative_indices
+                    )
                     self.cv_results_[task_name]["indices"][split] = (
                         absolute_indices
                     )
@@ -316,11 +335,15 @@ class MultiTaskProbingCV(BaseEstimator):
         """
         check_is_fitted(self)
 
-        X, _ = self.extract_features(self.estimator, test_dataloader)
+        X, _ = self.extract_features(test_dataloader)
         X = check_array(
             X, ensure_2d=True, dtype="numeric", force_all_finite=True
         )
-        y_pred = [probe.predict(X) for probe in self.probe_estimators_]
+        task_names = self._get_task_names(self.n_tasks_)
+        y_pred = [
+            self.probe_estimators_[task_name].predict(X)
+            for task_name in task_names
+        ]
 
         y_pred = torch.as_tensor(
             check_array(y_pred, ensure_2d=True, force_all_finite=True).T
@@ -347,7 +370,7 @@ class MultiTaskProbingCV(BaseEstimator):
 
         """
         check_is_fitted(self)
-        X, y = self.extract_features(self.estimator, test_dataloader)
+        X, y = self.extract_features(test_dataloader)
         X = check_array(
             X, ensure_2d=True, dtype="numeric", force_all_finite=True
         )
@@ -363,52 +386,31 @@ class MultiTaskProbingCV(BaseEstimator):
         scores = {}
         for i, task_name in enumerate(task_names):
             scorer = self.scorers_[task_name]
-            scores[task_name] = scorer(X, y[:, i])
+            estimator = self.probe_estimators_[task_name]
+            scores[task_name] = scorer(estimator, X, y[:, i])
         return scores
 
-    def extract_features(
-        self, estimator: BaseEstimator, dataloader: data.DataLoader
-    ):
-        """Extract features and labels using the provided embedding estimator.
-
-        It uses the `transform_step` logic applied on each batch to get the
-        embeddings with the labels.
+    def extract_features(self, dataloader: data.DataLoader):
+        """Extract features and labels using the embedding estimator.
 
         Parameters
         ----------
-        estimator: nidl.estimators.BaseEstimator
-            The BaseEstimator module that implements the `transform_step`.
-
         dataloader: torch.utils.data.DataLoader
             The dataloader to extract features from. It should yield batches of
             the form `(X, y)` where X is the input data and y are the labels.
 
         Returns
         ----------
-        tuple of (X, y)
-            Tuple of numpy arrays (X, y) where X are the extracted features
+        tuple of (array, array)
+            Tuple of numpy arrays `(X, y)` where `X` are the extracted features
             and `y` are the corresponding labels.
 
         """
-        is_training = estimator.training  # Save state
 
-        estimator.eval()
-        X, y = [], []
-
-        with torch.no_grad():
-            for batch_idx, batch in enumerate(dataloader):
-                x_batch, y_batch = batch
-                x_batch = x_batch.to(estimator.device)
-                features = estimator.transform_step(
-                    x_batch, batch_idx=batch_idx
-                )
-                X.append(features.detach().cpu())
-                y.append(y_batch.detach().cpu())
-        X = torch.cat(X).numpy()
-        y = torch.cat(y).numpy()
-
-        if is_training:
-            estimator.train()
+        X = self.features_extractor.transform(dataloader)
+        y = self.features_extractor.get_labels()
+        X = X.detach().cpu().numpy()
+        y = y.detach().cpu().numpy()
 
         return X, y
 
@@ -438,7 +440,8 @@ class MultiTaskProbingCV(BaseEstimator):
             )
         return task_names
 
-    def _filter_nan_or_inf(self, y):
+    @staticmethod
+    def _filter_nan_or_inf(y):
         """Filter out rows in y containing NaN or infinite values.
 
         Parameters
@@ -464,7 +467,8 @@ class MultiTaskProbingCV(BaseEstimator):
         indices = np.where(valid_mask)[0]
         return y[valid_mask], valid_mask, indices
 
-    def _check_y(self, y, force_all_finite: bool = True):
+    @staticmethod
+    def _check_y(y, force_all_finite: bool = True):
         """Check that y is a 1d or 2d array and cast it to 2d array."""
         y = check_array(y, ensure_2d=False, force_all_finite=force_all_finite)
         if y.ndim == 1:
@@ -477,17 +481,8 @@ class MultiTaskProbingCV(BaseEstimator):
 
         return y
 
-    def _parse_estimator(self, estimator):
-        if not isinstance(estimator, TransformerMixin) or not isinstance(
-            estimator, BaseEstimator
-        ):
-            raise TypeError(
-                "`estimator` must be a subclass of TransformerMixin "
-                "and BaseEstimator."
-            )
-        return estimator
-
-    def _parse_tasks(self, tasks):
+    @staticmethod
+    def _parse_tasks(tasks):
         allowed = {"classification", "regression"}
         if isinstance(tasks, str):
             if tasks not in allowed:
@@ -504,14 +499,17 @@ class MultiTaskProbingCV(BaseEstimator):
         else:
             raise TypeError("`tasks` must be a string or a list of strings.")
 
-    def _parse_task_names(self, task_names, tasks):
+    @staticmethod
+    def _parse_task_names(task_names, tasks):
         if task_names is None:
             return None  # Cannot determine the number of tasks here
+        if isinstance(task_names, str):
+            task_names = [task_names]
         if not isinstance(task_names, list) or not all(
             isinstance(tn, str) for tn in task_names
         ):
             raise TypeError("`task_names` must be a list of strings or None.")
-        if isinstance(tasks, list) and len(task_names) != len(self.tasks):
+        if isinstance(tasks, list) and len(task_names) != len(tasks):
             raise ValueError(
                 "Length of `task_names` must match length of `tasks`."
             )
@@ -519,7 +517,8 @@ class MultiTaskProbingCV(BaseEstimator):
             raise ValueError("All `task_names` must be unique.")
         return task_names
 
-    def _parse_cv(self, cv):
+    @staticmethod
+    def _parse_cv(cv):
         if (
             isinstance(cv, Integral)
             or hasattr(cv, "split")
@@ -532,7 +531,8 @@ class MultiTaskProbingCV(BaseEstimator):
                 "iterable of (train, test) splits."
             )
 
-    def _parse_classification_probe(self, probe):
+    @staticmethod
+    def _parse_classification_probe(probe):
         if probe is None:
             return LogisticRegression()
         if not is_classifier(probe) or not isinstance(probe, sk_BaseEstimator):
@@ -542,7 +542,8 @@ class MultiTaskProbingCV(BaseEstimator):
             )
         return probe
 
-    def _parse_regression_probe(self, probe):
+    @staticmethod
+    def _parse_regression_probe(probe):
         if probe is None:
             return Ridge()
         if not is_regressor(probe) or not isinstance(probe, sk_BaseEstimator):
@@ -550,3 +551,68 @@ class MultiTaskProbingCV(BaseEstimator):
                 "`regression_probe` must be a scikit-learn regressor or None."
             )
         return probe
+
+
+class LabelCachingTransformerWrapper(TransformerMixin, BaseEstimator):
+    """A wrapper for transformer-based estimators that caches labels during
+    transform calls.
+
+    This class wraps an existing estimator implementing `transform_step`
+    (e.g., an embedding estimator) so that labels from each processed
+    batch are automatically stored during `.transform()` calls. This is
+    useful when working with dataloaders that yield `(X, y)` pairs and
+    you need both the transformed features and their corresponding labels
+    after the transformation.
+
+
+    Parameters
+    ----------
+    estimator: nidl.estimators.BaseEstimator
+        The BaseEstimator module that implements the `transform_step`.
+
+    kwargs: dict
+        Ignored. This is only to match the signature of BaseEstimator.
+    """
+
+    def __init__(self, estimator: BaseEstimator, **kwargs):
+        trainer_params_ = {
+            **estimator.trainer_params_,
+            "callbacks": None,
+            "enable_checkpointing": False,
+            "enable_progress_bar": True,
+            "logger": False,
+            "ignore": ["estimator"],
+        }
+        super().__init__(**trainer_params_)
+
+        if not isinstance(estimator, TransformerMixin):
+            raise TypeError(
+                "`estimator` must be a subclass of TransformerMixin."
+            )
+
+        self.estimator = estimator
+        self.fitted_ = estimator.fitted_
+        self._cached_labels = []
+
+    def transform(self, test_dataloader: data.DataLoader):
+        # clear the cached labels before each transform
+        self._cached_labels.clear()
+        self.fitted_ = self.estimator.fitted_
+        return super().transform(test_dataloader)
+
+    def transform_step(
+        self,
+        batch: tuple[torch.Tensor],
+        batch_idx: int = 0,
+        dataloader_idx: int = 0,
+    ):
+        x_batch, y_batch = batch
+        self._cached_labels.append(y_batch.detach())
+        x_features = self.estimator.transform_step(
+            x_batch, batch_idx=batch_idx, dataloader_idx=dataloader_idx
+        )
+        return x_features
+
+    def get_labels(self):
+        """Get the cached labels."""
+        return torch.cat(self._cached_labels, dim=0)
