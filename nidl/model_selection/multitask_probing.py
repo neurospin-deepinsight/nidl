@@ -72,12 +72,12 @@ class MultiTaskProbingCV(BaseEstimator):
         <https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation>`_
         in scikit-learn for the available cross-validation strategies.
 
-    classification_probe: sklearn.base.BaseEstimator or None, default=None
+    classifier: sklearn.base.BaseEstimator or None, default=None
         The classification probe used to evaluate the data embedding on
         classification tasks. Each probe is trained independently for each
         task. If None (default), logistic regression is used.
 
-    regression_probe: sklearn.base.BaseEstimator or None, default=None
+    regressor: sklearn.base.BaseEstimator or None, default=None
         The regression probe used to evaluate the data embedding on regression
         tasks. Each probe is trained independently for each task.
         If None (default), ridge regression is used.
@@ -191,8 +191,8 @@ class MultiTaskProbingCV(BaseEstimator):
         tasks: Union[str, list[str]],
         task_names: Union[list[str], None] = None,
         cv: Union[int, Iterable, object] = 5,
-        classification_probe: Union[sk_BaseEstimator, None] = None,
-        regression_probe: Union[sk_BaseEstimator, None] = None,
+        classifier: Union[sk_BaseEstimator, None] = None,
+        regressor: Union[sk_BaseEstimator, None] = None,
         classification_scoring: Optional[
             Union[str, Callable, list[str], dict[str, Callable]]
         ] = None,
@@ -208,10 +208,8 @@ class MultiTaskProbingCV(BaseEstimator):
         self.tasks = self._parse_tasks(tasks)
         self.task_names = self._parse_task_names(task_names, self.tasks)
         self.cv = self._parse_cv(cv)
-        self.classification_probe = self._parse_classification_probe(
-            classification_probe
-        )
-        self.regression_probe = self._parse_regression_probe(regression_probe)
+        self.classifier = self._parse_classification_probe(classifier)
+        self.regressor = self._parse_regression_probe(regressor)
         self.classification_scoring = classification_scoring
         self.regression_scoring = regression_scoring
         self.n_jobs = n_jobs
@@ -267,10 +265,10 @@ class MultiTaskProbingCV(BaseEstimator):
 
         for i, (task, task_name) in enumerate(zip(tasks, task_names)):
             if task == "classification":
-                estimator = self.classification_probe
+                estimator = self.classifier
                 scoring = self.classification_scoring
             elif task == "regression":
-                estimator = self.regression_probe
+                estimator = self.regressor
                 scoring = self.regression_scoring
 
             cv = self.cv
