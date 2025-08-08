@@ -127,7 +127,7 @@ class MultiTaskProbingCV(BaseEstimator):
 
     Attributes
     ----------
-    cv_results_: dict
+    ``cv_results_``: dict
         Dictionary storing detailed cross-validation results for each task.
         The structure is as follows:
 
@@ -168,19 +168,19 @@ class MultiTaskProbingCV(BaseEstimator):
             ...
         }
 
-    probe_estimators_: dict
+    ``probe_estimators_``: dict
         Dictionary containing task name as key and the probe (classifier
         or regressor) fitted on the training set as value. These probes
         are used to predict the labels on new data with `predict` method.
 
-    scorers_: dict
+    ``scorers_``: dict
         Dictionary containing task name as key and score function used
         to score the probe as value.
 
-    n_tasks_: int
+    ``n_tasks_``: int
         Number of tasks seen during fit.
 
-    n_splits_: dict
+    ``n_splits_``: dict
         Dictionary containing task name as key and the number of
         cross-validation splits as value.
     """
@@ -203,7 +203,7 @@ class MultiTaskProbingCV(BaseEstimator):
         allow_nan: bool = False,
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(ignore=["estimator"], **kwargs)
         self.estimator = estimator
         self.tasks = self._parse_tasks(tasks)
         self.task_names = self._parse_task_names(task_names, self.tasks)
