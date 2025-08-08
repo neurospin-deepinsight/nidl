@@ -22,7 +22,7 @@ from .utils.projection_heads import YAwareProjectionHead
 
 
 class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
-    """y-Aware Contrastive Learning implementation [1]
+    """y-Aware Contrastive Learning [1]_.
 
     y-Aware Contrastive Learning is a self-supervised learning framework for
     learning visual representations with auxiliary variables. It leverages
@@ -40,10 +40,6 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
        i) the same image and ii) images with close auxiliary variables
        to be closer while pushing dissimilar ones apart.
 
-    References
-    ----------
-    [1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI
-        Classification, Dufumier et al., MICCAI 2021
 
     Parameters
     ----------
@@ -90,17 +86,17 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         default="gaussian"
         Kernel used as a similarity function between auxiliary variables.
 
-    bandwidth : Union[float, int, List[float], array, KernelMetric], \
+    bandwidth : Union[float, List[float], array, KernelMetric], \
         default=1.0
         The method used to calculate the bandwidth ("sigma" in [1]) between
         auxiliary variables:
 
-        - If `bandwidth` is a scalar (int or float), it sets the bandwidth to
-          a diagnonal matrix with equal values.
+        - If `bandwidth` is a scalar, it sets the bandwidth to a diagnonal
+          matrix with equal values.
         - If `bandwidth` is a 1d array, it sets the bandwidth to a
           diagonal matrix and it must be of size equal to the number of
           features in `y`.
-        - If bandwidth is a 2d array, it must be of shape
+        - If `bandwidth` is a 2d array, it must be of shape
           `(n_features, n_features)` where `n_features` is the number of
           features in `y`.
         - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`
@@ -159,6 +155,12 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
 
     lr_scheduler : LRSchedulerPLType or None
         Learning rate scheduler used for training.
+
+    References
+    ----------
+    .. [1] Dufumier, B., et al., "Contrastive learning with continuous proxy
+           meta-data for 3D MRI classification." MICCAI, 2021.
+           https://arxiv.org/abs/2106.08808
     """
 
     def __init__(

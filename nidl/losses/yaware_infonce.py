@@ -18,58 +18,85 @@ from sklearn.utils.validation import check_array, check_is_fitted
 
 
 class KernelMetric(BaseEstimator):
-    """Interface for fast kernel computation.
+    """Interface for fast weighting matrix computation.
     
-    It computes the weighting matrix between input samples based on
-    Kernel Density Estimation (KDE) weighting scheme [1, 2].
-    Concretely, it computes the following weighting matrix between
-    \( x1, ..., xn \):
+    It computes a weighting matrix :math:`W` between input samples based on
+    Kernel Density Estimation (KDE) [1]_, [2]_. Concretely, it computes the
+    following weighting matrix between multivariate samples
+    :math:`x_1, ..., x_n \\in \\mathbb{R}^{d}`:
+    
     .. math::
+        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (x_i-x_j) \\right)
 
-        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (xi-xj) \\right)
+    with :math:`K` a kernel (or "weighting function") such that:
 
-    with K a kernel such that:
+    - :math:`K(x) \\ge 0` (positive)
+    - :math:`\\int K(x) dx = 1` (normalized)
+    - :math:`K(x) = K(-x)` (symmetric)
 
-    1) \( K(x) \geq 0 \),
-    2) \( \int K(x) \, dx = 1 \),
-    3) \( K(x) = K(-x) \),
+    and :math:`H\\in \\mathbb{R}^{d\\times d}` is the bandwidth in the KDE
+    estimation of `p(X)`.
 
-    and \( H \) is the bandwidth in the KDE estimation of \( p(X) \).
-
-    H is symmetric definite positive and it can be automatically computed based
-    on Scott's method or Silverman's method if required.
+    :math:`H` is a symmetric definite-positive and it can be automatically
+    computed based on Scott's rule [3]_ or Silverman's rule [4]_ if required.
     In that case, the bandwidth is computed as a scaled version of the
-    covariance matrix of the data. If the bandwidth is set to a scalar,
-    it is used as a diagonal matrix:
+    diagonal terms in the data covariance matrix:
+    
     .. math::
+        H \\propto \\mathrm{diag}(\\hat{\\Sigma})
 
-        H = \mathrm{diag}(\\text{scalar})
 
     Parameters
     ----------
-    kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, \
+    kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'},\
         default='gaussian'
         The kernel applied to the distance between samples.
 
-    bandwidth: str or int or float or list of float, default="scott"
+    bandwidth: {'scott', 'silverman'} or float or list of float,\
+        default="scott"
         The method used to calculate the estimator bandwidth:
 
-        - If `bandwidth` is str, must be 'scott' or 'silverman'.
-          Bandwidth is a scaled version of the diagonal term in the
-          data covariance matrix.
-        - If `bandwidth` is scalar (float or int), it sets the bandwidth to
-          H=diag([bandwidth for _ in range(n_features)])
-        - If `bandwidth` is a list of float, it sets the bandwidth to
-          H=diag(bandwidth) and it must be of length equal `n_features`
+        - If `bandwidth` is 'scott' or 'silverman', :math:`H` is a scaled
+          version of the diagonal terms in the data covariance matrix.
+        - If `bandwidth` is scalar (float or int), :math:`H` is set to a
+          diagonal matrix:
+          :math:`H = \\mathrm{diag}([bandwidth,\\ldots, bandwidth])`.
+        - If `bandwidth` is a list of floats, :math:`H` is a diagonal matrix
+          with the list values on the diagonal:
+          :math:`H = \\mathrm{diag}(\\text{bandwidth})`.
         - If `bandwidth` is a 2d array, it must be of shape
           `(n_features, n_features)`
-          
+    
+    Notes
+    ----------
+    Scott's Rule [1]_ estimates the bandwidth as:
+
+    .. math::
+        H = \\hat{\\Sigma} \\cdot n^{-\\frac{2}{d+4}}
+
+    where :math:`\\hat{\\Sigma}` is the covariance matrix of the data,
+    :math:`n` is the number of samples, and :math:`d` is the number of
+    features (:math:`d=1` for univariate data). Here, we only consider
+    the diagonal terms (assuming features decorrelation) for numerical
+    stability.
+
+    Silverman's rule of thumb [2]_ for multivariate data is:
+
+    .. math::
+        H = \\hat{\\Sigma} \\cdot \\left(\\frac{n(d+2)}{4}\\right)^
+        {-\\frac{2}{d+4}}
+
+        
     References
     ----------
-    [1] Rosenblatt, M. (1956). "Remarks on some nonparametric estimates of a
-        density function". Annals of Mathematical Statistics.
-    [2] Parzen, E. (1962). "On estimation of a probability density function and
-        mode"
+    .. [1] Rosenblatt, M. (1956). "Remarks on some nonparametric estimates of a
+           density function". Annals of Mathematical Statistics.
+    .. [2] Parzen, E. (1962). "On estimation of a probability density function
+           and mode". Annals of Mathematicals Statistics.
+    .. [3] Scott, D. W. (1992). "Multivariate Density Estimation: Theory,
+           Practice, and Visualization". Wiley.
+    .. [4] Silverman, B. W. (1986). "Density Estimation for Statistics and Data
+           Analysis". Monographs on Statistics and Applied Probability.
 
     """
 
@@ -98,7 +125,7 @@ class KernelMetric(BaseEstimator):
             )
 
     def fit(self, X):
-        """Computes the bandwidth in the kernel density estimator of p(X).
+        """Computes the bandwidth in the kernel density estimation.
 
         Parameters
         ----------
@@ -298,30 +325,30 @@ class KernelMetric(BaseEstimator):
 
 class YAwareInfoNCE(nn.Module):
     """
-    Implementation of y-Aware InfoNCE loss [1].
+    Implementation of the y-Aware InfoNCE loss [1]_.
 
     Compute the y-Aware InfoNCE loss, which integrates auxiliary
     information into contrastive learning by weighting sample pairs.
 
-    Given a mini-batch of size N, two embeddings z1 and z2 representing
-    two views of the same samples and a weighting matrix W computed
-    using auxiliary variables y, the loss is:
+    Given a mini-batch of size :math:`n`, two embeddings :math:`z_1` and
+    :math:`z_2` representing two views of the same samples and a weighting
+    matrix :math:`W` computed using auxiliary variables :math:`y`, the loss is:
 
     .. math::
-
-        \\ell = -\\frac{1}{N} \\sum_{i,j} \\frac{W_{i,j}}{\\sum_{k=1}^{N} \
+        \\ell = -\\frac{1}{n} \\sum_{i,j} \\frac{W_{i,j}}{\\sum_{k=1}^{n} \
         W_{i, k}} \\log \\frac{\\exp(\\text{sim}(z_1^{i}, z_2^{j}) / \\tau)} \
-        {\\sum_{k=1}^{N} \\exp(\\text{sim}(z_1^{i}, z_2^{k}) / \\tau)}
+        {\\sum_{k=1}^{n} \\exp(\\text{sim}(z_1^{i}, z_2^{k}) / \\tau)}
 
-    where `sim` is the cosine similarity and `τ` is the temperature.
+    where :math:`sim` is the cosine similarity and :math:`\\tau` is the
+    temperature.
 
-    To compute W, a kernel K is specified (e.g. Gaussian) as well as a
-    bandwidth H and the weighting matrix is:
+    :math:`W` is computed with a kernel :math:`K` (e.g. Gaussian) and bandwidth
+    :math:`H` as:
 
     .. math::
-
         W_{i,j} = K\\left( H^{-\\frac{1}{2}} (y_i-y_j) \\right)
 
+    
     Parameters
     ----------
     kernel: str in {'gaussian', 'epanechnikov', 'exponential', 'linear', \
@@ -330,8 +357,8 @@ class YAwareInfoNCE(nn.Module):
         See PhD thesis, Dufumier 2022 page 94-95.
 
     bandwidth: Union[float, int, List[float], array, KernelMetric], default=1.0
-        The method used to calculate the bandwidth ("sigma" in [1]) between
-        auxiliary variables:
+        The method used to calculate the bandwidth (:math:`\\sigma^2` in [1]_)
+        between auxiliary variables:
 
         - If `bandwidth` is a scalar (int or float), it sets the bandwidth to
           a diagnonal matrix with equal values.
@@ -347,10 +374,12 @@ class YAwareInfoNCE(nn.Module):
     temperature: float, default=0.1
         Temperature used to scale the dot-product between embedded vectors
 
+
     References
     ----------
-    [1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI
-    Classification, MICCAI 2021
+    .. [1] Dufumier, B., et al., "Contrastive learning with continuous proxy
+           meta-data for 3D MRI classification." MICCAI, 2021.
+           https://arxiv.org/abs/2106.08808
 
     """
 
