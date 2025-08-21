@@ -80,6 +80,8 @@ ignore = [
     "FURB103",  # `open` and `write` should be replaced by `Path(logfile).write_text(code)`
     "RUF059",   # Unpacked variable `loss` is never used
     "FURB189",  # Subclassing `dict` can be error prone, use `collections.UserDict` instead
+    "N806",     # Variable `W` in function should be lowercase
+    "N803",     # Argument name `C_fin` should be lowercase
 ]
 
 [tool.ruff]
