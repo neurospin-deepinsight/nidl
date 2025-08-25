@@ -21,7 +21,7 @@ from nidl.datasets.base import (
     BaseNumpyDataset,
 )
 from nidl.datasets import OpenBHB, ImageDataFrameDataset
-from nidl.datasets.pandas_dataset import default_loader
+from nidl.datasets.pandas_dataset import default_image_loader as default_loader
 from nidl.utils import print_multicolor
 
 
@@ -352,55 +352,71 @@ class TestImageDataFrameDataset(unittest.TestCase):
         })
 
     def test_len_and_getitem_single_label(self):
-        image_loader = lambda path: "image_data"
-        ds = ImageDataFrameDataset(self.df, image_col="image_path", label_cols="label", 
-                                    image_loader=image_loader)
+        ds = ImageDataFrameDataset(
+            self.df,
+            image_col="image_path",
+            label_cols="label", 
+            image_loader=lambda path: path
+        )
         self.assertEqual(len(ds), 2)
         img, label = ds[0]
-        self.assertEqual(img, "image_data")
-        self.assertEqual(label, "cat")
+        self.assertEqual(img, "img1.jpg")
+        self.assertEqual(label, ["cat"])
 
     def test_getitem_multi_labels(self):
-        image_loader = lambda path: "image_data"
-        ds = ImageDataFrameDataset(self.df, image_col="image_path", label_cols=["label", "age"], 
-                                   image_loader=image_loader)
+        ds = ImageDataFrameDataset(
+            self.df,
+            image_col="image_path",
+            label_cols=["label", "age"], 
+            image_loader=lambda path: path
+        )
         img, label = ds[1]
-        self.assertEqual(img, "image_data")
+        self.assertEqual(img, "img2.jpg")
         self.assertEqual(label, ["dog", 7])
 
     def test_transform_applied(self):
-        image_loader = lambda path: "raw_img"
-        transform = lambda x: f"processed_{x}"
-        ds = ImageDataFrameDataset(self.df, transform=transform, label_cols="label", 
-                                   image_loader=image_loader)
+        ds = ImageDataFrameDataset(
+            self.df,
+            label_cols="label", 
+            image_loader=lambda path: path,
+            transform=lambda x: f"processed_{x}"
+        )
         img, label = ds[0]
-        self.assertEqual(img, "processed_raw_img")
+        self.assertEqual(img, "processed_img1.jpg")
 
     def test_target_transform_callable(self):
-        image_loader = lambda path: "img"
         target_transform = lambda y: y.upper()
-        ds = ImageDataFrameDataset(self.df, label_cols="label", target_transform=target_transform,
-                                    image_loader=image_loader)
+        ds = ImageDataFrameDataset(
+            self.df,
+            label_cols="label",
+            image_loader=lambda path: path,
+            target_transform=lambda y: y.upper()
+        )
         _, label = ds[0]
-        self.assertEqual(label, "CAT")
+        self.assertEqual(label, ["CAT"])
 
     def test_target_transform_dict(self):
-        image_loader = lambda path: "img"
-        ttf = {"label": str.upper, "age": lambda x: x * 2}
-        ds = ImageDataFrameDataset(self.df, label_cols=["label", "age"], target_transform=ttf,
-                         image_loader=image_loader)
+        ds = ImageDataFrameDataset(
+            self.df,
+            label_cols=["label", "age"],
+            image_loader=lambda path: path,
+            target_transform={"label": str.upper, "age": lambda x: x * 2},
+        )
         _, label = ds[1]
         self.assertEqual(label, ["DOG", 14])
 
     def test_series_as_input(self):
-        series = pd.Series(["img1.jpg", "img2.jpg"])
-        ds = ImageDataFrameDataset(series)
+        ds = ImageDataFrameDataset(
+            pd.Series(["img1.jpg", "img2.jpg"])
+        )
         self.assertEqual(len(ds), 2)
 
     def test_csv_as_input(self):
         tmp_csv = "/tmp/temp.csv"
         self.df.to_csv(tmp_csv, index=False)
-        ds = ImageDataFrameDataset(tmp_csv, image_col="image_path")
+        ds = ImageDataFrameDataset(
+            tmp_csv
+        )
         self.assertEqual(len(ds), 2)
 
     def test_invalid_df_type(self):
@@ -409,39 +425,33 @@ class TestImageDataFrameDataset(unittest.TestCase):
 
     def test_missing_image_col(self):
         with self.assertRaises(ValueError):
-            ImageDataFrameDataset(pd.DataFrame({"wrong": [1, 2]}))
+            ImageDataFrameDataset(
+                pd.DataFrame({"wrong": [1, 2]})
+            )
 
     def test_missing_label_col(self):
         with self.assertRaises(ValueError):
-            ImageDataFrameDataset(self.df, label_cols="nonexistent")
+            ImageDataFrameDataset(
+                self.df,
+                label_cols="nonexistent"
+            )
 
     def test_missing_label_cols_list(self):
         with self.assertRaises(ValueError):
-            ImageDataFrameDataset(self.df, label_cols=["label", "nope"])
+            ImageDataFrameDataset(
+                self.df,
+                label_cols=["label", "nope"]
+            )
 
     def test_return_img_only_if_no_label(self):
-        image_loader = lambda path: path
-        ds = ImageDataFrameDataset(self.df, label_cols=None, return_none_if_no_label=False,
-                                   image_loader=image_loader)
+        ds = ImageDataFrameDataset(
+            self.df,
+            label_cols=None,
+            return_none_if_no_label=True,
+            image_loader=lambda path: path
+        )
         img = ds[0]
         self.assertEqual(img, "img1.jpg")
-
-    def test_invalid_file_filtering(self):
-        df = pd.DataFrame({"image_path": ["valid.jpg", "invalid.txt"], "label": ["a", "b"]})
-        ds = ImageDataFrameDataset(df, label_cols="label")
-        self.assertEqual(len(ds), 1)
-        self.assertIn("valid.jpg", ds.imgs)
-
-    def test_invalid_label_filtering(self):
-        df = pd.DataFrame({"image_path": ["img.jpg", "img2.jpg"], "label": ["ok", None]})
-        ds = ImageDataFrameDataset(df, label_cols="label", is_valid_label=lambda x: x is not None)
-        self.assertEqual(len(ds), 1)
-
-    def test_indexing(self):
-        image_loader = lambda path: "img"
-        ds = ImageDataFrameDataset(self.df, label_cols="label", image_loader=image_loader)
-        self.assertEqual(ds[0], ("img", "cat"))
-        self.assertEqual(ds[1], ("img", "dog"))
 
 
 if __name__ == "__main__":

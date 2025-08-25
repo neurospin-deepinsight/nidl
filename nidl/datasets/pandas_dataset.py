@@ -15,8 +15,19 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 
-def default_loader(path: str) -> Any:
-    """Default image loader function."""
+def default_image_loader(path: str) -> Any:
+    """Default image loader function.
+
+    Parameters
+    ----------
+    path: str
+        the image to load.
+
+    Returns
+    -------
+    im: object
+        the loaded image.
+    """
     if path.endswith((".nii", ".nii.gz")):
         return nibabel.load(path).get_fdata()
     elif path.endswith((".npy", ".npz")):
@@ -81,7 +92,7 @@ class ImageDataFrameDataset(Dataset):
     return_none_if_no_label: bool, default=True
         If True, returns `(<img>, None)` when getting an item and `label_cols`
         is empty or None (default). Otherwise, only `<img>` is returned.
-    image_loader: Callable, default=default_loader
+    image_loader: Callable, default=default_image_loader
         Function to load the image from the file path. It takes a string (the
         file path) as input and returns the loaded image. By default, it
         accepts the following:
@@ -113,7 +124,7 @@ class ImageDataFrameDataset(Dataset):
     --------
     Dataset for supervised computer vision tasks:
     >>> import pandas as pd
-    >>> from datasets.pandas_dataset import ImageDataFrameDataset
+    >>> from nidl.datasets.pandas_dataset import ImageDataFrameDataset
     >>> df = pd.DataFrame({
     ...     'image_path': ['image1.jpg', 'image2.jpg'],
     ...     'label': ['cat', 'dog']
@@ -127,8 +138,6 @@ class ImageDataFrameDataset(Dataset):
     <class 'PIL.Image.Image'>
 
     Dataset for unsupervised computer vision tasks:
-    >>> import pandas as pd
-    >>> from datasets.pandas_dataset import ImageDataFrameDataset
     >>> df = pd.DataFrame({
     ...     'image_path': ['image1.jpg', 'image2.jpg']
     ... })
@@ -165,8 +174,8 @@ class ImageDataFrameDataset(Dataset):
             Union[Callable, dict[str, Callable]]
         ] = None,
         return_none_if_no_label: bool = True,
-        image_loader: Callable = default_loader,
-        is_valid_label: Optional[Union[Callable, dict[str, Callable]] = None,
+        image_loader: Callable = default_image_loader,
+        is_valid_label: Optional[Union[Callable, dict[str, Callable]]] = None,
         read_csv_kwargs: Optional[dict] = None,
     ):
         if isinstance(df, str):
@@ -184,47 +193,36 @@ class ImageDataFrameDataset(Dataset):
 
         self.df = df.copy()
         self.image_col = image_col
-        self.label_cols = self._parse_labels(df, label_cols)
+        self.label_cols = self._verify_labels(df, label_cols, is_valid_label)
         self.transform = transform
-        self.target_transform = target_transform
+        self.target_transform = target_transform or {}
+        if not isinstance(self.target_transform, dict):
+            assert len(self.label_cols) == 1
+            self.target_transform = {self.label_cols[0]: self.target_transform}
         self.return_none_if_no_label = return_none_if_no_label
         self.image_loader = image_loader
-        self.is_valid_label = is_valid_label
 
-        # Filter valid labels
-        if self.label_cols is not None:
-            if isinstance(self.label_cols, str):
-                mask = self.df[self.label_cols].apply(is_valid_label)
-            else:  # Multiple label columns: apply to each row
-                mask = self.df[self.label_cols].apply(is_valid_label, axis=1)
-            if mask.sum() < len(self.df):
-                print(
-                    f"Warning: {len(self.df) - mask.sum()} samples with "
-                    "invalid labels found. These will be removed from the "
-                    "dataset."
-                )
-                self.df = self.df[mask]
-
-        self.targets = self._extract_targets()
         self.imgs = self.df[image_col].tolist()
-
+        self.targets = (
+            self.df[self.label_cols].values.tolist()
+            if self.label_cols is not None
+            else [[None]] * len(df)
+        )
         assert len(self.imgs) == len(self.targets)
 
-    def _extract_targets(self):
-        if self.label_cols is None:
-            return [None] * len(self.df)
-        elif isinstance(self.label_cols, str):
-            return self.df[self.label_cols].tolist()
-        else:
-            return self.df[self.label_cols].values.tolist()
-
-    def _parse_labels(
-        self, df: pd.DataFrame,
-        label_cols: Optional[Union[str, list[str]]]
+    def _verify_labels(
+        self,
+        df: pd.DataFrame,
+        label_cols: Union[str, list[str]],
+        is_valid_label: Union[Callable, dict[str, Callable]]
     ):
+        """ Verify `label_cols` parameter format, that all columns are
+        available in the input data frame, and optionaly label values.
+        """
         if label_cols is None:
             return None
-        elif isinstance(label_cols, str) and label_cols not in df.columns:
+
+        if isinstance(label_cols, str) and label_cols not in df.columns:
             raise ValueError(f"Column '{label_cols}' not found in DataFrame.")
         elif (
             isinstance(label_cols, list)
@@ -239,49 +237,50 @@ class ImageDataFrameDataset(Dataset):
                 f"label_cols must be a string or a list of strings, got "
                 f"{label_cols}."
             )
-        return label_cols
 
-    def apply_transform(self, image):
-        """Apply the specified transform to the image."""
-        if self.transform is not None:
-            return self.transform(image)
-        return image
-
-    def apply_target_transform(self, label):
-        """Apply the specified target transform to the label(s)."""
-        if self.target_transform is None:
-            return label
-
-        if isinstance(self.target_transform, dict):
-            if isinstance(label, (list, tuple)):
-                return [
-                    self.target_transform.get(col, lambda x: x)(val)
-                    for col, val in zip(self.label_cols, label)
-                ]
+        if is_valid_label is not None:
+            if isinstance(label_cols, str):
+                mask = self.df[label_cols].apply(is_valid_label)
             else:
-                return self.target_transform.get(self.label_cols, lambda x: x)(
-                    label
+                mask = self.df[label_cols].apply(is_valid_label, axis=1)
+            if mask.sum() < len(self.df):
+                raise ValueError(
+                    f"`{len(self.df) - mask.sum()}` samples with "
+                    "invalid labels found."
                 )
 
-        return self.target_transform(label)
+        return label_cols if isinstance(label_cols, list) else [label_cols]
+
+    def apply_transform(self, image):
+        """Apply the specified transform to the image.
+        """
+        return self.transform(image) if self.transform is not None else image
+
+    def apply_target_transform(self, label):
+        """Apply the specified target transform to the label(s).
+        """
+        return (
+            [
+                self.target_transform.get(col, lambda x: x)(val)
+                for col, val in zip(self.label_cols, label)
+            ]
+            if (self.target_transform is not None and
+                self.label_cols is not None)
+            else label
+        )
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        image_path = self.imgs[idx]
-        image = self.image_loader(image_path)
-        label = self.targets[idx]
+        image = self.image_loader(self.imgs[idx])
+        labels = self.targets[idx]
 
-        label = self.apply_target_transform(label)
         image = self.apply_transform(image)
+        labels = self.apply_target_transform(labels)
 
-        if not self.return_none_if_no_label and (
-            self.label_cols is None
-            or (
-                isinstance(self.label_cols, list) and len(self.label_cols) == 0
-            )
-        ):
-            return image
+        outs = [image, labels]
+        if self.return_none_if_no_label and self.label_cols is None:
+            return outs[0]
 
-        return image, label
+        return tuple(outs)
