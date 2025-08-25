@@ -30,7 +30,7 @@ from torch.utils.data import Dataset
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from nidl.utils import Bunch
+from nidl.utils import Bunch, Weights
 from nidl.estimators.ae import MCVAE
 from nidl.callbacks.caching import CachingCallback
 
@@ -162,7 +162,7 @@ class DropoutRateCallback(pl.Callback):
             self.ax.spines[["right", "top"]].set_visible(False)
             self.fig.suptitle(
                 f"Dropout probability of {model_params.latent_dim} fitted latent "
-                "dimensions in SMCVAE",
+                "dimensions in sMCVAE",
                 fontweight="bold"
             )
             self.ax.set_title(f"{data_params.lat_dim} true latent dimensions")
@@ -227,8 +227,25 @@ dataloaders = {
 # Sparse vs non sparse
 # --------------------
 #
-# Train a sparse and a non sparse MCVAE.     
+# Train a sparse and a non sparse MCVAE.
+#
+# As in many tutorials before, we provide pre-trained models.
 
+load_pretrained = True
+checkpointdir = "/tmp/checkpoints"
+weights = {
+    name: Weights(
+        name="hf-hub:neurospin/mcvae-synth",
+        data_dir=checkpointdir,
+        filepath=f"{name}-synth.ckpt"
+    ) for name in ("sMCVAE", "MCVAE")
+}
+if load_pretrained:
+    for _, weight in weights.items():
+        src = weight.weight_file
+        dst = os.path.join(checkpointdir, os.path.basename(src))
+        if not os.path.exists(dst):
+            os.symlink(src, dst)
 
 model_params = Bunch(
     latent_dim=5,
@@ -244,8 +261,8 @@ model_params = Bunch(
 callbacks = {
     name: [
         ModelCheckpoint(
-            dirpath="/tmp/checkpoints",
-            filename=f"{name}-last",
+            dirpath=checkpointdir,
+            filename=f"{name}-synth",
             save_weights_only=False,
             save_last=False,
             save_top_k=1,
@@ -356,7 +373,7 @@ plt.axhline(
 plt.gca().spines[["right", "top"]].set_visible(False)
 plt.suptitle(
     f"Dropout probability of {model_params.latent_dim} fitted latent "
-    "dimensions insMCVAE",
+    "dimensions in sMCVAE",
     fontweight="bold"
 )
 plt.title(f"{data_params.lat_dim} true latent dimensions")
