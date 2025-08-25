@@ -56,38 +56,32 @@ class ImageDataFrameDataset(Dataset):
     df: pd.DataFrame or pd.Series or str
         DataFrame containing image paths and optional labels:
 
-        - If a DataFrame, it should contain at least one column with the
+        - if a DataFrame, it should contain at least one column with the
           image paths;
-        - If a Series, it should contain the image paths;
-        - If str, it should be the path to a CSV file.
-
+        - if a Series, it should contain the image paths;
+        - if str, it should be the path to a CSV file.
     image_col: str, default="image_path"
         Name of the column in `df` containing image file paths.
-
-    label_cols: Optional[str, list of str], default=None
+    label_cols: str, list of str, default=None
        Name of the column(s) containing label(s):
 
-       - If None (default), no labels are returned.
-       - If string, it should be the name of a single column in `df`.
-       - If list, it should contain the names of multiple columns in `df`.
-
-    transform: Optional[Callable], default=None
+       - if None (default), no labels are returned.
+       - if string, it should be the name of a single column in `df`.
+       - if list, it should contain the names of multiple columns in `df`.
+    transform: Callable, default=None
         Optional transform that takes in the loaded image and returns a
         transformed version.
-
-    target_transform: Optional[Callable, Dict[str, Callable]], default=None
+    target_transform: Callable, Dict[str, Callable], default=None
         Optional transform applied to the label(s):
 
-        - If callable: applied to all labels, e.g. `lambda y: torch.tensor(y)`
-        - If dictionary: apply different transforms per column. In that case,
+        - if callable: applied to all labels, e.g. `lambda y: torch.tensor(y)`
+        - if dictionary: apply different transforms per column. In that case,
           the keys should be included in the column names in `label_cols` and
           values must be callable.
-
     return_none_if_no_label: bool, default=True
         If True, returns `(<img>, None)` when getting an item and `label_cols`
         is empty or None (default). Otherwise, only `<img>` is returned.
-
-    image_loader: Callable[[str], Any], default=default_loader
+    image_loader: Callable, default=default_loader
         Function to load the image from the file path. It takes a string (the
         file path) as input and returns the loaded image. By default, it
         accepts the following:
@@ -95,23 +89,21 @@ class ImageDataFrameDataset(Dataset):
         - all image extensions supported by PIL (e.g., .jpg, .png, .bmp etc.)
         - numpy arrays (e.g., .npy, .npz)
         - 3D medical images (e.g., .nii, .nii.gz) using nibabel
-
-    is_valid_file: Optional[Callable[[str], bool]], default=None
+    is_valid_file: Callable, default=None
         Function to check if a file path (string) is a valid image file (e.g.
         correct extension). If None (default), the file extension is checked
         against a list of known image extensions. Invalid files will be
         filtered out from the dataset.
-
-    is_valid_label: Optional[Callable[[Any], bool]], default=None
+    is_valid_label: Callable, Dict[str, Callable], default=None
         Function to check if a label is valid. If None (default), all labels
         are considered valid. This can be used to filter out samples with
         invalid labels from the dataset, e.g. NaN. If `label_cols` is a string,
         it takes a label as input and returns a boolean. If `label_cols` is a
         list, it takes a list of labels as input and returns a boolean.
-
     read_csv_kwargs: Optional[dict], default=None
         Additional keyword arguments to pass to `pd.read_csv` if `df` is a
-        string path.
+        string path. For instance you can define the proper '\t' separator
+        when working with a TSV file.
 
     Attributes
     ----------
@@ -123,7 +115,7 @@ class ImageDataFrameDataset(Dataset):
         List of labels (before any transformations).
 
     Examples
-    ----------
+    --------
     Dataset for supervised computer vision tasks:
     >>> import pandas as pd
     >>> from datasets.pandas_dataset import ImageDataFrameDataset
@@ -147,20 +139,22 @@ class ImageDataFrameDataset(Dataset):
     ... })
     >>> dataset = ImageDataFrameDataset(df, image_col='image_path')
     >>> image, _ = dataset[0]
+    >>> print(type(image))
+    <class 'PIL.Image.Image'>
 
     Dataset for 3D medical images:
-    >>> df_mri = pd.DataFrame({
+    >>> df = pd.DataFrame({
     ...     'image_path': ['mri1.nii', 'mri2.nii'],
     ...     'diagnosis': ['patient', 'control'],
     ...     'age': [30, 25]
     ... })
     >>> target_transform = {"diagnosis": lambda x: 1 if x == 'patient' else 0}
-    >>> dataset_mri = ImageDataFrameDataset(
-    ...     df_mri, image_col='image_path',
+    >>> dataset = ImageDataFrameDataset(
+    ...     df, image_col='image_path',
     ...     label_cols=['diagnosis', 'age'],
     ...     target_transform=target_transform
     ... )
-    >>> image_mri, (label_mri, age_mri) = dataset_mri[0]
+    >>> image_mri, (label, age) = dataset[0]
     >>> print(label_mri, age_mri)
     (30, 1)
     >>> print(type(image_mri))
