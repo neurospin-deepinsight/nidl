@@ -6,9 +6,8 @@
 # for details.
 ##########################################################################
 
-""" Common losses.
+""" AutoEncoder estimators.
 """
 
-from .infonce import InfoNCE
-from .mcvae import MCVAELoss
-from .yaware_infonce import KernelMetric, YAwareInfoNCE
+from .mcvae import MCVAE
+from .vae import VAE
