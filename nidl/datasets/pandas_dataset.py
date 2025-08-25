@@ -89,11 +89,6 @@ class ImageDataFrameDataset(Dataset):
         - all image extensions supported by PIL (e.g., .jpg, .png, .bmp etc.)
         - numpy arrays (e.g., .npy, .npz)
         - 3D medical images (e.g., .nii, .nii.gz) using nibabel
-    is_valid_file: Callable, default=None
-        Function to check if a file path (string) is a valid image file (e.g.
-        correct extension). If None (default), the file extension is checked
-        against a list of known image extensions. Invalid files will be
-        filtered out from the dataset.
     is_valid_label: Callable, Dict[str, Callable], default=None
         Function to check if a label is valid. If None (default), all labels
         are considered valid. This can be used to filter out samples with
@@ -159,25 +154,7 @@ class ImageDataFrameDataset(Dataset):
     (30, 1)
     >>> print(type(image_mri))
     <class 'nibabel.nifti1.Nifti1Image'>
-
     """
-
-    IMG_EXTENSIONS = (
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".ppm",
-        ".bmp",
-        ".pgm",
-        ".tif",
-        ".tiff",
-        ".webp",
-        ".npz",
-        ".npy",
-        ".nii",
-        ".nii.gz",
-    )
-
     def __init__(
         self,
         df: Union[pd.DataFrame, pd.Series, str],
@@ -188,9 +165,8 @@ class ImageDataFrameDataset(Dataset):
             Union[Callable, dict[str, Callable]]
         ] = None,
         return_none_if_no_label: bool = True,
-        image_loader: Callable[[str], Any] = default_loader,
-        is_valid_file: Optional[Callable[[str], bool]] = None,
-        is_valid_label: Optional[Callable[[Any], bool]] = None,
+        image_loader: Callable = default_loader,
+        is_valid_label: Optional[Union[Callable, dict[str, Callable]] = None,
         read_csv_kwargs: Optional[dict] = None,
     ):
         if isinstance(df, str):
@@ -200,10 +176,11 @@ class ImageDataFrameDataset(Dataset):
             df = df.to_frame(name=image_col)
 
         if not isinstance(df, pd.DataFrame):
-            raise TypeError("df must be a DataFrame, Series, or path to CSV.")
-
+            raise TypeError(
+                "`df` must be a DataFrame, Series, or path to CSV."
+            )
         if image_col not in df.columns:
-            raise ValueError(f"{image_col} column not found in DataFrame.")
+            raise ValueError(f"`{image_col}` column not found in DataFrame.")
 
         self.df = df.copy()
         self.image_col = image_col
@@ -212,29 +189,7 @@ class ImageDataFrameDataset(Dataset):
         self.target_transform = target_transform
         self.return_none_if_no_label = return_none_if_no_label
         self.image_loader = image_loader
-
-        if is_valid_file is None:
-            # Default to checking file extensions
-            def is_valid_file(file_path: str) -> bool:
-                return file_path.lower().endswith(self.IMG_EXTENSIONS)
-
-        self.is_valid_file = is_valid_file
-
-        if is_valid_label is None:
-            # Default to considering all labels valid
-            def is_valid_label(label: Any) -> bool:
-                return True
-
         self.is_valid_label = is_valid_label
-
-        # Filter valid files
-        mask = self.df[image_col].apply(self.is_valid_file)
-        if mask.sum() < len(self.df):
-            print(
-                f"Warning: {len(self.df) - mask.sum()} invalid files found. "
-                "These will be removed from the dataset."
-            )
-            self.df = self.df[mask]
 
         # Filter valid labels
         if self.label_cols is not None:
@@ -264,7 +219,8 @@ class ImageDataFrameDataset(Dataset):
             return self.df[self.label_cols].values.tolist()
 
     def _parse_labels(
-        self, df: pd.DataFrame, label_cols: Optional[Union[str, list[str]]]
+        self, df: pd.DataFrame,
+        label_cols: Optional[Union[str, list[str]]]
     ):
         if label_cols is None:
             return None
