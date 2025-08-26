@@ -6,6 +6,7 @@
 # for details.
 ##########################################################################
 
+import hashlib
 import os
 from typing import Any, Callable, Optional, Union
 
@@ -58,6 +59,7 @@ class ImageDataFrameDataset(Dataset):
 
     - one column with file paths to image data;
     - zero or more additional columns containing target labels (optional).
+    - one column containing the image paths checksums (optional).
 
     Images are loaded on-the-fly from disk when accessed. Labels (if provided)
     are extracted from the specified column(s) and returned alongside the
@@ -83,6 +85,8 @@ class ImageDataFrameDataset(Dataset):
        - if None (default), no labels are returned.
        - if string, it should be the name of a single column in `df`.
        - if list, it should contain the names of multiple columns in `df`.
+    checksum_col: str; default=None
+        Name of the column in `df` containing the image file paths checksums.
     transform: Callable, default=None
         Optional transform that takes in the loaded image and returns a
         transformed version.
@@ -185,7 +189,8 @@ class ImageDataFrameDataset(Dataset):
         is not a string or a list of strings.
     ValueError
         If one the the specified colomn is not found in `df` or if the
-        targets have incorrect values.
+        targets have incorrect values or if based on checksum data have
+        changed on disk.
     """
     def __init__(
         self,
@@ -193,6 +198,7 @@ class ImageDataFrameDataset(Dataset):
         df: Union[pd.DataFrame, pd.Series, str],
         image_col: str = "image_path",
         label_cols: Optional[Union[str, list[str]]] = None,
+        checksum_col: Optional[str] = None,
         transform: Optional[Callable] = None,
         target_transform: Optional[
             Union[Callable, dict[str, Callable]]
@@ -218,6 +224,7 @@ class ImageDataFrameDataset(Dataset):
         self.df = df.copy()
         self.image_col = image_col
         self.label_cols = self._verify_labels(df, label_cols, is_valid_label)
+        self.checksum_col = checksum_col
         self.transform = transform
         self.target_transform = target_transform or {}
         if not isinstance(self.target_transform, dict):
@@ -228,6 +235,19 @@ class ImageDataFrameDataset(Dataset):
 
         self.df[image_col] = self.df[image_col].apply(
             lambda rpath: os.path.join(rootdir, rpath))
+        if self.checksum_col is not None:
+            is_valid = df.apply(
+                lambda x: self._verify_checksum(
+                    x[self.image_col],
+                    x[self.checksum_col]
+                ),
+                axis=1
+            ).values
+            if not all(is_valid):
+                raise ValueError(
+                    "Based on checksum, data have changed on disk."
+                )
+
         self.imgs = self.df[image_col].tolist()
         self.targets = (
             self.df[self.label_cols].values.tolist()
@@ -276,6 +296,30 @@ class ImageDataFrameDataset(Dataset):
                 )
 
         return label_cols if isinstance(label_cols, list) else [label_cols]
+
+    @classmethod
+    def _verify_checksum(cls, filename, expect_checksum):
+        """ Check if the input file matches the input SHA-256 sum.
+        """
+        checksum = cls._checksum(filename)
+        return expect_checksum == checksum
+
+    @classmethod
+    def _checksum(cls, filename):
+        """ Compute the input file SHA-256 sum.
+
+        Reading the whole file at once might consume a lot of memory if it
+        is large, thus reading and hashing the file in 4K chunks.
+        """
+        h = hashlib.sha256()
+        with open(filename, "rb") as fh:
+            while True:
+                data = fh.read(4096)
+                if len(data) == 0:
+                    break
+                else:
+                    h.update(data)
+        return h.hexdigest()
 
     def apply_transform(self, image):
         """Apply the specified transform to the image.

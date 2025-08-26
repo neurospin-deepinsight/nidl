@@ -468,6 +468,28 @@ class TestImageDataFrameDataset(unittest.TestCase):
         img = ds[0]
         self.assertEqual(img, "/myrootdir/img1.jpg")
 
+    def test_verify_checksum(self):
+        expect_checksum = ImageDataFrameDataset._checksum(__file__)
+        self.assertTrue(
+            ImageDataFrameDataset._verify_checksum(__file__, expect_checksum)
+        )
+        df = self.df.copy()
+        df["image_path"] = [__file__, __file__]
+        df["checksum"] = [expect_checksum, expect_checksum]
+        ds = ImageDataFrameDataset(
+            rootdir="",
+            df=df,
+            checksum_col="checksum"
+        )
+        self.assertEqual(len(ds), 2)
+        with self.assertRaises(ValueError):
+            df["checksum"] = [expect_checksum, "wrong"]
+            ds = ImageDataFrameDataset(
+                rootdir="",
+                df=df,
+                checksum_col="checksum"
+            )
+        
 
 if __name__ == "__main__":
     unittest.main()
