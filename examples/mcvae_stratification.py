@@ -216,15 +216,21 @@ model = MCVAE(
     **model_params,
 )
 
-save_callback = model.trainer_params["callbacks"][0]
+save_callback, cache_callback = model.trainer_params["callbacks"][:2]
 save_path = save_callback.format_checkpoint_name(metrics={})
 if not os.path.isfile(save_path):
     model.fit(dataloaders["train"], dataloaders["test"])
     print(f"Saving: {save_callback.last_model_path}...")
+    _weights = {
+        "model": model.state_dict(),
+        "cache": cache_callback.state_dict()
+    }
+    torch.save(_weights, save_path)
 else:
     print(f"Restoring: {save_path}...")
-    model = MCVAE.load_from_checkpoint(save_path)
-    cache_callback = model.trainer_params["callbacks"][1]
+    _weights = torch.load(save_path, weights_only=False)
+    model.load_state_dict(_weights["model"])
+    cache_callback.load_state_dict(_weights["cache"])
     model.cache = cache_callback.returned_objects
     model.fitted_ = True
 
@@ -276,7 +282,6 @@ groups = {
     split: [mapping[item] for item in y[split]["labels"]]
     for split in ("train", "test")
 }
-print(groups)
 for block, z_block in zip(datasets["test"].channel_names, z):
     print("-- display", block, z_block.shape)
     fig = plt.figure()
