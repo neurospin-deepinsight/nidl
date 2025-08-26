@@ -353,41 +353,46 @@ class TestImageDataFrameDataset(unittest.TestCase):
 
     def test_len_and_getitem_single_label(self):
         ds = ImageDataFrameDataset(
-            self.df,
+            rootdir="/myrootdir/",
+            df=self.df,
             image_col="image_path",
             label_cols="label", 
             image_loader=lambda path: path
         )
         self.assertEqual(len(ds), 2)
         img, label = ds[0]
-        self.assertEqual(img, "img1.jpg")
+        self.assertEqual(img, "/myrootdir/img1.jpg")
         self.assertEqual(label, ["cat"])
 
     def test_getitem_multi_labels(self):
         ds = ImageDataFrameDataset(
-            self.df,
+            rootdir="/myrootdir/",
+            df=self.df,
             image_col="image_path",
             label_cols=["label", "age"], 
             image_loader=lambda path: path
         )
         img, label = ds[1]
-        self.assertEqual(img, "img2.jpg")
+        self.assertEqual(img, "/myrootdir/img2.jpg")
         self.assertEqual(label, ["dog", 7])
 
     def test_transform_applied(self):
         ds = ImageDataFrameDataset(
-            self.df,
+            rootdir="/myrootdir/",
+            df=self.df,
             label_cols="label", 
             image_loader=lambda path: path,
-            transform=lambda x: f"processed_{x}"
+            transform=lambda x: os.path.join(
+                os.path.dirname(x), f"processed_{os.path.basename(x)}")
         )
         img, label = ds[0]
-        self.assertEqual(img, "processed_img1.jpg")
+        self.assertEqual(img, "/myrootdir/processed_img1.jpg")
 
     def test_target_transform_callable(self):
         target_transform = lambda y: y.upper()
         ds = ImageDataFrameDataset(
-            self.df,
+            rootdir="/myrootdir/",
+            df=self.df,
             label_cols="label",
             image_loader=lambda path: path,
             target_transform=lambda y: y.upper()
@@ -397,7 +402,8 @@ class TestImageDataFrameDataset(unittest.TestCase):
 
     def test_target_transform_dict(self):
         ds = ImageDataFrameDataset(
-            self.df,
+            rootdir="/myrootdir/",
+            df=self.df,
             label_cols=["label", "age"],
             image_loader=lambda path: path,
             target_transform={"label": str.upper, "age": lambda x: x * 2},
@@ -407,7 +413,8 @@ class TestImageDataFrameDataset(unittest.TestCase):
 
     def test_series_as_input(self):
         ds = ImageDataFrameDataset(
-            pd.Series(["img1.jpg", "img2.jpg"])
+            rootdir="/myrootdir/",
+            df=pd.Series(["img1.jpg", "img2.jpg"])
         )
         self.assertEqual(len(ds), 2)
 
@@ -415,43 +422,51 @@ class TestImageDataFrameDataset(unittest.TestCase):
         tmp_csv = "/tmp/temp.csv"
         self.df.to_csv(tmp_csv, index=False)
         ds = ImageDataFrameDataset(
-            tmp_csv
+            rootdir="/myrootdir/",
+            df=tmp_csv
         )
         self.assertEqual(len(ds), 2)
 
     def test_invalid_df_type(self):
         with self.assertRaises(TypeError):
-            ImageDataFrameDataset(123)
+            ImageDataFrameDataset(
+                rootdir="/myrootdir/",
+                df=123
+            )
 
     def test_missing_image_col(self):
         with self.assertRaises(ValueError):
             ImageDataFrameDataset(
-                pd.DataFrame({"wrong": [1, 2]})
+                rootdir="/myrootdir/",
+                df=pd.DataFrame({"wrong": [1, 2]})
             )
 
     def test_missing_label_col(self):
         with self.assertRaises(ValueError):
             ImageDataFrameDataset(
-                self.df,
+                rootdir="/myrootdir/",
+                df=self.df,
                 label_cols="nonexistent"
             )
 
     def test_missing_label_cols_list(self):
         with self.assertRaises(ValueError):
             ImageDataFrameDataset(
-                self.df,
+                rootdir="/myrootdir/",
+                df=self.df,
                 label_cols=["label", "nope"]
             )
 
     def test_return_img_only_if_no_label(self):
         ds = ImageDataFrameDataset(
-            self.df,
+            rootdir="/myrootdir/",
+            df=self.df,
             label_cols=None,
             return_none_if_no_label=True,
             image_loader=lambda path: path
         )
         img = ds[0]
-        self.assertEqual(img, "img1.jpg")
+        self.assertEqual(img, "/myrootdir/img1.jpg")
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@
 # for details.
 ##########################################################################
 
+import os
 from typing import Any, Callable, Optional, Union
 
 import nibabel
@@ -16,7 +17,7 @@ from torch.utils.data import Dataset
 
 
 def default_image_loader(path: str) -> Any:
-    """Default image loader function.
+    """ Default image loader function.
 
     Parameters
     ----------
@@ -51,7 +52,7 @@ def default_image_loader(path: str) -> Any:
 
 
 class ImageDataFrameDataset(Dataset):
-    """PyTorch Dataset for loading images from a pandas DataFrame.
+    """ Dataset for loading images from a pandas DataFrame.
 
     This dataset assumes that the DataFrame contains:
 
@@ -64,8 +65,11 @@ class ImageDataFrameDataset(Dataset):
 
     Parameters
     ----------
+    rootdir: str
+        The path where the dataset is stored.
     df: pd.DataFrame or pd.Series or str
-        DataFrame containing image paths and optional labels:
+        DataFrame containing image paths relatvice to the `rootdir` and
+        optional labels:
 
         - if a DataFrame, it should contain at least one column with the
           image paths;
@@ -129,8 +133,12 @@ class ImageDataFrameDataset(Dataset):
     ...     'image_path': ['image1.jpg', 'image2.jpg'],
     ...     'label': ['cat', 'dog']
     ... })
-    >>> dataset = ImageDataFrameDataset(df, image_col='image_path',
-    ...     label_cols='label')
+    >>> dataset = ImageDataFrameDataset(
+    ...     rootdir='mypath/',
+    ...     df=df,
+    ...     image_col='image_path',
+    ...     label_cols='label'
+    ... )
     >>> image, label = dataset[0]
     >>> print(label)
     "cat"
@@ -141,7 +149,11 @@ class ImageDataFrameDataset(Dataset):
     >>> df = pd.DataFrame({
     ...     'image_path': ['image1.jpg', 'image2.jpg']
     ... })
-    >>> dataset = ImageDataFrameDataset(df, image_col='image_path')
+    >>> dataset = ImageDataFrameDataset(
+    ...     rootdir='mypath/',
+    ...     df=df,
+    ...     image_col='image_path'
+    ... )
     >>> image, _ = dataset[0]
     >>> print(type(image))
     <class 'PIL.Image.Image'>
@@ -154,7 +166,9 @@ class ImageDataFrameDataset(Dataset):
     ... })
     >>> target_transform = {"diagnosis": lambda x: 1 if x == 'patient' else 0}
     >>> dataset = ImageDataFrameDataset(
-    ...     df, image_col='image_path',
+    ...     rootdir='mypath/',
+    ...     df=df,
+    ...     image_col='image_path',
     ...     label_cols=['diagnosis', 'age'],
     ...     target_transform=target_transform
     ... )
@@ -163,9 +177,19 @@ class ImageDataFrameDataset(Dataset):
     (30, 1)
     >>> print(type(image_mri))
     <class 'nibabel.nifti1.Nifti1Image'>
+
+    Raises
+    ------
+    TypeError
+        If `df` is not a DataFrame, Series, or path to CSV or if `label_cols`
+        is not a string or a list of strings.
+    ValueError
+        If one the the specified colomn is not found in `df` or if the
+        targets have incorrect values.
     """
     def __init__(
         self,
+        rootdir: str,
         df: Union[pd.DataFrame, pd.Series, str],
         image_col: str = "image_path",
         label_cols: Optional[Union[str, list[str]]] = None,
@@ -202,6 +226,8 @@ class ImageDataFrameDataset(Dataset):
         self.return_none_if_no_label = return_none_if_no_label
         self.image_loader = image_loader
 
+        self.df[image_col] = self.df[image_col].apply(
+            lambda rpath: os.path.join(rootdir, rpath))
         self.imgs = self.df[image_col].tolist()
         self.targets = (
             self.df[self.label_cols].values.tolist()
