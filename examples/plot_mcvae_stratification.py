@@ -121,7 +121,7 @@ class DropoutRateCallback(pl.Callback):
 # our ground truth: emotional dysregulation (Emot), attention problems (Attn),
 # anxiety depression (AnxDep) and controls.
 
-with_data = True
+with_data = False
 if with_data:
     data_params = Bunch(
         channel_names=["clinical", "rois"],
