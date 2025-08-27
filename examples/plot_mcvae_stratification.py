@@ -121,46 +121,50 @@ class DropoutRateCallback(pl.Callback):
 # our ground truth: emotional dysregulation (Emot), attention problems (Attn),
 # anxiety depression (AnxDep) and controls.
 
-
-data_params = Bunch(
-    channel_names=["clinical", "rois"],
-)
-data = {
-    split: np.load(f"./data/multiblock_X_{split}.npz")
-    for split in ("train", "test")
-}
-X = {
-    split: [
-        data[split][key] for key in data_params.channel_names
-    ]
-    for split in ("train", "test")
-}
-y = {
-    split: pd.read_csv(f"./data/metadata_{split}.tsv", sep="\t")
-    for split in ("train", "test")
-}
-mapping = dict((key, "Control") for key in range(9))
-mapping[0] = "AnxDep"
-mapping[3] = "Attn"
-mapping[6] = "Emot"
-datasets = {
-    split: MCDataset(
-        X[split],
-        **data_params,
+with_data = True
+if with_data:
+    data_params = Bunch(
+        channel_names=["clinical", "rois"],
     )
-    for split in ("train", "test")
-}
-print(f"-- input train: {[ch.shape for ch in datasets['train'].X]}")
-print(f"-- input validation: {[ch.shape for ch in datasets['test'].X]}")
-dataloaders = {
-    split: torch.utils.data.DataLoader(
-        datasets[split],
-        batch_size=len(datasets[split]),
-        shuffle=(split == "train"),
-        num_workers=1,
-    )
-    for split in ["train", "test"]
-}
+    data = {
+        split: np.load(f"./data/multiblock_X_{split}.npz")
+        for split in ("train", "test")
+    }
+    X = {
+        split: [
+            data[split][key] for key in data_params.channel_names
+        ]
+        for split in ("train", "test")
+    }
+    y = {
+        split: pd.read_csv(f"./data/metadata_{split}.tsv", sep="\t")
+        for split in ("train", "test")
+    }
+    mapping = dict((key, "Control") for key in range(9))
+    mapping[0] = "AnxDep"
+    mapping[3] = "Attn"
+    mapping[6] = "Emot"
+    datasets = {
+        split: MCDataset(
+            X[split],
+            **data_params,
+        )
+        for split in ("train", "test")
+    }
+    print(f"-- input train: {[ch.shape for ch in datasets['train'].X]}")
+    print(f"-- input validation: {[ch.shape for ch in datasets['test'].X]}")
+    dataloaders = {
+        split: torch.utils.data.DataLoader(
+            datasets[split],
+            batch_size=len(datasets[split]),
+            shuffle=(split == "train"),
+            num_workers=1,
+        )
+        for split in ["train", "test"]
+    }
+    n_feats = datasets["train"].n_feats
+else:
+    n_feats = [7, 444]
 
 
 # %%
@@ -188,7 +192,7 @@ if load_pretrained:
 model_params = Bunch(
     latent_dim=10,
     beta=1.,
-    n_feats=datasets["train"].n_feats,
+    n_feats=n_feats,
     vae_kwargs={},
     lr=2e-3,
     weight_decay=0,
@@ -277,31 +281,32 @@ colors = {
     "Attn": "goldenrod",
     "AnxDep": "red"
 }
-unique_groups = set(mapping.values()) - {"Control"}
-groups = {
-    split: [mapping[item] for item in y[split]["labels"]]
-    for split in ("train", "test")
-}
-for block, z_block in zip(datasets["test"].channel_names, z):
-    print("-- display", block, z_block.shape)
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-    for group in unique_groups:
-        group_indices = (np.asarray(groups["test"]) == group)
-        _z_block = z_block[group_indices]
-        print("-- group", group, _z_block.shape)
-        ax.scatter(_z_block[:, 0], _z_block[:, 1], _z_block[:, 2],
-                   c=colors[group], marker="o", label=group)
-    ax.set_xlabel("1st latent dim")
-    ax.set_ylabel("2nd latent dim")
-    ax.set_zlabel("3rd latent dim")
-    plt.suptitle(
-        f"Three selected latent dimensions for the '{block}' channel"
-    )
-    ax.xaxis.set_ticklabels([])
-    ax.yaxis.set_ticklabels([])
-    ax.zaxis.set_ticklabels([])
-    plt.legend(loc="upper right")
+if with_data:
+    unique_groups = set(mapping.values()) - {"Control"}
+    groups = {
+        split: [mapping[item] for item in y[split]["labels"]]
+        for split in ("train", "test")
+    }
+    for block, z_block in zip(datasets["test"].channel_names, z):
+        print("-- display", block, z_block.shape)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        for group in unique_groups:
+            group_indices = (np.asarray(groups["test"]) == group)
+            _z_block = z_block[group_indices]
+            print("-- group", group, _z_block.shape)
+            ax.scatter(_z_block[:, 0], _z_block[:, 1], _z_block[:, 2],
+                       c=colors[group], marker="o", label=group)
+        ax.set_xlabel("1st latent dim")
+        ax.set_ylabel("2nd latent dim")
+        ax.set_zlabel("3rd latent dim")
+        plt.suptitle(
+            f"Three selected latent dimensions for the '{block}' channel"
+        )
+        ax.xaxis.set_ticklabels([])
+        ax.yaxis.set_ticklabels([])
+        ax.zaxis.set_ticklabels([])
+        plt.legend(loc="upper right")
 
 
 plt.show()
