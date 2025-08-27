@@ -233,7 +233,6 @@ class BaseEstimator(pl.LightningModule):
             fitted estimator.
         """
         trainer = pl.Trainer(**self.trainer_params_)
-        trainer.logger._default_hp_metric = None
         pl.seed_everything(self.hparams.random_state)
         trainer.fit(self, train_dataloader, val_dataloader)
         self.fitted_ = True
@@ -288,8 +287,11 @@ class BaseEstimator(pl.LightningModule):
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
-        return torch.cat(trainer.predict(
-            self, test_dataloader, return_predictions=True))
+        pred = trainer.predict(self, test_dataloader, return_predictions=True)
+        if isinstance(pred[0], torch.Tensor):
+            return torch.cat(pred)
+        else:
+            return pred
 
     def training_step(
             self,
