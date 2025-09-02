@@ -1,3 +1,11 @@
+##########################################################################
+# NSAp - Copyright (C) CEA, 2025
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
+
 from typing import Union
 
 import numpy as np
@@ -198,6 +206,14 @@ class MultitaskModelProbing(ModelProbing):
     def log_classification_metrics(self, pl_module, y_pred, y_true, task_name):
         """Log the metrics for a classification task.
 
+        The main classification metrics reported are:
+
+        - precision (macro)
+        - recall (macro)
+        - f1-score (weighted and macro)
+        - accuracy (global)
+        - balanced accuracy
+
         Parameters
         ----------
         pl_module: nidl.estimators.base.BaseEstimator
@@ -240,6 +256,16 @@ class MultitaskModelProbing(ModelProbing):
     def log_regression_metrics(self, pl_module, y_pred, y_true, task_name):
         """Log the metrics for a regression task.
 
+        The main regression metrics reported are:
+
+        - mean absolute error
+        - median absolute error
+        - root mean squared error
+        - mean squared error
+        - R² score
+        - Pearson's r
+        - explained variance score
+
         Parameters
         ----------
         pl_module: nidl.estimators.base.BaseEstimator
@@ -261,7 +287,7 @@ class MultitaskModelProbing(ModelProbing):
         for name, value in metrics_report.items():
             if isinstance(value, dict):
                 value_ = {
-                    f"{task_name}{name}/{k}": v for (k, v) in value.items()
+                    f"{task_name}/{name}/{k}": v for (k, v) in value.items()
                 }
                 pl_module.log_dict(
                     value_,
@@ -270,7 +296,7 @@ class MultitaskModelProbing(ModelProbing):
                 )
             else:
                 pl_module.log(
-                    f"{task_name}{name}",
+                    f"{task_name}/{name}",
                     value,
                     prog_bar=self.prog_bar,
                     on_epoch=True,
@@ -292,7 +318,7 @@ class MultitaskModelProbing(ModelProbing):
             Ground-truth for the tasks.
 
         """
-        for i, task_name in self.enumerate(self.probe_names):
+        for i, task_name in enumerate(self.probe_names):
             if is_classifier(self.probe.estimators[i]):
                 self.log_classification_metrics(
                     pl_module, y_pred[:, i], y_true[:, i], task_name

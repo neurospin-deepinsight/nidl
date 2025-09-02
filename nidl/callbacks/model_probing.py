@@ -95,12 +95,12 @@ class ModelProbing(ABC, pl.Callback):
 
     @rank_zero_only
     def fit(self, X, y):
-        """Fit the probe on the embeddings and labels of the training data."""
+        """Fit the probe on the training data embeddings."""
         return self.probe.fit(X, y)
 
     @rank_zero_only
     def predict(self, X):
-        """Predict the probe on new data X."""
+        """Make predictions on new data."""
         return self.probe.predict(X)
 
     @abstractmethod
@@ -206,9 +206,9 @@ class ModelProbing(ABC, pl.Callback):
 
         Returns
         -------
-        tuple of (X, y)
-            Tuple of numpy arrays (X, y) where X is the extracted features
-            and y is the corresponding labels.
+        tuple of (z, y)
+            Tuple of numpy arrays (z, y) where z are the extracted features
+            and y are the corresponding labels.
 
         """
         is_training = pl_module.training  # Save state
@@ -236,11 +236,11 @@ class ModelProbing(ABC, pl.Callback):
         y = torch.cat(y)
 
         # Gather across GPUs
-        X = pl_module.trainer.strategy.all_gather(X).cpu().numpy()
-        y = pl_module.trainer.strategy.all_gather(y).cpu().numpy()
+        X = pl_module.all_gather(X).cpu().numpy()
+        y = pl_module.all_gather(y).cpu().numpy()
 
         # Reduce (world_size, batch, ...) to (world_size * batch, ...)
-        if X.ndim > 2:
+        if X.ndim > 2 and pl_module.trainer.world_size > 1:
             X = X.reshape(X.shape[0] * X.shape[1], *X.shape[2:])
             y = y.reshape(y.shape[0] * y.shape[1], *y.shape[2:])
 
@@ -279,9 +279,7 @@ class ClassificationProbingCallback(ModelProbing):
     Concretely this callback:
 
     1) Embeds the input data through the torch model.
-
     2) Fits the classification probe on the embedded data.
-
     3) Logs the main classification metrics:
 
        - precision (macro)
@@ -355,9 +353,9 @@ class ClassificationProbingCallback(ModelProbing):
             prog_bar,
         )
         self.probe_name = (
-            probe_name + "/"
+            probe_name
             if probe_name is not None
-            else f"{probe.__class__.__name__}/"
+            else f"{probe.__class__.__name__}"
         )
 
     @rank_zero_only
@@ -399,9 +397,7 @@ class RegressionProbingCallback(ModelProbing):
     Concretely this callback:
 
     1) Embeds the input data through the estimator.
-
     2) Fits the regression probe on the embedded data.
-
     3) Logs the main regression metrics including:
 
        - mean absolute error
