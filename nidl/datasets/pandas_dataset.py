@@ -18,7 +18,7 @@ from torch.utils.data import Dataset
 
 
 def default_image_loader(path: str) -> Any:
-    """ Default image loader function.
+    """Default image loader function.
 
     Parameters
     ----------
@@ -53,7 +53,7 @@ def default_image_loader(path: str) -> Any:
 
 
 class ImageDataFrameDataset(Dataset):
-    """ Dataset for loading images from a pandas DataFrame.
+    """Dataset for loading images from a pandas DataFrame.
 
     This dataset assumes that the DataFrame contains:
 
@@ -70,7 +70,7 @@ class ImageDataFrameDataset(Dataset):
     rootdir: str
         The path where the dataset is stored.
     df: pd.DataFrame or pd.Series or str
-        DataFrame containing image paths relatvice to the `rootdir` and
+        DataFrame containing image paths relative to the `rootdir` and
         optional labels:
 
         - if a DataFrame, it should contain at least one column with the
@@ -192,6 +192,7 @@ class ImageDataFrameDataset(Dataset):
         targets have incorrect values or if based on checksum data have
         changed on disk.
     """
+
     def __init__(
         self,
         rootdir: str,
@@ -234,14 +235,14 @@ class ImageDataFrameDataset(Dataset):
         self.image_loader = image_loader
 
         self.df[image_col] = self.df[image_col].apply(
-            lambda rpath: os.path.join(rootdir, rpath))
+            lambda rpath: os.path.join(rootdir, rpath)
+        )
         if self.checksum_col is not None:
             is_valid = df.apply(
                 lambda x: self._verify_checksum(
-                    x[self.image_col],
-                    x[self.checksum_col]
+                    x[self.image_col], x[self.checksum_col]
                 ),
-                axis=1
+                axis=1,
             ).values
             if not all(is_valid):
                 raise ValueError(
@@ -260,9 +261,9 @@ class ImageDataFrameDataset(Dataset):
         self,
         df: pd.DataFrame,
         label_cols: Union[str, list[str]],
-        is_valid_label: Union[Callable, dict[str, Callable]]
+        is_valid_label: Union[Callable, dict[str, Callable]],
     ):
-        """ Verify `label_cols` parameter format, that all columns are
+        """Verify `label_cols` parameter format, that all columns are
         available in the input data frame, and optionaly label values.
         """
         if label_cols is None:
@@ -299,14 +300,13 @@ class ImageDataFrameDataset(Dataset):
 
     @classmethod
     def _verify_checksum(cls, filename, expect_checksum):
-        """ Check if the input file matches the input SHA-256 sum.
-        """
+        """Check if the input file matches the input SHA-256 sum."""
         checksum = cls._checksum(filename)
         return expect_checksum == checksum
 
     @classmethod
     def _checksum(cls, filename):
-        """ Compute the input file SHA-256 sum.
+        """Compute the input file SHA-256 sum.
 
         Reading the whole file at once might consume a lot of memory if it
         is large, thus reading and hashing the file in 4K chunks.
@@ -322,20 +322,20 @@ class ImageDataFrameDataset(Dataset):
         return h.hexdigest()
 
     def apply_transform(self, image):
-        """Apply the specified transform to the image.
-        """
+        """Apply the specified transform to the image."""
         return self.transform(image) if self.transform is not None else image
 
     def apply_target_transform(self, label):
-        """Apply the specified target transform to the label(s).
-        """
+        """Apply the specified target transform to the label(s)."""
         return (
             [
                 self.target_transform.get(col, lambda x: x)(val)
                 for col, val in zip(self.label_cols, label)
             ]
-            if (self.target_transform is not None and
-                self.label_cols is not None)
+            if (
+                self.target_transform is not None
+                and self.label_cols is not None
+            )
             else label
         )
 
