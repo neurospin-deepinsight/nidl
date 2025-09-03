@@ -45,7 +45,7 @@ def pearson_r(
         Sample weights for weighted Pearson's correlation.
 
     multioutput : {'raw_values', 'uniform_average'} or array-like of shape \
-(n_outputs,), optional
+        (n_outputs,), optional
         Defines aggregating of multiple output scores.
 
         - 'raw_values': Returns a full set of scores in case of multioutput
@@ -215,12 +215,14 @@ def regression_report(
     regressor 0     1.80   2.00   2.21   4.90  -0.34  0.92  0.55
     regressor 1     1.05   1.10   1.27   1.61  -2.95  0.44 -0.25
 
-        average     1.42   1.55   1.74   3.26  -1.64  0.68  0.15
+    average         1.42   1.55   1.74   3.26  -1.64  0.68  0.15
+
     >>> y_true = [0.1, 5.1, 2.0, 4.0]
     >>> y_pred = [0.0, 2.0, 1.0, 1.0]
     >>> print(regression_report(y_true, y_pred))
                     MAE   MedAE   RMSE    MSE     R2   PCC  EVar
     regressor 0    1.80   2.00   2.21   4.90  -0.34  0.92  0.55
+
     """
     headers = [
         "MAE",

@@ -67,9 +67,9 @@ class TestRegressionMetrics(unittest.TestCase):
         report = regression_report(y_true, y_pred, 
                                    sample_weight=np.random.rand(10),
                                    output_dict=True)
+        reg_metrics = ['MAE', 'MedAE', 'RMSE', 'MSE', 'R2', 'PCC', 'EVar']
         for i in range(3):
-            for metric in ['MAE', 'MedAE', 'RMSE', 'MSE', 
-                           'R2', 'PCC', 'EVar']:
+            for metric in reg_metrics:
                 self.assertAlmostEqual(report[f'regressor {i}'][metric], report[f'average'][metric])
 
         report = regression_report(y_true, y_pred, output_dict=False)
@@ -84,4 +84,4 @@ class TestRegressionMetrics(unittest.TestCase):
         y_true = np.random.rand(10, 1)
         y_pred = np.random.rand(10, 1)
         report = regression_report(y_true, y_pred, output_dict=True)
-        self.assertTrue(len(report) == 1)
+        self.assertTrue(set(report.keys()) == set(reg_metrics)) # metrics are reported directly
