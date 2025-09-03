@@ -10,9 +10,8 @@
 
 from .check_typing import BatchTypingCallback
 from .model_probing import (
-    KNeighborsClassifierCVCallback,
-    KNeighborsRegressorCVCallback,
-    LogisticRegressionCVCallback,
+    ClassificationProbingCallback,
     ModelProbing,
-    RidgeCVCallback,
+    RegressionProbingCallback,
 )
+from .multitask_probing import MultiTaskEstimator, MultitaskModelProbing

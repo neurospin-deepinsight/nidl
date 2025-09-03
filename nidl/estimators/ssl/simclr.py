@@ -194,7 +194,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
             feats[:n_samples], feats[n_samples:]
         )
         # Logging loss
-        self.log(mode + "_loss", nll, prog_bar=True)
+        self.log(mode + "_loss", nll, prog_bar=True, sync_dist=True)
         return nll
 
     def training_step(
