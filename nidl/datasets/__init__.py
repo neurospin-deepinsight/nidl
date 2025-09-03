@@ -10,3 +10,4 @@
 
 from .base import BaseImageDataset, BaseNumpyDataset
 from .openbhb import OpenBHB
+from .pandas_dataset import ImageDataFrameDataset

@@ -7,20 +7,21 @@
 ##########################################################################
 
 import unittest
-from unittest.mock import patch
-
+from unittest.mock import patch, MagicMock
 import os
 import pandas as pd
 import numpy as np
 import shutil
 import sys
 import torch
+from PIL import Image
 
 from nidl.datasets.base import (
     BaseImageDataset,
     BaseNumpyDataset,
 )
-from nidl.datasets import OpenBHB
+from nidl.datasets import OpenBHB, ImageDataFrameDataset
+from nidl.datasets.pandas_dataset import default_image_loader as default_loader
 from nidl.utils import print_multicolor
 
 
@@ -311,6 +312,184 @@ class TestOpenBHB(unittest.TestCase):
                 OpenBHB(root=self.local_path, modality="vbm", 
                         target=target, split="train", streaming=True)
 
+
+class TestDefaultLoader(unittest.TestCase):
+    @patch("nibabel.load")
+    def test_load_nii(self, mock_nib):
+        mock_img = MagicMock()
+        mock_img.get_fdata.return_value = "nii_data"
+        mock_nib.return_value = mock_img
+
+        result = default_loader("test.nii")
+        self.assertEqual(result, "nii_data")
+
+    @patch("numpy.load")
+    def test_load_numpy(self, mock_npy):
+        mock_npy.return_value = np.array([1, 2, 3])
+        result = default_loader("array.npy")
+        np.testing.assert_array_equal(result, np.array([1, 2, 3]))
+
+    @patch("PIL.Image.open")
+    def test_load_pil_image(self, mock_open):
+        mock_img = MagicMock()
+        mock_img.convert.return_value = "rgb_img"
+        mock_open.return_value = mock_img
+
+        result = default_loader("image.jpg")
+        self.assertEqual(result, "rgb_img")
+
+    def test_invalid_extension(self):
+        with self.assertRaises(ValueError):
+            default_loader("file.txt")
+
+
+class TestImageDataFrameDataset(unittest.TestCase):
+    def setUp(self):
+        self.df = pd.DataFrame({
+            "image_path": ["img1.jpg", "img2.jpg"],
+            "label": ["cat", "dog"],
+            "age": [5, 7]
+        })
+
+    def test_len_and_getitem_single_label(self):
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=self.df,
+            image_col="image_path",
+            label_cols="label", 
+            image_loader=lambda path: path
+        )
+        self.assertEqual(len(ds), 2)
+        img, label = ds[0]
+        self.assertEqual(img, "/myrootdir/img1.jpg")
+        self.assertEqual(label, ["cat"])
+
+    def test_getitem_multi_labels(self):
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=self.df,
+            image_col="image_path",
+            label_cols=["label", "age"], 
+            image_loader=lambda path: path
+        )
+        img, label = ds[1]
+        self.assertEqual(img, "/myrootdir/img2.jpg")
+        self.assertEqual(label, ["dog", 7])
+
+    def test_transform_applied(self):
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=self.df,
+            label_cols="label", 
+            image_loader=lambda path: path,
+            transform=lambda x: os.path.join(
+                os.path.dirname(x), f"processed_{os.path.basename(x)}")
+        )
+        img, label = ds[0]
+        self.assertEqual(img, "/myrootdir/processed_img1.jpg")
+
+    def test_target_transform_callable(self):
+        target_transform = lambda y: y.upper()
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=self.df,
+            label_cols="label",
+            image_loader=lambda path: path,
+            target_transform=lambda y: y.upper()
+        )
+        _, label = ds[0]
+        self.assertEqual(label, ["CAT"])
+
+    def test_target_transform_dict(self):
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=self.df,
+            label_cols=["label", "age"],
+            image_loader=lambda path: path,
+            target_transform={"label": str.upper, "age": lambda x: x * 2},
+        )
+        _, label = ds[1]
+        self.assertEqual(label, ["DOG", 14])
+
+    def test_series_as_input(self):
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=pd.Series(["img1.jpg", "img2.jpg"])
+        )
+        self.assertEqual(len(ds), 2)
+
+    def test_csv_as_input(self):
+        tmp_csv = "/tmp/temp.csv"
+        self.df.to_csv(tmp_csv, index=False)
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=tmp_csv
+        )
+        self.assertEqual(len(ds), 2)
+
+    def test_invalid_df_type(self):
+        with self.assertRaises(TypeError):
+            ImageDataFrameDataset(
+                rootdir="/myrootdir/",
+                df=123
+            )
+
+    def test_missing_image_col(self):
+        with self.assertRaises(ValueError):
+            ImageDataFrameDataset(
+                rootdir="/myrootdir/",
+                df=pd.DataFrame({"wrong": [1, 2]})
+            )
+
+    def test_missing_label_col(self):
+        with self.assertRaises(ValueError):
+            ImageDataFrameDataset(
+                rootdir="/myrootdir/",
+                df=self.df,
+                label_cols="nonexistent"
+            )
+
+    def test_missing_label_cols_list(self):
+        with self.assertRaises(ValueError):
+            ImageDataFrameDataset(
+                rootdir="/myrootdir/",
+                df=self.df,
+                label_cols=["label", "nope"]
+            )
+
+    def test_return_img_only_if_no_label(self):
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=self.df,
+            label_cols=None,
+            return_none_if_no_label=True,
+            image_loader=lambda path: path
+        )
+        img = ds[0]
+        self.assertEqual(img, "/myrootdir/img1.jpg")
+
+    def test_verify_checksum(self):
+        expect_checksum = ImageDataFrameDataset._checksum(__file__)
+        self.assertTrue(
+            ImageDataFrameDataset._verify_checksum(__file__, expect_checksum)
+        )
+        df = self.df.copy()
+        df["image_path"] = [__file__, __file__]
+        df["checksum"] = [expect_checksum, expect_checksum]
+        ds = ImageDataFrameDataset(
+            rootdir="",
+            df=df,
+            checksum_col="checksum"
+        )
+        self.assertEqual(len(ds), 2)
+        with self.assertRaises(ValueError):
+            df["checksum"] = [expect_checksum, "wrong"]
+            ds = ImageDataFrameDataset(
+                rootdir="",
+                df=df,
+                checksum_col="checksum"
+            )
+        
 
 if __name__ == "__main__":
     unittest.main()
