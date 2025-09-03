@@ -41,6 +41,16 @@ Various utilities to print text in a terminal using term colors.
     * `nidl.utils.color.random_stylize <nidl.utils.color.random_stylize.html>`_
     * `nidl.utils.color.stylize <nidl.utils.color.stylize.html>`_
 
+nidl.utils.bunch
+^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
+
 nidl.utils.validation
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -65,14 +75,4 @@ Various utilities to download model weights.
 
   **Classes**:
     * `nidl.utils.weights.Weights <nidl.utils.weights.Weights.html>`_
-
-nidl.utils.bunch
-^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.utils.bunch.Bunch <nidl.utils.bunch.Bunch.html>`_
 

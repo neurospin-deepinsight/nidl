@@ -18,16 +18,6 @@ nidl.volume.transforms.augmentation.spatial
     * `nidl.volume.transforms.augmentation.spatial.RandomResizedCrop <nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop.html>`_
     * `nidl.volume.transforms.augmentation.spatial.RandomRotation <nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation.html>`_
 
-nidl.volume.transforms.augmentation.spatial.random_erasing
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing <nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html>`_
-
 nidl.volume.transforms.augmentation.spatial.random_rotation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -37,6 +27,16 @@ nidl.volume.transforms.augmentation.spatial.random_rotation
 
   **Classes**:
     * `nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation <nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation.html>`_
+
+nidl.volume.transforms.augmentation.spatial.random_resized_crop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop <nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop.html>`_
 
 nidl.volume.transforms.augmentation.spatial.random_flip
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -48,13 +48,13 @@ nidl.volume.transforms.augmentation.spatial.random_flip
   **Classes**:
     * `nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip <nidl.volume.transforms.augmentation.spatial.random_flip.RandomFlip.html>`_
 
-nidl.volume.transforms.augmentation.spatial.random_resized_crop
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+nidl.volume.transforms.augmentation.spatial.random_erasing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
 .. rst-class:: documentation-contents
 
   **Classes**:
-    * `nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop <nidl.volume.transforms.augmentation.spatial.random_resized_crop.RandomResizedCrop.html>`_
+    * `nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing <nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing.html>`_
 

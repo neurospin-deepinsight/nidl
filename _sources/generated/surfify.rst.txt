@@ -10,16 +10,6 @@ surfify
 
 Helper module for surface integration in PyTorch.
 
-surfify.preprocessing
-^^^^^^^^^^^^^^^^^^^^^
-
-Methods for scaling, centering, normalization, and more.
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `surfify.preprocessing.StandardScaler <surfify.preprocessing.StandardScaler.html>`_
-
 surfify.transforms
 ^^^^^^^^^^^^^^^^^^
 
@@ -29,4 +19,14 @@ Methods to decalre transforms.
 
   **Classes**:
     * `surfify.transforms.RandomCompose <surfify.transforms.RandomCompose.html>`_
+
+surfify.preprocessing
+^^^^^^^^^^^^^^^^^^^^^
+
+Methods for scaling, centering, normalization, and more.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.preprocessing.StandardScaler <surfify.preprocessing.StandardScaler.html>`_
 

@@ -6,9 +6,9 @@
 
     This page is a reference documentation. It only explains the function signature, and not how to use it. Please refer to the :ref:`gallery <sphx_glr_auto_gallery>` for the big picture.
 
-.. autofunction:: surfify.utils.sampling.patch_tri
+.. autofunction:: nidl.datasets.pandas_dataset.default_image_loader
 
-.. minigallery:: surfify.utils.sampling.patch_tri surfify.utils.patch_tri
+.. minigallery:: nidl.datasets.pandas_dataset.default_image_loader
     :add-heading: Examples
     :heading-level: -
 

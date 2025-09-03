@@ -17,6 +17,16 @@ nidl.volume.transforms.preprocessing.spatial
     * `nidl.volume.transforms.preprocessing.spatial.Resample <nidl.volume.transforms.preprocessing.spatial.resample.Resample.html>`_
     * `nidl.volume.transforms.preprocessing.spatial.Resize <nidl.volume.transforms.preprocessing.spatial.resize.Resize.html>`_
 
+nidl.volume.transforms.preprocessing.spatial.resize
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.transforms.preprocessing.spatial.resize.Resize <nidl.volume.transforms.preprocessing.spatial.resize.Resize.html>`_
+
 nidl.volume.transforms.preprocessing.spatial.resample
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -36,14 +46,4 @@ nidl.volume.transforms.preprocessing.spatial.crop_or_pad
 
   **Classes**:
     * `nidl.volume.transforms.preprocessing.spatial.crop_or_pad.CropOrPad <nidl.volume.transforms.preprocessing.spatial.crop_or_pad.CropOrPad.html>`_
-
-nidl.volume.transforms.preprocessing.spatial.resize
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.volume.transforms.preprocessing.spatial.resize.Resize <nidl.volume.transforms.preprocessing.spatial.resize.Resize.html>`_
 

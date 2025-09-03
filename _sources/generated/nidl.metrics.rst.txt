@@ -16,6 +16,11 @@ nidl.metrics
     * `nidl.metrics.pearson_r <nidl.metrics.regression.pearson_r.html>`_
     * `nidl.metrics.regression_report <nidl.metrics.regression.regression_report.html>`_
 
+nidl.metrics.classification
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
 nidl.metrics._regression
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -28,11 +33,6 @@ functions that does not require the latest numpy >= 2.0 version.
     * `nidl.metrics._regression._check_reg_targets <nidl.metrics._regression._check_reg_targets.html>`_
     * `nidl.metrics._regression._check_reg_targets_with_floating_dtype <nidl.metrics._regression._check_reg_targets_with_floating_dtype.html>`_
     * `nidl.metrics._regression._find_matching_floating_dtype <nidl.metrics._regression._find_matching_floating_dtype.html>`_
-
-nidl.metrics.classification
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
 
 nidl.metrics.regression
 ^^^^^^^^^^^^^^^^^^^^^^^

@@ -15,17 +15,8 @@ Common datasets.
   **Classes**:
     * `nidl.datasets.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
     * `nidl.datasets.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
+    * `nidl.datasets.ImageDataFrameDataset <nidl.datasets.pandas_dataset.ImageDataFrameDataset.html>`_
     * `nidl.datasets.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
-
-nidl.datasets.openbhb
-^^^^^^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.datasets.openbhb.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
 
 nidl.datasets.base
 ^^^^^^^^^^^^^^^^^^
@@ -38,4 +29,27 @@ Base class to generate datasets.
     * `nidl.datasets.base.BaseDataset <nidl.datasets.base.BaseDataset.html>`_
     * `nidl.datasets.base.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
     * `nidl.datasets.base.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
+
+nidl.datasets.pandas_dataset
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.datasets.pandas_dataset.ImageDataFrameDataset <nidl.datasets.pandas_dataset.ImageDataFrameDataset.html>`_
+
+  **Functions**:
+    * `nidl.datasets.pandas_dataset.default_image_loader <nidl.datasets.pandas_dataset.default_image_loader.html>`_
+
+nidl.datasets.openbhb
+^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.datasets.openbhb.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
 

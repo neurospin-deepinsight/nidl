@@ -6,11 +6,11 @@
 
      This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the :ref:`gallery <sphx_glr_auto_gallery>` for the big picture.
 
-.. autoclass:: nidl.losses.infonce.InfoNCE
+.. autoclass:: nidl.datasets.pandas_dataset.ImageDataFrameDataset
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.losses.infonce.InfoNCE nidl.losses.InfoNCE
+.. minigallery:: nidl.datasets.ImageDataFrameDataset nidl.datasets.pandas_dataset.ImageDataFrameDataset
     :add-heading: Examples
     :heading-level: -
 

@@ -16,16 +16,6 @@ Self-supervised estimators.
     * `nidl.estimators.ssl.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
     * `nidl.estimators.ssl.YAwareContrastiveLearning <nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html>`_
 
-nidl.estimators.ssl.yaware
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.estimators.ssl.yaware.YAwareContrastiveLearning <nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html>`_
-
 nidl.estimators.ssl.simclr
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -35,4 +25,14 @@ nidl.estimators.ssl.simclr
 
   **Classes**:
     * `nidl.estimators.ssl.simclr.SimCLR <nidl.estimators.ssl.simclr.SimCLR.html>`_
+
+nidl.estimators.ssl.yaware
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.estimators.ssl.yaware.YAwareContrastiveLearning <nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html>`_
 

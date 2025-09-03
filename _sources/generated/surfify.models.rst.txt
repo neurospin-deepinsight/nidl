@@ -42,51 +42,6 @@ Common architectures.
     * `surfify.models.SphericalVGG19 <surfify.models.vgg.SphericalVGG19.html>`_
     * `surfify.models.SphericalVGG19BN <surfify.models.vgg.SphericalVGG19BN.html>`_
 
-surfify.models.base
-^^^^^^^^^^^^^^^^^^^
-
-A base class for spherical networks that generate the requested icosahedrons
-and related informations.
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `surfify.models.base.Ico <surfify.models.base.Ico.html>`_
-    * `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
-
-surfify.models.sit
-^^^^^^^^^^^^^^^^^^
-
-The Surface Vision Transformer.
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
-    * `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
-    * `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
-    * `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
-
-surfify.models.vae
-^^^^^^^^^^^^^^^^^^
-
-Cortical Spherical Variational Auto-Encoder (GMVAE) models.
-
-[1] Representation Learning of Resting State fMRI with Variational
-Autoencoder: https://github.com/libilab/rsfMRI-VAE
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
-    * `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
-    * `surfify.models.vae.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
-    * `surfify.models.vae.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
-    * `surfify.models.vae.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
-
-  **Functions**:
-    * `surfify.models.vae.compute_output_dim <surfify.models.vae.compute_output_dim.html>`_
-
 surfify.models.vgg
 ^^^^^^^^^^^^^^^^^^
 
@@ -117,6 +72,18 @@ Spherical implementation of the torch vision VGG.
   **Functions**:
     * `surfify.models.vgg.class_factory <surfify.models.vgg.class_factory.html>`_
 
+surfify.models.base
+^^^^^^^^^^^^^^^^^^^
+
+A base class for spherical networks that generate the requested icosahedrons
+and related informations.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.models.base.Ico <surfify.models.base.Ico.html>`_
+    * `surfify.models.base.SphericalBase <surfify.models.base.SphericalBase.html>`_
+
 surfify.models.simclr
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -126,6 +93,19 @@ surfify.models.simclr
 
   **Classes**:
     * `surfify.models.simclr.SimCLR <surfify.models.simclr.SimCLR.html>`_
+
+surfify.models.sit
+^^^^^^^^^^^^^^^^^^
+
+The Surface Vision Transformer.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.models.sit.Attention <surfify.models.sit.Attention.html>`_
+    * `surfify.models.sit.FeedForward <surfify.models.sit.FeedForward.html>`_
+    * `surfify.models.sit.SiT <surfify.models.sit.SiT.html>`_
+    * `surfify.models.sit.Transformer <surfify.models.sit.Transformer.html>`_
 
 surfify.models.unet
 ^^^^^^^^^^^^^^^^^^^
@@ -142,4 +122,24 @@ The spherical UNet architecture.
     * `surfify.models.unet.SphericalUNet <surfify.models.unet.SphericalUNet.html>`_
     * `surfify.models.unet.UpBlock <surfify.models.unet.UpBlock.html>`_
     * `surfify.models.unet.UpGBlock <surfify.models.unet.UpGBlock.html>`_
+
+surfify.models.vae
+^^^^^^^^^^^^^^^^^^
+
+Cortical Spherical Variational Auto-Encoder (GMVAE) models.
+
+[1] Representation Learning of Resting State fMRI with Variational
+Autoencoder: https://github.com/libilab/rsfMRI-VAE
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `surfify.models.vae.HemiFusionDecoder <surfify.models.vae.HemiFusionDecoder.html>`_
+    * `surfify.models.vae.HemiFusionEncoder <surfify.models.vae.HemiFusionEncoder.html>`_
+    * `surfify.models.vae.SphericalHemiFusionDecoder <surfify.models.vae.SphericalHemiFusionDecoder.html>`_
+    * `surfify.models.vae.SphericalHemiFusionEncoder <surfify.models.vae.SphericalHemiFusionEncoder.html>`_
+    * `surfify.models.vae.SphericalVAE <surfify.models.vae.SphericalVAE.html>`_
+
+  **Functions**:
+    * `surfify.models.vae.compute_output_dim <surfify.models.vae.compute_output_dim.html>`_
 

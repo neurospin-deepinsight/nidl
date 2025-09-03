@@ -195,17 +195,17 @@
                                     
 						                <li> <a href='#surfify-models'>Surfify.models</a> </li>                                    
                                     
-						                <li> <a href='#surfify-models-base'>Surfify.models.base</a> </li>                                    
-                                    
-						                <li> <a href='#id1'>Surfify.models.sit</a> </li>                                    
-                                    
-						                <li> <a href='#surfify-models-vae'>Surfify.models.vae</a> </li>                                    
-                                    
 						                <li> <a href='#surfify-models-vgg'>Surfify.models.vgg</a> </li>                                    
                                     
-						                <li> <a href='#id2'>Surfify.models.simclr</a> </li>                                    
+						                <li> <a href='#surfify-models-base'>Surfify.models.base</a> </li>                                    
+                                    
+						                <li> <a href='#id1'>Surfify.models.simclr</a> </li>                                    
+                                    
+						                <li> <a href='#id2'>Surfify.models.sit</a> </li>                                    
                                     
 						                <li> <a href='#surfify-models-unet'>Surfify.models.unet</a> </li>                                    
+                                    
+						                <li> <a href='#surfify-models-vae'>Surfify.models.vae</a> </li>                                    
                                     
                                 
                             
@@ -296,51 +296,6 @@
 </dd>
 </dl>
 </section>
-<section id="surfify-models-base">
-<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.base<a class="headerlink" href="#surfify-models-base" title="Link to this heading">¶</a></h2>
-<p>A base class for spherical networks that generate the requested icosahedrons
-and related informations.</p>
-<dl class="simple documentation-contents">
-<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="surfify.models.base.Ico.html">surfify.models.base.Ico</a></p></li>
-<li><p><a class="reference external" href="surfify.models.base.SphericalBase.html">surfify.models.base.SphericalBase</a></p></li>
-</ul>
-</dd>
-</dl>
-</section>
-<section id="id1">
-<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.sit<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
-<p>The Surface Vision Transformer.</p>
-<dl class="simple documentation-contents">
-<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="surfify.models.sit.Attention.html">surfify.models.sit.Attention</a></p></li>
-<li><p><a class="reference external" href="surfify.models.sit.FeedForward.html">surfify.models.sit.FeedForward</a></p></li>
-<li><p><a class="reference external" href="surfify.models.sit.SiT.html">surfify.models.sit.SiT</a></p></li>
-<li><p><a class="reference external" href="surfify.models.sit.Transformer.html">surfify.models.sit.Transformer</a></p></li>
-</ul>
-</dd>
-</dl>
-</section>
-<section id="surfify-models-vae">
-<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.vae<a class="headerlink" href="#surfify-models-vae" title="Link to this heading">¶</a></h2>
-<p>Cortical Spherical Variational Auto-Encoder (GMVAE) models.</p>
-<p>[1] Representation Learning of Resting State fMRI with Variational
-Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfMRI-VAE">https://github.com/libilab/rsfMRI-VAE</a></p>
-<dl class="simple documentation-contents">
-<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="surfify.models.vae.HemiFusionDecoder.html">surfify.models.vae.HemiFusionDecoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.HemiFusionEncoder.html">surfify.models.vae.HemiFusionEncoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionDecoder.html">surfify.models.vae.SphericalHemiFusionDecoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionEncoder.html">surfify.models.vae.SphericalHemiFusionEncoder</a></p></li>
-<li><p><a class="reference external" href="surfify.models.vae.SphericalVAE.html">surfify.models.vae.SphericalVAE</a></p></li>
-</ul>
-</dd>
-<dt><strong>Functions</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="surfify.models.vae.compute_output_dim.html">surfify.models.vae.compute_output_dim</a></p></li>
-</ul>
-</dd>
-</dl>
-</section>
 <section id="surfify-models-vgg">
 <h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.vgg<a class="headerlink" href="#surfify-models-vgg" title="Link to this heading">¶</a></h2>
 <p>Spherical implementation of the torch vision VGG.</p>
@@ -372,11 +327,36 @@ Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfM
 </dd>
 </dl>
 </section>
-<section id="id2">
-<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.simclr<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<section id="surfify-models-base">
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.base<a class="headerlink" href="#surfify-models-base" title="Link to this heading">¶</a></h2>
+<p>A base class for spherical networks that generate the requested icosahedrons
+and related informations.</p>
+<dl class="simple documentation-contents">
+<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.base.Ico.html">surfify.models.base.Ico</a></p></li>
+<li><p><a class="reference external" href="surfify.models.base.SphericalBase.html">surfify.models.base.SphericalBase</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="id1">
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.simclr<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
 <li><p><a class="reference external" href="surfify.models.simclr.SimCLR.html">surfify.models.simclr.SimCLR</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.sit<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>The Surface Vision Transformer.</p>
+<dl class="simple documentation-contents">
+<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.sit.Attention.html">surfify.models.sit.Attention</a></p></li>
+<li><p><a class="reference external" href="surfify.models.sit.FeedForward.html">surfify.models.sit.FeedForward</a></p></li>
+<li><p><a class="reference external" href="surfify.models.sit.SiT.html">surfify.models.sit.SiT</a></p></li>
+<li><p><a class="reference external" href="surfify.models.sit.Transformer.html">surfify.models.sit.Transformer</a></p></li>
 </ul>
 </dd>
 </dl>
@@ -393,6 +373,26 @@ Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfM
 <li><p><a class="reference external" href="surfify.models.unet.SphericalUNet.html">surfify.models.unet.SphericalUNet</a></p></li>
 <li><p><a class="reference external" href="surfify.models.unet.UpBlock.html">surfify.models.unet.UpBlock</a></p></li>
 <li><p><a class="reference external" href="surfify.models.unet.UpGBlock.html">surfify.models.unet.UpGBlock</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="surfify-models-vae">
+<h2 style='border-bottom: 1px solid #d3dbd5'>surfify.models.vae<a class="headerlink" href="#surfify-models-vae" title="Link to this heading">¶</a></h2>
+<p>Cortical Spherical Variational Auto-Encoder (GMVAE) models.</p>
+<p>[1] Representation Learning of Resting State fMRI with Variational
+Autoencoder: <a class="reference external" href="https://github.com/libilab/rsfMRI-VAE">https://github.com/libilab/rsfMRI-VAE</a></p>
+<dl class="simple documentation-contents">
+<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.vae.HemiFusionDecoder.html">surfify.models.vae.HemiFusionDecoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.HemiFusionEncoder.html">surfify.models.vae.HemiFusionEncoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionDecoder.html">surfify.models.vae.SphericalHemiFusionDecoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.SphericalHemiFusionEncoder.html">surfify.models.vae.SphericalHemiFusionEncoder</a></p></li>
+<li><p><a class="reference external" href="surfify.models.vae.SphericalVAE.html">surfify.models.vae.SphericalVAE</a></p></li>
+</ul>
+</dd>
+<dt><strong>Functions</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="surfify.models.vae.compute_output_dim.html">surfify.models.vae.compute_output_dim</a></p></li>
 </ul>
 </dd>
 </dl>

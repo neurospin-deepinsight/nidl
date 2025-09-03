@@ -27,11 +27,14 @@ Search in API documentation of ``nidl``
         <li><a href='nidl.callbacks.model_probing.RidgeCVCallback.html'>nidl.callbacks.model_probing.RidgeCVCallback</a></li>
         <li><a href='nidl.datasets.base.BaseImageDataset.html'>nidl.datasets.BaseImageDataset</a></li>
         <li><a href='nidl.datasets.base.BaseNumpyDataset.html'>nidl.datasets.BaseNumpyDataset</a></li>
+        <li><a href='nidl.datasets.pandas_dataset.ImageDataFrameDataset.html'>nidl.datasets.ImageDataFrameDataset</a></li>
         <li><a href='nidl.datasets.openbhb.OpenBHB.html'>nidl.datasets.OpenBHB</a></li>
         <li><a href='nidl.datasets.base.BaseDataset.html'>nidl.datasets.base.BaseDataset</a></li>
         <li><a href='nidl.datasets.base.BaseImageDataset.html'>nidl.datasets.base.BaseImageDataset</a></li>
         <li><a href='nidl.datasets.base.BaseNumpyDataset.html'>nidl.datasets.base.BaseNumpyDataset</a></li>
         <li><a href='nidl.datasets.openbhb.OpenBHB.html'>nidl.datasets.openbhb.OpenBHB</a></li>
+        <li><a href='nidl.datasets.pandas_dataset.ImageDataFrameDataset.html'>nidl.datasets.pandas_dataset.ImageDataFrameDataset</a></li>
+        <li><a href='nidl.datasets.pandas_dataset.default_image_loader.html'>nidl.datasets.pandas_dataset.default_image_loader</a></li>
         <li><a href='nidl.estimators.base.BaseEstimator.html'>nidl.estimators.BaseEstimator</a></li>
         <li><a href='nidl.estimators.base.ClassifierMixin.html'>nidl.estimators.ClassifierMixin</a></li>
         <li><a href='nidl.estimators.base.ClusterMixin.html'>nidl.estimators.ClusterMixin</a></li>

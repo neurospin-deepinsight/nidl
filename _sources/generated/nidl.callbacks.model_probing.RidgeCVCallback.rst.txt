@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.model_probing.RidgeCVCallback nidl.callbacks.RidgeCVCallback
+.. minigallery:: nidl.callbacks.RidgeCVCallback nidl.callbacks.model_probing.RidgeCVCallback
     :add-heading: Examples
     :heading-level: -
 

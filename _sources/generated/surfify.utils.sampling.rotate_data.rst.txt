@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.rotate_data
 
-.. minigallery:: surfify.utils.sampling.rotate_data surfify.utils.rotate_data
+.. minigallery:: surfify.utils.rotate_data surfify.utils.sampling.rotate_data
     :add-heading: Examples
     :heading-level: -
 

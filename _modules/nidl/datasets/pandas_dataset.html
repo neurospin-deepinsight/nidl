@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../../_static/css/style.css">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../../../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                            <li>API</li>
+                            <li><a href="../../../generated/nidl.html">nidl</a></li><li><a href="../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../generated/nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../generated/nidl.metrics.html">nidl.metrics</a></li><li><a href="../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../generated/nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="../../../generated/surfify.html">surfify</a></li><li><a href="../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <h1>Source code for nidl.datasets.pandas_dataset</h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div><div class="highlight"><pre>
+<span></span><span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2025</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">nibabel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<div class="viewcode-block" id="default_image_loader">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.pandas_dataset.default_image_loader.html#nidl.datasets.default_image_loader">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_image_loader</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default image loader function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        the image to load.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    im: object</span>
+<span class="sd">        the loaded image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.nii&quot;</span><span class="p">,</span> <span class="s2">&quot;.nii.gz&quot;</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.npy&quot;</span><span class="p">,</span> <span class="s2">&quot;.npz&quot;</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.jpeg&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.ppm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.bmp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.pgm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.tif&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.tiff&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;.webp&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file type: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ImageDataFrameDataset">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.pandas_dataset.ImageDataFrameDataset.html#nidl.datasets.ImageDataFrameDataset">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageDataFrameDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataset for loading images from a pandas DataFrame.</span>
+
+<span class="sd">    This dataset assumes that the DataFrame contains:</span>
+
+<span class="sd">    - one column with file paths to image data;</span>
+<span class="sd">    - zero or more additional columns containing target labels (optional).</span>
+<span class="sd">    - one column containing the image paths checksums (optional).</span>
+
+<span class="sd">    Images are loaded on-the-fly from disk when accessed. Labels (if provided)</span>
+<span class="sd">    are extracted from the specified column(s) and returned alongside the</span>
+<span class="sd">    image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rootdir: str</span>
+<span class="sd">        The path where the dataset is stored.</span>
+<span class="sd">    df: pd.DataFrame or pd.Series or str</span>
+<span class="sd">        DataFrame containing image paths relative to the `rootdir` and</span>
+<span class="sd">        optional labels:</span>
+
+<span class="sd">        - if a DataFrame, it should contain at least one column with the</span>
+<span class="sd">          image paths;</span>
+<span class="sd">        - if a Series, it should contain the image paths;</span>
+<span class="sd">        - if str, it should be the path to a CSV file.</span>
+<span class="sd">    image_col: str, default=&quot;image_path&quot;</span>
+<span class="sd">        Name of the column in `df` containing image file paths.</span>
+<span class="sd">    label_cols: str, list of str, default=None</span>
+<span class="sd">       Name of the column(s) containing label(s):</span>
+
+<span class="sd">       - if None (default), no labels are returned.</span>
+<span class="sd">       - if string, it should be the name of a single column in `df`.</span>
+<span class="sd">       - if list, it should contain the names of multiple columns in `df`.</span>
+<span class="sd">    checksum_col: str; default=None</span>
+<span class="sd">        Name of the column in `df` containing the image file paths checksums.</span>
+<span class="sd">    transform: Callable, default=None</span>
+<span class="sd">        Optional transform that takes in the loaded image and returns a</span>
+<span class="sd">        transformed version.</span>
+<span class="sd">    target_transform: Callable, Dict[str, Callable], default=None</span>
+<span class="sd">        Optional transform applied to the label(s):</span>
+
+<span class="sd">        - if callable: applied to all labels, e.g. `lambda y: torch.tensor(y)`</span>
+<span class="sd">        - if dictionary: apply different transforms per column. In that case,</span>
+<span class="sd">          the keys should be included in the column names in `label_cols` and</span>
+<span class="sd">          values must be callable.</span>
+<span class="sd">    return_none_if_no_label: bool, default=True</span>
+<span class="sd">        If True, returns `(&lt;img&gt;, None)` when getting an item and `label_cols`</span>
+<span class="sd">        is empty or None (default). Otherwise, only `&lt;img&gt;` is returned.</span>
+<span class="sd">    image_loader: Callable, default=default_image_loader</span>
+<span class="sd">        Function to load the image from the file path. It takes a string (the</span>
+<span class="sd">        file path) as input and returns the loaded image. By default, it</span>
+<span class="sd">        accepts the following:</span>
+
+<span class="sd">        - all image extensions supported by PIL (e.g., .jpg, .png, .bmp etc.)</span>
+<span class="sd">        - numpy arrays (e.g., .npy, .npz)</span>
+<span class="sd">        - 3D medical images (e.g., .nii, .nii.gz) using nibabel</span>
+<span class="sd">    is_valid_label: Callable, Dict[str, Callable], default=None</span>
+<span class="sd">        Function to check if a label is valid. If None (default), all labels</span>
+<span class="sd">        are considered valid. This can be used to filter out samples with</span>
+<span class="sd">        invalid labels from the dataset, e.g. NaN. If `label_cols` is a string,</span>
+<span class="sd">        it takes a label as input and returns a boolean. If `label_cols` is a</span>
+<span class="sd">        list, it takes a list of labels as input and returns a boolean.</span>
+<span class="sd">    read_csv_kwargs: Optional[dict], default=None</span>
+<span class="sd">        Additional keyword arguments to pass to `pd.read_csv` if `df` is a</span>
+<span class="sd">        string path. For instance you can define the proper &#39;\t&#39; separator</span>
+<span class="sd">        when working with a TSV file.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        The DataFrame containing image paths and labels.</span>
+<span class="sd">    imgs: list</span>
+<span class="sd">        List of image paths (before loading).</span>
+<span class="sd">    targets: list</span>
+<span class="sd">        List of labels (before any transformations).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Dataset for supervised computer vision tasks:</span>
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; from nidl.datasets.pandas_dataset import ImageDataFrameDataset</span>
+<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame({</span>
+<span class="sd">    ...     &#39;image_path&#39;: [&#39;image1.jpg&#39;, &#39;image2.jpg&#39;],</span>
+<span class="sd">    ...     &#39;label&#39;: [&#39;cat&#39;, &#39;dog&#39;]</span>
+<span class="sd">    ... })</span>
+<span class="sd">    &gt;&gt;&gt; dataset = ImageDataFrameDataset(</span>
+<span class="sd">    ...     rootdir=&#39;mypath/&#39;,</span>
+<span class="sd">    ...     df=df,</span>
+<span class="sd">    ...     image_col=&#39;image_path&#39;,</span>
+<span class="sd">    ...     label_cols=&#39;label&#39;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; image, label = dataset[0]</span>
+<span class="sd">    &gt;&gt;&gt; print(label)</span>
+<span class="sd">    &quot;cat&quot;</span>
+<span class="sd">    &gt;&gt;&gt; print(type(image))</span>
+<span class="sd">    &lt;class &#39;PIL.Image.Image&#39;&gt;</span>
+
+<span class="sd">    Dataset for unsupervised computer vision tasks:</span>
+<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame({</span>
+<span class="sd">    ...     &#39;image_path&#39;: [&#39;image1.jpg&#39;, &#39;image2.jpg&#39;]</span>
+<span class="sd">    ... })</span>
+<span class="sd">    &gt;&gt;&gt; dataset = ImageDataFrameDataset(</span>
+<span class="sd">    ...     rootdir=&#39;mypath/&#39;,</span>
+<span class="sd">    ...     df=df,</span>
+<span class="sd">    ...     image_col=&#39;image_path&#39;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; image, _ = dataset[0]</span>
+<span class="sd">    &gt;&gt;&gt; print(type(image))</span>
+<span class="sd">    &lt;class &#39;PIL.Image.Image&#39;&gt;</span>
+
+<span class="sd">    Dataset for 3D medical images:</span>
+<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame({</span>
+<span class="sd">    ...     &#39;image_path&#39;: [&#39;mri1.nii&#39;, &#39;mri2.nii&#39;],</span>
+<span class="sd">    ...     &#39;diagnosis&#39;: [&#39;patient&#39;, &#39;control&#39;],</span>
+<span class="sd">    ...     &#39;age&#39;: [30, 25]</span>
+<span class="sd">    ... })</span>
+<span class="sd">    &gt;&gt;&gt; target_transform = {&quot;diagnosis&quot;: lambda x: 1 if x == &#39;patient&#39; else 0}</span>
+<span class="sd">    &gt;&gt;&gt; dataset = ImageDataFrameDataset(</span>
+<span class="sd">    ...     rootdir=&#39;mypath/&#39;,</span>
+<span class="sd">    ...     df=df,</span>
+<span class="sd">    ...     image_col=&#39;image_path&#39;,</span>
+<span class="sd">    ...     label_cols=[&#39;diagnosis&#39;, &#39;age&#39;],</span>
+<span class="sd">    ...     target_transform=target_transform</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; image_mri, (label, age) = dataset[0]</span>
+<span class="sd">    &gt;&gt;&gt; print(label_mri, age_mri)</span>
+<span class="sd">    (30, 1)</span>
+<span class="sd">    &gt;&gt;&gt; print(type(image_mri))</span>
+<span class="sd">    &lt;class &#39;nibabel.nifti1.Nifti1Image&#39;&gt;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If `df` is not a DataFrame, Series, or path to CSV or if `label_cols`</span>
+<span class="sd">        is not a string or a list of strings.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If one the the specified colomn is not found in `df` or if the</span>
+<span class="sd">        targets have incorrect values or if based on checksum data have</span>
+<span class="sd">        changed on disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">rootdir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">image_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;image_path&quot;</span><span class="p">,</span>
+        <span class="n">label_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">checksum_col</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">target_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_none_if_no_label</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">image_loader</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">default_image_loader</span><span class="p">,</span>
+        <span class="n">is_valid_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">read_csv_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">read_csv_kwargs</span> <span class="o">=</span> <span class="n">read_csv_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">read_csv_kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">image_col</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;`df` must be a DataFrame, Series, or path to CSV.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">image_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">image_col</span><span class="si">}</span><span class="s2">` column not found in DataFrame.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_col</span> <span class="o">=</span> <span class="n">image_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verify_labels</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">label_cols</span><span class="p">,</span> <span class="n">is_valid_label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksum_col</span> <span class="o">=</span> <span class="n">checksum_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span> <span class="o">=</span> <span class="n">target_transform</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_none_if_no_label</span> <span class="o">=</span> <span class="n">return_none_if_no_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_loader</span> <span class="o">=</span> <span class="n">image_loader</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">image_col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">image_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">rpath</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">rpath</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksum_col</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">is_valid</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verify_checksum</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_col</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">checksum_col</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">is_valid</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Based on checksum, data have changed on disk.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">image_col</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="p">[[</span><span class="kc">None</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_labels</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">label_cols</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">is_valid_label</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify `label_cols` parameter format, that all columns are</span>
+<span class="sd">        available in the input data frame, and optionaly label values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">label_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_cols</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">label_cols</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">label_cols</span><span class="si">}</span><span class="s2">&#39; not found in DataFrame.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_cols</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">label_cols</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Columns </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">label_cols</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;not found in DataFrame.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">label_cols</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">))):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;label_cols must be a string or a list of strings, got &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label_cols</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_valid_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_cols</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">label_cols</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">is_valid_label</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">label_cols</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">is_valid_label</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">` samples with &quot;</span>
+                    <span class="s2">&quot;invalid labels found.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">label_cols</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_cols</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">label_cols</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_checksum</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">expect_checksum</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the input file matches the input SHA-256 sum.&quot;&quot;&quot;</span>
+        <span class="n">checksum</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_checksum</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">expect_checksum</span> <span class="o">==</span> <span class="n">checksum</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_checksum</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the input file SHA-256 sum.</span>
+
+<span class="sd">        Reading the whole file at once might consume a lot of memory if it</span>
+<span class="sd">        is large, thus reading and hashing the file in 4K chunks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">h</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ImageDataFrameDataset.apply_transform">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.pandas_dataset.ImageDataFrameDataset.html#nidl.datasets.ImageDataFrameDataset.apply_transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the specified transform to the image.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">image</span></div>
+
+
+<div class="viewcode-block" id="ImageDataFrameDataset.apply_target_transform">
+<a class="viewcode-back" href="../../../generated/nidl.datasets.pandas_dataset.ImageDataFrameDataset.html#nidl.datasets.ImageDataFrameDataset.apply_target_transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_target_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the specified target transform to the label(s).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)(</span><span class="n">val</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">target_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">else</span> <span class="n">label</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgs</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_transform</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_target_transform</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+        <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span><span class="p">,</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_none_if_no_label</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">outs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">outs</span><span class="p">)</span></div>
+
+</pre></div>
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../../_static/js/wow.min.js"></script>
+        <script src="../../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../../_static/js/scripts.js"></script>
+        <script src="../../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>
