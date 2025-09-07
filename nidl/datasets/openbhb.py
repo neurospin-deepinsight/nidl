@@ -234,16 +234,26 @@ class OpenBHB(Dataset):
         """
         split = "train" if split == "train" else "val"
         img_regex = {
-            "vbm": f"{split}/derivatives/sub-*/ses-*/sub-*cat12vbm_desc-gm_T1w.npy",
-            "quasiraw": f"{split}/derivatives/sub-*/ses-*/sub-*quasiraw_T1w.npy",
-            "fs_xhemi": f"{split}/derivatives/sub-*/ses-*/sub-*xhemi_T1w.npy",
-            "vbm_roi": f"{split}/derivatives/cat12vbm_roi/cat12vbm_roi_features.csv",
-            "fs_desikan_roi": f"{split}/derivatives/freesurfer_roi/desikan_roi_features.csv",
-            "fs_destrieux_roi": f"{split}/derivatives/freesurfer_roi/destrieux_roi_features.csv"
+            "vbm": (
+                f"{split}/derivatives/sub-*/ses-*/sub-*cat12vbm_desc-gm_T1w.npy"
+            ),
+            "quasiraw": (
+                f"{split}/derivatives/sub-*/ses-*/sub-*quasiraw_T1w.npy"
+            ),
+            "fs_xhemi": (
+                f"{split}/derivatives/sub-*/ses-*/sub-*xhemi_T1w.npy"
+            ),
+            "vbm_roi": (
+                f"{split}/derivatives/cat12vbm_roi/cat12vbm_roi_features.csv"
+            ),
+            "fs_desikan_roi": (
+                f"{split}/derivatives/freesurfer_roi/desikan_roi_features.csv"
+            ),
+            "fs_destrieux_roi": (
+                f"{split}/derivatives/freesurfer_roi/destrieux_roi_features.csv"
+            ),
         }
-        allow_patterns = [
-            img_regex[m] for m in modality
-        ]
+        allow_patterns = [img_regex[m] for m in modality]
         ignore_patterns = []
         len_all = 0
         if incremental:
@@ -697,7 +707,7 @@ class OpenBHB(Dataset):
             elif path.endswith("destrieux_roi_features.csv"):
                 shape = (7, 148)
             if path in self._cache:
-                    data = self._cache[path]
+                data = self._cache[path]
             else:
                 data = pd.read_csv(path)
                 self._cache[path] = data
