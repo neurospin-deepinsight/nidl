@@ -183,7 +183,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     ):
         if optimizer_kwargs is None:
             optimizer_kwargs = {"betas": (0.9, 0.99), "weight_decay": 5e-05}
-        ignore = []
+        ignore = ["callbacks"]
         if isinstance(encoder, nn.Module):
             ignore.append("encoder")
         if isinstance(projection_head, nn.Module):
