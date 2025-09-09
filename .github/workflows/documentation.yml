@@ -1,3 +1,16 @@
+---
+# Workflow to build the documentation.
+#
+# - check the quality of the doc strings.
+# - build doc and upload it as artifact.
+#
+# To run this check locally from the `doc` folder:
+#
+# .. code-block:: bash
+#
+#   $ cd ./doc
+#   $ make html-strict
+###
 name: "DOCUMENTATION"
 
 on:
@@ -34,50 +47,31 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install Latex
       run: |
-        sudo apt-get update
-        sudo apt install texlive-latex-extra
-        sudo apt install dvipng
+        sudo -E apt-get -yq update
+        sudo -E apt-get -yq --no-install-suggests --no-install-recommends install \
+            dvipng texlive-latex-base texlive-latex-extra
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
         python -m pip install --progress-bar off .
-        python -m pip install git+https://github.com/AGrigis/pysphinxdoc.git
-    - name: Declare plugins
-      run: |
-        declare -a plugins=("surfify")
-        mkdir ./plugins
-        for name in "${plugins[@]}"
-        do
-            git clone https://github.com/neurospin-deepinsight/$name ./plugins/$name
-            ls ./plugins/$name
-            ln -s $PWD/plugins/$name/examples $PWD/examples/$name
-            ls -l ./examples
-            ls ./examples/$name
-            sed -i '1d' ./examples/$name/README.txt
-            python -m pip install git+https://github.com/neurospin-deepinsight/$name
-            PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
-            echo $PLUGPATH
-            ln -s $PLUGPATH .
-        done
+        python -m pip install --progress-bar off .[openbhb]
+        python -m pip install --progress-bar off .[doc]
     - name: Compute documentation
       run: |
-        mkdir -p tmp/doc
-        DIR=$(pwd)
-        sphinxdoc -v 2 -p . -n '*nidl' -o $DIR/tmp/doc
-        cd tmp/doc
-        make raw-html
+        cd ./doc
+        make html-strict
         ls source/_static
         ls build/html/_static
         cp -r source/_static/* build/html/_static
-        cd ../..
+        cd ..
     - name: Upload documentation as an artifact
       uses: actions/upload-artifact@v4
       with: 
         name: html-documentation
         retention-days: 15
         path: |
-            tmp/doc/build/html
+            doc/build/html
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v4
       with:
@@ -114,32 +108,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install joblib
         python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
         python -m pip install --progress-bar off .
-        python -m pip install git+https://github.com/AGrigis/pysphinxdoc.git
-    - name: Declare plugins
-      run: |
-        declare -a plugins=("surfify")
-        mkdir ./plugins
-        for name in "${plugins[@]}"
-        do
-            git clone https://github.com/neurospin-deepinsight/$name ./plugins/$name
-            ln -s $PWD/plugins/$name/examples $PWD/examples/$name
-            sed -i '1d' ./examples/$name/README.txt
-            python -m pip install git+https://github.com/neurospin-deepinsight/$name
-            PLUGPATH=$(python3 -c "import $name; import os; print(os.path.dirname($name.__file__))")
-            echo $PLUGPATH
-            ln -s $PLUGPATH .
-        done
+        python -m pip install --progress-bar off .[openbhb]
+        python -m pip install --progress-bar off .[doc]
     - name: Compute documentation
       run: |
-        mkdir -p tmp/doc
-        DIR=$(pwd)
-        sphinxdoc -v 2 -p . -n '*nidl' -o $DIR/tmp/doc
-        cd tmp/doc
-        make raw-html
-        ls source/_static
-        ls build/html/_static
-        cp -r source/_static/* build/html/_static
-        cd ../..
+        cd ./doc
+        make html-strict

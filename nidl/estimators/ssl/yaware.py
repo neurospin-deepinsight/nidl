@@ -22,7 +22,7 @@ from .utils.projection_heads import YAwareProjectionHead
 
 
 class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
-    """y-Aware Contrastive Learning implementation [1]
+    """y-Aware Contrastive Learning implementation [1].
 
     y-Aware Contrastive Learning is a self-supervised learning framework for
     learning visual representations with auxiliary variables. It leverages
@@ -49,7 +49,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     ----------
     encoder : nn.Module or class
         Which deep architecture to use for encoding the input.
-        A PyTorch :class:`~torch.nn.Module` is expected.
+        A PyTorch `torch.nn.Module` is expected.
         In general, the uninstantiated class should be passed, although
         instantiated modules will also work.
 
@@ -69,7 +69,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     projection_head : nn.Module or class or None, default=YAwareProjectionHead
         Which projection head to use for the model. If None, no projection head
         is used and the encoder output is directly used for loss computation.
-        Otherwise, a :class:`~torch.nn.Module` is expected. In general,
+        Otherwise, a `~torch.nn.Module` is expected. In general,
         the uninstantiated class should be passed, although instantiated
         modules will also work. By default, a 2-layer MLP with ReLU activation,
         2048-d hidden units, and 128-d output dimensions is used.
@@ -103,7 +103,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         - If bandwidth is a 2d array, it must be of shape
           `(n_features, n_features)` where `n_features` is the number of
           features in `y`.
-        - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`
+        - If `bandwidth` is `KernelMetric`, it uses the `pairwise`
           method to compute the similarity matrix between auxiliary variables.
 
     optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
@@ -160,7 +160,6 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     lr_scheduler : LRSchedulerPLType or None
         Learning rate scheduler used for training.
     """
-
     def __init__(
         self,
         encoder: Union[nn.Module, type[nn.Module]],
@@ -225,12 +224,11 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             It can be a pair of `torch.Tensor` (V1, V2) or a pair
             ((V1, V2), y) where V1 and V2 are the two views of the same sample
             and y is the auxiliary variable.
-
         batch_idx: int
             The index of the current batch.
 
         Returns
-        ----------
+        -------
         loss: Tensor
             Training loss computed on this batch of data.
         """
@@ -260,11 +258,9 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             It can be a pair of `torch.Tensor` (V1, V2) or a pair
             ((V1, V2), y) where V1 and V2 are the two views of the same
             sample and y is the auxiliary variable.
-
         batch_idx: int
             The index of the current batch.
         """
-
         V1, V2, y = self.parse_batch(batch)
         Z1, Z2 = (
             self.projection_head(self.encoder(V1)),
@@ -312,7 +308,6 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             Second view of the input.
         y : Optional[torch.Tensor]
             Auxiliary label or variable, if present. Otherwise, None.
-
         """
         if isinstance(batch, Sequence) and len(batch) == 2:
             first, second = batch
@@ -338,6 +333,8 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         return V1, V2, y
 
     def configure_optimizers(self):
+        """ TODO
+        """
         known_optimizers = {
             "adam": torch.optim.Adam,
             "adamW": torch.optim.AdamW,

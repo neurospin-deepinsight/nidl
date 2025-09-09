@@ -23,27 +23,29 @@ class KernelMetric(BaseEstimator):
     It computes the weighting matrix between input samples based on
     Kernel Density Estimation (KDE) weighting scheme [1, 2].
     Concretely, it computes the following weighting matrix between
-    \( x1, ..., xn \):
+    (x1, ..., xn):
+
     .. math::
 
         W_{i,j} = K\\left( H^{-\\frac{1}{2}} (xi-xj) \\right)
 
     with K a kernel such that:
 
-    1) \( K(x) \geq 0 \),
-    2) \( \int K(x) \, dx = 1 \),
-    3) \( K(x) = K(-x) \),
+    1) K(x) >= 0,
+    2) K(x), dx = 1,
+    3) K(x) = K(-x),
 
-    and \( H \) is the bandwidth in the KDE estimation of \( p(X) \).
+    and (H) is the bandwidth in the KDE estimation of (p(X)).
 
     H is symmetric definite positive and it can be automatically computed based
     on Scott's method or Silverman's method if required.
     In that case, the bandwidth is computed as a scaled version of the
     covariance matrix of the data. If the bandwidth is set to a scalar,
     it is used as a diagonal matrix:
+
     .. math::
 
-        H = \mathrm{diag}(\\text{scalar})
+        H = \\mathrm{diag}(\\text{scalar})
 
     Parameters
     ----------
@@ -69,8 +71,7 @@ class KernelMetric(BaseEstimator):
     [1] Rosenblatt, M. (1956). "Remarks on some nonparametric estimates of a
         density function". Annals of Mathematical Statistics.
     [2] Parzen, E. (1962). "On estimation of a probability density function and
-        mode"
-
+        mode".
     """
 
     def __init__(
@@ -107,7 +108,7 @@ class KernelMetric(BaseEstimator):
             matrix).
 
         Returns
-        ----------
+        -------
         self: KernelMetric
         """
         X = check_array(self.atleast_2d(X))
@@ -216,7 +217,7 @@ class KernelMetric(BaseEstimator):
         """Compute Scott's factor.
 
         Returns
-        ----------
+        -------
         s : float
             Scott's factor.
         """
@@ -227,7 +228,7 @@ class KernelMetric(BaseEstimator):
         """Compute the Silverman factor.
 
         Returns
-        ----------
+        -------
         s : float
             The silverman factor.
         """
@@ -242,7 +243,7 @@ class KernelMetric(BaseEstimator):
             Input data.
 
         Returns
-        ----------
+        -------
         S: array of shape (n_samples, n_samples)
             Similarity matrix between input data.
         """
@@ -396,7 +397,7 @@ class YAwareInfoNCE(nn.Module):
             If None, the standard InfoNCE loss is returned.
 
         Returns
-        ----------
+        -------
         loss: torch.Tensor
             The y-Aware InfoNCE loss computed between `z1` and `z2`.
         """
