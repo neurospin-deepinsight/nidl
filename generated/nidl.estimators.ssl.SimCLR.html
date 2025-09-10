@@ -181,9 +181,9 @@
                                 
                                     <li>SECTIONS</li>
                                     
-						                <li> <a href='#nidl.estimators.ssl.SimCLR.configure_optimizers'>Simclr.configure_optimizers()</a> </li>                                    
+						                <li> <a href='#nidl.estimators.ssl.SimCLR.all_gather_and_flatten'>Simclr.all_gather_and_flatten()</a> </li>                                    
                                     
-						                <li> <a href='#nidl.estimators.ssl.SimCLR.info_nce_loss'>Simclr.info_nce_loss()</a> </li>                                    
+						                <li> <a href='#nidl.estimators.ssl.SimCLR.configure_optimizers'>Simclr.configure_optimizers()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.ssl.SimCLR.training_step'>Simclr.training_step()</a> </li>                                    
                                     
@@ -251,71 +251,44 @@
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">SimCLR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.base.TransformerMixin.html#nidl.estimators.base.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.base.BaseEstimator.html#nidl.estimators.base.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
-<p>SimCLR implementation.</p>
-<p>At each iteration, we get for every data x two differently augmented
-versions, which we refer to as x_i and x_j. Both of these images are
-encoded into a one-dimensional feature vector, between which we want to
-maximize similarity which minimizes it to all other data in the batch.
-The encoder network is split into two parts: a base encoder network f(.),
-and a projection head g(.). The base network is usually a deep CNN or SCNN,
-and is responsible for extracting a representation vector from the
-augmented data examples. Let’s denote the representations obtained from the
-encoder h=f(x). The projection head g(.) maps the representation h into a
-space where we apply the contrastive loss, i.e., compare similarities
-between vectors. In the original SimCLR paper g(.) was defined as a
-two-layer MLP with ReLU activation in the hidden layer. Note that in the
-follow-up paper, SimCLRv2, the authors mention that larger/wider MLPs can
-boost the performance considerably.</p>
-<p>After finishing the training with contrastive learning, we will remove
-the projection head g(.), and use f(.) as a pretrained feature extractor.
-The representations z that come out of the projection head g(.) have been
-shown to perform worse than those of the base network f(.) when
-finetuning the network for a new task. This is likely because the
-representations z are trained to become invariant to many features that
-can be important for downstream tasks. Thus, g(.) is only needed for the
-contrastive learning stage.</p>
-<p>Now that the architecture is described, let’s take a closer look at how we
-train the model. As mentioned before, we want to maximize the similarity
-between the representations of the two augmented versions of the same
-image, i.e., z_i and z_j, while minimizing it to all other examples in the
-batch. SimCLR thereby applies the InfoNCE loss, originally proposed by
-Aaron van den Oord et al. for contrastive learning. In short, the InfoNCE
-loss compares the similarity of z_i and z_j to the similarity of z_i to
-any other representation in the batch by performing a softmax over the
-similarity values. The loss can be formally written as:</p>
+<p>SimCLR <a class="reference internal" href="#r3" id="id1"><span>[R3]</span></a>.</p>
+<p>SimCLR is a contrastive learning framework for self-supervised
+representation learning. The key idea is to learn useful features
+without labels by making different augmented views of the same image close
+in a representation space, while pushing apart representations of different
+images. Once trained, the encoder can be reused for downstream tasks such
+as classification or regression.</p>
+<p>The model consists of:</p>
+<ul class="simple">
+<li><p>A base encoder <cite>f</cite> (e.g., a CNN), which extracts representation vectors.</p></li>
+<li><p>A projection head <cite>g</cite>, which maps representations into a space where the
+contrastive objective is applied.</p></li>
+</ul>
+<p>During training, two augmented versions of each input <cite>x</cite> are encoded into
+<cite>(z_i, z_j)</cite>. The objective is to maximize their similarity while
+minimizing similarity to all other samples in the batch. This is achieved
+with the InfoNCE loss <a class="reference internal" href="#r4" id="id2"><span>[R4]</span></a>, <a class="reference internal" href="#r5" id="id3"><span>[R5]</span></a>:</p>
 <div class="math">
-<p><img src="../_images/math/7a85bb32c2a48b2cecc525ca341bf85198c5035d.png" alt="\ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
-             \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                \exp(\text{sim}(z_i,z_k)/\tau)}
-           = -\text{sim}(z_i,z_j)/\tau
-             +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                \exp(\text{sim}(z_i,z_k)/\tau)\right]"/></p>
-</div><p>The function text{sim} is a similarity metric, and the hyperparameter
-tau is called temperature determining how peaked the distribution is.
-Since many similarity metrics are bounded, the temperature parameter
-allows us to balance the influence of many dissimilar image patches versus
-one similar patch. The similarity metric that is used in SimCLR is cosine
-similarity, as defined below:</p>
-<div class="math">
-<p><img src="../_images/math/18a8ddec389dc33fc5114f51c36d2e38f52adbce.png" alt="\text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}"/></p>
-</div><p>The maximum cosine similarity possible is 1, while the minimum is -1. In
-general, we will see that the features of two different images will
-converge to a cosine similarity around zero since the minimum, -1, would
-require z_i and z_j to be in the exact opposite direction in all feature
-dimensions, which does not allow for great flexibility.</p>
-<p>Alternatively to performing the validation on the contrastive learning
-loss as well, we could also take a simple, small downstream task, and
-track the performance of the base network f(.) on that.</p>
+<p><img src="../_images/math/ab31f1dd62cc4eeb13549a120426d4da7a6f0438.png" alt="\ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}
+                {\sum_{k=1, k\neq i}^{2N}
+                \exp(\text{sim}(z_i, z_k)/\tau)}"/></p>
+</div><p>Similarity is measured with cosine similarity. The temperature
+<img class="math" src="../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/> controls the sharpness of the distribution (refer to <a class="reference internal" href="#r6" id="id4"><span>[R6]</span></a> for
+more details).
+After training, the projection head <cite>g</cite> is discarded, and the encoder <cite>f</cite>
+serves as a pretrained feature extractor. This is because <cite>f</cite> provides
+representations that transfer better to downstream tasks than those from
+<cite>g</cite>.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>encoder</strong> : nn.Module</p>
 <blockquote>
-<div><p>the encoder f(.). It must store the size of the encoded one-dimensional
+<div><p>the encoder <cite>f</cite>. It must store the size of the encoded one-dimensional
 feature vector in a <cite>latent_size</cite> parameter.</p>
 </div></blockquote>
 <p><strong>hidden_dims</strong> : list of str</p>
 <blockquote>
-<div><p>the projector g(.) MLP architecture.</p>
+<div><p>the projector <cite>g</cite> with an MLP architecture.</p>
 </div></blockquote>
 <p><strong>lr</strong> : float</p>
 <blockquote>
@@ -343,9 +316,34 @@ feature vector in a <cite>latent_size</cite> parameter.</p>
 </div></blockquote>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>A batch of data must contains two elements: two tensors with contrasted
-images, and a list of tensors containing auxiliary variables.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
+“A Simple Framework for Contrastive Learning of Visual
+Representations”, ICML 2020.</p>
+</div>
+<div class="citation" id="r4" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R4<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
+<p>Aaron van den Oord, Yazhe Li, Oriol Vinyals, “Representation
+Learning with Contrastive Predictive Coding”, arXiv 2018.</p>
+</div>
+<div class="citation" id="r5" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R5<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<p>Sohn Kihyuk, “Improved Deep Metric Learning with Multi-class N-pair
+Loss Objective”, NIPS 2016.</p>
+</div>
+<div class="citation" id="r6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R6<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
+<p>Feng Wang, Huaping Liu, “Understanding the Behaviour of Contrastive
+Loss”, CVPR 2021.</p>
+</div>
+</div>
 <p class="rubric">Attributes</p>
 <table class="docutils align-default">
 <tbody>
@@ -358,130 +356,122 @@ images, and a list of tensors containing auxiliary variables.</p>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.configure_optimizers">
-<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.configure_optimizers" title="Link to this definition">¶</a></dt>
-<dd><p>Declare a <code class="xref py py-class docutils literal notranslate"><span class="pre">AdamW</span></code> optimizer and, optionnaly
-(<code class="docutils literal notranslate"><span class="pre">max_epochs</span></code> is defined), a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">CosineAnnealingLR</span></code> learning-rate
-scheduler.</p>
+<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.all_gather_and_flatten">
+<span class="sig-name descname"><span class="pre">all_gather_and_flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.all_gather_and_flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.all_gather_and_flatten" title="Link to this definition">¶</a></dt>
+<dd><p>Gathers the tensor from all devices and flattens batch dimension.</p>
+<p>This is useful when gathering tensors without adding extra dimensions.
+It handles some edge cases, such as when using a single GPU.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tensor</strong> : torch.Tensor</p>
+<blockquote>
+<div><p>The tensor to gather.</p>
+</div></blockquote>
+<p><strong>**kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Additional keyword arguments for <cite>self.all_gather</cite>.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>tensor</strong> : torch.Tensor</p>
+<blockquote>
+<div><p>The gathered and flattened tensor.</p>
+</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.info_nce_loss">
-<span class="sig-name descname"><span class="pre">info_nce_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.info_nce_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.info_nce_loss" title="Link to this definition">¶</a></dt>
-<dd><p>Compute and log the InfoNCE loss using
-<a class="reference internal" href="nidl.losses.InfoNCE.html#nidl.losses.InfoNCE" title="nidl.losses.InfoNCE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoNCE</span></code></a>.</p>
+<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.configure_optimizers">
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.configure_optimizers" title="Link to this definition">¶</a></dt>
+<dd><p>Declare a <code class="xref py py-class docutils literal notranslate"><span class="pre">AdamW</span></code> optimizer and, optionally
+a <code class="xref py py-class docutils literal notranslate"><span class="pre">CosineAnnealingLR</span></code> learning rate
+scheduler if <code class="docutils literal notranslate"><span class="pre">max_epochs</span></code> is set.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.training_step">
 <span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.training_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.training_step" title="Link to this definition">¶</a></dt>
-<dd><p>Here you compute and return the training loss and some additional
-metrics for e.g. the progress bar or logger.</p>
+<dd><p>Perform one training step and computes training loss.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>batch</strong> : iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
+<dd class="field-odd"><p><strong>batch</strong> : Any</p>
 <blockquote>
-<div><p>the current data.</p>
+<div><p>A batch of data that has been generated from train_dataloader.
+It should be a pair of <cite>torch.Tensor</cite> (V1, V2) where V1 and V2
+are the two views of the same sample. They must have equal first
+dimensions.</p>
 </div></blockquote>
 <p><strong>batch_idx</strong> : int</p>
 <blockquote>
-<div><p>the index of this batch.</p>
+<div><p>The index of the current batch (ignored).</p>
 </div></blockquote>
 <p><strong>dataloader_idx</strong> : int, default=0</p>
 <blockquote>
-<div><p>the index of the dataloader that produced this batch (only if
-multiple dataloaders are used).</p>
+<div><p>The index of the dataloader (ignored).</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>loss</strong> : STEP_OUTPUT</p>
+<dd class="field-even"><p><strong>loss</strong> : Tensor</p>
 <blockquote>
-<div><p>the computed loss:</p>
-<ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - the loss tensor.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - a dictionary which can include any keys, but must
-include the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code> in the case of automatic optimization.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - in automatic optimization, this will skip to the
-next batch (but is not supported for multi-GPU, TPU, or
-DeepSpeed). For manual optimization, this has no special
-meaning, as returning the loss is not required.</p></li>
-</ul>
+<div><p>Training loss computed on this batch of data.</p>
 </div></blockquote>
-<p>To use multiple optimizers, you can switch to ‘manual optimization’</p>
-<p>and control their stepping:</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>When <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> &gt; 1, the loss returned here will be
-automatically normalized by <code class="docutils literal notranslate"><span class="pre">accumulate_grad_batches</span></code> internally.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Multiple optimizers (e.g.: GANs)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="p">,</span> <span class="n">opt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizers</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with encoder</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt1</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># do training_step with decoder</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">opt2</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.transform_step">
 <span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.transform_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.transform_step" title="Link to this definition">¶</a></dt>
-<dd><p>Define a transform step.</p>
-<p>Share the same API as <code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.predict_step()</span></code>.</p>
+<dd><p>Encode the input data into the latent space.</p>
+<p>Importantly, we do not apply the projection head here since it is
+not part of the final model at inference time (only used for training).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> : torch.Tensor</p>
+<blockquote>
+<div><p>A batch of data that has been generated from <cite>test_dataloader</cite>.
+This is given as is to the encoder.</p>
+</div></blockquote>
+<p><strong>batch_idx</strong> : int</p>
+<blockquote>
+<div><p>The index of the current batch (ignored).</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>The index of the dataloader (ignored).</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>features</strong> : torch.Tensor</p>
+<blockquote>
+<div><p>The encoded features returned by the encoder.</p>
+</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.validation_step">
 <span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.validation_step" title="Link to this definition">¶</a></dt>
-<dd><p>Operates on a single batch of data from the validation set. In
-this step you’d might generate examples or calculate anything of
-interest like accuracy.</p>
+<dd><p>Perform one validation step and computes validation loss.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>batch</strong> : iterable, normally a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></p>
+<dd class="field-odd"><p><strong>batch</strong> : Any</p>
 <blockquote>
-<div><p>the current data.</p>
+<div><p>A batch of data that has been generated from val_dataloader.
+It should be a pair of <cite>torch.Tensor</cite> (V1, V2).</p>
 </div></blockquote>
 <p><strong>batch_idx</strong> : int</p>
 <blockquote>
-<div><p>the index of this batch.</p>
+<div><p>The index of the current batch (ignored).</p>
 </div></blockquote>
 <p><strong>dataloader_idx</strong> : int, default=0</p>
 <blockquote>
-<div><p>the index of the dataloader that produced this batch (only if
-multiple dataloaders are used).</p>
-</div></blockquote>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>loss</strong> : STEP_OUTPUT</p>
-<blockquote>
-<div><p>the computed loss:</p>
-<ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> - the loss tensor.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> - a dictionary. can include any keys, but must include
-the key <code class="docutils literal notranslate"><span class="pre">'loss'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - skip to the next batch.</p></li>
-</ul>
+<div><p>The index of the dataloader (ignored).</p>
 </div></blockquote>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>When the <a class="reference internal" href="#nidl.estimators.ssl.SimCLR.validation_step" title="nidl.estimators.ssl.SimCLR.validation_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validation_step()</span></code></a> is called, the model has been put in
-eval mode and PyTorch gradients have been disabled. At the end of
-validation,  the model goes back to training mode and gradients are
-enabled.</p>
 </dd></dl>
 
 </dd></dl>

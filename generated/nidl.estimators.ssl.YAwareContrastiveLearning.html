@@ -159,6 +159,18 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -180,6 +192,8 @@
                                 
                                 
                                     <li>SECTIONS</li>
+                                    
+						                <li> <a href='#nidl.estimators.ssl.YAwareContrastiveLearning.all_gather_and_flatten'>Yawarecontrastivelearning.all_gather_and_flatten()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.ssl.YAwareContrastiveLearning.configure_optimizers'>Yawarecontrastivelearning.configure_optimizers()</a> </li>                                    
                                     
@@ -251,7 +265,7 @@
 <dt class="sig sig-object py" id="nidl.estimators.ssl.YAwareContrastiveLearning">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">YAwareContrastiveLearning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">encoder:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">|</span> <span class="pre">type[~torch.nn.modules.module.Module],</span> <span class="pre">encoder_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">projection_head:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">|</span> <span class="pre">type[~torch.nn.modules.module.Module]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead'&gt;,</span> <span class="pre">projection_head_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">temperature:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1,</span> <span class="pre">kernel:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'gaussian',</span> <span class="pre">bandwidth:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">list[float]</span> <span class="pre">|</span> <span class="pre">~numpy.ndarray</span> <span class="pre">|</span> <span class="pre">~nidl.losses.yaware_infonce.KernelMetric</span> <span class="pre">=</span> <span class="pre">1.0,</span> <span class="pre">optimizer:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~torch.optim.optimizer.Optimizer</span> <span class="pre">|</span> <span class="pre">type[~torch.optim.optimizer.Optimizer]</span> <span class="pre">=</span> <span class="pre">'adam',</span> <span class="pre">optimizer_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">learning_rate:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0001,</span> <span class="pre">lr_scheduler:</span> <span class="pre">~torch.optim.lr_scheduler.LRScheduler</span> <span class="pre">|</span> <span class="pre">~torch.optim.lr_scheduler.ReduceLROnPlateau</span> <span class="pre">|</span> <span class="pre">type[~torch.optim.lr_scheduler.LRScheduler</span> <span class="pre">|</span> <span class="pre">~torch.optim.lr_scheduler.ReduceLROnPlateau]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">lr_scheduler_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">**kwargs:</span> <span class="pre">~typing.Any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.base.TransformerMixin.html#nidl.estimators.base.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.base.BaseEstimator.html#nidl.estimators.base.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
-<p>y-Aware Contrastive Learning <a class="reference internal" href="#r3" id="id1"><span>[R3]</span></a>.</p>
+<p>y-Aware Contrastive Learning <a class="reference internal" href="#r7" id="id1"><span>[R7]</span></a>.</p>
 <p>y-Aware Contrastive Learning is a self-supervised learning framework for
 learning visual representations with auxiliary variables. It leverages
 contrastive learning by maximizing the agreement between differently
@@ -383,8 +397,8 @@ exponential decay rates for first and second moment estimates.</p>
 </dl>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R3<span class="fn-bracket">]</span></span>
+<div class="citation" id="r7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R7<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
 <p>Dufumier, B., et al., “Contrastive learning with continuous proxy
 meta-data for 3D MRI classification.” MICCAI, 2021.
@@ -411,6 +425,32 @@ meta-data for 3D MRI classification.” MICCAI, 2021.
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.estimators.ssl.YAwareContrastiveLearning.all_gather_and_flatten">
+<span class="sig-name descname"><span class="pre">all_gather_and_flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning.all_gather_and_flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning.all_gather_and_flatten" title="Link to this definition">¶</a></dt>
+<dd><p>Gathers the tensor from all devices and flattens batch dimension.</p>
+<p>This is useful when gathering tensors without adding extra dimensions.
+It handles some edge cases, such as when using a single GPU.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tensor</strong> : torch.Tensor or None</p>
+<blockquote>
+<div><p>The tensor to gather. If None, it is returned as is.</p>
+</div></blockquote>
+<p><strong>**kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Additional keyword arguments for <cite>self.all_gather</cite>.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>tensor</strong> : torch.Tensor</p>
+<blockquote>
+<div><p>The gathered and flattened tensor.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.YAwareContrastiveLearning.configure_optimizers">
 <span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning.configure_optimizers" title="Link to this definition">¶</a></dt>
@@ -547,7 +587,7 @@ The batch can be either:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.YAwareContrastiveLearning.training_step">
-<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning.training_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning.training_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning.training_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning.training_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one training step and computes training loss.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -560,7 +600,11 @@ and y is the auxiliary variable.</p>
 </div></blockquote>
 <p><strong>batch_idx</strong> : int</p>
 <blockquote>
-<div><p>The index of the current batch.</p>
+<div><p>The index of the current batch (ignored).</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>The index of the dataloader (ignored).</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -575,13 +619,37 @@ and y is the auxiliary variable.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.YAwareContrastiveLearning.transform_step">
 <span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning.transform_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning.transform_step" title="Link to this definition">¶</a></dt>
-<dd><p>Define a transform step.</p>
-<p>Share the same API as <code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEstimator.predict_step()</span></code>.</p>
+<dd><p>Encode the input data into the latent space.</p>
+<p>Importantly, we do not apply the projection head here since it is
+not part of the final model at inference time (only used for training).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch</strong> : torch.Tensor</p>
+<blockquote>
+<div><p>A batch of data that has been generated from <cite>test_dataloader</cite>.
+This is given as is to the encoder.</p>
+</div></blockquote>
+<p><strong>batch_idx</strong> : int</p>
+<blockquote>
+<div><p>The index of the current batch (ignored).</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>The index of the dataloader (ignored).</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>features</strong> : torch.Tensor</p>
+<blockquote>
+<div><p>The encoded features returned by the encoder.</p>
+</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.YAwareContrastiveLearning.validation_step">
-<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning.validation_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning.validation_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one validation step and computes validation loss.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -594,7 +662,11 @@ sample and y is the auxiliary variable.</p>
 </div></blockquote>
 <p><strong>batch_idx</strong> : int</p>
 <blockquote>
-<div><p>The index of the current batch.</p>
+<div><p>The index of the current batch (ignored).</p>
+</div></blockquote>
+<p><strong>dataloader_idx</strong> : int, default=0</p>
+<blockquote>
+<div><p>The index of the dataloader (ignored).</p>
 </div></blockquote>
 </dd>
 </dl>

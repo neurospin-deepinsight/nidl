@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.datasets.base.BaseImageDataset nidl.datasets.BaseImageDataset
+.. minigallery:: nidl.datasets.BaseImageDataset nidl.datasets.base.BaseImageDataset
     :add-heading: Examples
     :heading-level: -
 

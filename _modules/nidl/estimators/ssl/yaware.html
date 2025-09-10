@@ -358,7 +358,12 @@
 
 <div class="viewcode-block" id="YAwareContrastiveLearning.training_step">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning.training_step">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform one training step and computes training loss.</span>
 
 <span class="sd">        Parameters</span>
@@ -368,9 +373,10 @@
 <span class="sd">            It can be a pair of `torch.Tensor` (V1, V2) or a pair</span>
 <span class="sd">            ((V1, V2), y) where V1 and V2 are the two views of the same sample</span>
 <span class="sd">            and y is the auxiliary variable.</span>
-
 <span class="sd">        batch_idx: int</span>
-<span class="sd">            The index of the current batch.</span>
+<span class="sd">            The index of the current batch (ignored).</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            The index of the dataloader (ignored).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
@@ -382,8 +388,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">projection_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">V1</span><span class="p">)),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">projection_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">V2</span><span class="p">)),</span>
         <span class="p">)</span>
+        <span class="c1"># Gather before computing the contrastive loss.</span>
+        <span class="n">Z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">Z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z2</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/train&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/train&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
             <span class="s2">&quot;Z1&quot;</span><span class="p">:</span> <span class="n">Z1</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
@@ -396,7 +407,12 @@
 
 <div class="viewcode-block" id="YAwareContrastiveLearning.validation_step">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning.validation_step">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform one validation step and computes validation loss.</span>
 
 <span class="sd">        Parameters</span>
@@ -406,9 +422,10 @@
 <span class="sd">            It can be a pair of `torch.Tensor` (V1, V2) or a pair</span>
 <span class="sd">            ((V1, V2), y) where V1 and V2 are the two views of the same</span>
 <span class="sd">            sample and y is the auxiliary variable.</span>
-
 <span class="sd">        batch_idx: int</span>
-<span class="sd">            The index of the current batch.</span>
+<span class="sd">            The index of the current batch (ignored).</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            The index of the dataloader (ignored).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">V1</span><span class="p">,</span> <span class="n">V2</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
@@ -416,6 +433,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">projection_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">V1</span><span class="p">)),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">projection_head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">V2</span><span class="p">)),</span>
         <span class="p">)</span>
+        <span class="n">Z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">Z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z2</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
         <span class="n">val_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">val_loss</span><span class="p">,</span>
@@ -423,7 +444,7 @@
             <span class="s2">&quot;Z2&quot;</span><span class="p">:</span> <span class="n">Z2</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
             <span class="s2">&quot;y_true&quot;</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/val&quot;</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/val&quot;</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Returns everything needed for further logging/metrics computation</span>
         <span class="k">return</span> <span class="n">outputs</span></div>
 
@@ -436,6 +457,27 @@
         <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode the input data into the latent space.</span>
+
+<span class="sd">        Importantly, we do not apply the projection head here since it is</span>
+<span class="sd">        not part of the final model at inference time (only used for training).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: torch.Tensor</span>
+<span class="sd">            A batch of data that has been generated from `test_dataloader`.</span>
+<span class="sd">            This is given as is to the encoder.</span>
+<span class="sd">        batch_idx: int</span>
+<span class="sd">            The index of the current batch (ignored).</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            The index of the dataloader (ignored).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        features: torch.Tensor</span>
+<span class="sd">            The encoded features returned by the encoder.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span></div>
 
 
@@ -548,6 +590,42 @@
             <span class="k">return</span> <span class="n">optimizer</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">optimizer</span><span class="p">],</span> <span class="p">[</span><span class="n">scheduler</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="YAwareContrastiveLearning.all_gather_and_flatten">
+<a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning.all_gather_and_flatten">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all_gather_and_flatten</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gathers the tensor from all devices and flattens batch dimension.</span>
+
+<span class="sd">        This is useful when gathering tensors without adding extra dimensions.</span>
+<span class="sd">        It handles some edge cases, such as when using a single GPU.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tensor: torch.Tensor or None</span>
+<span class="sd">            The tensor to gather. If None, it is returned as is.</span>
+<span class="sd">        **kwargs: dict</span>
+<span class="sd">            Additional keyword arguments for `self.all_gather`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tensor: torch.Tensor</span>
+<span class="sd">            The gathered and flattened tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tensor</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;tensor must be a torch.Tensor, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">world_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tensor</span>
+        <span class="n">gathered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Reshape to (batch_size * world_size, *)</span>
+        <span class="n">gathered</span> <span class="o">=</span> <span class="n">gathered</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">gathered</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">gathered</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_encoder</span><span class="p">(</span>

@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.losses.yaware_infonce.YAwareInfoNCE nidl.losses.YAwareInfoNCE
+.. minigallery:: nidl.losses.YAwareInfoNCE nidl.losses.yaware_infonce.YAwareInfoNCE
     :add-heading: Examples
     :heading-level: -
 

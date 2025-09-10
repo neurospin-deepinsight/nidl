@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.losses.yaware_infonce.KernelMetric nidl.losses.KernelMetric
+.. minigallery:: nidl.losses.KernelMetric nidl.losses.yaware_infonce.KernelMetric
     :add-heading: Examples
     :heading-level: -
 

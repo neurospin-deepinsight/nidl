@@ -158,79 +158,47 @@
 <div class="viewcode-block" id="SimCLR">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimCLR</span><span class="p">(</span><span class="n">TransformerMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;SimCLR implementation.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;SimCLR [1]_.</span>
 
-<span class="sd">    At each iteration, we get for every data x two differently augmented</span>
-<span class="sd">    versions, which we refer to as x_i and x_j. Both of these images are</span>
-<span class="sd">    encoded into a one-dimensional feature vector, between which we want to</span>
-<span class="sd">    maximize similarity which minimizes it to all other data in the batch.</span>
-<span class="sd">    The encoder network is split into two parts: a base encoder network f(.),</span>
-<span class="sd">    and a projection head g(.). The base network is usually a deep CNN or SCNN,</span>
-<span class="sd">    and is responsible for extracting a representation vector from the</span>
-<span class="sd">    augmented data examples. Let&#39;s denote the representations obtained from the</span>
-<span class="sd">    encoder h=f(x). The projection head g(.) maps the representation h into a</span>
-<span class="sd">    space where we apply the contrastive loss, i.e., compare similarities</span>
-<span class="sd">    between vectors. In the original SimCLR paper g(.) was defined as a</span>
-<span class="sd">    two-layer MLP with ReLU activation in the hidden layer. Note that in the</span>
-<span class="sd">    follow-up paper, SimCLRv2, the authors mention that larger/wider MLPs can</span>
-<span class="sd">    boost the performance considerably.</span>
+<span class="sd">    SimCLR is a contrastive learning framework for self-supervised</span>
+<span class="sd">    representation learning. The key idea is to learn useful features</span>
+<span class="sd">    without labels by making different augmented views of the same image close</span>
+<span class="sd">    in a representation space, while pushing apart representations of different</span>
+<span class="sd">    images. Once trained, the encoder can be reused for downstream tasks such</span>
+<span class="sd">    as classification or regression.</span>
 
-<span class="sd">    After finishing the training with contrastive learning, we will remove</span>
-<span class="sd">    the projection head g(.), and use f(.) as a pretrained feature extractor.</span>
-<span class="sd">    The representations z that come out of the projection head g(.) have been</span>
-<span class="sd">    shown to perform worse than those of the base network f(.) when</span>
-<span class="sd">    finetuning the network for a new task. This is likely because the</span>
-<span class="sd">    representations z are trained to become invariant to many features that</span>
-<span class="sd">    can be important for downstream tasks. Thus, g(.) is only needed for the</span>
-<span class="sd">    contrastive learning stage.</span>
+<span class="sd">    The model consists of:</span>
 
-<span class="sd">    Now that the architecture is described, let&#39;s take a closer look at how we</span>
-<span class="sd">    train the model. As mentioned before, we want to maximize the similarity</span>
-<span class="sd">    between the representations of the two augmented versions of the same</span>
-<span class="sd">    image, i.e., z_i and z_j, while minimizing it to all other examples in the</span>
-<span class="sd">    batch. SimCLR thereby applies the InfoNCE loss, originally proposed by</span>
-<span class="sd">    Aaron van den Oord et al. for contrastive learning. In short, the InfoNCE</span>
-<span class="sd">    loss compares the similarity of z_i and z_j to the similarity of z_i to</span>
-<span class="sd">    any other representation in the batch by performing a softmax over the</span>
-<span class="sd">    similarity values. The loss can be formally written as:</span>
+<span class="sd">    - A base encoder `f` (e.g., a CNN), which extracts representation vectors.</span>
+<span class="sd">    - A projection head `g`, which maps representations into a space where the</span>
+<span class="sd">      contrastive objective is applied.</span>
+
+<span class="sd">    During training, two augmented versions of each input `x` are encoded into</span>
+<span class="sd">    `(z_i, z_j)`. The objective is to maximize their similarity while</span>
+<span class="sd">    minimizing similarity to all other samples in the batch. This is achieved</span>
+<span class="sd">    with the InfoNCE loss [2]_, [3]_:</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{</span>
-<span class="sd">                     \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}</span>
-<span class="sd">                        \exp(\text{sim}(z_i,z_k)/\tau)}</span>
-<span class="sd">                   = -\text{sim}(z_i,z_j)/\tau</span>
-<span class="sd">                     +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}</span>
-<span class="sd">                        \exp(\text{sim}(z_i,z_k)/\tau)\right]</span>
+<span class="sd">        \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}</span>
+<span class="sd">                        {\sum_{k=1, k\neq i}^{2N}</span>
+<span class="sd">                        \exp(\text{sim}(z_i, z_k)/\tau)}</span>
 
-<span class="sd">    The function \text{sim} is a similarity metric, and the hyperparameter</span>
-<span class="sd">    \tau is called temperature determining how peaked the distribution is.</span>
-<span class="sd">    Since many similarity metrics are bounded, the temperature parameter</span>
-<span class="sd">    allows us to balance the influence of many dissimilar image patches versus</span>
-<span class="sd">    one similar patch. The similarity metric that is used in SimCLR is cosine</span>
-<span class="sd">    similarity, as defined below:</span>
-
-<span class="sd">    .. math::</span>
-
-<span class="sd">        \text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}</span>
-
-<span class="sd">    The maximum cosine similarity possible is 1, while the minimum is -1. In</span>
-<span class="sd">    general, we will see that the features of two different images will</span>
-<span class="sd">    converge to a cosine similarity around zero since the minimum, -1, would</span>
-<span class="sd">    require z_i and z_j to be in the exact opposite direction in all feature</span>
-<span class="sd">    dimensions, which does not allow for great flexibility.</span>
-
-<span class="sd">    Alternatively to performing the validation on the contrastive learning</span>
-<span class="sd">    loss as well, we could also take a simple, small downstream task, and</span>
-<span class="sd">    track the performance of the base network f(.) on that.</span>
+<span class="sd">    Similarity is measured with cosine similarity. The temperature</span>
+<span class="sd">    :math:`\tau` controls the sharpness of the distribution (refer to [4]_ for</span>
+<span class="sd">    more details).</span>
+<span class="sd">    After training, the projection head `g` is discarded, and the encoder `f`</span>
+<span class="sd">    serves as a pretrained feature extractor. This is because `f` provides</span>
+<span class="sd">    representations that transfer better to downstream tasks than those from</span>
+<span class="sd">    `g`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    encoder: nn.Module</span>
-<span class="sd">        the encoder f(.). It must store the size of the encoded one-dimensional</span>
+<span class="sd">        the encoder `f`. It must store the size of the encoded one-dimensional</span>
 <span class="sd">        feature vector in a `latent_size` parameter.</span>
 <span class="sd">    hidden_dims: list of str</span>
-<span class="sd">        the projector g(.) MLP architecture.</span>
+<span class="sd">        the projector `g` with an MLP architecture.</span>
 <span class="sd">    lr: float</span>
 <span class="sd">        the learning rate.</span>
 <span class="sd">    temperature: float</span>
@@ -251,10 +219,18 @@
 <span class="sd">    g</span>
 <span class="sd">        a :class:`~torch.nn.Module` containing the projection head.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    A batch of data must contains two elements: two tensors with contrasted</span>
-<span class="sd">    images, and a list of tensors containing auxiliary variables.</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,</span>
+<span class="sd">           &quot;A Simple Framework for Contrastive Learning of Visual</span>
+<span class="sd">           Representations&quot;, ICML 2020.</span>
+<span class="sd">    .. [2] Aaron van den Oord, Yazhe Li, Oriol Vinyals, &quot;Representation</span>
+<span class="sd">           Learning with Contrastive Predictive Coding&quot;, arXiv 2018.</span>
+<span class="sd">    .. [3] Sohn Kihyuk, &quot;Improved Deep Metric Learning with Multi-class N-pair</span>
+<span class="sd">           Loss Objective&quot;, NIPS 2016.</span>
+<span class="sd">    .. [4] Feng Wang, Huaping Liu, &quot;Understanding the Behaviour of Contrastive</span>
+<span class="sd">           Loss&quot;, CVPR 2021.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -270,9 +246,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;encoder&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="p">(</span>
-            <span class="s2">&quot;The temperature must be a positive float!&quot;</span>
-        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">temperature</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;The temperature must be a positive float!&quot;</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">encoder</span><span class="p">,</span> <span class="s2">&quot;latent_size&quot;</span><span class="p">),</span> <span class="p">(</span>
             <span class="s2">&quot;The encoder must store the size of the encoded one-dimensional &quot;</span>
             <span class="s2">&quot;feature vector in a `latent_size` parameter!&quot;</span>
@@ -293,19 +267,22 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_decay</span> <span class="o">=</span> <span class="n">weight_decay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">InfoNCE</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimCLR.configure_optimizers">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.configure_optimizers">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly</span>
-<span class="sd">        (``max_epochs`` is defined), a</span>
-<span class="sd">        :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning-rate</span>
-<span class="sd">        scheduler.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declare a :class:`~torch.optim.AdamW` optimizer and, optionally</span>
+<span class="sd">        a :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning rate</span>
+<span class="sd">        scheduler if ``max_epochs`` is set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
-            <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
-            <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="p">,</span> <span class="s2">&quot;max_epochs&quot;</span><span class="p">)</span>
@@ -314,32 +291,11 @@
             <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">CosineAnnealingLR</span><span class="p">(</span>
                 <span class="n">optimizer</span><span class="p">,</span>
                 <span class="n">T_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">max_epochs</span><span class="p">,</span>
-                <span class="n">eta_min</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">lr</span> <span class="o">/</span> <span class="mi">50</span><span class="p">),</span>
+                <span class="n">eta_min</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">/</span> <span class="mi">50</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">optimizer</span><span class="p">],</span> <span class="p">[</span><span class="n">lr_scheduler</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">optimizer</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="SimCLR.info_nce_loss">
-<a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.info_nce_loss">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">info_nce_loss</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute and log the InfoNCE loss using</span>
-<span class="sd">        :class:`~nidl.losses.InfoNCE`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Encode all images</span>
-        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">imgs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">imgs</span><span class="p">))</span>
-        <span class="c1"># Calculate loss</span>
-        <span class="n">nll</span> <span class="o">=</span> <span class="n">InfoNCE</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">temperature</span><span class="p">)(</span>
-            <span class="n">feats</span><span class="p">[:</span><span class="n">n_samples</span><span class="p">],</span> <span class="n">feats</span><span class="p">[</span><span class="n">n_samples</span><span class="p">:]</span>
-        <span class="p">)</span>
-        <span class="c1"># Logging loss</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot;_loss&quot;</span><span class="p">,</span> <span class="n">nll</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nll</span></div>
 
 
 <div class="viewcode-block" id="SimCLR.training_step">
@@ -350,7 +306,42 @@
         <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_nce_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform one training step and computes training loss.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: Any</span>
+<span class="sd">            A batch of data that has been generated from train_dataloader.</span>
+<span class="sd">            It should be a pair of `torch.Tensor` (V1, V2) where V1 and V2</span>
+<span class="sd">            are the two views of the same sample. They must have equal first</span>
+<span class="sd">            dimensions.</span>
+<span class="sd">        batch_idx: int</span>
+<span class="sd">            The index of the current batch (ignored).</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            The index of the dataloader (ignored).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loss: Tensor</span>
+<span class="sd">            Training loss computed on this batch of data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">V1</span><span class="p">,</span> <span class="n">V2</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">V1</span><span class="p">))</span>
+        <span class="n">Z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">V2</span><span class="p">))</span>
+
+        <span class="c1"># Gather before computing the contrastive loss.</span>
+        <span class="n">Z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">Z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z2</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/train&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
+            <span class="s2">&quot;Z1&quot;</span><span class="p">:</span> <span class="n">Z1</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+            <span class="s2">&quot;Z2&quot;</span><span class="p">:</span> <span class="n">Z2</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="c1"># Returns everything needed for further logging/metrics computation</span>
+        <span class="k">return</span> <span class="n">outputs</span></div>
 
 
 <div class="viewcode-block" id="SimCLR.validation_step">
@@ -361,7 +352,35 @@
         <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">info_nce_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform one validation step and computes validation loss.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: Any</span>
+<span class="sd">            A batch of data that has been generated from val_dataloader.</span>
+<span class="sd">            It should be a pair of `torch.Tensor` (V1, V2).</span>
+<span class="sd">        batch_idx: int</span>
+<span class="sd">            The index of the current batch (ignored).</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            The index of the dataloader (ignored).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">V1</span><span class="p">,</span> <span class="n">V2</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">V1</span><span class="p">))</span>
+        <span class="n">Z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">V2</span><span class="p">))</span>
+
+        <span class="c1"># Gather before computing the contrastive loss.</span>
+        <span class="n">Z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">Z2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather_and_flatten</span><span class="p">(</span><span class="n">Z2</span><span class="p">,</span> <span class="n">sync_grads</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">val_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">val_loss</span><span class="p">,</span>
+            <span class="s2">&quot;Z1&quot;</span><span class="p">:</span> <span class="n">Z1</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+            <span class="s2">&quot;Z2&quot;</span><span class="p">:</span> <span class="n">Z2</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/val&quot;</span><span class="p">,</span> <span class="n">val_loss</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Returns everything needed for further logging/metrics computation</span>
+        <span class="k">return</span> <span class="n">outputs</span></div>
 
 
 <div class="viewcode-block" id="SimCLR.transform_step">
@@ -372,7 +391,60 @@
         <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">dataloader_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode the input data into the latent space.</span>
+
+<span class="sd">        Importantly, we do not apply the projection head here since it is</span>
+<span class="sd">        not part of the final model at inference time (only used for training).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: torch.Tensor</span>
+<span class="sd">            A batch of data that has been generated from `test_dataloader`.</span>
+<span class="sd">            This is given as is to the encoder.</span>
+<span class="sd">        batch_idx: int</span>
+<span class="sd">            The index of the current batch (ignored).</span>
+<span class="sd">        dataloader_idx: int, default=0</span>
+<span class="sd">            The index of the dataloader (ignored).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        features: torch.Tensor</span>
+<span class="sd">            The encoded features returned by the encoder.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimCLR.all_gather_and_flatten">
+<a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.simclr.SimCLR.html#nidl.estimators.ssl.SimCLR.all_gather_and_flatten">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all_gather_and_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gathers the tensor from all devices and flattens batch dimension.</span>
+
+<span class="sd">        This is useful when gathering tensors without adding extra dimensions.</span>
+<span class="sd">        It handles some edge cases, such as when using a single GPU.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tensor: torch.Tensor</span>
+<span class="sd">            The tensor to gather.</span>
+<span class="sd">        **kwargs: dict</span>
+<span class="sd">            Additional keyword arguments for `self.all_gather`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tensor: torch.Tensor</span>
+<span class="sd">            The gathered and flattened tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;tensor must be a torch.Tensor, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">world_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tensor</span>
+        <span class="n">gathered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_gather</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Reshape to (batch_size * world_size, *)</span>
+        <span class="n">gathered</span> <span class="o">=</span> <span class="n">gathered</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">gathered</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">gathered</span></div>
 </div>
 
 </pre></div>
