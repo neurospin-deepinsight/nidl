@@ -129,7 +129,9 @@ class SimCLR(TransformerMixin, BaseEstimator):
         **kwargs,
     ):
         super().__init__(
-            random_state=random_state, ignore=["encoder"], **kwargs
+            random_state=random_state,
+            ignore=["encoder", "callbacks"],
+            **kwargs,
         )
         assert self.hparams.temperature > 0.0, (
             "The temperature must be a positive float!"
@@ -194,7 +196,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
             feats[:n_samples], feats[n_samples:]
         )
         # Logging loss
-        self.log(mode + "_loss", nll, prog_bar=True)
+        self.log(mode + "_loss", nll, prog_bar=True, sync_dist=True)
         return nll
 
     def training_step(
