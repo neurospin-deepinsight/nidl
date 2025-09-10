@@ -156,40 +156,40 @@ an accuracy of 100% is expected.
 
  .. code-block:: none
 
-    loss 0: 1.240223  [    0/   40]
-    loss 0: 1.042014  [    5/   40]
-    loss 0: 0.880884  [   10/   40]
-    loss 0: 0.712951  [   15/   40]
-    loss 0: 0.595959  [   20/   40]
-    loss 0: 0.494291  [   25/   40]
-    loss 0: 0.410809  [   30/   40]
-    loss 0: 0.335262  [   35/   40]
-    loss 5: 0.004935  [    0/   40]
-    loss 5: 0.003078  [    5/   40]
-    loss 5: 0.002033  [   10/   40]
-    loss 5: 0.001755  [   15/   40]
-    loss 5: 0.002034  [   20/   40]
-    loss 5: 0.002901  [   25/   40]
-    loss 5: 0.004256  [   30/   40]
-    loss 5: 0.005585  [   35/   40]
-    loss 10: 0.000695  [    0/   40]
-    loss 10: 0.000400  [    5/   40]
-    loss 10: 0.000204  [   10/   40]
-    loss 10: 0.000097  [   15/   40]
-    loss 10: 0.000045  [   20/   40]
-    loss 10: 0.000021  [   25/   40]
-    loss 10: 0.000010  [   30/   40]
-    loss 10: 0.000005  [   35/   40]
-    loss 15: 0.000026  [    0/   40]
-    loss 15: 0.000033  [    5/   40]
-    loss 15: 0.000039  [   10/   40]
-    loss 15: 0.000043  [   15/   40]
-    loss 15: 0.000044  [   20/   40]
-    loss 15: 0.000041  [   25/   40]
-    loss 15: 0.000035  [   30/   40]
-    loss 15: 0.000028  [   35/   40]
+    loss 0: 1.150821  [    0/   40]
+    loss 0: 1.004838  [    5/   40]
+    loss 0: 0.852475  [   10/   40]
+    loss 0: 0.729922  [   15/   40]
+    loss 0: 0.615286  [   20/   40]
+    loss 0: 0.507819  [   25/   40]
+    loss 0: 0.411370  [   30/   40]
+    loss 0: 0.329437  [   35/   40]
+    loss 5: 0.004504  [    0/   40]
+    loss 5: 0.004460  [    5/   40]
+    loss 5: 0.004186  [   10/   40]
+    loss 5: 0.003705  [   15/   40]
+    loss 5: 0.003093  [   20/   40]
+    loss 5: 0.002362  [   25/   40]
+    loss 5: 0.001626  [   30/   40]
+    loss 5: 0.001052  [   35/   40]
+    loss 10: 0.000008  [    0/   40]
+    loss 10: 0.000007  [    5/   40]
+    loss 10: 0.000008  [   10/   40]
+    loss 10: 0.000008  [   15/   40]
+    loss 10: 0.000010  [   20/   40]
+    loss 10: 0.000013  [   25/   40]
+    loss 10: 0.000016  [   30/   40]
+    loss 10: 0.000021  [   35/   40]
+    loss 15: 0.000008  [    0/   40]
+    loss 15: 0.000007  [    5/   40]
+    loss 15: 0.000006  [   10/   40]
+    loss 15: 0.000006  [   15/   40]
+    loss 15: 0.000006  [   20/   40]
+    loss 15: 0.000006  [   25/   40]
+    loss 15: 0.000006  [   30/   40]
+    loss 15: 0.000007  [   35/   40]
     Test Error: 
-     Accuracy: 100.0%, Avg loss: 0.000010
+     Accuracy: 100.0%, Avg loss: 0.000024
 
 
 
@@ -224,9 +224,9 @@ they corresspond exactly to the ground truth.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.762 seconds)
+   **Total running time of the script:** (0 minutes 5.572 seconds)
 
-**Estimated memory usage:**  566 MB
+**Estimated memory usage:**  565 MB
 
 
 .. _sphx_glr_download_auto_gallery_surfify_plot_unet_segmentation.py:

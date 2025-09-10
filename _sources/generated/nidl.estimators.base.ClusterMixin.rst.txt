@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.base.ClusterMixin nidl.estimators.ClusterMixin
+.. minigallery:: nidl.estimators.ClusterMixin nidl.estimators.base.ClusterMixin
     :add-heading: Examples
     :heading-level: -
 

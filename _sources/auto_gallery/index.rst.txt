@@ -30,6 +30,23 @@ Use Cases
     </div>
 
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This notebook introduces the OpenBHB dataset [1]_, a large-scale, multi-site brain MRI dataset. It is designed to perform benchmarking of machine learning and deep learning models on neuroimaging data.">
+
+.. only:: html
+
+  .. image:: /auto_gallery/images/thumb/sphx_glr_openbhb_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_gallery_openbhb.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Presentation of the OpenBHB dataset and baseline models for age and sex predictions</div>
+    </div>
+
+
 .. thumbnail-parent-div-close
 
 .. raw:: html
@@ -41,6 +58,7 @@ Use Cases
    :hidden:
 
    /auto_gallery/simclr_stl10
+   /auto_gallery/openbhb
 
 
 Spherical Modules Use Cases

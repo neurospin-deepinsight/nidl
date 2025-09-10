@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.datasets._samples_generator.make_classification
 
-.. minigallery:: surfify.datasets._samples_generator.make_classification surfify.datasets.make_classification
+.. minigallery:: surfify.datasets.make_classification surfify.datasets._samples_generator.make_classification
     :add-heading: Examples
     :heading-level: -
 
