@@ -19,79 +19,46 @@ from ..base import BaseEstimator, TransformerMixin
 
 
 class SimCLR(TransformerMixin, BaseEstimator):
-    r"""SimCLR implementation.
+    r"""SimCLR [1]_.
 
-    At each iteration, we get for every data x two differently augmented
-    versions, which we refer to as x_i and x_j. Both of these images are
-    encoded into a one-dimensional feature vector, between which we want to
-    maximize similarity which minimizes it to all other data in the batch.
-    The encoder network is split into two parts: a base encoder network f(.),
-    and a projection head g(.). The base network is usually a deep CNN or SCNN,
-    and is responsible for extracting a representation vector from the
-    augmented data examples. Let's denote the representations obtained from the
-    encoder h=f(x). The projection head g(.) maps the representation h into a
-    space where we apply the contrastive loss, i.e., compare similarities
-    between vectors. In the original SimCLR paper g(.) was defined as a
-    two-layer MLP with ReLU activation in the hidden layer. Note that in the
-    follow-up paper, SimCLRv2, the authors mention that larger/wider MLPs can
-    boost the performance considerably.
+    SimCLR is a contrastive learning framework for self-supervised
+    representation learning. The key idea is to learn useful features
+    without labels by making different augmented views of the same image close
+    in a representation space, while pushing apart representations of different
+    images. Once trained, the encoder can be reused for downstream tasks such
+    as classification or regression.
 
-    After finishing the training with contrastive learning, we will remove
-    the projection head g(.), and use f(.) as a pretrained feature extractor.
-    The representations z that come out of the projection head g(.) have been
-    shown to perform worse than those of the base network f(.) when
-    finetuning the network for a new task. This is likely because the
-    representations z are trained to become invariant to many features that
-    can be important for downstream tasks. Thus, g(.) is only needed for the
-    contrastive learning stage.
+    The model consists of:
 
-    Now that the architecture is described, let's take a closer look at how we
-    train the model. As mentioned before, we want to maximize the similarity
-    between the representations of the two augmented versions of the same
-    image, i.e., z_i and z_j, while minimizing it to all other examples in the
-    batch. SimCLR thereby applies the InfoNCE loss, originally proposed by
-    Aaron van den Oord et al. for contrastive learning. In short, the InfoNCE
-    loss compares the similarity of z_i and z_j to the similarity of z_i to
-    any other representation in the batch by performing a softmax over the
-    similarity values. The loss can be formally written as:
+    - A base encoder `f` (e.g., a CNN), which extracts representation vectors.
+    - A projection head `g`, which maps representations into a space where the
+      contrastive objective is applied.
+
+    During training, two augmented versions of each input `x` are encoded into
+    `(z_i, z_j)`. The objective is to maximize their similarity while minimizing
+    similarity to all other samples in the batch. This is achieved with the
+    InfoNCE loss:
 
     .. math::
 
-        \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
-                     \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                        \exp(\text{sim}(z_i,z_k)/\tau)}
-                   = -\text{sim}(z_i,z_j)/\tau
-                     +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                        \exp(\text{sim}(z_i,z_k)/\tau)\right]
+        \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}
+                        {\sum_{k=1}^{2N}\mathbb{1}_{[k \neq i]}
+                        \exp(\text{sim}(z_i, z_k)/\tau)}
 
-    The function \text{sim} is a similarity metric, and the hyperparameter
-    \tau is called temperature determining how peaked the distribution is.
-    Since many similarity metrics are bounded, the temperature parameter
-    allows us to balance the influence of many dissimilar image patches versus
-    one similar patch. The similarity metric that is used in SimCLR is cosine
-    similarity, as defined below:
-
-    .. math::
-
-        \text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}
-
-    The maximum cosine similarity possible is 1, while the minimum is -1. In
-    general, we will see that the features of two different images will
-    converge to a cosine similarity around zero since the minimum, -1, would
-    require z_i and z_j to be in the exact opposite direction in all feature
-    dimensions, which does not allow for great flexibility.
-
-    Alternatively to performing the validation on the contrastive learning
-    loss as well, we could also take a simple, small downstream task, and
-    track the performance of the base network f(.) on that.
+    Similarity is measured with cosine similarity. The temperature
+    :math:`\\tau` controls the sharpness of the distribution.
+    After training, the projection head `g` is discarded, and the encoder `f`
+    serves as a pretrained feature extractor. This is because `f` provides
+    representations that transfer better to downstream tasks than those from
+    `g`.
 
     Parameters
     ----------
     encoder: nn.Module
-        the encoder f(.). It must store the size of the encoded one-dimensional
+        the encoder `f`. It must store the size of the encoded one-dimensional
         feature vector in a `latent_size` parameter.
     hidden_dims: list of str
-        the projector g(.) MLP architecture.
+        the projector `g` with an MLP architecture.
     lr: float
         the learning rate.
     temperature: float
@@ -112,10 +79,13 @@ class SimCLR(TransformerMixin, BaseEstimator):
     g
         a :class:`~torch.nn.Module` containing the projection head.
 
-    Notes
-    -----
-    A batch of data must contains two elements: two tensors with contrasted
-    images, and a list of tensors containing auxiliary variables.
+    References
+    ----------
+    .. [1] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
+           "A Simple Framework for Contrastive Learning of Visual
+           Representations", ICML 2020.
+
+
     """
 
     def __init__(
@@ -131,9 +101,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         super().__init__(
             random_state=random_state, ignore=["encoder"], **kwargs
         )
-        assert self.hparams.temperature > 0.0, (
-            "The temperature must be a positive float!"
-        )
+        assert temperature > 0.0, "The temperature must be a positive float!"
         assert hasattr(encoder, "latent_size"), (
             "The encoder must store the size of the encoded one-dimensional "
             "feature vector in a `latent_size` parameter!"
@@ -154,6 +122,10 @@ class SimCLR(TransformerMixin, BaseEstimator):
                 if not isinstance(layer, nn.Dropout)
             ]
         )
+        self.lr = lr
+        self.temperature = temperature
+        self.weight_decay = weight_decay
+        self.loss = InfoNCE(self.temperature)
 
     def configure_optimizers(self):
         """Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
@@ -163,8 +135,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         """
         optimizer = optim.AdamW(
             self.parameters(),
-            lr=self.hparams.lr,
-            weight_decay=self.hparams.weight_decay,
+            lr=self.lr,
+            weight_decay=self.weight_decay,
         )
         if (
             hasattr(self.hparams, "max_epochs")
@@ -173,29 +145,11 @@ class SimCLR(TransformerMixin, BaseEstimator):
             lr_scheduler = optim.lr_scheduler.CosineAnnealingLR(
                 optimizer,
                 T_max=self.hparams.max_epochs,
-                eta_min=(self.hparams.lr / 50),
+                eta_min=(self.lr / 50),
             )
             return [optimizer], [lr_scheduler]
         else:
             return [optimizer]
-
-    def info_nce_loss(
-        self, batch: tuple[torch.Tensor, torch.Tensor], mode: str
-    ):
-        """Compute and log the InfoNCE loss using
-        :class:`~nidl.losses.InfoNCE`.
-        """
-        # Encode all images
-        n_samples = len(batch[0])
-        imgs = torch.cat(batch, dim=0)
-        feats = self.g(self.f(imgs))
-        # Calculate loss
-        nll = InfoNCE(self.hparams.temperature)(
-            feats[:n_samples], feats[n_samples:]
-        )
-        # Logging loss
-        self.log(mode + "_loss", nll, prog_bar=True)
-        return nll
 
     def training_step(
         self,
@@ -203,7 +157,42 @@ class SimCLR(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
-        return self.info_nce_loss(batch, mode="train")
+        """Perform one training step and computes training loss.
+
+        Parameters
+        ----------
+        batch: Any
+            A batch of data that has been generated from train_dataloader.
+            It should be a pair of `torch.Tensor` (V1, V2) where V1 and V2
+            are the two views of the same sample. They must have equal first
+            dimensions.
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+
+        Returns
+        ----------
+        loss: Tensor
+            Training loss computed on this batch of data.
+        """
+        V1, V2 = batch[0], batch[1]
+        Z1 = self.g(self.f(V1))
+        Z2 = self.g(self.f(V2))
+
+        # Gather before computing the contrastive loss.
+        Z1 = self.all_gather_and_flatten(Z1, sync_grads=True)
+        Z2 = self.all_gather_and_flatten(Z2, sync_grads=True)
+
+        loss = self.loss(Z1, Z2)
+        self.log("loss/train", loss, prog_bar=True, sync_dist=True)
+        outputs = {
+            "loss": loss,
+            "Z1": Z1.cpu().detach(),
+            "Z2": Z2.cpu().detach(),
+        }
+        # Returns everything needed for further logging/metrics computation
+        return outputs
 
     def validation_step(
         self,
@@ -211,7 +200,35 @@ class SimCLR(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
-        self.info_nce_loss(batch, mode="val")
+        """Perform one validation step and computes validation loss.
+
+        Parameters
+        ----------
+        batch: Any
+            A batch of data that has been generated from val_dataloader.
+            It should be a pair of `torch.Tensor` (V1, V2).
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+        """
+        V1, V2 = batch[0], batch[1]
+        Z1 = self.g(self.f(V1))
+        Z2 = self.g(self.f(V2))
+
+        # Gather before computing the contrastive loss.
+        Z1 = self.all_gather_and_flatten(Z1, sync_grads=False)
+        Z2 = self.all_gather_and_flatten(Z2, sync_grads=False)
+
+        val_loss = self.loss(Z1, Z2)
+        outputs = {
+            "loss": val_loss,
+            "Z1": Z1.cpu().detach(),
+            "Z2": Z2.cpu().detach(),
+        }
+        self.log("loss/val", val_loss, prog_bar=True, sync_dist=True)
+        # Returns everything needed for further logging/metrics computation
+        return outputs
 
     def transform_step(
         self,
@@ -219,4 +236,54 @@ class SimCLR(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
+        """Encode the input data into the latent space.
+
+        Importantly, we do not apply the projection head here since it is
+        not part of the final model at inference time (only used for training).
+
+        Parameters
+        ----------
+        batch: torch.Tensor
+            A batch of data that has been generated from `test_dataloader`.
+            This is given as is to the encoder.
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+
+        Returns
+        ----------
+        features: torch.Tensor
+            The encoded features returned by the encoder.
+
+        """
         return self.f(batch)
+
+    def all_gather_and_flatten(self, tensor: torch.Tensor, **kwargs):
+        """Gathers the tensor from all devices and flattens batch dimension.
+
+        This is useful when gathering tensors without adding extra dimensions.
+        It handles some edge cases, such as when using a single GPU.
+
+        Parameters
+        ----------
+        tensor: torch.Tensor
+            The tensor to gather.
+        **kwargs: dict
+            Additional keyword arguments for `self.all_gather`.
+
+        Returns
+        -------
+        tensor: torch.Tensor
+            The gathered and flattened tensor.
+        """
+        if not isinstance(tensor, torch.Tensor):
+            raise ValueError(
+                f"tensor must be a torch.Tensor, got {type(tensor)}"
+            )
+        if self.trainer is None or self.trainer.world_size == 1:
+            return tensor
+        gathered = self.all_gather(tensor, **kwargs)
+        # Reshape to (batch_size * world_size, *)
+        gathered = gathered.reshape(-1, *gathered.shape[2:])
+        return gathered
