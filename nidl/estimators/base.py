@@ -383,8 +383,7 @@ class BaseEstimator(pl.LightningModule):
         -----
         If you don't need to validate you don't need to implement this method.
 
-        Notes
-        -----
+
         When the :meth:`validation_step` is called, the model has been put in
         eval mode and PyTorch gradients have been disabled. At the end of
         validation,  the model goes back to training mode and gradients are

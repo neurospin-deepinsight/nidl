@@ -1,3 +1,12 @@
+---
+# Workflow to check code using unit tests.
+#
+# To run this check locally from the repository folder:
+#
+# .. code-block:: bash
+#
+#   $ nosetests --with-coverage --cover-package=nidl --verbosity=2
+###
 name: "TESTING"
 
 on:

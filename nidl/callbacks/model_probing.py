@@ -386,7 +386,7 @@ class KNeighborsRegressorCVCallback(ModelProbing):
 
     n_jobs: int or None, default=None
         Number of jobs to run in parallel.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend`
+        ``None`` means 1 unless in a `joblib.parallel_backend`
         context.
         ``-1`` means using all processors.
 
@@ -530,7 +530,7 @@ class LogisticRegressionCVCallback(ModelProbing):
 
     n_jobs: int or None, default=None
         Number of jobs to run in parallel.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend`
+        ``None`` means 1 unless in a `joblib.parallel_backend`
         context.
         ``-1`` means using all processors.
 
@@ -683,7 +683,7 @@ class KNeighborsClassifierCVCallback(ModelProbing):
 
     n_jobs: int or None, default=None
         Number of jobs to run in parallel.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``None`` means 1 unless in a `joblib.parallel_backend` context.
         ``-1`` means using all processors.
 
     scoring: str in {"accuracy", "balanced_accuracy", "f1", ...}, \

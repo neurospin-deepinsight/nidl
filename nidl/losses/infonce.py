@@ -36,7 +36,7 @@ class InfoNCE(nn.Module):
             Second embedded view.
 
         Returns
-        ----------
+        -------
         loss: torch.Tensor
             The InfoNCE loss computed between `z1` and `z2`.
         """

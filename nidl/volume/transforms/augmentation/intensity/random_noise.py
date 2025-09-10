@@ -19,8 +19,8 @@ from ...volume_transform import TypeTransformInput, VolumeTransform
 class RandomGaussianNoise(VolumeTransform):
     """Add Gaussian noise to input data with random parameters.
 
-    The input data can have any shape with type :class:`np.ndarray` or
-    :class:`torch.Tensor`. The output has consistent type and shape with
+    The input data can have any shape with type `np.ndarray` or
+    `torch.Tensor`. The output has consistent type and shape with
     the input.
 
     Parameters
@@ -29,15 +29,12 @@ class RandomGaussianNoise(VolumeTransform):
         Mean :math:`\\mu` of the Gaussian distribution from which the noise
         is sampled. If two values :math:`(a, b)` are given, then
         :math:`\\mu \\sim \\mathcal{U}(a, b)`.
-
     std: (float, float), default=(0.1, 1.0)
         Range of the standard deviation :math:`(a, b)` of the Gaussian
         distribution from which the noise is sampled
         :math:`\\sigma \\sim \\mathcal{U}(a, b)`.
-
     kwargs: dict
-        Keyword arguments given to base :class:`nidl.transforms.Transform`.
-
+        Keyword arguments.
     """
 
     def __init__(
@@ -62,7 +59,7 @@ class RandomGaussianNoise(VolumeTransform):
             The input volume.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Input with noise.
         """

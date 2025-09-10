@@ -1,24 +1,28 @@
 .. -*- mode: rst -*-
 
-|PythonVersion|_ |Coveralls|_ |Testing|_ |Linter|_ |Doc|_ |PyPi|_
+.. image:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+    :target: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+    :alt: Python Version
 
-.. |PythonVersion| image:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
-.. _PythonVersion: target:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+.. image:: https://coveralls.io/repos/github/neurospin-deepinsight/nidl/badge.svg?branch=main
+    :target: https://coveralls.io/github/neurospin-deepinsight/nidl
+    :alt: Coverage Status
 
-.. |Coveralls| image:: https://coveralls.io/repos/github/neurospin-deepinsight/nidl/badge.svg?branch=main
-.. _Coveralls: target:: https://coveralls.io/github/neurospin-deepinsight/nidl
+.. image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/testing.yml/badge.svg
+    :target: https://github.com/neurospin-deepinsight/nidl/actions
+    :alt: Github Actions Test Status
 
-.. |Testing| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/testing.yml/badge.svg
-.. _Testing: target:: https://github.com/neurospin-deepinsight/nidl/actions
+.. image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/linters.yml/badge.svg
+    :target: https://github.com/neurospin-deepinsight/nidl/actions
+    :alt: Github Actions Linter Status
 
-.. |Linter| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/linters.yml/badge.svg
-.. _Linter: target:: https://github.com/neurospin-deepinsight/nidl/actions
+.. image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/documentation.yml/badge.svg
+    :target: http://neurospin-deepinsight.github.io/nidl
+    :alt: Github Actions Doc Build Status
 
-.. |Doc| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/documentation.yml/badge.svg
-.. _Doc: target:: http://neurospin-deepinsight.github.io/nidl
-
-.. |PyPi| image:: https://badge.fury.io/py/nidl.svg
-.. _PyPi: target:: https://badge.fury.io/py/nidl
+.. image:: https://badge.fury.io/py/nidl.svg
+    :target: https://pypi.org/project/nidl
+    :alt: Pypi Package
 
 
 A Deep Learning toolbox for NeuroImaging

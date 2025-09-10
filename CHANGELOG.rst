@@ -1,28 +1,30 @@
 .. -*- mode: rst -*-
 
 
-Version 0.1.0
-=============
+0.0.0
+=====
 
-:Date: October 15, 2025
+**Released Planed Spetemeber 2015**
 
-Added
------
-
-* 
-
-Changed
--------
-
-Deprecated
+HIGHLIGHTS
 ----------
 
-Fixed
+- :bdg-success:`API` Create estimators using sklearn API.
+- :bdg-primary:`Doc` Updated docs with a new theme using `furo <https://github.com/pradyunsg/furo>`_.
+
+NEW
+---
+
+- :bdg-success:`API` Create estimators using sklearn API.
+- :bdg-primary:`Doc` Updated docs with a new theme using `furo <https://github.com/pradyunsg/furo>`_.
+- :bdg-dark:`Code` ...
+
+Fixes
 -----
 
-Contributors
+Enhancements
 ------------
 
-The following people contributed to this release (from ``git shortlog -ns v0.1.0``)::
-
+Changes
+-------
 

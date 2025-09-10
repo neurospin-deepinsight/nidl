@@ -21,37 +21,31 @@ class RandomErasing(VolumeTransform):
     Randomly selects one or multiple boxes in input data and erases their
     values (i.e. random erasing [1]_, very similar to cutout [2]_ but with
     arbitrary aspect ratio). It is an extension of
-    :class:`torchvision.transforms.RandomErasing` to the 3d case and it can
-    eventually erase multiple random boxes. It handles :class:`np.ndarray` or
-    :class:`torch.Tensor` as input and returns a consistent output (same type
+    `torchvision.transforms.RandomErasing` to the 3d case and it can
+    eventually erase multiple random boxes. It handles `np.ndarray` or
+    `torch.Tensor` as input and returns a consistent output (same type
     and shape).
 
     Parameters
     ----------
     scale: tuple of (float, float), default=(0.02, 0.33)
         Range of proportion of erased area against input data.
-
     ratio: tuple of (float, float), default=(1.0, 3.0)
         Range of aspect ratio of erased area (min, max).
-
     num_iterations: int, default=1
         Number of erased areas.
-
     value: float, "mean" or "random", default=0.0
         Erasing value. If "random", erases each voxel with random values
         normally distributed. If "mean", replaces each voxel with the mean
         value of the erased area, preserving the global statistics.
-
     inplace: bool, default=False
         If true, makes the transformation inplace, i.e. it modifies
         the input data directly.
-
     kwargs: dict
-        Additional keyword arguments given to
-        :class:`nidl.transforms.Transform`.
+        Additional keyword.
 
     Notes
-    ----------
+    -----
     In 3d, we define the "aspect ratio" as the ratio between each dimension
     size relatively to their geometric mean. It is a simple generalization
     from 2d to nd and we don't particularize any dimension. The aspect ratio
@@ -67,7 +61,6 @@ class RandomErasing(VolumeTransform):
     .. [2] DeVries, T., & Taylor, G. W. (2017).
            Improved Regularization of Convolutional Neural Networks with Cutout
            https://arxiv.org/abs/1708.04552
-
     """
 
     def __init__(
@@ -132,7 +125,7 @@ class RandomErasing(VolumeTransform):
             :math:`(H, W, D)`. Erased boxes are equal the same across channels.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Data with erased boxes.
         """
