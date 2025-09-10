@@ -181,17 +181,18 @@
 <dt class="sig sig-object py" id="nidl.losses.YAwareInfoNCE">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">YAwareInfoNCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nidl.losses.yaware_infonce.KernelMetric.html#nidl.losses.yaware_infonce.KernelMetric" title="nidl.losses.yaware_infonce.KernelMetric"><span class="pre">KernelMetric</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/losses/yaware_infonce.html#YAwareInfoNCE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.YAwareInfoNCE" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Implementation of y-Aware InfoNCE loss [1].</p>
+<p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="#r15" id="id1"><span>[R15]</span></a>.</p>
 <p>Compute the y-Aware InfoNCE loss, which integrates auxiliary
 information into contrastive learning by weighting sample pairs.</p>
-<p>Given a mini-batch of size N, two embeddings z1 and z2 representing
-two views of the same samples and a weighting matrix W computed
-using auxiliary variables y, the loss is:</p>
+<p>Given a mini-batch of size <img class="math" src="../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/>, two embeddings <img class="math" src="../_images/math/25e1d0f27471fc48a5066ec25b700df2e725728e.png" alt="z_1"/> and
+<img class="math" src="../_images/math/6441921587e886c3a91cd217680c4f079d061a08.png" alt="z_2"/> representing two views of the same samples and a weighting
+matrix <img class="math" src="../_images/math/1fbee781f84569077719a167b64e12064360fac1.png" alt="W"/> computed using auxiliary variables <img class="math" src="../_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/>, the loss is:</p>
 <div class="math">
-<p><img src="../_images/math/108b179ef0cc6667d5a9d4a88d73162482cee8ff.png" alt="\ell = -\frac{1}{N} \sum_{i,j} \frac{W_{i,j}}{\sum_{k=1}^{N}         W_{i, k}} \log \frac{\exp(\text{sim}(z_1^{i}, z_2^{j}) / \tau)}         {\sum_{k=1}^{N} \exp(\text{sim}(z_1^{i}, z_2^{k}) / \tau)}"/></p>
-</div><p>where <cite>sim</cite> is the cosine similarity and <cite>τ</cite> is the temperature.</p>
-<p>To compute W, a kernel K is specified (e.g. Gaussian) as well as a
-bandwidth H and the weighting matrix is:</p>
+<p><img src="../_images/math/620b5d582decf8817504416627f70cc74e92dc1d.png" alt="\ell = -\frac{1}{n} \sum_{i,j} \frac{W_{i,j}}{\sum_{k=1}^{n}         W_{i, k}} \log \frac{\exp(\text{sim}(z_1^{i}, z_2^{j}) / \tau)}         {\sum_{k=1}^{n} \exp(\text{sim}(z_1^{i}, z_2^{k}) / \tau)}"/></p>
+</div><p>where <img class="math" src="../_images/math/a2c2594d4f443c4af74c679d026ee83673a001a3.png" alt="sim"/> is the cosine similarity and <img class="math" src="../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/> is the
+temperature.</p>
+<p><img class="math" src="../_images/math/1fbee781f84569077719a167b64e12064360fac1.png" alt="W"/> is computed with a kernel <img class="math" src="../_images/math/52ddc0cde6d632f631533173562fe3ca375b1f32.png" alt="K"/> (e.g. Gaussian) and bandwidth
+<img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> as:</p>
 <div class="math">
 <p><img src="../_images/math/9214419675fd383ecf57238eb61723600af191fa.png" alt="W_{i,j} = K\left( H^{-\frac{1}{2}} (y_i-y_j) \right)"/></p>
 </div><dl class="field-list">
@@ -203,8 +204,8 @@ See PhD thesis, Dufumier 2022 page 94-95.</p>
 </div></blockquote>
 <p><strong>bandwidth</strong> : Union[float, int, List[float], array, KernelMetric], default=1.0</p>
 <blockquote>
-<div><p>The method used to calculate the bandwidth (“sigma” in [1]) between
-auxiliary variables:</p>
+<div><p>The method used to calculate the bandwidth (<img class="math" src="../_images/math/5406eadc281dbd20de843b0034c8497320dae5cb.png" alt="\sigma^2"/> in <a class="reference internal" href="#r15" id="id2"><span>[R15]</span></a>)
+between auxiliary variables:</p>
 <ul class="simple">
 <li><p>If <cite>bandwidth</cite> is a scalar (int or float), it sets the bandwidth to
 a diagnonal matrix with equal values.</p></li>
@@ -225,8 +226,15 @@ method to compute the similarity matrix between auxiliary variables.</p></li>
 </dd>
 </dl>
 <p class="rubric">References</p>
-<p>[1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI
-Classification, MICCAI 2021</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r15" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R15<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>)</span>
+<p>Dufumier, B., et al., “Contrastive learning with continuous proxy
+meta-data for 3D MRI classification.” MICCAI, 2021.
+<a class="reference external" href="https://arxiv.org/abs/2106.08808">https://arxiv.org/abs/2106.08808</a></p>
+</div>
+</div>
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.YAwareInfoNCE.forward">

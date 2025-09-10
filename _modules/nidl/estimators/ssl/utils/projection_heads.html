@@ -217,12 +217,19 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SimCLRProjectionHead</span><span class="p">(</span><span class="n">ProjectionHead</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Projection head used for SimCLR.</span>
 
-<span class="sd">    &quot;We use a MLP with one hidden layer to obtain</span>
-<span class="sd">    :math: `zi = g(h) = W_2 * \sigma (W_1 * h)` where :math: `\sigma`</span>
-<span class="sd">    is a ReLU non-linearity.&quot; [1]</span>
+<span class="sd">    This module implements the projection head as described in SimCLR [1]_.</span>
+<span class="sd">    The projection head is a multilayer perceptron (MLP) with one hidden layer</span>
+<span class="sd">    and a ReLU non-linearity, defined as:</span>
 
-<span class="sd">    [1] SimCLR, 2020, https://arxiv.org/abs/2002.05709</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \\mathbf{z} = g(\\mathbf{h}) = W_2 \\cdot \sigma(W_1\\cdot\\mathbf{h})</span>
 
+<span class="sd">    where :math:`\\sigma` is the ReLU activation function.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Chen, T., et al. &quot;A Simple Framework for Contrastive Learning of</span>
+<span class="sd">        Visual Representations.&quot; ICML, 2020. https://arxiv.org/abs/2002.05709</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -243,11 +250,25 @@
 <div class="viewcode-block" id="YAwareProjectionHead">
 <a class="viewcode-back" href="../../../../../generated/nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead.html#nidl.estimators.ssl.utils.YAwareProjectionHead">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">YAwareProjectionHead</span><span class="p">(</span><span class="n">ProjectionHead</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Projection head used for yAware.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Projection head used for yAware contrastive learning.</span>
 
-<span class="sd">    &quot;[...] zθ2 is a vanilla multilayer perceptron as in [SimCLR, 2020]&quot; [1]</span>
+<span class="sd">    This module implements the projection head :math:`z_{\\theta_2}` as</span>
+<span class="sd">    described in yAware [1]_, which is a simple multilayer perceptron (MLP)</span>
+<span class="sd">    similar to that used in SimCLR [2]_. It maps feature representations into</span>
+<span class="sd">    a space where contrastive loss can be applied.</span>
 
-<span class="sd">    [1] yAware, 2021, https://arxiv.org/abs/2106.08808</span>
+<span class="sd">    Typically, this MLP consists of one hidden layer followed by a</span>
+<span class="sd">    non-linearity (ReLU) and a final linear projection.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Dufumier, B., et al., &quot;Contrastive learning with continuous proxy</span>
+<span class="sd">           meta-data for 3D MRI classification.&quot; MICCAI, 2021.</span>
+<span class="sd">           https://arxiv.org/abs/2106.08808</span>
+
+<span class="sd">    .. [2] Chen, T., et al. &quot;A Simple Framework for Contrastive Learning of</span>
+<span class="sd">           Visual Representations.&quot; ICML, 2020. https://arxiv.org/abs/2002.05709</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

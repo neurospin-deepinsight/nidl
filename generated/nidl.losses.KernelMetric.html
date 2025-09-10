@@ -237,65 +237,95 @@
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">KernelMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/losses/yaware_infonce.html#KernelMetric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></p>
-<p>Interface for fast kernel computation.</p>
-<p>It computes the weighting matrix between input samples based on
-Kernel Density Estimation (KDE) weighting scheme [1, 2].
-Concretely, it computes the following weighting matrix between
-( x1, …, xn ):
-.. math:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">W_</span><span class="p">{</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">}</span> <span class="o">=</span> <span class="n">K</span>\<span class="n">left</span><span class="p">(</span> <span class="n">H</span><span class="o">^</span><span class="p">{</span><span class="o">-</span>\<span class="n">frac</span><span class="p">{</span><span class="mi">1</span><span class="p">}{</span><span class="mi">2</span><span class="p">}}</span> <span class="p">(</span><span class="n">xi</span><span class="o">-</span><span class="n">xj</span><span class="p">)</span> \<span class="n">right</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>with K a kernel such that:</p>
-<ol class="arabic simple">
-<li><p>( K(x) geq 0 ),</p></li>
-<li><p>( int K(x) , dx = 1 ),</p></li>
-<li><p>( K(x) = K(-x) ),</p></li>
-</ol>
-<p>and ( H ) is the bandwidth in the KDE estimation of ( p(X) ).</p>
-<p>H is symmetric definite positive and it can be automatically computed based
-on Scott’s method or Silverman’s method if required.
+<p>Interface for fast weighting matrix computation.</p>
+<p>It computes a weighting matrix <img class="math" src="../_images/math/1fbee781f84569077719a167b64e12064360fac1.png" alt="W"/> between input samples based on
+Kernel Density Estimation (KDE) <a class="reference internal" href="#r11" id="id1"><span>[R11]</span></a>, <a class="reference internal" href="#r12" id="id2"><span>[R12]</span></a>. Concretely, it computes the
+following weighting matrix between multivariate samples
+<img class="math" src="../_images/math/4bbfad71e31e6c6643958ad4b0a8a3d93a3f63a3.png" alt="x_1, ..., x_n \in \mathbb{R}^{d}"/>:</p>
+<div class="math">
+<p><img src="../_images/math/8a8bf92061178be6924aa8d26ecb5a87909cd1fc.png" alt="W_{i,j} = K\left( H^{-\frac{1}{2}} (x_i-x_j) \right)"/></p>
+</div><p>with <img class="math" src="../_images/math/52ddc0cde6d632f631533173562fe3ca375b1f32.png" alt="K"/> a kernel (or “weighting function”) such that:</p>
+<ul class="simple">
+<li><p><img class="math" src="../_images/math/29d2a66188696ce360d0f4a33212699e3a95f99a.png" alt="K(x) \ge 0"/> (positive)</p></li>
+<li><p><img class="math" src="../_images/math/4cbb9f910782c0d288a91b2f9ca78d1923ce5392.png" alt="\int K(x) dx = 1"/> (normalized)</p></li>
+<li><p><img class="math" src="../_images/math/d7cbb632bfeaa9ba37cab907d69a55ef3717ff7e.png" alt="K(x) = K(-x)"/> (symmetric)</p></li>
+</ul>
+<p>and <img class="math" src="../_images/math/076fb0488bed1d8fab4d8523104de181326182a7.png" alt="H\in \mathbb{R}^{d\times d}"/> is the bandwidth in the KDE
+estimation of <cite>p(X)</cite>.</p>
+<p><img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> is a symmetric definite-positive and it can be automatically
+computed based on Scott’s rule <a class="reference internal" href="#r13" id="id3"><span>[R13]</span></a> or Silverman’s rule <a class="reference internal" href="#r14" id="id4"><span>[R14]</span></a> if required.
 In that case, the bandwidth is computed as a scaled version of the
-covariance matrix of the data. If the bandwidth is set to a scalar,
-it is used as a diagonal matrix:
-.. math:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">H</span> <span class="o">=</span> \<span class="n">mathrm</span><span class="p">{</span><span class="n">diag</span><span class="p">}(</span>\<span class="n">text</span><span class="p">{</span><span class="n">scalar</span><span class="p">})</span>
-</pre></div>
-</div>
-<dl class="field-list">
+diagonal terms in the data covariance matrix:</p>
+<div class="math">
+<p><img src="../_images/math/2ec3ba58c7168b72f2efe102f161bdbebc03c1db.png" alt="H \propto \mathrm{diag}(\hat{\Sigma})"/></p>
+</div><dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kernel</strong> : {‘gaussian’, ‘epanechnikov’, ‘exponential’, ‘linear’, ‘cosine’},         default=’gaussian’</p>
+<dd class="field-odd"><p><strong>kernel</strong> : {‘gaussian’, ‘epanechnikov’, ‘exponential’, ‘linear’, ‘cosine’},        default=’gaussian’</p>
 <blockquote>
 <div><p>The kernel applied to the distance between samples.</p>
 </div></blockquote>
-<p><strong>bandwidth</strong> : str or int or float or list of float, default=”scott”</p>
+<p><strong>bandwidth</strong> : {‘scott’, ‘silverman’} or float or list of float,        default=”scott”</p>
 <blockquote>
 <div><p>The method used to calculate the estimator bandwidth:</p>
 <ul class="simple">
-<li><p>If <cite>bandwidth</cite> is str, must be ‘scott’ or ‘silverman’.
-Bandwidth is a scaled version of the diagonal term in the
-data covariance matrix.</p></li>
-<li><p>If <cite>bandwidth</cite> is scalar (float or int), it sets the bandwidth to
-H=diag([bandwidth for _ in range(n_features)])</p></li>
-<li><p>If <cite>bandwidth</cite> is a list of float, it sets the bandwidth to
-H=diag(bandwidth) and it must be of length equal <cite>n_features</cite></p></li>
+<li><p>If <cite>bandwidth</cite> is ‘scott’ or ‘silverman’, <img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> is a scaled
+version of the diagonal terms in the data covariance matrix.</p></li>
+<li><p>If <cite>bandwidth</cite> is scalar (float or int), <img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> is set to a
+diagonal matrix:
+<img class="math" src="../_images/math/2a4e0f928998e9d1b8a55411ccfb5e39db5c2e88.png" alt="H = \mathrm{diag}([bandwidth,\ldots, bandwidth])"/>.</p></li>
+<li><p>If <cite>bandwidth</cite> is a list of floats, <img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> is a diagonal matrix
+with the list values on the diagonal:
+<img class="math" src="../_images/math/88e9b21c887d2f2f846a0a18100e884cfd295bdc.png" alt="H = \mathrm{diag}(\text{bandwidth})"/>.</p></li>
 <li><p>If <cite>bandwidth</cite> is a 2d array, it must be of shape
 <cite>(n_features, n_features)</cite></p></li>
 </ul>
 </div></blockquote>
 </dd>
 </dl>
-<p class="rubric">References</p>
-<dl class="simple">
-<dt>[1] Rosenblatt, M. (1956). “Remarks on some nonparametric estimates of a</dt><dd><p>density function”. Annals of Mathematical Statistics.</p>
-</dd>
-<dt>[2] Parzen, E. (1962). “On estimation of a probability density function and</dt><dd><p>mode”</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
+<p>Scott’s Rule <a class="reference internal" href="#r11" id="id5"><span>[R11]</span></a> estimates the bandwidth as:</p>
+<div class="math">
+<p><img src="../_images/math/b20e99228bbf7e50d5fdddd0decd6df6bf69b715.png" alt="H = \hat{\Sigma} \cdot n^{-\frac{2}{d+4}}"/></p>
+</div><p>where <img class="math" src="../_images/math/1135b1f6a7cfebb0706fa49de85ca47963b6660c.png" alt="\hat{\Sigma}"/> is the covariance matrix of the data,
+<img class="math" src="../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/> is the number of samples, and <img class="math" src="../_images/math/badad346f6fbe2e237af99bfbd9a93a4da53a3da.png" alt="d"/> is the number of
+features (<img class="math" src="../_images/math/6615894a3053ff67a5225966fc2a7be625dca573.png" alt="d=1"/> for univariate data). Here, we only consider
+the diagonal terms (assuming features decorrelation) for numerical
+stability.</p>
+<p>Silverman’s rule of thumb <a class="reference internal" href="#r12" id="id6"><span>[R12]</span></a> for multivariate data is:</p>
+<div class="math">
+<p><img src="../_images/math/3e725f96e7c40e1c982755b3811ac69db385cc53.png" alt="H = \hat{\Sigma} \cdot \left(\frac{n(d+2)}{4}\right)^
+{-\frac{2}{d+4}}"/></p>
+</div><p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r11" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R11<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>,<a role="doc-backlink" href="#id7">3</a>)</span>
+<p>Rosenblatt, M. (1956). “Remarks on some nonparametric estimates of a
+density function”. Annals of Mathematical Statistics.</p>
+</div>
+<div class="citation" id="r12" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R12<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id6">2</a>,<a role="doc-backlink" href="#id8">3</a>)</span>
+<p>Parzen, E. (1962). “On estimation of a probability density function
+and mode”. Annals of Mathematicals Statistics.</p>
+</div>
+<div class="citation" id="r13" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R13<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id9">2</a>)</span>
+<p>Scott, D. W. (1992). “Multivariate Density Estimation: Theory,
+Practice, and Visualization”. Wiley.</p>
+</div>
+<div class="citation" id="r14" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R14<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id10">2</a>)</span>
+<p>Silverman, B. W. (1986). “Density Estimation for Statistics and Data
+Analysis”. Monographs on Statistics and Applied Probability.</p>
+</div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/losses/yaware_infonce.html#KernelMetric.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.fit" title="Link to this definition">¶</a></dt>
-<dd><p>Computes the bandwidth in the kernel density estimator of p(X).</p>
+<dd><p>Computes the bandwidth in the kernel density estimation.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> : array of shape (n_samples, n_features)</p>

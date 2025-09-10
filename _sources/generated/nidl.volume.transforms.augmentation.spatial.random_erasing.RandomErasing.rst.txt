@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.augmentation.spatial.RandomErasing nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing
+.. minigallery:: nidl.volume.transforms.augmentation.spatial.random_erasing.RandomErasing nidl.volume.transforms.augmentation.spatial.RandomErasing
     :add-heading: Examples
     :heading-level: -
 

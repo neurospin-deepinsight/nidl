@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.preprocessing.intensity.ZNormalization nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization
+.. minigallery:: nidl.volume.transforms.preprocessing.intensity.z_normalization.ZNormalization nidl.volume.transforms.preprocessing.intensity.ZNormalization
     :add-heading: Examples
     :heading-level: -
 

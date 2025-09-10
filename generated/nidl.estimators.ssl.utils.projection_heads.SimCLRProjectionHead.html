@@ -165,10 +165,21 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.utils.projection_heads.</span></span><span class="sig-name descname"><span class="pre">SimCLRProjectionHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/utils/projection_heads.html#SimCLRProjectionHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.utils.projection_heads.SimCLRProjectionHead" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.ssl.utils.projection_heads.ProjectionHead.html#nidl.estimators.ssl.utils.projection_heads.ProjectionHead" title="nidl.estimators.ssl.utils.projection_heads.ProjectionHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectionHead</span></code></a></p>
 <p>Projection head used for SimCLR.</p>
-<p>“We use a MLP with one hidden layer to obtain
-:math: <cite>zi = g(h) = W_2 * sigma (W_1 * h)</cite> where :math: <cite>sigma</cite>
-is a ReLU non-linearity.” [1]</p>
-<p>[1] SimCLR, 2020, <a class="reference external" href="https://arxiv.org/abs/2002.05709">https://arxiv.org/abs/2002.05709</a></p>
+<p>This module implements the projection head as described in SimCLR <a class="reference internal" href="#r7" id="id1"><span>[R7]</span></a>.
+The projection head is a multilayer perceptron (MLP) with one hidden layer
+and a ReLU non-linearity, defined as:</p>
+<div class="math">
+<p><img src="../_images/math/1549ddad5e65a94befda1707ea1a35ca19ea21a3.png" alt="\mathbf{z} = g(\mathbf{h}) = W_2 \cdot \sigma(W_1\cdot\mathbf{h})"/></p>
+</div><p>where <img class="math" src="../_images/math/b52df27bfb0b1e3af0c2c68a7b9da459178c2a7d.png" alt="\sigma"/> is the ReLU activation function.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R7<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Chen, T., et al. “A Simple Framework for Contrastive Learning of
+Visual Representations.” ICML, 2020. <a class="reference external" href="https://arxiv.org/abs/2002.05709">https://arxiv.org/abs/2002.05709</a></p>
+</div>
+</div>
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 

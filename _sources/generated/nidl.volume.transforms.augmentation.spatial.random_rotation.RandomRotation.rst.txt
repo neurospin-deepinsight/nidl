@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.augmentation.spatial.RandomRotation nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation
+.. minigallery:: nidl.volume.transforms.augmentation.spatial.random_rotation.RandomRotation nidl.volume.transforms.augmentation.spatial.RandomRotation
     :add-heading: Examples
     :heading-level: -
 

@@ -8,7 +8,7 @@
 
 .. autofunction:: nidl.metrics.regression.regression_report
 
-.. minigallery:: nidl.metrics.regression.regression_report nidl.metrics.regression_report
+.. minigallery:: nidl.metrics.regression_report nidl.metrics.regression.regression_report
     :add-heading: Examples
     :heading-level: -
 

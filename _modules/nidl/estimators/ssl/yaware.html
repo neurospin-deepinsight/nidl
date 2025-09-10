@@ -161,7 +161,7 @@
 <div class="viewcode-block" id="YAwareContrastiveLearning">
 <a class="viewcode-back" href="../../../../generated/nidl.estimators.ssl.yaware.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">YAwareContrastiveLearning</span><span class="p">(</span><span class="n">TransformerMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;y-Aware Contrastive Learning implementation [1]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;y-Aware Contrastive Learning [1]_.</span>
 
 <span class="sd">    y-Aware Contrastive Learning is a self-supervised learning framework for</span>
 <span class="sd">    learning visual representations with auxiliary variables. It leverages</span>
@@ -179,10 +179,6 @@
 <span class="sd">       i) the same image and ii) images with close auxiliary variables</span>
 <span class="sd">       to be closer while pushing dissimilar ones apart.</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    [1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI</span>
-<span class="sd">        Classification, Dufumier et al., MICCAI 2021</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -229,17 +225,17 @@
 <span class="sd">        default=&quot;gaussian&quot;</span>
 <span class="sd">        Kernel used as a similarity function between auxiliary variables.</span>
 
-<span class="sd">    bandwidth : Union[float, int, List[float], array, KernelMetric], \</span>
+<span class="sd">    bandwidth : Union[float, List[float], array, KernelMetric], \</span>
 <span class="sd">        default=1.0</span>
 <span class="sd">        The method used to calculate the bandwidth (&quot;sigma&quot; in [1]) between</span>
 <span class="sd">        auxiliary variables:</span>
 
-<span class="sd">        - If `bandwidth` is a scalar (int or float), it sets the bandwidth to</span>
-<span class="sd">          a diagnonal matrix with equal values.</span>
+<span class="sd">        - If `bandwidth` is a scalar, it sets the bandwidth to a diagnonal</span>
+<span class="sd">          matrix with equal values.</span>
 <span class="sd">        - If `bandwidth` is a 1d array, it sets the bandwidth to a</span>
 <span class="sd">          diagonal matrix and it must be of size equal to the number of</span>
 <span class="sd">          features in `y`.</span>
-<span class="sd">        - If bandwidth is a 2d array, it must be of shape</span>
+<span class="sd">        - If `bandwidth` is a 2d array, it must be of shape</span>
 <span class="sd">          `(n_features, n_features)` where `n_features` is the number of</span>
 <span class="sd">          features in `y`.</span>
 <span class="sd">        - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`</span>
@@ -298,6 +294,12 @@
 
 <span class="sd">    lr_scheduler : LRSchedulerPLType or None</span>
 <span class="sd">        Learning rate scheduler used for training.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Dufumier, B., et al., &quot;Contrastive learning with continuous proxy</span>
+<span class="sd">           meta-data for 3D MRI classification.&quot; MICCAI, 2021.</span>
+<span class="sd">           https://arxiv.org/abs/2106.08808</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>

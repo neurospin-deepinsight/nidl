@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.preprocessing.intensity.RobustRescaling nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling
+.. minigallery:: nidl.volume.transforms.preprocessing.intensity.rescale.RobustRescaling nidl.volume.transforms.preprocessing.intensity.RobustRescaling
     :add-heading: Examples
     :heading-level: -
 

@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.datasets.pandas_dataset.ImageDataFrameDataset nidl.datasets.ImageDataFrameDataset
+.. minigallery:: nidl.datasets.ImageDataFrameDataset nidl.datasets.pandas_dataset.ImageDataFrameDataset
     :add-heading: Examples
     :heading-level: -
 

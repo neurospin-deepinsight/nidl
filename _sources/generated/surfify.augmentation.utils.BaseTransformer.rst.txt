@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.augmentation.utils.BaseTransformer surfify.augmentation.BaseTransformer
+.. minigallery:: surfify.augmentation.BaseTransformer surfify.augmentation.utils.BaseTransformer
     :add-heading: Examples
     :heading-level: -
 

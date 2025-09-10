@@ -157,58 +157,85 @@
 <div class="viewcode-block" id="KernelMetric">
 <a class="viewcode-back" href="../../../generated/nidl.losses.yaware_infonce.KernelMetric.html#nidl.losses.KernelMetric">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">KernelMetric</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for fast kernel computation.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface for fast weighting matrix computation.</span>
 <span class="sd">    </span>
-<span class="sd">    It computes the weighting matrix between input samples based on</span>
-<span class="sd">    Kernel Density Estimation (KDE) weighting scheme [1, 2].</span>
-<span class="sd">    Concretely, it computes the following weighting matrix between</span>
-<span class="sd">    \( x1, ..., xn \):</span>
+<span class="sd">    It computes a weighting matrix :math:`W` between input samples based on</span>
+<span class="sd">    Kernel Density Estimation (KDE) [1]_, [2]_. Concretely, it computes the</span>
+<span class="sd">    following weighting matrix between multivariate samples</span>
+<span class="sd">    :math:`x_1, ..., x_n \\in \\mathbb{R}^{d}`:</span>
+<span class="sd">    </span>
 <span class="sd">    .. math::</span>
+<span class="sd">        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (x_i-x_j) \\right)</span>
 
-<span class="sd">        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (xi-xj) \\right)</span>
+<span class="sd">    with :math:`K` a kernel (or &quot;weighting function&quot;) such that:</span>
 
-<span class="sd">    with K a kernel such that:</span>
+<span class="sd">    - :math:`K(x) \\ge 0` (positive)</span>
+<span class="sd">    - :math:`\\int K(x) dx = 1` (normalized)</span>
+<span class="sd">    - :math:`K(x) = K(-x)` (symmetric)</span>
 
-<span class="sd">    1) \( K(x) \geq 0 \),</span>
-<span class="sd">    2) \( \int K(x) \, dx = 1 \),</span>
-<span class="sd">    3) \( K(x) = K(-x) \),</span>
+<span class="sd">    and :math:`H\\in \\mathbb{R}^{d\\times d}` is the bandwidth in the KDE</span>
+<span class="sd">    estimation of `p(X)`.</span>
 
-<span class="sd">    and \( H \) is the bandwidth in the KDE estimation of \( p(X) \).</span>
-
-<span class="sd">    H is symmetric definite positive and it can be automatically computed based</span>
-<span class="sd">    on Scott&#39;s method or Silverman&#39;s method if required.</span>
+<span class="sd">    :math:`H` is a symmetric definite-positive and it can be automatically</span>
+<span class="sd">    computed based on Scott&#39;s rule [3]_ or Silverman&#39;s rule [4]_ if required.</span>
 <span class="sd">    In that case, the bandwidth is computed as a scaled version of the</span>
-<span class="sd">    covariance matrix of the data. If the bandwidth is set to a scalar,</span>
-<span class="sd">    it is used as a diagonal matrix:</span>
+<span class="sd">    diagonal terms in the data covariance matrix:</span>
+<span class="sd">    </span>
 <span class="sd">    .. math::</span>
+<span class="sd">        H \\propto \\mathrm{diag}(\\hat{\\Sigma})</span>
 
-<span class="sd">        H = \mathrm{diag}(\\text{scalar})</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    kernel: {&#39;gaussian&#39;, &#39;epanechnikov&#39;, &#39;exponential&#39;, &#39;linear&#39;, &#39;cosine&#39;}, \</span>
+<span class="sd">    kernel: {&#39;gaussian&#39;, &#39;epanechnikov&#39;, &#39;exponential&#39;, &#39;linear&#39;, &#39;cosine&#39;},\</span>
 <span class="sd">        default=&#39;gaussian&#39;</span>
 <span class="sd">        The kernel applied to the distance between samples.</span>
 
-<span class="sd">    bandwidth: str or int or float or list of float, default=&quot;scott&quot;</span>
+<span class="sd">    bandwidth: {&#39;scott&#39;, &#39;silverman&#39;} or float or list of float,\</span>
+<span class="sd">        default=&quot;scott&quot;</span>
 <span class="sd">        The method used to calculate the estimator bandwidth:</span>
 
-<span class="sd">        - If `bandwidth` is str, must be &#39;scott&#39; or &#39;silverman&#39;.</span>
-<span class="sd">          Bandwidth is a scaled version of the diagonal term in the</span>
-<span class="sd">          data covariance matrix.</span>
-<span class="sd">        - If `bandwidth` is scalar (float or int), it sets the bandwidth to</span>
-<span class="sd">          H=diag([bandwidth for _ in range(n_features)])</span>
-<span class="sd">        - If `bandwidth` is a list of float, it sets the bandwidth to</span>
-<span class="sd">          H=diag(bandwidth) and it must be of length equal `n_features`</span>
+<span class="sd">        - If `bandwidth` is &#39;scott&#39; or &#39;silverman&#39;, :math:`H` is a scaled</span>
+<span class="sd">          version of the diagonal terms in the data covariance matrix.</span>
+<span class="sd">        - If `bandwidth` is scalar (float or int), :math:`H` is set to a</span>
+<span class="sd">          diagonal matrix:</span>
+<span class="sd">          :math:`H = \\mathrm{diag}([bandwidth,\\ldots, bandwidth])`.</span>
+<span class="sd">        - If `bandwidth` is a list of floats, :math:`H` is a diagonal matrix</span>
+<span class="sd">          with the list values on the diagonal:</span>
+<span class="sd">          :math:`H = \\mathrm{diag}(\\text{bandwidth})`.</span>
 <span class="sd">        - If `bandwidth` is a 2d array, it must be of shape</span>
 <span class="sd">          `(n_features, n_features)`</span>
-<span class="sd">          </span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Scott&#39;s Rule [1]_ estimates the bandwidth as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        H = \\hat{\\Sigma} \\cdot n^{-\\frac{2}{d+4}}</span>
+
+<span class="sd">    where :math:`\\hat{\\Sigma}` is the covariance matrix of the data,</span>
+<span class="sd">    :math:`n` is the number of samples, and :math:`d` is the number of</span>
+<span class="sd">    features (:math:`d=1` for univariate data). Here, we only consider</span>
+<span class="sd">    the diagonal terms (assuming features decorrelation) for numerical</span>
+<span class="sd">    stability.</span>
+
+<span class="sd">    Silverman&#39;s rule of thumb [2]_ for multivariate data is:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        H = \\hat{\\Sigma} \\cdot \\left(\\frac{n(d+2)}{4}\\right)^</span>
+<span class="sd">        {-\\frac{2}{d+4}}</span>
+
+<span class="sd">        </span>
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Rosenblatt, M. (1956). &quot;Remarks on some nonparametric estimates of a</span>
-<span class="sd">        density function&quot;. Annals of Mathematical Statistics.</span>
-<span class="sd">    [2] Parzen, E. (1962). &quot;On estimation of a probability density function and</span>
-<span class="sd">        mode&quot;</span>
+<span class="sd">    .. [1] Rosenblatt, M. (1956). &quot;Remarks on some nonparametric estimates of a</span>
+<span class="sd">           density function&quot;. Annals of Mathematical Statistics.</span>
+<span class="sd">    .. [2] Parzen, E. (1962). &quot;On estimation of a probability density function</span>
+<span class="sd">           and mode&quot;. Annals of Mathematicals Statistics.</span>
+<span class="sd">    .. [3] Scott, D. W. (1992). &quot;Multivariate Density Estimation: Theory,</span>
+<span class="sd">           Practice, and Visualization&quot;. Wiley.</span>
+<span class="sd">    .. [4] Silverman, B. W. (1986). &quot;Density Estimation for Statistics and Data</span>
+<span class="sd">           Analysis&quot;. Monographs on Statistics and Applied Probability.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -239,7 +266,7 @@
 <div class="viewcode-block" id="KernelMetric.fit">
 <a class="viewcode-back" href="../../../generated/nidl.losses.yaware_infonce.KernelMetric.html#nidl.losses.KernelMetric.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the bandwidth in the kernel density estimator of p(X).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the bandwidth in the kernel density estimation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -455,30 +482,30 @@
 <a class="viewcode-back" href="../../../generated/nidl.losses.yaware_infonce.YAwareInfoNCE.html#nidl.losses.YAwareInfoNCE">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">YAwareInfoNCE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implementation of y-Aware InfoNCE loss [1].</span>
+<span class="sd">    Implementation of the y-Aware InfoNCE loss [1]_.</span>
 
 <span class="sd">    Compute the y-Aware InfoNCE loss, which integrates auxiliary</span>
 <span class="sd">    information into contrastive learning by weighting sample pairs.</span>
 
-<span class="sd">    Given a mini-batch of size N, two embeddings z1 and z2 representing</span>
-<span class="sd">    two views of the same samples and a weighting matrix W computed</span>
-<span class="sd">    using auxiliary variables y, the loss is:</span>
+<span class="sd">    Given a mini-batch of size :math:`n`, two embeddings :math:`z_1` and</span>
+<span class="sd">    :math:`z_2` representing two views of the same samples and a weighting</span>
+<span class="sd">    matrix :math:`W` computed using auxiliary variables :math:`y`, the loss is:</span>
 
 <span class="sd">    .. math::</span>
-
-<span class="sd">        \\ell = -\\frac{1}{N} \\sum_{i,j} \\frac{W_{i,j}}{\\sum_{k=1}^{N} \</span>
+<span class="sd">        \\ell = -\\frac{1}{n} \\sum_{i,j} \\frac{W_{i,j}}{\\sum_{k=1}^{n} \</span>
 <span class="sd">        W_{i, k}} \\log \\frac{\\exp(\\text{sim}(z_1^{i}, z_2^{j}) / \\tau)} \</span>
-<span class="sd">        {\\sum_{k=1}^{N} \\exp(\\text{sim}(z_1^{i}, z_2^{k}) / \\tau)}</span>
+<span class="sd">        {\\sum_{k=1}^{n} \\exp(\\text{sim}(z_1^{i}, z_2^{k}) / \\tau)}</span>
 
-<span class="sd">    where `sim` is the cosine similarity and `τ` is the temperature.</span>
+<span class="sd">    where :math:`sim` is the cosine similarity and :math:`\\tau` is the</span>
+<span class="sd">    temperature.</span>
 
-<span class="sd">    To compute W, a kernel K is specified (e.g. Gaussian) as well as a</span>
-<span class="sd">    bandwidth H and the weighting matrix is:</span>
+<span class="sd">    :math:`W` is computed with a kernel :math:`K` (e.g. Gaussian) and bandwidth</span>
+<span class="sd">    :math:`H` as:</span>
 
 <span class="sd">    .. math::</span>
-
 <span class="sd">        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (y_i-y_j) \\right)</span>
 
+<span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    kernel: str in {&#39;gaussian&#39;, &#39;epanechnikov&#39;, &#39;exponential&#39;, &#39;linear&#39;, \</span>
@@ -487,8 +514,8 @@
 <span class="sd">        See PhD thesis, Dufumier 2022 page 94-95.</span>
 
 <span class="sd">    bandwidth: Union[float, int, List[float], array, KernelMetric], default=1.0</span>
-<span class="sd">        The method used to calculate the bandwidth (&quot;sigma&quot; in [1]) between</span>
-<span class="sd">        auxiliary variables:</span>
+<span class="sd">        The method used to calculate the bandwidth (:math:`\\sigma^2` in [1]_)</span>
+<span class="sd">        between auxiliary variables:</span>
 
 <span class="sd">        - If `bandwidth` is a scalar (int or float), it sets the bandwidth to</span>
 <span class="sd">          a diagnonal matrix with equal values.</span>
@@ -504,10 +531,12 @@
 <span class="sd">    temperature: float, default=0.1</span>
 <span class="sd">        Temperature used to scale the dot-product between embedded vectors</span>
 
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI</span>
-<span class="sd">    Classification, MICCAI 2021</span>
+<span class="sd">    .. [1] Dufumier, B., et al., &quot;Contrastive learning with continuous proxy</span>
+<span class="sd">           meta-data for 3D MRI classification.&quot; MICCAI, 2021.</span>
+<span class="sd">           https://arxiv.org/abs/2106.08808</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

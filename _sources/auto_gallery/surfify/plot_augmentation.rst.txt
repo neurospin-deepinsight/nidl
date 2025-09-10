@@ -422,9 +422,9 @@ Transformer
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.650 seconds)
+   **Total running time of the script:** (0 minutes 10.352 seconds)
 
-**Estimated memory usage:**  110 MB
+**Estimated memory usage:**  87 MB
 
 
 .. _sphx_glr_download_auto_gallery_surfify_plot_augmentation.py:

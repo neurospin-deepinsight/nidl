@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.backbones.alexnet3d.AlexNet nidl.volume.backbones.AlexNet
+.. minigallery:: nidl.volume.backbones.AlexNet nidl.volume.backbones.alexnet3d.AlexNet
     :add-heading: Examples
     :heading-level: -
 

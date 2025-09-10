@@ -165,6 +165,18 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                 
                                     <li>SECTIONS</li>
@@ -178,6 +190,8 @@
 						                <li> <a href='#nidl.estimators.ssl.YAwareContrastiveLearning.transform_step'>Yawarecontrastivelearning.transform_step()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.estimators.ssl.YAwareContrastiveLearning.validation_step'>Yawarecontrastivelearning.validation_step()</a> </li>                                    
+                                    
+						                <li> <a href='#examples'>Examples</a> </li>                                    
                                     
                                 
                             
@@ -237,7 +251,7 @@
 <dt class="sig sig-object py" id="nidl.estimators.ssl.YAwareContrastiveLearning">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">YAwareContrastiveLearning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">encoder:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">|</span> <span class="pre">type[~torch.nn.modules.module.Module],</span> <span class="pre">encoder_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">projection_head:</span> <span class="pre">~torch.nn.modules.module.Module</span> <span class="pre">|</span> <span class="pre">type[~torch.nn.modules.module.Module]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'nidl.estimators.ssl.utils.projection_heads.YAwareProjectionHead'&gt;,</span> <span class="pre">projection_head_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">temperature:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.1,</span> <span class="pre">kernel:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'gaussian',</span> <span class="pre">bandwidth:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">list[float]</span> <span class="pre">|</span> <span class="pre">~numpy.ndarray</span> <span class="pre">|</span> <span class="pre">~nidl.losses.yaware_infonce.KernelMetric</span> <span class="pre">=</span> <span class="pre">1.0,</span> <span class="pre">optimizer:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~torch.optim.optimizer.Optimizer</span> <span class="pre">|</span> <span class="pre">type[~torch.optim.optimizer.Optimizer]</span> <span class="pre">=</span> <span class="pre">'adam',</span> <span class="pre">optimizer_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">learning_rate:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0001,</span> <span class="pre">lr_scheduler:</span> <span class="pre">~torch.optim.lr_scheduler.LRScheduler</span> <span class="pre">|</span> <span class="pre">~torch.optim.lr_scheduler.ReduceLROnPlateau</span> <span class="pre">|</span> <span class="pre">type[~torch.optim.lr_scheduler.LRScheduler</span> <span class="pre">|</span> <span class="pre">~torch.optim.lr_scheduler.ReduceLROnPlateau]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">lr_scheduler_kwargs:</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">**kwargs:</span> <span class="pre">~typing.Any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/yaware.html#YAwareContrastiveLearning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.YAwareContrastiveLearning" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.base.TransformerMixin.html#nidl.estimators.base.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.base.BaseEstimator.html#nidl.estimators.base.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
-<p>y-Aware Contrastive Learning implementation [1]</p>
+<p>y-Aware Contrastive Learning <a class="reference internal" href="#r3" id="id1"><span>[R3]</span></a>.</p>
 <p>y-Aware Contrastive Learning is a self-supervised learning framework for
 learning visual representations with auxiliary variables. It leverages
 contrastive learning by maximizing the agreement between differently
@@ -304,17 +318,17 @@ clustered embedding more sensitive to augmentations.</p>
 <blockquote>
 <div><p>Kernel used as a similarity function between auxiliary variables.</p>
 </div></blockquote>
-<p><strong>bandwidth</strong> : Union[float, int, List[float], array, KernelMetric],         default=1.0</p>
+<p><strong>bandwidth</strong> : Union[float, List[float], array, KernelMetric],         default=1.0</p>
 <blockquote>
 <div><p>The method used to calculate the bandwidth (“sigma” in [1]) between
 auxiliary variables:</p>
 <ul class="simple">
-<li><p>If <cite>bandwidth</cite> is a scalar (int or float), it sets the bandwidth to
-a diagnonal matrix with equal values.</p></li>
+<li><p>If <cite>bandwidth</cite> is a scalar, it sets the bandwidth to a diagnonal
+matrix with equal values.</p></li>
 <li><p>If <cite>bandwidth</cite> is a 1d array, it sets the bandwidth to a
 diagonal matrix and it must be of size equal to the number of
 features in <cite>y</cite>.</p></li>
-<li><p>If bandwidth is a 2d array, it must be of shape
+<li><p>If <cite>bandwidth</cite> is a 2d array, it must be of shape
 <cite>(n_features, n_features)</cite> where <cite>n_features</cite> is the number of
 features in <cite>y</cite>.</p></li>
 <li><p>If <cite>bandwidth</cite> is <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelMetric</span></code>, it uses the <cite>pairwise</cite>
@@ -368,10 +382,15 @@ exponential decay rates for first and second moment estimates.</p>
 </dd>
 </dl>
 <p class="rubric">References</p>
-<dl class="simple">
-<dt>[1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI</dt><dd><p>Classification, Dufumier et al., MICCAI 2021</p>
-</dd>
-</dl>
+<div role="list" class="citation-list">
+<div class="citation" id="r3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Dufumier, B., et al., “Contrastive learning with continuous proxy
+meta-data for 3D MRI classification.” MICCAI, 2021.
+<a class="reference external" href="https://arxiv.org/abs/2106.08808">https://arxiv.org/abs/2106.08808</a></p>
+</div>
+</div>
 <p class="rubric">Attributes</p>
 <table class="docutils align-default">
 <tbody>
@@ -583,6 +602,12 @@ sample and y is the auxiliary variable.</p>
 
 </dd></dl>
 
+<section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer section-5-box wow fadeInUp" tooltip="This tutorial will show you how to fit and evaluate a y-Aware Contrastive Learning model on the OpenBHB dataset using NIDL. As in the original paper [1]_, we will use age as a weak label to guide the contrastive learning process. The model will be trained to bring representations of samples with similar ages closer together in the feature space, while pushing apart samples with dissimilar ages. This approach leverages the age information to enhance the quality of the learned representations, making them more relevant for downstream tasks such as age prediction or disease classification."><img alt="" src="../_images/sphx_glr_yaware_openbhb_thumb.png" />
+<p><a class="reference internal" href="../auto_gallery/yaware_openbhb.html#sphx-glr-auto-gallery-yaware-openbhb-py"><span class="std std-ref">Weakly Supervised Contrastive Learning with y-Aware</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Weakly Supervised Contrastive Learning with y-Aware</div>
+</div></div></section>
 
                     </div>
                 <div class="spacer"></div>

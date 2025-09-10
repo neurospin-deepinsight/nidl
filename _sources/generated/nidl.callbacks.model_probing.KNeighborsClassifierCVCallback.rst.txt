@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.model_probing.KNeighborsClassifierCVCallback nidl.callbacks.KNeighborsClassifierCVCallback
+.. minigallery:: nidl.callbacks.KNeighborsClassifierCVCallback nidl.callbacks.model_probing.KNeighborsClassifierCVCallback
     :add-heading: Examples
     :heading-level: -
 

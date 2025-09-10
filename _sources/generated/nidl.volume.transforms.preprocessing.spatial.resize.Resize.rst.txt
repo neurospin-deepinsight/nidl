@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.preprocessing.spatial.resize.Resize nidl.volume.transforms.preprocessing.spatial.Resize
+.. minigallery:: nidl.volume.transforms.preprocessing.spatial.Resize nidl.volume.transforms.preprocessing.spatial.resize.Resize
     :add-heading: Examples
     :heading-level: -
 
