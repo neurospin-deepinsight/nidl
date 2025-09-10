@@ -35,18 +35,19 @@ class SimCLR(TransformerMixin, BaseEstimator):
       contrastive objective is applied.
 
     During training, two augmented versions of each input `x` are encoded into
-    `(z_i, z_j)`. The objective is to maximize their similarity while minimizing
-    similarity to all other samples in the batch. This is achieved with the
-    InfoNCE loss:
+    `(z_i, z_j)`. The objective is to maximize their similarity while
+    minimizing similarity to all other samples in the batch. This is achieved
+    with the InfoNCE loss [2]_, [3]_:
 
     .. math::
 
         \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}
-                        {\sum_{k=1}^{2N}\mathbb{1}_{[k \neq i]}
+                        {\sum_{k=1, k\neq i}^{2N}
                         \exp(\text{sim}(z_i, z_k)/\tau)}
 
     Similarity is measured with cosine similarity. The temperature
-    :math:`\\tau` controls the sharpness of the distribution.
+    :math:`\tau` controls the sharpness of the distribution (refer to [4]_ for
+    more details).
     After training, the projection head `g` is discarded, and the encoder `f`
     serves as a pretrained feature extractor. This is because `f` provides
     representations that transfer better to downstream tasks than those from
@@ -84,7 +85,12 @@ class SimCLR(TransformerMixin, BaseEstimator):
     .. [1] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
            "A Simple Framework for Contrastive Learning of Visual
            Representations", ICML 2020.
-
+    .. [2] Aaron van den Oord, Yazhe Li, Oriol Vinyals, "Representation
+           Learning with Contrastive Predictive Coding", arXiv 2018.
+    .. [3] Sohn Kihyuk, "Improved Deep Metric Learning with Multi-class N-pair
+           Loss Objective", NIPS 2016.
+    .. [4] Feng Wang, Huaping Liu, "Understanding the Behaviour of Contrastive
+           Loss", CVPR 2021.
 
     """
 
@@ -128,10 +134,9 @@ class SimCLR(TransformerMixin, BaseEstimator):
         self.loss = InfoNCE(self.temperature)
 
     def configure_optimizers(self):
-        """Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
-        (``max_epochs`` is defined), a
-        :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning-rate
-        scheduler.
+        """Declare a :class:`~torch.optim.AdamW` optimizer and, optionally
+        a :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning rate
+        scheduler if ``max_epochs`` is set.
         """
         optimizer = optim.AdamW(
             self.parameters(),
