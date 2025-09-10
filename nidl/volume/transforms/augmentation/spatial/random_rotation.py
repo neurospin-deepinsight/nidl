@@ -13,7 +13,7 @@ import numpy as np
 import torch
 from nibabel.orientations import aff2axcodes
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomRotation(VolumeTransform):

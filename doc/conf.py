@@ -56,10 +56,7 @@ extensions = [
     "sphinxcontrib.bibtex",
     "sphinxcontrib.mermaid",
     "sphinxext.opengraph",
-    "sphinx.ext.viewcode",
 ]
-
-autosummary_generate = True
 
 autodoc_typehints = "none"
 
@@ -119,7 +116,7 @@ try:
 except AttributeError:
     # This may fail in case the git tags were not fetched.
     # So let's have a back up.
-    latest_release = "0.0.0.dev"
+    latest_release = None
 
 # The full current version, including alpha/beta/rc tags.
 current_version = __version__
@@ -254,7 +251,7 @@ html_theme_options = {
 }
 
 # Add banner in case version is not stable
-if "dev" in current_version:
+if "dev" in current_version and latest_release is not None:
     html_theme_options["announcement"] = (
         "<p>This is the development documentation "
         f"of nidl ({current_version}) "
@@ -262,6 +259,11 @@ if "dev" in current_version:
         'sd-btn-outline-dark reference external" '
         'href="https://neurospin-deepinsight.github.io/nidl/stable">'
         f"<span>Switch to stable version ({latest_release})</span></a></p>"
+    )
+else:
+    html_theme_options["announcement"] = (
+        "<p>This is the development documentation "
+        f"of nidl ({current_version}) "
     )
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -336,20 +338,30 @@ copybutton_prompt_text = ">>> "
 
 trim_doctests_flags = True
 
-_python_doc_base = "https://docs.python.org/3.9"
-
-# Example configuration for intersphinx: refer to the Python standard library.
+# Options for intersphinx extension
 intersphinx_mapping = {
-    "python": (_python_doc_base, None),
+    "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://scipy.github.io/devdocs/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
+    "PIL": ("https://pillow.readthedocs.io/en/stable/", None),
     "sklearn": ("https://scikit-learn.org/stable/", None),
-    "nibabel": ("https://nipy.org/nibabel", None),
+    "nibabel": ("https://nipy.org/nibabel/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-    "torch": ("https://pytorch.org/docs/main", None),
-    "torchvision": ("https://pytorch.org/vision/main", None),
+    "torch": ("https://pytorch.org/docs/main/", None),
+    "torchvision": ("https://pytorch.org/vision/main/", None),
+    "torchmetrics": ("https://lightning.ai/docs/torchmetrics/stable/", None),
+    "lighnting": ("https://lightning.ai/docs/pytorch/stable/", None),
+    "lightning.fabric": ("https://lightning.ai/docs/fabric/stable/", None),
 }
+nitpicky = True
+nitpick_ignore = [
+    ("py:class", "Module"),
+    ("py:class", "pytorch_lightning.core.LightningModule"),
+    ("py:class", "pytorch_lightning.core.module.LightningModule"),
+    ("py:class", "pytorch_lightning.callbacks.callback.Callback"),
+    ("py:class", "nidl.datasets.base.BaseDataset"),
+]
 
 extlinks = {
     "sklearn": ("https://scikit-learn.org/stable/%s", None),

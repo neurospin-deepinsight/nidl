@@ -203,6 +203,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
+        """
+        """
         return self.info_nce_loss(batch, mode="train")
 
     def validation_step(
@@ -211,6 +213,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
+        """
+        """
         self.info_nce_loss(batch, mode="val")
 
     def transform_step(
@@ -219,4 +223,6 @@ class SimCLR(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
+        """
+        """
         return self.f(batch)

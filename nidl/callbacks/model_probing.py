@@ -41,33 +41,25 @@ class ModelProbing(ABC, pl.Callback):
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form (X, y)
         for further embedding and training of the probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form (X, y)
         for further embedding and test of the probe.
-
     probe_name: str or None, default=None
         Name of the probe displayed when logging the results.
         It will appear as <probe_name>/<metric_name> for each metric.
         If None, only <metric_name> is displayed.
-
     every_n_train_epochs: int or None, default=1
         Number of training epochs after which to run the linear probing.
         Disabled if None.
-
     every_n_val_epochs: int or None, default=None
         Number of validation epochs after which to run the linear probing.
         Disabled if None.
-
     on_test_epoch_start: bool, default=False
         Whether to run the linear probing at the start of the test epoch.
-
     on_test_epoch_end: bool, default=False
         Whether to run the linear probing at the end of the test epoch.
-
     prog_bar: bool, default=True
         Whether to display the metrics in the progress bar.
-
     """
 
     def __init__(
@@ -256,36 +248,28 @@ class RidgeCVCallback(ModelProbing):
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form (X, y)
         for further embedding and training of the ridge probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form (X, y)
         for further embedding and test of the ridge probe.
-
     probe_name: str or None, default=None
         Name of the probe displayed when logging the results.
         It will appear as <probe_name>/<metric_name> for each metric.
         If None, only <metric_name> is displayed.
-
     alphas : tuple of floats, default=(0.1, 1.0, 10.0)
         Arrays of `alpha` values to try in CV. It corresponds to the
         regularization strength.
-
     cv: int or cross-validation generator, default=5
         How many folds to use for cross-validating the `alpha`
         regularization strength in the `Ridge` regression.
-
     scoring: str in {"r2", "neg_mean_absolute_error",
         "neg_mean_squared_error", ...}, default="r2"
         Which scoring function to use to cross-validate the `alpha`
         hyper-parameter. For a complete list of scoring options, check
         https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring
-
     kwargs: dict
         Additional keyword arguments to pass to the `ModelProbing` constructor
         (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).
-
     """
-
     def __init__(
         self,
         train_dataloader: DataLoader,
@@ -359,49 +343,39 @@ class KNeighborsRegressorCVCallback(ModelProbing):
        - Pearson correlation coefficient
        - explained variance score
 
-
     Parameters
     ----------
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form (X, y)
         for further embedding and training of the KNN probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form (X, y)
         for further embedding and test of the KNN probe.
-
     probe_name: str or None, default=None
         Name of the probe displayed when logging the results.
         It will appear as <probe_name>/<metric_name> for each metric.
         If None, only <metric_name> is displayed.
-
     n_neighbors: tuple of int, default=(2, 5, 10)
         Arrays of `n_neighbors` values to try in CV.
         It corresponds to the number of neighbors to use by the KNN on the
         training set.
-
     cv: int or cross-validation generator, default=5
         How many folds to use for cross-validating the `alpha`
         regularization strength in the `Ridge` regression.
-
     n_jobs: int or None, default=None
         Number of jobs to run in parallel.
         ``None`` means 1 unless in a `joblib.parallel_backend`
         context.
         ``-1`` means using all processors.
-
     scoring: str in {"r2", "neg_mean_absolute_error",
         "neg_mean_squared_error",  ...}, default="r2"
         Which scoring function to use to cross-validate the `n_neighbors`
         hyper-parameter. For a complete list of scoring options, check
         https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring
-
     kwargs: dict
         Additional keyword arguments to pass to the `ModelProbing` constructor
         (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).
-
     """
-
     def __init__(
         self,
         train_dataloader: DataLoader,
@@ -439,11 +413,9 @@ class KNeighborsRegressorCVCallback(ModelProbing):
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Training data.
-
         y : {array-like, sparse matrix} of shape (n_samples,) or \
                 (n_samples, n_outputs)
             Target values.
-
         """
         return self.probe.fit(X, y)
 
@@ -502,55 +474,44 @@ class LogisticRegressionCVCallback(ModelProbing):
         Training dataloader yielding batches in the form (X, y)
         for further embedding and training of the logistic regression
         probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form (X, y)
         for further embedding and test of the logistic regression
         probe.
-
     probe_name: str or None, default=None
         Name of the probe displayed when logging the results.
         It will appear as <probe_name>/<metric_name> for each metric.
         If None, only <metric_name> is displayed.
-
-    Cs : int or list of floats, default=10
+    Cs: int or list of floats, default=10
         Each of the values in Cs describes the inverse of regularization
         strength. If Cs is as an int, then a grid of Cs values are chosen
         in a logarithmic scale between 1e-4 and 1e4.
         Like in support vector machines, smaller values specify stronger
         regularization.
-
     cv: int or cross-validation generator, default=5
         How many folds to use for cross-validating the `C`
         regularization strenght
         in the `LogisticRegression`.
-
     max_iter: int, default=100
         Maximum number of iterations taken for the solver to converge.
-
     n_jobs: int or None, default=None
         Number of jobs to run in parallel.
         ``None`` means 1 unless in a `joblib.parallel_backend`
         context.
         ``-1`` means using all processors.
-
     scoring: str in {"accuracy", "balanced_accuracy", "f1", ...},
         default="balanced_accuracy"
         Which scoring function to use to cross-validate the `C`
         hyper-parameter.
         For a complete list of scoring options, check
         https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring
-
     linear_solver: str in {'lbfgs', 'liblinear', 'newton-cg',
         'newton-cholesky', 'sag', 'saga'}, default='lbfgs'
         Algorithm to use in the optimization problem.
-
     kwargs: dict
         Additional keyword arguments to pass to the `ModelProbing` constructor
         (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).
-
     """
-
     def __init__(
         self,
         train_dataloader: DataLoader,
@@ -662,43 +623,34 @@ class KNeighborsClassifierCVCallback(ModelProbing):
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form (X, y)
         for further embedding and training of the KNN probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form (X, y)
-        for further embedding and test of the KNN probe.
-                
+        for further embedding and test of the KNN probe.        
     probe_name: str or None, default=None
         Name of the probe displayed when logging the results.
         It will appear as <probe_name>/<metric_name> for each metric.
         If None, only <metric_name> is displayed.
-
     n_neighbors: tuple of int, default=(2, 5, 10)
         Array of `n_neighbors` values to try in CV.
         It corresponds to the number of neighbors to use by the KNN on
         the training set.
-
     cv: int or cross-validation generator, default=5
         How many folds to use for cross-validating the `n_neighbors`
         hyper-parameter.
-
     n_jobs: int or None, default=None
         Number of jobs to run in parallel.
         ``None`` means 1 unless in a `joblib.parallel_backend` context.
         ``-1`` means using all processors.
-
     scoring: str in {"accuracy", "balanced_accuracy", "f1", ...}, \
         default="balanced_accuracy"
         Which scoring function to use to cross-validate the `n_neighbors`
         hyper-parameter.
         For a complete list of scoring options, check
         https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring
-
     kwargs: dict
         Additional keyword arguments to pass to the `ModelProbing` constructor
         (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).
-
     """
-
     def __init__(
         self,
         train_dataloader: DataLoader,

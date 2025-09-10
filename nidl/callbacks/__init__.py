@@ -6,7 +6,9 @@
 # for details.
 ##########################################################################
 
-"""Common callbacks."""
+""" This modules details the public API you should use and implement for a
+nidl compatible callback, as well as the callbacks available in nidl.
+"""
 
 from .check_typing import BatchTypingCallback
 from .model_probing import (

@@ -11,7 +11,7 @@ from typing import Union
 import numpy as np
 
 from ...preprocessing.spatial.resize import Resize
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomResizedCrop(VolumeTransform):

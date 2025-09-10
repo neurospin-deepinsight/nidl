@@ -123,34 +123,7 @@ class BaseEstimator(pl.LightningModule):
         the current lightning trainer.
     trainer_params
         a dictionaray with the trainer parameters.
-
-    Methods
-    -------
-    :meth:`BaseEstimator.fit`
-        the `fit` method.
-    :meth:`BaseEstimator.transform`
-        the `transform` method for transformer.
-    :meth:`BaseEstimator.predict`
-        the `predict` method for regression, classification and clustering.
-    :meth:`BaseEstimator.training_step`
-        compute and return the training loss and some additional
-        metrics.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.validation_step`
-        compute anything of interest like accuracy on a single batch of data
-        from the validation set.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.transform_step`
-        transform new data.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.predict_step`
-        make some predictions on new data.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.log`
-        log a key, value pair.
-    :meth:`BaseEstimator.log_dict`
-        log a dictionary of values at once.
-        
+       
     Notes
     -----
     Callbacks can help you to tune, monitor or debug an estimator. For
@@ -486,7 +459,7 @@ class BaseEstimator(pl.LightningModule):
             determined by the hook.
         reduce_fx: str of callable, default='mean'
             reduction function over step values for end of epoch.
-            :meth:`torch.mean` by default.
+            :func:`torch.mean` by default.
         enable_graph: bool, default=False
             if ``True``, will not auto detach the graph.
         sync_dist: bool, default=False
@@ -571,7 +544,7 @@ class BaseEstimator(pl.LightningModule):
             The default value is determined by the hook.
         reduce_fx: str of callable, default='mean'
             reduction function over step values for end of epoch.
-            :meth:`torch.mean` by default.
+            :func:`torch.mean` by default.
         enable_graph: bool, default=False
             if ``True``, will not auto detach the graph.
         sync_dist: bool, default=False

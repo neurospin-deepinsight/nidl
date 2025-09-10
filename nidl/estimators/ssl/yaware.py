@@ -47,13 +47,12 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
 
     Parameters
     ----------
-    encoder : nn.Module or class
+    encoder: nn.Module or class
         Which deep architecture to use for encoding the input.
         A PyTorch `torch.nn.Module` is expected.
         In general, the uninstantiated class should be passed, although
         instantiated modules will also work.
-
-    encoder_kwargs : dict or None, default=None
+    encoder_kwargs: dict or None, default=None
         Options for building the encoder (depends on each architecture).
         Examples:
 
@@ -65,32 +64,27 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
           10 output dimension.
 
         Ignored if `encoder` is instantiated.
-
-    projection_head : nn.Module or class or None, default=YAwareProjectionHead
+    projection_head: nn.Module or class or None, default=YAwareProjectionHead
         Which projection head to use for the model. If None, no projection head
         is used and the encoder output is directly used for loss computation.
         Otherwise, a `~torch.nn.Module` is expected. In general,
         the uninstantiated class should be passed, although instantiated
         modules will also work. By default, a 2-layer MLP with ReLU activation,
         2048-d hidden units, and 128-d output dimensions is used.
-
-    projection_head_kwargs : dict or None, default=None
+    projection_head_kwargs: dict or None, default=None
         Arguments for building the projection head. By default, input dimension
         is 2048-d and output dimension is 128-d. These can be changed by
         passing a dictionary with keys 'input_dim' and 'output_dim'.
         'input_dim' must be equal to the encoder's output dimension.
         Ignored if `projection_head` is instantiated.
-
-    temperature : float, default=0.1
+    temperature: float, default=0.1
         Temperature value in y-Aware InfoNCE loss. Small values imply more
         uniformity between samples' embeddings, whereas high values impose
         clustered embedding more sensitive to augmentations.
-
-    kernel : {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, \
+    kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, \
         default="gaussian"
         Kernel used as a similarity function between auxiliary variables.
-
-    bandwidth : Union[float, int, List[float], array, KernelMetric], \
+    bandwidth: Union[float, int, List[float], array, KernelMetric], \
         default=1.0
         The method used to calculate the bandwidth ("sigma" in [1]) between
         auxiliary variables:
@@ -105,8 +99,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
           features in `y`.
         - If `bandwidth` is `KernelMetric`, it uses the `pairwise`
           method to compute the similarity matrix between auxiliary variables.
-
-    optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
+    optimizer: {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
         default="adam"
         Optimizer for training the model. Can be:
 
@@ -119,45 +112,36 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
               Hutter, ICLR 2019).
               
         - An instance or subclass of ``torch.optim.Optimizer``.
-
-    optimizer_kwargs : dict or None, default=None
+    optimizer_kwargs: dict or None, default=None
         Arguments for the optimizer ('adam' by default). By default:
         {'betas': (0.9, 0.99), 'weight_decay': 5e-05} where 'betas' are the
         exponential decay rates for first and second moment estimates.
 
         Ignored if `optimizer` is instantiated.
-
-    learning_rate : float, default=1e-4
+    learning_rate: float, default=1e-4
         Initial learning rate.
-
-    lr_scheduler : LRSchedulerPLType or class or None, default=None
+    lr_scheduler: LRSchedulerPLType or class or None, default=None
         Learning rate scheduler to use.
-
-    lr_scheduler_kwargs : dict or None, default=None
+    lr_scheduler_kwargs: dict or None, default=None
         Additional keyword arguments for the scheduler.
 
         Ignored if `lr_scheduler` is instantiated.
-
-    **kwargs : dict, optional
+    **kwargs: dict, optional
         Additional keyword arguments for the BaseEstimator class, such as
         `max_epochs`, `max_steps`, `num_sanity_val_steps`,
         `check_val_every_n_epoch`, `callbacks`, etc.
 
     Attributes
     ----------
-    encoder : torch.nn.Module
+    encoder: torch.nn.Module
         Deep neural network mapping input data to low-dimensional vectors.
-
-    projection_head : torch.nn.Module
+    projection_head: torch.nn.Module
         Maps encoder output to latent space for contrastive loss optimization.
-
-    loss : yAwareInfoNCE
+    loss: yAwareInfoNCE
         The yAwareInfoNCE loss function used for training.
-
-    optimizer : torch.optim.Optimizer
+    optimizer: torch.optim.Optimizer
         Optimizer used for training.
-
-    lr_scheduler : LRSchedulerPLType or None
+    lr_scheduler: LRSchedulerPLType or None
         Learning rate scheduler used for training.
     """
     def __init__(
@@ -283,6 +267,8 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
+        """
+        """
         return self.encoder(batch)
 
     def parse_batch(

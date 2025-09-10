@@ -11,7 +11,7 @@ from typing import Callable, Optional
 import numpy as np
 import torch
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RobustRescaling(VolumeTransform):

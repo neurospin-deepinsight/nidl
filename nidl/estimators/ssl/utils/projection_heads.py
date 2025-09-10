@@ -43,9 +43,7 @@ class ProjectionHead(nn.Module):
     >>>     (256, 256, nn.BatchNorm1d(256), nn.ReLU()),
     >>>     (256, 128, None, None)
     >>> ])
-
     """
-
     def __init__(
         self,
         blocks: list[
@@ -77,7 +75,6 @@ class SimCLRProjectionHead(ProjectionHead):
     is a ReLU non-linearity." [1]
 
     [1] SimCLR, 2020, https://arxiv.org/abs/2002.05709
-
     """
 
     def __init__(
@@ -100,9 +97,7 @@ class YAwareProjectionHead(ProjectionHead):
     "[...] zθ2 is a vanilla multilayer perceptron as in [SimCLR, 2020]" [1]
 
     [1] yAware, 2021, https://arxiv.org/abs/2106.08808
-
     """
-
     def __init__(
         self,
         input_dim: int = 2048,

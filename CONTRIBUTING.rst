@@ -2,7 +2,8 @@ Contributing
 ============
 
 .. |fork_logo| image:: https://upload.wikimedia.org/wikipedia/commons/d/dd/Octicons-repo-forked.svg
-               :height: 20
+               :height: 10
+               :width: 10
 
 Introduction
 ------------
