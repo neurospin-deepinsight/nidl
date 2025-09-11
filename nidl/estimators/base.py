@@ -261,8 +261,11 @@ class BaseEstimator(pl.LightningModule):
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
-        return torch.cat(trainer.predict(
-            self, test_dataloader, return_predictions=True))
+        pred = trainer.predict(self, test_dataloader, return_predictions=True)
+        if isinstance(pred[0], torch.Tensor):
+            return torch.cat(pred)
+        else:
+            return pred
     
     @available_if(_estimator_is(("regressor", "classifier", "clusterer")))
     def predict(

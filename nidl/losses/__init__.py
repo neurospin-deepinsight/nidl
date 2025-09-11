@@ -11,4 +11,5 @@
 
 from .infonce import InfoNCE
 from .mcvae import MCVAELoss
+from .vae import BetaHLoss
 from .yaware_infonce import KernelMetric, YAwareInfoNCE

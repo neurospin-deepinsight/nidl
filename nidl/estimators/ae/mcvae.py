@@ -17,11 +17,11 @@ from torch import Tensor
 from torch.distributions import Bernoulli, Categorical, Normal
 
 from ...losses import MCVAELoss
-from ..base import BaseEstimator, ClassifierMixin
-from .vae import VAE
+from ...volume.backbones import VAE
+from ..base import BaseEstimator, TransformerMixin
 
 
-class MCVAE(ClassifierMixin, BaseEstimator):
+class MCVAE(TransformerMixin, BaseEstimator):
     """ Multi-Channel Variational Autoencoder for the joint analysis of
     heterogeneous data.
 
@@ -66,8 +66,8 @@ class MCVAE(ClassifierMixin, BaseEstimator):
 
     Attributes
     ----------
-    model
-        a :class:`~torch.nn.Module` containing the prediction model.
+    vae
+        a :class:`~torch.nn.Module` containing the transformer model.
     return_reconstructions
         False when the predict step needs to return the embeddings rather than
         the reconstruction.
@@ -349,7 +349,7 @@ class MCVAE(ClassifierMixin, BaseEstimator):
         loss, extra_loss, qs = self.mcvae_loss(batch, mode="val")
         return qs
 
-    def predict_step(
+    def transform_step(
             self,
             batch: Sequence[torch.Tensor],
             batch_idx: int,

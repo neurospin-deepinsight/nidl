@@ -22,3 +22,6 @@ from .resnet3d import (
     resnet50,
     resnet50_trunc,
 )
+from .vae import (
+    VAE,
+)

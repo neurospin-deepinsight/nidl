@@ -331,7 +331,7 @@ for name, model in models.items():
     g[name] = np.array(g[name]).reshape(-1)
     print(f"-- g flat: {g[name].shape}")
     model.return_reconstructions = True
-    p = model.predict(dataloaders["validation"])[0]
+    p = model.transform(dataloaders["validation"])[0]
     x_hat[name] = model.reconstruct(p)
 
 
