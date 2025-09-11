@@ -68,7 +68,7 @@ jobs:
         cd ..
     - name: Upload documentation as an artifact
       uses: actions/upload-artifact@v4
-      with: 
+      with:
         name: html-documentation
         retention-days: 15
         path: |
@@ -77,7 +77,8 @@ jobs:
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: tmp/doc/build/html
+        publish_dir: doc/build/html
+        destination_dir: dev
 
   build:
 
@@ -117,3 +118,10 @@ jobs:
       run: |
         cd ./doc
         make html-strict
+    - name: Upload documentation as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-documentation
+        retention-days: 7
+        path: |
+            doc/build/html
