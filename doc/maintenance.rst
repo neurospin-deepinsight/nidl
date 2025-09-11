@@ -139,9 +139,6 @@ More detailed information can be found on
 
 The packaging specification is contained in
 `pyproject.toml <https://github.com/neurospin-deepinsght/nidl/blob/main/pyproject.toml>`_.
-We use ``hatchling`` and ``hatch-vcs``
-as described in these `guidelines <https://effigies.gitlab.io/posts/python-packaging-2023/>`_
-to build the sdist, wheel, and extract version number from the git tag.
 
 We assume that we are in a clean state where all the Pull Requests (PR)
 that we wish to include in the new release have been merged.
@@ -181,7 +178,8 @@ the docstring should be updated to:
         """
         ...
 
-Additionally, make sure all deprecations that are supposed to be removed with this new version have been addressed.
+Additionally, make sure all deprecations that are supposed to be removed with
+this new version have been addressed.
 
 If this new release comes with dependency version bumps (Python, Numpy...),
 make sure to implement and test these changes beforehand.
@@ -281,11 +279,6 @@ Once the PR has been reviewed and merged, pull from master and tag the merge com
     git tag x.y.z
     git push upstream --tags
 
-.. note::
-
-    When building the distribution as described below, ``hatch-vcs``, defined in ``pyproject.toml``,
-    extracts the version number using this tag and writes it to a ``_version.py`` file.
-
 
 Build the distributions and upload them to Pypi
 -----------------------------------------------
@@ -331,8 +324,6 @@ This should add two files to the ``dist`` subfolder:
 -   one for the built distribution
     that should look like ``PACKAGENAME-PACKAGEVERSION-PYTHONVERSION-PYTHONCVERSION-PLATFORM.whl``
 
-This will also update ``_version.py``.
-
 Optionally, we can run some basic checks with ``twine``:
 
 .. code-block:: bash
@@ -366,71 +357,9 @@ Build of stable docs
 --------------------
 
 Once the new tagged github release is made following the step above,
-the Github Actions workflow ``release-docs.yml`` will be triggered automatically
-to build the stable docs and push them
-to our github pages repository.
-The workflow can also be triggered manually from the Actions tab.
+the Github Actions workflow ``release-docs.yml`` can be triggered manually
+from the Actions tab.
 
-
-Build and deploy the documentation manually
--------------------------------------------
-
-.. note::
-
-    This step is now automated as described above.
-    If there is a need to run it manually please follow the instructions below.
-
-
-Before building the documentation, make sure that the following LaTeX
-dependencies are installed on your system:
-
-- `dvipng <https://ctan.org/pkg/dvipng>`_
-- `texlive-latex-base <https://ctan.org/pkg/latex-base>`_
-- `texlive-latex-extra <https://packages.debian.org/sid/texlive-latex-extra>`_
-
-You can check if each package is installed by using
-``command -v <command-name>`` as in:
-
-.. code-block:: bash
-
-    command -v dvipng
-
-If the package is installed, then the path to its location on your system will
-be returned. Otherwise, you can install using your system's package manager or
-from source, for example:
-
-.. code-block:: bash
-
-    wget https://mirrors.ctan.org/dviware/dvipng.zip
-    unzip dvipng.zip
-    cd dvipng
-    ./configure
-    make
-    make install
-
-See available linux distributions of texlive-latex-base and texlive-latex-extra:
-
-- https://pkgs.org/search/?q=texlive-latex-base
-- https://pkgs.org/search/?q=texlive-latex-extra
-
-We now need to update the documentation.
-We let tox handle creating virtual env and install dependencies.
-
-.. warning::
-
-    The doc build is done with the minimum python version supported by Nidl.
-
-.. code-block:: bash
-
-    pip install tox
-    tox run --colored yes --list-dependencies -e doc -- html
-    export DEPLOY_TYPE="stable"
-    export COMMIT_SHA=$(git rev-parse HEAD)
-    bash ./build_tools/github/deploy_doc.sh
-
-
-This will build the documentation (beware, this is time consuming...)
-and push it to the GitHub pages.
 
 Post-release
 ------------
