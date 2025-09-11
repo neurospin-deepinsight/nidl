@@ -6,22 +6,8 @@
 # for details.
 ##########################################################################
 
-""" Definition of common volumic architectures.
+""" AutoEncoder estimators.
 """
 
-from .alexnet3d import AlexNet
-from .densenet3d import (
-    DenseNet,
-    densenet121,
-)
-from .resnet3d import (
-    ResNet,
-    ResNetTruncated,
-    resnet18,
-    resnet18_trunc,
-    resnet50,
-    resnet50_trunc,
-)
-from .vae import (
-    VAE,
-)
+from .mcvae import MCVAE
+from .vae import VAE
