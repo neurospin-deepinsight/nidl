@@ -124,4 +124,4 @@ jobs:
         name: html-documentation
         retention-days: 7
         path: |
-            doc/build/html
+            doc/_build/html
