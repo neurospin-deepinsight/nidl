@@ -11,31 +11,36 @@ import torch.nn as nn
 
 
 class BarlowTwins(nn.Module):
-    """ Redundancy-reduction loss derived from Zbontar et al.,
-    JMLR 2021. See https://proceedings.mlr.press/v139/zbontar21a for details.
+    """Implementation of the redundancy-reduction loss [1]_.
+
+    Compute the Barlow Twins loss.
+
 
     Parameters
     ----------
     lambd: float, default=5e-3
         trading off the importance of the redundancy reduction term.
+
+
+    References
+    ----------
+    .. [1] Zbontar, J., et al., "Barlow Twins: Self-Supervised Learning
+           via Redundancy Reduction." PMLR, 2021.
+           hhttps://proceedings.mlr.press/v139/zbontar21a
+
     """
 
-    def __init__(
-            self,
-            lambd: float = 5e-3):
+    def __init__(self, lambd: float = 5e-3):
         super().__init__()
         self.lambd = lambd
 
-    def forward(
-            self,
-            z1: torch.Tensor,
-            z2: torch.Tensor):
-        """ Forward implementation.
-
+    def forward(self, z1: torch.Tensor, z2: torch.Tensor):
+        """
         Parameters
         ----------
         z1: torch.Tensor of shape (batch_size, n_features)
             First embedded view.
+
         z2: torch.Tensor of shape (batch_size, n_features)
             Second embedded view.
 
@@ -66,5 +71,5 @@ class BarlowTwins(nn.Module):
 
         return loss
 
-    def __repr__(self):
+    def __str__(self):
         return f"{type(self).__name__}(lambd={self.lambd})"

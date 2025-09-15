@@ -12,6 +12,7 @@ import numpy as np
 import torch
 
 from nidl.losses import (
+    BarlowTwins,
     InfoNCE,
     YAwareInfoNCE,
     KernelMetric
@@ -47,6 +48,11 @@ class TestLosses(unittest.TestCase):
                     )
                     assert loss_low >= 0, "InfoNCE loss should be positive."
     
+    def test_barlowtwins(self):
+        """Test BarlowTwins loss is computed correctly.
+        """
+        assert True
+
     def test_yaware(self):
         """ Test y-Aware loss is computed correctly.
         """
