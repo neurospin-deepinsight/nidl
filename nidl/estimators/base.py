@@ -201,11 +201,11 @@ class BaseEstimator(pl.LightningModule):
 
     @property
     def fitted(self):
-	    return self.fitted_
-
+        return self.fitted_
+    
     @property
     def trainer_params(self):
-	    return self.trainer_params_
+        return self.trainer_params_
 
     def fit(
             self,
