@@ -15,6 +15,21 @@ class BarlowTwins(nn.Module):
 
     Compute the Barlow Twins loss.
 
+    .. math::
+        \mathcal{L}_{BT} \triangleq 
+        \\underbrace{\sum_{i} \\left( 1 - C_{ii} \\right)^{2}
+        }_{\\text{invariance term}} 
+        + \lambda \, 
+        \\underbrace{\sum_{i} \sum_{j \\neq i} C_{ij}^{2}
+        }_{\\text{redundancy reduction term}}
+
+    .. math::
+        C_{ij} \triangleq
+        \\frac{\sum_{b} z^{A}_{b,i} \, z^{B}_{b,j}}
+        {\\sqrt{\sum_{b} \\left(z^{A}_{b,i}\\right)^{2}}
+        \; \\sqrt{\sum_{b} \\left(z^{B}_{b,j}\\right)^{2}} }
+
+
 
     Parameters
     ----------
