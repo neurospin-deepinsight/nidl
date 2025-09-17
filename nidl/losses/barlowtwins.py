@@ -98,7 +98,10 @@ class BarlowTwins(nn.Module):
         lbd = self.lambd / D
 
         # cross-correlation matrix
-        c = torch.mm(z1_norm.T, z2_norm) / (N - 1)  # DxD
+        if N == 1:
+            c = torch.mm(z1_norm.T, z2_norm)
+        else:
+            c = torch.mm(z1_norm.T, z2_norm) / (N - 1)  # DxD
 
         # loss
         c_diff = (c - torch.eye(D, device=z1.device)).pow(2)  # DxD

@@ -63,6 +63,49 @@ class TestLosses(unittest.TestCase):
                     "to 1, thus the invariance term should be equal to 0"
                 )
 
+    def test_str(self):
+        loss_fn = BarlowTwins(lambd=0.01)
+        self.assertEqual(str(loss_fn), "BarlowTwins(lambd=0.01)")
+
+    def test_loss_batch_gt_1(self):
+        # Typical batch size > 1
+        torch.manual_seed(0)
+        z1 = torch.randn(4, 5)
+        z2 = torch.randn(4, 5)
+
+        loss_fn = BarlowTwins(lambd=0.01)
+        loss = loss_fn(z1, z2)
+
+        self.assertIsInstance(loss, torch.Tensor)
+        self.assertEqual(loss.dim(), 0)  # should be scalar tensor
+        self.assertGreater(loss.item(), 0)  # loss should be positive
+
+    def test_loss_batch_eq_1(self):
+        # Edge case: batch size = 1
+        torch.manual_seed(0)
+        z1 = torch.randn(1, 5)
+        z2 = torch.randn(1, 5)
+
+        loss_fn = BarlowTwins(lambd=0.01)
+        loss = loss_fn(z1, z2)
+
+        self.assertIsInstance(loss, torch.Tensor)
+        self.assertEqual(loss.dim(), 0)  # should be scalar tensor
+
+    def test_gradients(self):
+        # Check that the loss is differentiable
+        z1 = torch.randn(4, 5, requires_grad=True)
+        z2 = torch.randn(4, 5, requires_grad=True)
+
+        loss_fn = BarlowTwins()
+        loss = loss_fn(z1, z2)
+        loss.backward()
+
+        self.assertIsNotNone(z1.grad)
+        self.assertIsNotNone(z2.grad)
+        self.assertEqual(z1.grad.shape, z1.shape)
+        self.assertEqual(z2.grad.shape, z2.shape)
+
     def test_yaware(self):
         """ Test y-Aware loss is computed correctly.
         """
