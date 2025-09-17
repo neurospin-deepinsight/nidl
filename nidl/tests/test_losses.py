@@ -51,7 +51,17 @@ class TestLosses(unittest.TestCase):
     def test_barlowtwins(self):
         """Test BarlowTwins loss is computed correctly.
         """
-        assert True
+        lambd = 0.
+        for batch_size in [5, 10]:
+            for n_embedding in [5, 10]:
+                z1 = torch.rand(
+                    batch_size, n_embedding)
+                barlowtwins = BarlowTwins(lambd)
+                loss = barlowtwins(z1, z1)
+                assert np.allclose(loss.numpy(), 0., atol=1e-10), (
+                    "For an autocorrelation, diagonal elements should be equal "
+                    "to 1, thus the invariance term should be equal to 0"
+                )
 
     def test_yaware(self):
         """ Test y-Aware loss is computed correctly.
