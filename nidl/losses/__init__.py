@@ -8,5 +8,6 @@
 
 """Common losses."""
 
+from .barlowtwins import BarlowTwins
 from .infonce import InfoNCE
 from .yaware_infonce import KernelMetric, YAwareInfoNCE
