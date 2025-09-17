@@ -6,9 +6,9 @@
 # for details.
 ##########################################################################
 
-import numpy as np
 import torch
 import torch.nn as nn
+
 
 class BarlowTwins(nn.Module):
     """Implementation of the redundancy-reduction loss [1]_.
@@ -21,10 +21,10 @@ class BarlowTwins(nn.Module):
     two outputs of dimension :math:`D` of the same sample:
 
     .. math::`
-        \mathcal{L}_{BT} \\triangleq 
+        \mathcal{L}_{BT} \\triangleq
         \\underbrace{\sum_{i} \\left( 1 - C_{ii} \\right)^{2}
-        }_{\\text{invariance term}} 
-        + \\frac{\lambda}{D} \, 
+        }_{\\text{invariance term}}
+        + \\frac{\lambda}{D} \,
         \\underbrace{\sum_{i} \sum_{j \\neq i} C_{ij}^{2}
         }_{\\text{redundancy reduction term}}
 
