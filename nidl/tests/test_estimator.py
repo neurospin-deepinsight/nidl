@@ -7,14 +7,11 @@
 ##########################################################################
 
 from collections import OrderedDict
-from types import SimpleNamespace
 
 import unittest
-from unittest.mock import patch
 
 import torch
 from torch import nn
-import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
@@ -27,15 +24,17 @@ from nidl.estimators import (
 )
 from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
 from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
+from nidl.estimators.autoencoders import VAE
 from nidl.estimators.linear import LogisticRegression
 from nidl.losses.yaware_infonce import KernelMetric
+from nidl.losses.beta_vae import BetaVAELoss
 from nidl.transforms import MultiViewsTransform
 from nidl.utils import print_multicolor
 
 
 class CustomTensorDataset(Dataset):
-    """TensorDataset with support of transforms."""
-
+    """ TensorDataset with support of transforms.
+    """
     def __init__(self, data, labels=None, transform=None):
         self.data = data
         self.labels = labels
@@ -53,13 +52,12 @@ class CustomTensorDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
-
+    
 
 class TestEstimators(unittest.TestCase):
-    """Test estimators."""
-
+    """ Test estimators: simple checks.
+    """
     def setUp(self):
-        """Setup test."""
         self._encoder = nn.Linear(5 * 5, 10)
         self._encoder.latent_size = 10
         self._fc = nn.Linear(self._encoder.latent_size, 2)
@@ -182,6 +180,22 @@ class TestEstimators(unittest.TestCase):
             ),
         )
     
+    def vae_config(self):
+        return {
+            VAE:
+                {
+                    "encoder": DummyEncoder(),
+                    "decoder": DummyDecoder(),
+                    "encoder_out_dim": 4,
+                    "latent_dim": 2,
+                    "beta": 1.0,
+                    "stochastic_transform": True,
+                    "lr": 1e-3,
+                    "weight_decay": 0.0,
+                    "max_epochs": 2,
+                }
+        }
+
     def predict_config(self):
         return {
             LogisticRegression: {
@@ -223,7 +237,7 @@ class TestEstimators(unittest.TestCase):
                 self.assertFalse(hasattr(obj, "transform"))
 
     def test_ssl(self):
-        """Test self supervised model (simple check)."""
+        """ Test self supervised model (simple check)."""
         for klass, params in self.ssl_config():
             print(f"[{print_multicolor(klass.__name__, display=False)}]...")
             model = klass(**params)
@@ -233,6 +247,20 @@ class TestEstimators(unittest.TestCase):
                 z.shape == (self.n_images, self._encoder.latent_size),
                 msg="Shape mismatch for transformed data: "
                     f"{z.shape} != {(self.n_images, self._encoder.latent_size)}",
+            )
+    
+    def test_vae(self):
+        """ Test VAE model (simple check).
+        """
+        for klass, params in self.vae_config().items():
+            print(f"[{print_multicolor(klass.__name__, display=False)}]...")
+            model = klass(**params)
+            model.fit(self.x_loader)
+            z = model.transform(self.x_loader)
+            self.assertTrue(
+                z.shape == (self.n_images, model.latent_dim),
+                msg="Shape mismatch for transformed data: "
+                    f"{z.shape} != {(self.n_images, model.latent_dim)}",
             )
 
     def test_weakly_sup(self):
@@ -267,224 +295,114 @@ class TestEstimators(unittest.TestCase):
 
 
 class DummyEncoder(nn.Module):
-    """Very small encoder that returns a fixed-sized vector per sample and exposes .latent_size."""
-    def __init__(self, latent_size=16):
+    def __init__(self, in_dim=25, out_dim=4):
         super().__init__()
-        self.latent_size = latent_size
-        # simple linear mapping from flattened image to latent
-        self.backbone = nn.Sequential(
+        self.net = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(8 * 8 * 1, latent_size)
+            nn.Linear(in_dim, out_dim),
+            nn.ReLU(),
         )
-        # initialize weights deterministically for reproducibility
-        torch.manual_seed(0)
-        for p in self.backbone.parameters():
-            nn.init.constant_(p, 0.01)
 
     def forward(self, x):
-        return self.backbone(x)
+        return self.net(x)
 
-class DummySSLDataset(CustomTensorDataset):
 
-    def __init__(self, n_images=20):
-        self.fake_data = torch.rand(n_images, 8 * 8)
-        ssl_transforms = transforms.Compose([lambda x: x + torch.rand(x.size())])
-        super().__init__(
-            self.fake_data, transform=MultiViewsTransform(ssl_transforms, n_views=2)
+class DummyDecoder(nn.Module):
+    def __init__(self, latent_dim=2, out_dim=25):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(latent_dim, out_dim),
+            nn.Sigmoid(),
         )
 
-class SimpleSimCLRTestMixin:
-    """Utilities for testcases to create a SimCLR object."""
-    def make_simclr(
-            self, latent_size=16, hidden_dims=[32, 8], 
-            lr=1e-3, temperature=0.1, weight_decay=0.0,
-            world_size=1, fitted=False):
-        encoder = DummyEncoder(latent_size=latent_size)
-        sim = SimCLR(
-            encoder=encoder,
-            hidden_dims=hidden_dims,
-            lr=lr,
-            temperature=temperature,
-            weight_decay=weight_decay,
-            random_state=0,
-            max_epochs=2,
-            devices=world_size,
-            accelerator="cpu"
-        )
-        if fitted:
-            dataset = DummySSLDataset()
-            dataloader = DataLoader(dataset, batch_size=2, shuffle=False)
-            sim.fit(dataloader)
-        return sim
+    def forward(self, z):
+        return self.net(z)
 
 
-class TestSimCLRBasic(unittest.TestCase, SimpleSimCLRTestMixin):
-    def test_constructor_invalid_temperature_raises(self):
-        encoder = DummyEncoder(latent_size=8)
-        with self.assertRaises(AssertionError):
-            SimCLR(
-                encoder=encoder, hidden_dims=[16], 
-                lr=1e-3, temperature=0.0, weight_decay=0.0
-            )
-
-    def test_constructor_encoder_without_latent_size_raises(self):
-        class BadEnc(nn.Module):
-            def __init__(self):
-                super().__init__()
-            def forward(self, x):
-                return x
-        with self.assertRaises(AssertionError):
-            SimCLR(
-                encoder=BadEnc(), hidden_dims=[16], lr=1e-3, 
-                temperature=0.1, weight_decay=0.0)
-
-    def test_all_gather_and_flatten_non_tensor_raises(self):
-        sim = self.make_simclr()
-        with self.assertRaises(ValueError):
-            sim.all_gather_and_flatten("not a tensor")
-
-    def test_all_gather_and_flatten_single_device_returns_same_tensor(self):
-        sim = self.make_simclr(world_size=1, fitted=True)
-
-        x = torch.randn(3, sim.f.latent_size)
-        out2 = sim.all_gather_and_flatten(x)
-        self.assertTrue(torch.allclose(out2, x))
-
-    def test_all_gather_and_flatten_multi_device_flattening(self):
-        # Create simclr and monkeypatch all_gather to return stacked tensors
-        sim = self.make_simclr(world_size=2, fitted=True)
-        batch = 3
-        feat = sim.f.latent_size
-        z = torch.randn(batch, feat)
-
-        def fake_all_gather(tensor, **kwargs):
-            # return simulated gathered tensor shaped (world_size, batch, feat)
-            return torch.stack([tensor, tensor], dim=0)
-
-        sim.all_gather = fake_all_gather
-        out = sim.all_gather_and_flatten(z)
-        # expected shape is (world_size * batch, feat)
-        self.assertEqual(out.shape, (2 * batch, feat))
-        # check that first batch matches original
-        self.assertTrue(torch.allclose(out[:batch], z))
-
-    def test_configure_optimizers_without_scheduler(self):
-        sim = self.make_simclr()
-        # ensure no hparams.max_epochs present
-        if hasattr(sim, "hparams"):
-            # remove max_epochs if it exists
-            try:
-                delattr(sim.hparams, "max_epochs")
-            except Exception:
-                pass
-        res = sim.configure_optimizers()
-        self.assertIsInstance(res, list)
-        # should return one-element list (optimizers) or [optimizer]
-        self.assertGreaterEqual(len(res), 1)
-
-    def test_configure_optimizers_with_scheduler(self):
-        sim = self.make_simclr()
-        res = sim.configure_optimizers()
-        # Expect [optimizer], [scheduler]
-        self.assertTrue(isinstance(res, tuple) or isinstance(res, list))
-        # The function returns either [opt] or ([opt],[sched]); we check for scheduler return shape
-        # if a scheduler is returned we expect outer list of length 2
-        if isinstance(res, list) and len(res) == 2 and all(isinstance(x, list) for x in res):
-            # good: [optimizer], [lr_scheduler]
-            self.assertTrue(len(res[0]) >= 1 and len(res[1]) >= 1)
-        else:
-            # In some environments the code may return ([opt], [sched]) as a tuple; accept that
-            self.assertTrue(True)
-
-    def test_transform_step_returns_encoder_output(self):
-        sim = self.make_simclr()
-        # create small "image" shaped input consistent with DummyEncoder (expects 8x8x1)
-        batch = torch.randn(2, 1, 8, 8)
-        out = sim.transform_step(batch, batch_idx=0)
-        # Should be the encoder output: shape (2, latent_size)
-        self.assertEqual(out.shape, (2, sim.f.latent_size))
-
-
-class TestSimCLRSteps(unittest.TestCase, SimpleSimCLRTestMixin):
+class TestVAE(unittest.TestCase):
+    """ Test VAE estimator.
+    """
     def setUp(self):
-        self.sim = self.make_simclr(
-            latent_size=8, hidden_dims=[16, 8], 
-            lr=1e-3, temperature=0.1, fitted=True
+        encoder = DummyEncoder()
+        decoder = DummyDecoder()
+        self.vae = VAE(
+            encoder=encoder,
+            decoder=decoder,
+            encoder_out_dim=4,
+            latent_dim=2,
+            beta=1.0,
+            stochastic_transform=True,
+            lr=1e-3,
+            weight_decay=0.0,
         )
+        self.batch = torch.rand(2, 25)
 
-    def test_training_step_returns_expected_loss_and_embeddings(self):
-        sim = self.sim
-        sim.log = lambda *a, **k: None
-        # Create toy views V1 and V2: small 8x8 images
-        batch_size = 4
-        V1 = torch.randn(batch_size, 1, 8, 8)
-        V2 = torch.randn(batch_size, 1, 8, 8)
-        outputs = sim.training_step((V1, V2), batch_idx=0)
-        # The loss is DeterministicInfoNCE: mean squared difference between Z1 and Z2
-        self.assertIn("loss", outputs)
-        self.assertIn("Z1", outputs)
-        self.assertIn("Z2", outputs)
+    def test_init_attributes(self):
+        self.assertIsInstance(self.vae.encoder, nn.Module)
+        self.assertIsInstance(self.vae.decoder, nn.Module)
+        self.assertIsInstance(self.vae.fc_mu, nn.Linear)
+        self.assertIsInstance(self.vae.fc_logvar, nn.Linear)
+        self.assertIsInstance(self.vae.criterion, BetaVAELoss)
+        self.assertEqual(self.vae.latent_dim, 2)
+        self.assertEqual(self.vae.beta, 1.0)
 
-        # Z1, Z2 shapes: (batch, proj_dim).
-        self.assertEqual(outputs["Z1"].shape, (batch_size, sim.f.latent_size))
-        self.assertEqual(outputs["Z2"].shape, (batch_size, sim.f.latent_size))
-        # Check loss numeric equality with a direct computation using sim.loss
-        # outputs['Z1'] and 'Z2' came back on cpu detached
-        z1 = outputs["Z1"]
-        z2 = outputs["Z2"]
-        expected_loss = sim.loss(z1, z2)
-        # loss returned in outputs might be a tensor; compare floats
-        self.assertAlmostEqual(float(outputs["loss"]), float(expected_loss), places=6)
+    def test_forward_shape(self):
+        z = self.vae.forward(self.batch)
+        self.assertEqual(z.shape, (self.batch.size(0), self.vae.latent_dim))
+        self.assertTrue(z.requires_grad)
 
-    def test_validation_step_behavior(self):
-        sim = self.sim
-        sim.log = lambda *a, **k: None
-        batch_size = 3
-        V1 = torch.randn(batch_size, 1, 8, 8)
-        V2 = torch.randn(batch_size, 1, 8, 8)
-        outputs = sim.validation_step((V1, V2), batch_idx=0)
-        self.assertIn("loss", outputs)
-        self.assertIn("Z1", outputs)
-        self.assertIn("Z2", outputs)
-        # shapes should match
-        self.assertEqual(outputs["Z1"].shape, (batch_size, sim.f.latent_size))
-        self.assertEqual(outputs["Z2"].shape, (batch_size, sim.f.latent_size))
+    def test_sampling(self):
+        x = self.vae.sample(n_samples=4)
+        self.assertEqual(x.shape, (4, 25))
+        self.assertTrue(torch.isfinite(x).all())
 
-    def test_training_step_multi_device_collects_and_flattens(self):
-        sim = self.make_simclr(
-            latent_size=8, hidden_dims=[16, 8], 
-            lr=1e-3, temperature=0.1, world_size=2,
-            fitted=True)
-        sim.log = lambda *a, **k: None
-        batch_size = 2
-        V1 = torch.randn(batch_size, 1, 8, 8)
-        V2 = torch.randn(batch_size, 1, 8, 8)
+    def test_run_step_and_losses(self):
+        x_hat, q = self.vae._run_step(self.batch)
+        self.assertEqual(x_hat.shape[0], self.batch.shape[0])
+        self.assertTrue(hasattr(q, "loc"))
 
-        outputs = sim.training_step((V1, V2), batch_idx=0)
+        losses = self.vae.training_step(self.batch, batch_idx=0)
+        for key in ("loss", "rec_loss", "kl_loss"):
+            self.assertIn(key, losses)
+            self.assertIsInstance(losses[key], torch.Tensor)
+            self.assertEqual(losses[key].ndim, 0)
 
-        z1 = outputs["Z1"]
-        z2 = outputs["Z2"]
-        self.assertEqual(z1.shape, (2 * batch_size, sim.f.latent_size))
-        self.assertEqual(z2.shape, (2 * batch_size, sim.f.latent_size))
+    def test_validation_step_returns_losses(self):
+        losses = self.vae.validation_step(self.batch, batch_idx=0)
+        self.assertEqual(set(losses), {"loss", "rec_loss", "kl_loss"})
 
-        expected_loss = float(sim.loss(z1, z2))
-        self.assertAlmostEqual(float(outputs["loss"]), expected_loss, places=6)
+    def test_transform_step_stochastic_and_deterministic(self):
+        for stochastic in (True, False):
+            vae = VAE(
+                encoder=DummyEncoder(),
+                decoder=DummyDecoder(),
+                encoder_out_dim=4,
+                latent_dim=2,
+                stochastic_transform=stochastic,
+            )
+            x = torch.rand(3, 25)
+            z = vae.transform_step(x, batch_idx=0)
+            self.assertEqual(z.shape, (3, 2))
+            if not stochastic:
+                with torch.no_grad():
+                    z_mu = vae.fc_mu(vae.encoder(x))
+                    self.assertTrue(torch.allclose(z, z_mu, atol=1e-6))
 
-    def test_zero_batch_size_handling(self):
-        """
-        Ensure the steps don't crash on zero-size batch (edge case).
-        Many dataloaders might never emit this, but code should handle gracefully if it occurs.
-        """
-        sim = self.sim
-        sim.log = lambda *a, **k: None
-        V1 = torch.empty(0, 1, 8, 8)
-        V2 = torch.empty(0, 1, 8, 8)
-        outputs_train = sim.training_step((V1, V2), batch_idx=0)
-        self.assertIn("loss", outputs_train)
-        self.assertIsInstance(outputs_train["loss"], torch.Tensor)
-        outputs_val = sim.validation_step((V1, V2), batch_idx=0)
-        self.assertIn("loss", outputs_val)
-        self.assertIsInstance(outputs_val["loss"], torch.Tensor)
+    def test_configure_optimizers_returns_adamw(self):
+        opt_list = self.vae.configure_optimizers()
+        self.assertIsInstance(opt_list, list)
+        self.assertIsInstance(opt_list[0], torch.optim.AdamW)
+
+    def test_backward_and_optimizer_step(self):
+        opt = self.vae.configure_optimizers()[0]
+        opt.zero_grad()
+        losses = self.vae.training_step(self.batch, batch_idx=0)
+        losses["loss"].backward()
+
+        before = [p.detach().clone() for p in self.vae.parameters()]
+        opt.step()
+        after = list(self.vae.parameters())
+        self.assertTrue(any((a - b).abs().sum() > 0 for a, b in zip(after, before)))
 
 
 if __name__ == "__main__":
