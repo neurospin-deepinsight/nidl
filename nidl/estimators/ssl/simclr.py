@@ -105,7 +105,9 @@ class SimCLR(TransformerMixin, BaseEstimator):
         **kwargs,
     ):
         super().__init__(
-            random_state=random_state, ignore=["encoder"], **kwargs
+            random_state=random_state,
+            ignore=["encoder", "callbacks"],
+            **kwargs,
         )
         assert temperature > 0.0, "The temperature must be a positive float!"
         assert hasattr(encoder, "latent_size"), (
