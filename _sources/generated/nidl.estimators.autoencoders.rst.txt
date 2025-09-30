@@ -1,0 +1,27 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *nidl.estimators.autoencoders*
+====================================================
+
+nidl.estimators.autoencoders
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AutoEncoder estimators.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.estimators.autoencoders.VAE <nidl.estimators.autoencoders.vae.VAE.html>`_
+
+nidl.estimators.autoencoders.vae
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.estimators.autoencoders.vae.VAE <nidl.estimators.autoencoders.vae.VAE.html>`_
+

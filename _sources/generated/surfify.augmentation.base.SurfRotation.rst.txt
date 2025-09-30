@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.augmentation.base.SurfRotation surfify.augmentation.SurfRotation
+.. minigallery:: surfify.augmentation.SurfRotation surfify.augmentation.base.SurfRotation
     :add-heading: Examples
     :heading-level: -
 

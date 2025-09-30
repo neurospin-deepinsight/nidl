@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.RegressionProbingCallback nidl.callbacks.model_probing.RegressionProbingCallback
+.. minigallery:: nidl.callbacks.model_probing.RegressionProbingCallback nidl.callbacks.RegressionProbingCallback
     :add-heading: Examples
     :heading-level: -
 

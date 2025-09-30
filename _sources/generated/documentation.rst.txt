@@ -46,22 +46,29 @@ This is the classes and functions reference in nidl. Please refer to the gallery
         <p>Common estimators.</p>    </blockquote>
     </div>
     <div class='col-md-4'>
+    <h3><a href='nidl.estimators.autoencoders.html'>
+    nidl.estimators.autoencoders
+    </a></h3>
+    <blockquote>
+        <p>AutoEncoder estimators.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
     <h3><a href='nidl.estimators.linear.html'>
     nidl.estimators.linear
     </a></h3>
     <blockquote>
         <p>Linear estimators.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.estimators.ssl.html'>
     nidl.estimators.ssl
     </a></h3>
     <blockquote>
         <p>Self-supervised estimators.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.estimators.ssl.utils.html'>
     nidl.estimators.ssl.utils
     </a></h3>
@@ -75,16 +82,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Common losses.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.metrics.html'>
     nidl.metrics
     </a></h3>
     <blockquote>
     </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.utils.html'>
     nidl.utils
     </a></h3>
@@ -98,16 +105,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
         <p>Definition of common architectures.</p>    </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.volume.backbones.html'>
     nidl.volume.backbones
     </a></h3>
     <blockquote>
         <p>Definition of common volumic architectures.</p>    </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.volume.transforms.html'>
     nidl.volume.transforms
     </a></h3>
@@ -121,16 +128,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
     </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.volume.transforms.augmentation.intensity.html'>
     nidl.volume.transforms.augmentation.intensity
     </a></h3>
     <blockquote>
     </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.volume.transforms.augmentation.spatial.html'>
     nidl.volume.transforms.augmentation.spatial
     </a></h3>
@@ -144,16 +151,16 @@ This is the classes and functions reference in nidl. Please refer to the gallery
     <blockquote>
     </blockquote>
     </div>
-    <div class='col-md-4'>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
     <h3><a href='nidl.volume.transforms.preprocessing.intensity.html'>
     nidl.volume.transforms.preprocessing.intensity
     </a></h3>
     <blockquote>
     </blockquote>
     </div>
-
-    </div>
-    <div class='row'>    <div class='col-md-4'>
+    <div class='col-md-4'>
     <h3><a href='nidl.volume.transforms.preprocessing.spatial.html'>
     nidl.volume.transforms.preprocessing.spatial
     </a></h3>
@@ -348,6 +355,15 @@ This is the classes and functions reference in nidl. Please refer to the gallery
 
           `nidl.estimators.base.TransformerMixin <nidl.estimators.base.TransformerMixin.html>`_
 
+    * `nidl.estimators.autoencoders <nidl.estimators.autoencoders.html>`_
+        .. hidden-technical-block::
+          :label: [+ show/hide members]
+          :starthidden: true
+
+          `nidl.estimators.autoencoders.VAE <nidl.estimators.autoencoders.vae.VAE.html>`_
+
+          `nidl.estimators.autoencoders.vae.VAE <nidl.estimators.autoencoders.vae.VAE.html>`_
+
     * `nidl.estimators.linear <nidl.estimators.linear.html>`_
         .. hidden-technical-block::
           :label: [+ show/hide members]
@@ -392,6 +408,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           :label: [+ show/hide members]
           :starthidden: true
 
+          `nidl.losses.BetaVAELoss <nidl.losses.beta_vae.BetaVAELoss.html>`_
+
           `nidl.losses.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
 
           `nidl.losses.KernelMetric <nidl.losses.yaware_infonce.KernelMetric.html>`_
@@ -405,6 +423,8 @@ This is the classes and functions reference in nidl. Please refer to the gallery
           `nidl.losses.yaware_infonce.YAwareInfoNCE <nidl.losses.yaware_infonce.YAwareInfoNCE.html>`_
 
           `nidl.losses.infonce.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
+
+          `nidl.losses.beta_vae.BetaVAELoss <nidl.losses.beta_vae.BetaVAELoss.html>`_
 
     * `nidl.metrics <nidl.metrics.html>`_
         .. hidden-technical-block::

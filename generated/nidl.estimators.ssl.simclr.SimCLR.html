@@ -196,7 +196,7 @@
                                 
                             
                             <li>API</li>
-                            <li><a href="nidl.html">nidl</a></li><li><a href="nidl.callbacks.html">nidl.callbacks</a></li><li><a href="nidl.datasets.html">nidl.datasets</a></li><li><a href="nidl.estimators.html">nidl.estimators</a></li><li><a href="nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="nidl.losses.html">nidl.losses</a></li><li><a href="nidl.metrics.html">nidl.metrics</a></li><li><a href="nidl.utils.html">nidl.utils</a></li><li><a href="nidl.volume.html">nidl.volume</a></li><li><a href="nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="surfify.html">surfify</a></li><li><a href="surfify.augmentation.html">surfify.augmentation</a></li><li><a href="surfify.datasets.html">surfify.datasets</a></li><li><a href="surfify.losses.html">surfify.losses</a></li><li><a href="surfify.models.html">surfify.models</a></li><li><a href="surfify.nn.html">surfify.nn</a></li><li><a href="surfify.plotting.html">surfify.plotting</a></li><li><a href="surfify.utils.html">surfify.utils</a></li>
+                            <li><a href="nidl.html">nidl</a></li><li><a href="nidl.callbacks.html">nidl.callbacks</a></li><li><a href="nidl.datasets.html">nidl.datasets</a></li><li><a href="nidl.estimators.html">nidl.estimators</a></li><li><a href="nidl.estimators.autoencoders.html">nidl.estimators.autoencoders</a></li><li><a href="nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="nidl.losses.html">nidl.losses</a></li><li><a href="nidl.metrics.html">nidl.metrics</a></li><li><a href="nidl.utils.html">nidl.utils</a></li><li><a href="nidl.volume.html">nidl.volume</a></li><li><a href="nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="surfify.html">surfify</a></li><li><a href="surfify.augmentation.html">surfify.augmentation</a></li><li><a href="surfify.datasets.html">surfify.datasets</a></li><li><a href="surfify.losses.html">surfify.losses</a></li><li><a href="surfify.models.html">surfify.models</a></li><li><a href="surfify.nn.html">surfify.nn</a></li><li><a href="surfify.plotting.html">surfify.plotting</a></li><li><a href="surfify.utils.html">surfify.utils</a></li>
 						</ul>
 					</li> -->
 				</ul>
@@ -251,7 +251,7 @@
 <dt class="sig sig-object py" id="nidl.estimators.ssl.simclr.SimCLR">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.simclr.</span></span><span class="sig-name descname"><span class="pre">SimCLR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/estimators/ssl/simclr.html#SimCLR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.simclr.SimCLR" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.base.TransformerMixin.html#nidl.estimators.base.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.base.BaseEstimator.html#nidl.estimators.base.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
-<p>SimCLR <a class="reference internal" href="#r8" id="id1"><span>[R8]</span></a>.</p>
+<p>SimCLR <a class="reference internal" href="#r12" id="id1"><span>[R12]</span></a>.</p>
 <p>SimCLR is a contrastive learning framework for self-supervised
 representation learning. The key idea is to learn useful features
 without labels by making different augmented views of the same image close
@@ -267,13 +267,13 @@ contrastive objective is applied.</p></li>
 <p>During training, two augmented versions of each input <cite>x</cite> are encoded into
 <cite>(z_i, z_j)</cite>. The objective is to maximize their similarity while
 minimizing similarity to all other samples in the batch. This is achieved
-with the InfoNCE loss <a class="reference internal" href="#r9" id="id2"><span>[R9]</span></a>, <a class="reference internal" href="#r10" id="id3"><span>[R10]</span></a>:</p>
+with the InfoNCE loss <a class="reference internal" href="#r13" id="id2"><span>[R13]</span></a>, <a class="reference internal" href="#r14" id="id3"><span>[R14]</span></a>:</p>
 <div class="math">
 <p><img src="../_images/math/ab31f1dd62cc4eeb13549a120426d4da7a6f0438.png" alt="\ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}
                 {\sum_{k=1, k\neq i}^{2N}
                 \exp(\text{sim}(z_i, z_k)/\tau)}"/></p>
 </div><p>Similarity is measured with cosine similarity. The temperature
-<img class="math" src="../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/> controls the sharpness of the distribution (refer to <a class="reference internal" href="#r11" id="id4"><span>[R11]</span></a> for
+<img class="math" src="../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/> controls the sharpness of the distribution (refer to <a class="reference internal" href="#r15" id="id4"><span>[R15]</span></a> for
 more details).
 After training, the projection head <cite>g</cite> is discarded, and the encoder <cite>f</cite>
 serves as a pretrained feature extractor. This is because <cite>f</cite> provides
@@ -318,27 +318,27 @@ feature vector in a <cite>latent_size</cite> parameter.</p>
 </dl>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r8" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R8<span class="fn-bracket">]</span></span>
+<div class="citation" id="r12" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R12<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
 <p>Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
 “A Simple Framework for Contrastive Learning of Visual
 Representations”, ICML 2020.</p>
 </div>
-<div class="citation" id="r9" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R9<span class="fn-bracket">]</span></span>
+<div class="citation" id="r13" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R13<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Aaron van den Oord, Yazhe Li, Oriol Vinyals, “Representation
 Learning with Contrastive Predictive Coding”, arXiv 2018.</p>
 </div>
-<div class="citation" id="r10" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R10<span class="fn-bracket">]</span></span>
+<div class="citation" id="r14" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R14<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
 <p>Sohn Kihyuk, “Improved Deep Metric Learning with Multi-class N-pair
 Loss Objective”, NIPS 2016.</p>
 </div>
-<div class="citation" id="r11" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R11<span class="fn-bracket">]</span></span>
+<div class="citation" id="r15" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R15<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
 <p>Feng Wang, Huaping Liu, “Understanding the Behaviour of Contrastive
 Loss”, CVPR 2021.</p>

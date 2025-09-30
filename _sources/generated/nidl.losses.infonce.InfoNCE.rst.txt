@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.losses.InfoNCE nidl.losses.infonce.InfoNCE
+.. minigallery:: nidl.losses.infonce.InfoNCE nidl.losses.InfoNCE
     :add-heading: Examples
     :heading-level: -
 

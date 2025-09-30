@@ -8,7 +8,7 @@
 
 .. autofunction:: nidl.metrics.regression.pearson_r
 
-.. minigallery:: nidl.metrics.pearson_r nidl.metrics.regression.pearson_r
+.. minigallery:: nidl.metrics.regression.pearson_r nidl.metrics.pearson_r
     :add-heading: Examples
     :heading-level: -
 

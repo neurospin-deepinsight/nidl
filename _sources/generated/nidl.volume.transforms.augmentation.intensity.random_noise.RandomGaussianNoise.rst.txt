@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise nidl.volume.transforms.augmentation.intensity.RandomGaussianNoise
+.. minigallery:: nidl.volume.transforms.augmentation.intensity.RandomGaussianNoise nidl.volume.transforms.augmentation.intensity.random_noise.RandomGaussianNoise
     :add-heading: Examples
     :heading-level: -
 

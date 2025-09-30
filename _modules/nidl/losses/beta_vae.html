@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>nidl</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../../../_static/css/animate.css">
+        <link rel="stylesheet" href="../../../_static/css/style.css">
+        <link rel="stylesheet" href="../../../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../../../_static/sg_gallery.css">
+        <link rel="stylesheet" href="../../../_static/css/media-queries.css">
+        <link rel="stylesheet" href="../../../_static/css/pygment.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../../../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../../../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<!-- <div class="logo"">
+					<h3><a href="../../../index.html">Sidebar Menu</a></h3>
+				</div> -->
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for nidl <strong>version 0.0.0</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin-deepinsight/nidl">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../../../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../../../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="../../../auto_gallery/index.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../../../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="../../../generated/search.html"><i class="fas fa-search"></i> Search</a>
+					</li>
+					<!-- <li>
+						<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fas fa-external-link-alt"></i> PYSPHINXDOC</a>
+					</li> -->
+					<!-- <li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections Shortcuts
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            <li>LINKS</li><li><a href='https://github.com/neurospin-deepinsight/surfify'>surfify</a></li>
+                            
+                            <li>API</li>
+                            <li><a href="../../../generated/nidl.html">nidl</a></li><li><a href="../../../generated/nidl.callbacks.html">nidl.callbacks</a></li><li><a href="../../../generated/nidl.datasets.html">nidl.datasets</a></li><li><a href="../../../generated/nidl.estimators.html">nidl.estimators</a></li><li><a href="../../../generated/nidl.estimators.autoencoders.html">nidl.estimators.autoencoders</a></li><li><a href="../../../generated/nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="../../../generated/nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="../../../generated/nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="../../../generated/nidl.losses.html">nidl.losses</a></li><li><a href="../../../generated/nidl.metrics.html">nidl.metrics</a></li><li><a href="../../../generated/nidl.utils.html">nidl.utils</a></li><li><a href="../../../generated/nidl.volume.html">nidl.volume</a></li><li><a href="../../../generated/nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="../../../generated/nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="../../../generated/nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="../../../generated/nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="../../../generated/surfify.html">surfify</a></li><li><a href="../../../generated/surfify.augmentation.html">surfify.augmentation</a></li><li><a href="../../../generated/surfify.datasets.html">surfify.datasets</a></li><li><a href="../../../generated/surfify.losses.html">surfify.losses</a></li><li><a href="../../../generated/surfify.models.html">surfify.models</a></li><li><a href="../../../generated/surfify.nn.html">surfify.nn</a></li><li><a href="../../../generated/surfify.plotting.html">surfify.plotting</a></li><li><a href="../../../generated/surfify.utils.html">surfify.utils</a></li>
+						</ul>
+					</li> -->
+				</ul>
+				
+                <!-- go top page -->
+				<!-- <div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div> -->
+			
+                <!-- change color -->
+				<!-- <div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div> -->
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../../../_static/nidl.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Deep learning for NeuroImaging in Python.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <h1>Source code for nidl.losses.beta_vae</h1><div class='divider-1 wow fadeInUp' style='margin-top: -20px;'><span></span></div><div class="highlight"><pre>
+<span></span><span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2025</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bernoulli</span><span class="p">,</span> <span class="n">Laplace</span><span class="p">,</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">kl_divergence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">func</span>
+
+
+<div class="viewcode-block" id="BetaVAELoss">
+<a class="viewcode-back" href="../../../generated/nidl.losses.beta_vae.BetaVAELoss.html#nidl.losses.BetaVAELoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BetaVAELoss</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Compute the Beta-VAE loss [1]_.</span>
+
+<span class="sd">    See Also: :class:`~nidl.estimators.autoencoders.vae.VAE`</span>
+
+<span class="sd">    The Beta-VAE was introduced to learn disentangled representations and</span>
+<span class="sd">    improve interpretability. The idea is to keep the distance between the</span>
+<span class="sd">    real and estimated posterior distribution small (under a small constant</span>
+<span class="sd">    delta) while maximizing the probability of generating real data:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \underset{\phi, \theta}{\mathrm{max}}</span>
+<span class="sd">            \underset{x \sim D}{\mathbb{E}}\left[</span>
+<span class="sd">                \underset{z \sim q_\phi(z | x)}{\mathbb{E}}</span>
+<span class="sd">                    log \ p_\theta(x|z)</span>
+<span class="sd">            \right] \\</span>
+<span class="sd">        \text{subject to} D_{KL}(q_\phi(z|x) | p_\theta(z)) &lt; \delta</span>
+
+<span class="sd">    We can rewrite this equation as a Lagrangian with a Lagrangian multiplier</span>
+<span class="sd">    :math:`\beta`, which leads to the Beta-VAE loss function:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        L_{VAE}(\theta, \phi) = L_{MSE}(\theta, \phi) -</span>
+<span class="sd">                                  \beta L_{KL}(\theta, \phi)</span>
+
+<span class="sd">    When :math:`\beta=1`, it corresponds to a VAE loss. If :math:`\beta&gt;1`,</span>
+<span class="sd">    this puts more weight on statistical independence than on reconstruction.</span>
+<span class="sd">    Note that such a stronger constraint on the latent bottleneck limits</span>
+<span class="sd">    the representation capacity of z.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    beta: float, default=4.0</span>
+<span class="sd">        Weight of the KL divergence.</span>
+<span class="sd">    default_dist: {&quot;normal&quot;, &quot;laplace&quot;, &quot;bernoulli&quot;}, default=&quot;normal&quot;</span>
+<span class="sd">        Default decoder distribution. It defines the reconstruction loss</span>
+<span class="sd">        (L2 for Normal, L1 for Laplace, cross-entropy for Bernoulli).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the input distribution is not supported.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Irina Higgins et al., &quot;beta-VAE: Learning Basic Visual Concepts with</span>
+<span class="sd">       a Constrained Variational Framework&quot;, ICLR 2017.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>
+            <span class="n">default_dist</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_dist</span> <span class="o">=</span> <span class="n">default_dist</span>
+        <span class="k">if</span> <span class="n">default_dist</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="s2">&quot;laplace&quot;</span><span class="p">,</span> <span class="s2">&quot;bernoulli&quot;</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Default decoder distribution must be &#39;normal&#39;, &#39;laplace&#39; or &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;bernouilli&#39;, got </span><span class="si">{</span><span class="n">default_dist</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute the loss.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: torch.Tensor</span>
+<span class="sd">            The input data.</span>
+<span class="sd">        p: torch.distributions or torch.Tensor</span>
+<span class="sd">            Decoder distribution :math:`p(x | z)` for a given latent code `z`</span>
+<span class="sd">            if `p` is :class:`torch.distributions`. If `p` is `torch.Tensor`,</span>
+<span class="sd">            it should be the distribution mean for Normal or Laplacian</span>
+<span class="sd">            distribution or probability of success for Bernouilli</span>
+<span class="sd">            distribution.</span>
+<span class="sd">        q: torch.distributions</span>
+<span class="sd">            Probabilistic encoder (or estimated posterior probability</span>
+<span class="sd">            function).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        losses: dict</span>
+<span class="sd">            Dictionary containing the beta-VAE loss (&quot;loss&quot;) along with all</span>
+<span class="sd">            composite terms: the reconstruction loss &quot;rec_loss&quot; and KL loss</span>
+<span class="sd">            &quot;kl_loss&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_distribution</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">rec_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">kl_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kl_normal_loss</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">rec_loss</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">kl_loss</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;rec_loss&quot;</span><span class="p">:</span> <span class="n">rec_loss</span><span class="p">,</span> <span class="s2">&quot;kl_loss&quot;</span><span class="p">:</span> <span class="n">kl_loss</span><span class="p">,</span> <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">}</span>
+
+<div class="viewcode-block" id="BetaVAELoss.reconstruction_loss">
+<a class="viewcode-back" href="../../../generated/nidl.losses.beta_vae.BetaVAELoss.html#nidl.losses.BetaVAELoss.reconstruction_loss">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reconstruction_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the per image reconstruction loss for a batch of data</span>
+<span class="sd">        (i.e. negative log likelihood).</span>
+
+<span class="sd">        The distribution of the likelihood on the each pixel implicitely</span>
+<span class="sd">        defines the loss. Bernoulli corresponds to a binary cross entropy.</span>
+<span class="sd">        Gaussian distribution corresponds to MSE. Laplace distribution</span>
+<span class="sd">        corresponds to L1.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        p: torch.distributions</span>
+<span class="sd">            probabilistic decoder (or likelihood of generating true data</span>
+<span class="sd">            sample given the latent code).</span>
+<span class="sd">        data: torch.Tensor</span>
+<span class="sd">            The observed data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        loss: torch.Tensor</span>
+<span class="sd">            per image cross entropy (i.e. normalized per batch but not pixel</span>
+<span class="sd">            and channel).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Bernoulli</span><span class="p">):</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">binary_cross_entropy</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">probs</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Normal</span><span class="p">):</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">loc</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Laplace</span><span class="p">):</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">l1_loss</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">loc</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">*</span> <span class="p">(</span><span class="n">loss</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># masking to avoid nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unkown distribution: </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">/</span> <span class="n">batch_size</span>
+
+        <span class="k">return</span> <span class="n">loss</span></div>
+
+
+<div class="viewcode-block" id="BetaVAELoss.kl_normal_loss">
+<a class="viewcode-back" href="../../../generated/nidl.losses.beta_vae.BetaVAELoss.html#nidl.losses.BetaVAELoss.kl_normal_loss">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kl_normal_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the KL divergence between a normal distribution</span>
+<span class="sd">        with diagonal covariance and a unit normal distribution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        q: torch.distributions</span>
+<span class="sd">            probabilistic encoder (or estimated posterior probability</span>
+<span class="sd">            function).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dimension_wise_kl</span> <span class="o">=</span> <span class="n">kl_divergence</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dimension_wise_kl</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Check that the input parameter is a valid distribution.</span>
+
+<span class="sd">        If a tensor is given, it will be converted automatically to the</span>
+<span class="sd">        specified default distributon.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        p: torch.distributions or torch.Tensor</span>
+<span class="sd">            the input distribution.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        p: torch.distributions</span>
+<span class="sd">            the returned distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">(</span><span class="n">Bernoulli</span><span class="p">,</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Laplace</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">p</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dist</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dist</span> <span class="o">==</span> <span class="s2">&quot;laplace&quot;</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">Laplace</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dist</span> <span class="o">==</span> <span class="s2">&quot;bernoulli&quot;</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">Bernoulli</span><span class="p">(</span><span class="n">probs</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">p</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Decoder distribution must be `torch.distributions` or &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`torch.Tensor`, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+</pre></div>
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+                                <div class="section-6-title">
+		                    	    <p>Follow us</p>
+                                </div>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://gaia.neurospin.fr"><i class="fa fa-link"></i></a>
+                                    <p>&copy; 2025, 
+nidl developers
+ <antoine.grigis@cea.fr></p>
+		                    	</div>
+		                    </div>
+			            </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../../../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../../../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../../../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../../../_static/js/wow.min.js"></script>
+        <script src="../../../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../../../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../../../_static/js/scripts.js"></script>
+        <script src="../../../_static/js/jquery.mosaic.js"></script>
+        <script src="../../../_static/js/search.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../../../_static/img/backgrounds/banner1.png");
+            $('.section-6-container').backstretch("../../../_static/img/backgrounds/footer1.png");
+        </script>
+
+    </body>
+
+</html>

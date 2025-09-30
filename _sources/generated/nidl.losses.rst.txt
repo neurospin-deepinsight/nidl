@@ -13,6 +13,7 @@ Common losses.
 .. rst-class:: documentation-contents
 
   **Classes**:
+    * `nidl.losses.BetaVAELoss <nidl.losses.beta_vae.BetaVAELoss.html>`_
     * `nidl.losses.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
     * `nidl.losses.KernelMetric <nidl.losses.yaware_infonce.KernelMetric.html>`_
     * `nidl.losses.YAwareInfoNCE <nidl.losses.yaware_infonce.YAwareInfoNCE.html>`_
@@ -38,4 +39,14 @@ nidl.losses.infonce
 
   **Classes**:
     * `nidl.losses.infonce.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
+
+nidl.losses.beta_vae
+^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.losses.beta_vae.BetaVAELoss <nidl.losses.beta_vae.BetaVAELoss.html>`_
 

@@ -126,7 +126,7 @@
                                 
                             
                             <li>API</li>
-                            <li><a href="nidl.html">nidl</a></li><li><a href="nidl.callbacks.html">nidl.callbacks</a></li><li><a href="nidl.datasets.html">nidl.datasets</a></li><li><a href="nidl.estimators.html">nidl.estimators</a></li><li><a href="nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="nidl.losses.html">nidl.losses</a></li><li><a href="nidl.metrics.html">nidl.metrics</a></li><li><a href="nidl.utils.html">nidl.utils</a></li><li><a href="nidl.volume.html">nidl.volume</a></li><li><a href="nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="surfify.html">surfify</a></li><li><a href="surfify.augmentation.html">surfify.augmentation</a></li><li><a href="surfify.datasets.html">surfify.datasets</a></li><li><a href="surfify.losses.html">surfify.losses</a></li><li><a href="surfify.models.html">surfify.models</a></li><li><a href="surfify.nn.html">surfify.nn</a></li><li><a href="surfify.plotting.html">surfify.plotting</a></li><li><a href="surfify.utils.html">surfify.utils</a></li>
+                            <li><a href="nidl.html">nidl</a></li><li><a href="nidl.callbacks.html">nidl.callbacks</a></li><li><a href="nidl.datasets.html">nidl.datasets</a></li><li><a href="nidl.estimators.html">nidl.estimators</a></li><li><a href="nidl.estimators.autoencoders.html">nidl.estimators.autoencoders</a></li><li><a href="nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="nidl.losses.html">nidl.losses</a></li><li><a href="nidl.metrics.html">nidl.metrics</a></li><li><a href="nidl.utils.html">nidl.utils</a></li><li><a href="nidl.volume.html">nidl.volume</a></li><li><a href="nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="surfify.html">surfify</a></li><li><a href="surfify.augmentation.html">surfify.augmentation</a></li><li><a href="surfify.datasets.html">surfify.datasets</a></li><li><a href="surfify.losses.html">surfify.losses</a></li><li><a href="surfify.models.html">surfify.models</a></li><li><a href="surfify.nn.html">surfify.nn</a></li><li><a href="surfify.plotting.html">surfify.plotting</a></li><li><a href="surfify.utils.html">surfify.utils</a></li>
 						</ul>
 					</li> -->
 				</ul>
@@ -207,7 +207,7 @@ returns a consistent output (same type and shape). Input shape must be
 <p><strong>percentiles</strong> : (float, float), default=(1, 99)</p>
 <blockquote>
 <div><p>Percentage for the quantile values of the input volume used to clip
-the data. For example, SynthSeg <a class="reference internal" href="#r33" id="id1"><span>[R33]</span></a> uses (1, 99) while nnUNet <a class="reference internal" href="#r34" id="id2"><span>[R34]</span></a>
+the data. For example, SynthSeg <a class="reference internal" href="#r39" id="id1"><span>[R39]</span></a> uses (1, 99) while nnUNet <a class="reference internal" href="#r40" id="id2"><span>[R40]</span></a>
 uses (0.5, 99.5).</p>
 </div></blockquote>
 <p><strong>masking_fn</strong> : Callable or None, default=None</p>
@@ -228,15 +228,15 @@ None, the whole volume is taken to compute the cutoff.</p>
 its minimum value by convention.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r33" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R33<span class="fn-bracket">]</span></span>
+<div class="citation" id="r39" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R39<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Billot, B. et al., (2023). “SynthSeg: Segmentation of brain MRI
 scans of any contrast and resolution without retraining.”
 Medical Image Analysis, 86,  102789.</p>
 </div>
-<div class="citation" id="r34" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R34<span class="fn-bracket">]</span></span>
+<div class="citation" id="r40" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R40<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
 <p>Isensee, F. et al., (2021). “nnU-Net: a self-configuring method
 for deep learning-based biomedical image segmentation.”

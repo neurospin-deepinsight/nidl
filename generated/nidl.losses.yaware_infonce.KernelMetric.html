@@ -182,7 +182,7 @@
                                 
                             
                             <li>API</li>
-                            <li><a href="nidl.html">nidl</a></li><li><a href="nidl.callbacks.html">nidl.callbacks</a></li><li><a href="nidl.datasets.html">nidl.datasets</a></li><li><a href="nidl.estimators.html">nidl.estimators</a></li><li><a href="nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="nidl.losses.html">nidl.losses</a></li><li><a href="nidl.metrics.html">nidl.metrics</a></li><li><a href="nidl.utils.html">nidl.utils</a></li><li><a href="nidl.volume.html">nidl.volume</a></li><li><a href="nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="surfify.html">surfify</a></li><li><a href="surfify.augmentation.html">surfify.augmentation</a></li><li><a href="surfify.datasets.html">surfify.datasets</a></li><li><a href="surfify.losses.html">surfify.losses</a></li><li><a href="surfify.models.html">surfify.models</a></li><li><a href="surfify.nn.html">surfify.nn</a></li><li><a href="surfify.plotting.html">surfify.plotting</a></li><li><a href="surfify.utils.html">surfify.utils</a></li>
+                            <li><a href="nidl.html">nidl</a></li><li><a href="nidl.callbacks.html">nidl.callbacks</a></li><li><a href="nidl.datasets.html">nidl.datasets</a></li><li><a href="nidl.estimators.html">nidl.estimators</a></li><li><a href="nidl.estimators.autoencoders.html">nidl.estimators.autoencoders</a></li><li><a href="nidl.estimators.linear.html">nidl.estimators.linear</a></li><li><a href="nidl.estimators.ssl.html">nidl.estimators.ssl</a></li><li><a href="nidl.estimators.ssl.utils.html">nidl.estimators.ssl.utils</a></li><li><a href="nidl.losses.html">nidl.losses</a></li><li><a href="nidl.metrics.html">nidl.metrics</a></li><li><a href="nidl.utils.html">nidl.utils</a></li><li><a href="nidl.volume.html">nidl.volume</a></li><li><a href="nidl.volume.backbones.html">nidl.volume.backbones</a></li><li><a href="nidl.volume.transforms.html">nidl.volume.transforms</a></li><li><a href="nidl.volume.transforms.augmentation.html">nidl.volume.transforms.augmentation</a></li><li><a href="nidl.volume.transforms.augmentation.intensity.html">nidl.volume.transforms.augmentation.intensity</a></li><li><a href="nidl.volume.transforms.augmentation.spatial.html">nidl.volume.transforms.augmentation.spatial</a></li><li><a href="nidl.volume.transforms.preprocessing.html">nidl.volume.transforms.preprocessing</a></li><li><a href="nidl.volume.transforms.preprocessing.intensity.html">nidl.volume.transforms.preprocessing.intensity</a></li><li><a href="nidl.volume.transforms.preprocessing.spatial.html">nidl.volume.transforms.preprocessing.spatial</a></li><li><a href="surfify.html">surfify</a></li><li><a href="surfify.augmentation.html">surfify.augmentation</a></li><li><a href="surfify.datasets.html">surfify.datasets</a></li><li><a href="surfify.losses.html">surfify.losses</a></li><li><a href="surfify.models.html">surfify.models</a></li><li><a href="surfify.nn.html">surfify.nn</a></li><li><a href="surfify.plotting.html">surfify.plotting</a></li><li><a href="surfify.utils.html">surfify.utils</a></li>
 						</ul>
 					</li> -->
 				</ul>
@@ -239,7 +239,7 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></p>
 <p>Interface for fast weighting matrix computation.</p>
 <p>It computes a weighting matrix <img class="math" src="../_images/math/1fbee781f84569077719a167b64e12064360fac1.png" alt="W"/> between input samples based on
-Kernel Density Estimation (KDE) <a class="reference internal" href="#r24" id="id1"><span>[R24]</span></a>, <a class="reference internal" href="#r25" id="id2"><span>[R25]</span></a>. Concretely, it computes the
+Kernel Density Estimation (KDE) <a class="reference internal" href="#r30" id="id1"><span>[R30]</span></a>, <a class="reference internal" href="#r31" id="id2"><span>[R31]</span></a>. Concretely, it computes the
 following weighting matrix between multivariate samples
 <img class="math" src="../_images/math/4bbfad71e31e6c6643958ad4b0a8a3d93a3f63a3.png" alt="x_1, ..., x_n \in \mathbb{R}^{d}"/>:</p>
 <div class="math">
@@ -253,7 +253,7 @@ following weighting matrix between multivariate samples
 <p>and <img class="math" src="../_images/math/076fb0488bed1d8fab4d8523104de181326182a7.png" alt="H\in \mathbb{R}^{d\times d}"/> is the bandwidth in the KDE
 estimation of <cite>p(X)</cite>.</p>
 <p><img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> is a symmetric definite-positive and it can be automatically
-computed based on Scott’s rule <a class="reference internal" href="#r26" id="id3"><span>[R26]</span></a> or Silverman’s rule <a class="reference internal" href="#r27" id="id4"><span>[R27]</span></a> if required.
+computed based on Scott’s rule <a class="reference internal" href="#r32" id="id3"><span>[R32]</span></a> or Silverman’s rule <a class="reference internal" href="#r33" id="id4"><span>[R33]</span></a> if required.
 In that case, the bandwidth is computed as a scaled version of the
 diagonal terms in the data covariance matrix:</p>
 <div class="math">
@@ -283,7 +283,7 @@ with the list values on the diagonal:
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Scott’s Rule <a class="reference internal" href="#r24" id="id5"><span>[R24]</span></a> estimates the bandwidth as:</p>
+<p>Scott’s Rule <a class="reference internal" href="#r30" id="id5"><span>[R30]</span></a> estimates the bandwidth as:</p>
 <div class="math">
 <p><img src="../_images/math/b20e99228bbf7e50d5fdddd0decd6df6bf69b715.png" alt="H = \hat{\Sigma} \cdot n^{-\frac{2}{d+4}}"/></p>
 </div><p>where <img class="math" src="../_images/math/1135b1f6a7cfebb0706fa49de85ca47963b6660c.png" alt="\hat{\Sigma}"/> is the covariance matrix of the data,
@@ -291,32 +291,32 @@ with the list values on the diagonal:
 features (<img class="math" src="../_images/math/6615894a3053ff67a5225966fc2a7be625dca573.png" alt="d=1"/> for univariate data). Here, we only consider
 the diagonal terms (assuming features decorrelation) for numerical
 stability.</p>
-<p>Silverman’s rule of thumb <a class="reference internal" href="#r25" id="id6"><span>[R25]</span></a> for multivariate data is:</p>
+<p>Silverman’s rule of thumb <a class="reference internal" href="#r31" id="id6"><span>[R31]</span></a> for multivariate data is:</p>
 <div class="math">
 <p><img src="../_images/math/3e725f96e7c40e1c982755b3811ac69db385cc53.png" alt="H = \hat{\Sigma} \cdot \left(\frac{n(d+2)}{4}\right)^
 {-\frac{2}{d+4}}"/></p>
 </div><p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r24" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R24<span class="fn-bracket">]</span></span>
+<div class="citation" id="r30" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R30<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>,<a role="doc-backlink" href="#id7">3</a>)</span>
 <p>Rosenblatt, M. (1956). “Remarks on some nonparametric estimates of a
 density function”. Annals of Mathematical Statistics.</p>
 </div>
-<div class="citation" id="r25" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R25<span class="fn-bracket">]</span></span>
+<div class="citation" id="r31" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R31<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id6">2</a>,<a role="doc-backlink" href="#id8">3</a>)</span>
 <p>Parzen, E. (1962). “On estimation of a probability density function
 and mode”. Annals of Mathematicals Statistics.</p>
 </div>
-<div class="citation" id="r26" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R26<span class="fn-bracket">]</span></span>
+<div class="citation" id="r32" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R32<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id9">2</a>)</span>
 <p>Scott, D. W. (1992). “Multivariate Density Estimation: Theory,
 Practice, and Visualization”. Wiley.</p>
 </div>
-<div class="citation" id="r27" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>R27<span class="fn-bracket">]</span></span>
+<div class="citation" id="r33" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>R33<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id10">2</a>)</span>
 <p>Silverman, B. W. (1986). “Density Estimation for Statistics and Data
 Analysis”. Monographs on Statistics and Applied Probability.</p>

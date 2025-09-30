@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: surfify.nn.modules.IcoFixIndexUpSample surfify.nn.IcoFixIndexUpSample
+.. minigallery:: surfify.nn.IcoFixIndexUpSample surfify.nn.modules.IcoFixIndexUpSample
     :add-heading: Examples
     :heading-level: -
 

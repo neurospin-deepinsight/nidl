@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.MultitaskModelProbing nidl.callbacks.multitask_probing.MultitaskModelProbing
+.. minigallery:: nidl.callbacks.multitask_probing.MultitaskModelProbing nidl.callbacks.MultitaskModelProbing
     :add-heading: Examples
     :heading-level: -
 
