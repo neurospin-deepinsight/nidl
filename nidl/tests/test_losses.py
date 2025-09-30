@@ -10,11 +10,13 @@ import unittest
 
 import numpy as np
 import torch
+from torch.distributions import Normal, Laplace, Bernoulli
 
 from nidl.losses import (
     InfoNCE,
     YAwareInfoNCE,
-    KernelMetric
+    KernelMetric,
+    BetaVAELoss
 )
 
 class TestLosses(unittest.TestCase):
@@ -111,7 +113,96 @@ class TestLosses(unittest.TestCase):
             "YAwareInfoNCE should be equal to InfoNCE when no labels are provided, got "
             f"{loss_ya} vs {loss_inf}"
         )
-    
+
+
+class TestBetaVAELoss(unittest.TestCase):
+    """ Test the Beta-VAE loss.
+    """
+    def setUp(self):
+        torch.manual_seed(0)
+        self.x = torch.rand(4, 3)  # batch of 4, 3 features
+        self.mu = torch.zeros_like(self.x)
+        self.std = torch.ones_like(self.x)
+        self.q = Normal(self.mu, self.std)
+
+    def test_invalid_default_dist(self):
+        with self.assertRaises(ValueError):
+            BetaVAELoss(default_dist="foo")
+
+    def test_valid_default_dist(self):
+        for dist in ["normal", "laplace", "bernoulli"]:
+            loss_fn = BetaVAELoss(default_dist=dist)
+            self.assertIsInstance(loss_fn, BetaVAELoss)
+
+    def test_reconstruction_normal(self):
+        p = Normal(self.x, torch.ones_like(self.x))
+        loss_fn = BetaVAELoss(beta=1.0, default_dist="normal")
+        loss = loss_fn.reconstruction_loss(p, self.x)
+        self.assertGreaterEqual(loss.item(), 0)
+
+    def test_reconstruction_laplace(self):
+        p = Laplace(self.x, torch.ones_like(self.x))
+        loss_fn = BetaVAELoss(beta=1.0, default_dist="laplace")
+        loss = loss_fn.reconstruction_loss(p, self.x)
+        self.assertGreaterEqual(loss.item(), 0)
+
+    def test_reconstruction_bernoulli(self):
+        probs = torch.sigmoid(self.x)
+        p = Bernoulli(probs=probs)
+        loss_fn = BetaVAELoss(beta=1.0, default_dist="bernoulli")
+        loss = loss_fn.reconstruction_loss(p, probs)
+        self.assertGreaterEqual(loss.item(), 0)
+
+    def test_reconstruction_unknown_distribution(self):
+        loss_fn = BetaVAELoss()
+        with self.assertRaises(ValueError):
+            loss_fn.reconstruction_loss("foo", self.x)
+
+    def test_kl_divergence_zero_for_standard_normal(self):
+        q = Normal(torch.zeros_like(self.x), torch.ones_like(self.x))
+        loss_fn = BetaVAELoss()
+        kl = loss_fn.kl_normal_loss(q)
+        self.assertAlmostEqual(kl.item(), 0.0, places=5)
+
+    def test_kl_divergence_positive(self):
+        q = Normal(2 * torch.ones_like(self.x), torch.ones_like(self.x))
+        loss_fn = BetaVAELoss()
+        kl = loss_fn.kl_normal_loss(q)
+        self.assertGreater(kl.item(), 0.0)
+
+    def test_call_with_distribution(self):
+        p = Normal(self.x, torch.ones_like(self.x))
+        loss_fn = BetaVAELoss(beta=2.0)
+        out = loss_fn(self.x, p, self.q)
+        self.assertIn("loss", out)
+        self.assertIn("rec_loss", out)
+        self.assertIn("kl_loss", out)
+        self.assertAlmostEqual(
+            out["loss"].item(),
+            out["rec_loss"].item() + 2.0 * out["kl_loss"].item(),
+            places=5,
+        )
+
+    def test_call_with_tensor_as_p(self):
+        p_mean = self.x.clone()
+        loss_fn = BetaVAELoss(default_dist="normal")
+        out = loss_fn(self.x, p_mean, self.q)
+        self.assertIsInstance(out["loss"], torch.Tensor)
+
+    def test_parse_tensor_for_each_default(self):
+        for dist in ["normal", "laplace", "bernoulli"]:
+            loss_fn = BetaVAELoss(default_dist=dist)
+            p = loss_fn._parse_distribution(self.x)
+            self.assertTrue(
+                isinstance(p, (Normal, Laplace, Bernoulli)),
+                f"Expected a distribution for {dist}",
+            )
+
+    def test_parse_invalid_type(self):
+        loss_fn = BetaVAELoss()
+        with self.assertRaises(ValueError):
+            loss_fn._parse_distribution(123)  # not a tensor or distribution
+
 
 if __name__ == "__main__":
     unittest.main()

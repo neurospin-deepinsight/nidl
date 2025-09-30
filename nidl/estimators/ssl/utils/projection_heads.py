@@ -70,11 +70,19 @@ class ProjectionHead(nn.Module):
 class SimCLRProjectionHead(ProjectionHead):
     """Projection head used for SimCLR.
 
-    "We use a MLP with one hidden layer to obtain
-    :math: `zi = g(h) = W_2 * \sigma (W_1 * h)` where :math: `\sigma`
-    is a ReLU non-linearity." [1]
+    This module implements the projection head as described in SimCLR [1]_.
+    The projection head is a multilayer perceptron (MLP) with one hidden layer
+    and a ReLU non-linearity, defined as:
 
-    [1] SimCLR, 2020, https://arxiv.org/abs/2002.05709
+    .. math::
+        \\mathbf{z} = g(\\mathbf{h}) = W_2 \\cdot \sigma(W_1\\cdot\\mathbf{h})
+
+    where :math:`\\sigma` is the ReLU activation function.
+
+    References
+    ----------
+    .. [1] Chen, T., et al. "A Simple Framework for Contrastive Learning of
+           Visual Representations." ICML, 2020. https://arxiv.org/abs/2002.05709
     """
 
     def __init__(
@@ -92,11 +100,25 @@ class SimCLRProjectionHead(ProjectionHead):
 
 
 class YAwareProjectionHead(ProjectionHead):
-    """Projection head used for yAware.
+    """Projection head used for yAware contrastive learning.
 
-    "[...] zθ2 is a vanilla multilayer perceptron as in [SimCLR, 2020]" [1]
+    This module implements the projection head :math:`z_{\\theta_2}` as
+    described in yAware [1]_, which is a simple multilayer perceptron (MLP)
+    similar to that used in SimCLR [2]_. It maps feature representations into
+    a space where contrastive loss can be applied.
 
-    [1] yAware, 2021, https://arxiv.org/abs/2106.08808
+    Typically, this MLP consists of one hidden layer followed by a
+    non-linearity (ReLU) and a final linear projection.
+
+    References
+    ----------
+    .. [1] Dufumier, B., et al., "Contrastive learning with continuous proxy
+           meta-data for 3D MRI classification." MICCAI, 2021.
+           https://arxiv.org/abs/2106.08808
+
+    .. [2] Chen, T., et al. "A Simple Framework for Contrastive Learning of
+           Visual Representations." ICML, 2020. https://arxiv.org/abs/2002.05709
+
     """
     def __init__(
         self,

@@ -6,7 +6,9 @@
 # for details.
 ##########################################################################
 
-"""Common losses."""
+""" Common losses.
+"""
 
+from .beta_vae import BetaVAELoss
 from .infonce import InfoNCE
 from .yaware_infonce import KernelMetric, YAwareInfoNCE
