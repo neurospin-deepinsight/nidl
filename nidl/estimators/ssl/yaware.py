@@ -22,7 +22,7 @@ from .utils.projection_heads import YAwareProjectionHead
 
 
 class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
-    """y-Aware Contrastive Learning implementation [1]
+    """y-Aware Contrastive Learning [1]_.
 
     y-Aware Contrastive Learning is a self-supervised learning framework for
     learning visual representations with auxiliary variables. It leverages
@@ -40,10 +40,6 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
        i) the same image and ii) images with close auxiliary variables
        to be closer while pushing dissimilar ones apart.
 
-    References
-    ----------
-    [1] Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI
-        Classification, Dufumier et al., MICCAI 2021
 
     Parameters
     ----------
@@ -90,17 +86,17 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         default="gaussian"
         Kernel used as a similarity function between auxiliary variables.
 
-    bandwidth : Union[float, int, List[float], array, KernelMetric], \
+    bandwidth : Union[float, List[float], array, KernelMetric], \
         default=1.0
         The method used to calculate the bandwidth ("sigma" in [1]) between
         auxiliary variables:
 
-        - If `bandwidth` is a scalar (int or float), it sets the bandwidth to
-          a diagnonal matrix with equal values.
+        - If `bandwidth` is a scalar, it sets the bandwidth to a diagnonal
+          matrix with equal values.
         - If `bandwidth` is a 1d array, it sets the bandwidth to a
           diagonal matrix and it must be of size equal to the number of
           features in `y`.
-        - If bandwidth is a 2d array, it must be of shape
+        - If `bandwidth` is a 2d array, it must be of shape
           `(n_features, n_features)` where `n_features` is the number of
           features in `y`.
         - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`
@@ -159,6 +155,12 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
 
     lr_scheduler : LRSchedulerPLType or None
         Learning rate scheduler used for training.
+
+    References
+    ----------
+    .. [1] Dufumier, B., et al., "Contrastive learning with continuous proxy
+           meta-data for 3D MRI classification." MICCAI, 2021.
+           https://arxiv.org/abs/2106.08808
     """
 
     def __init__(
@@ -215,7 +217,12 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         )
         self.optimizer_kwargs = optimizer_kwargs
 
-    def training_step(self, batch: Any, batch_idx: int):
+    def training_step(
+        self,
+        batch: Any,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
         """Perform one training step and computes training loss.
 
         Parameters
@@ -225,9 +232,10 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             It can be a pair of `torch.Tensor` (V1, V2) or a pair
             ((V1, V2), y) where V1 and V2 are the two views of the same sample
             and y is the auxiliary variable.
-
         batch_idx: int
-            The index of the current batch.
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
 
         Returns
         ----------
@@ -239,8 +247,13 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             self.projection_head(self.encoder(V1)),
             self.projection_head(self.encoder(V2)),
         )
+        # Gather before computing the contrastive loss.
+        Z1 = self.all_gather_and_flatten(Z1, sync_grads=True)
+        Z2 = self.all_gather_and_flatten(Z2, sync_grads=True)
+        y = self.all_gather_and_flatten(y, sync_grads=True)
+
         loss = self.loss(Z1, Z2, y)
-        self.log("loss/train", loss, prog_bar=True)
+        self.log("loss/train", loss, prog_bar=True, sync_dist=True)
         outputs = {
             "loss": loss,
             "Z1": Z1.cpu().detach(),
@@ -250,7 +263,12 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         # Returns everything needed for further logging/metrics computation
         return outputs
 
-    def validation_step(self, batch: Any, batch_idx: int):
+    def validation_step(
+        self,
+        batch: Any,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
         """Perform one validation step and computes validation loss.
 
         Parameters
@@ -260,9 +278,10 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             It can be a pair of `torch.Tensor` (V1, V2) or a pair
             ((V1, V2), y) where V1 and V2 are the two views of the same
             sample and y is the auxiliary variable.
-
         batch_idx: int
-            The index of the current batch.
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
         """
 
         V1, V2, y = self.parse_batch(batch)
@@ -270,6 +289,10 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             self.projection_head(self.encoder(V1)),
             self.projection_head(self.encoder(V2)),
         )
+        Z1 = self.all_gather_and_flatten(Z1, sync_grads=False)
+        Z2 = self.all_gather_and_flatten(Z2, sync_grads=False)
+        y = self.all_gather_and_flatten(y, sync_grads=False)
+
         val_loss = self.loss(Z1, Z2, y)
         outputs = {
             "loss": val_loss,
@@ -277,7 +300,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             "Z2": Z2.cpu().detach(),
             "y_true": y.cpu().detach() if y is not None else None,
         }
-        self.log("loss/val", val_loss, prog_bar=True)
+        self.log("loss/val", val_loss, prog_bar=True, sync_dist=True)
         # Returns everything needed for further logging/metrics computation
         return outputs
 
@@ -287,6 +310,27 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
+        """Encode the input data into the latent space.
+
+        Importantly, we do not apply the projection head here since it is
+        not part of the final model at inference time (only used for training).
+
+        Parameters
+        ----------
+        batch: torch.Tensor
+            A batch of data that has been generated from `test_dataloader`.
+            This is given as is to the encoder.
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+
+        Returns
+        ----------
+        features: torch.Tensor
+            The encoded features returned by the encoder.
+
+        """
         return self.encoder(batch)
 
     def parse_batch(
@@ -393,6 +437,39 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             return optimizer
         else:
             return [optimizer], [scheduler]
+
+    def all_gather_and_flatten(
+        self, tensor: Union[torch.Tensor, None], **kwargs
+    ):
+        """Gathers the tensor from all devices and flattens batch dimension.
+
+        This is useful when gathering tensors without adding extra dimensions.
+        It handles some edge cases, such as when using a single GPU.
+
+        Parameters
+        ----------
+        tensor: torch.Tensor or None
+            The tensor to gather. If None, it is returned as is.
+        **kwargs: dict
+            Additional keyword arguments for `self.all_gather`.
+
+        Returns
+        -------
+        tensor: torch.Tensor
+            The gathered and flattened tensor.
+        """
+        if tensor is None:
+            return tensor
+        if not isinstance(tensor, torch.Tensor):
+            raise ValueError(
+                f"tensor must be a torch.Tensor, got {type(tensor)}"
+            )
+        if self.trainer is None or self.trainer.world_size == 1:
+            return tensor
+        gathered = self.all_gather(tensor, **kwargs)
+        # Reshape to (batch_size * world_size, *)
+        gathered = gathered.reshape(-1, *gathered.shape[2:])
+        return gathered
 
     def _build_encoder(
         self,
