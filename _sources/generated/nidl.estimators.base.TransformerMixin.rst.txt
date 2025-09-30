@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.TransformerMixin nidl.estimators.base.TransformerMixin
+.. minigallery:: nidl.estimators.base.TransformerMixin nidl.estimators.TransformerMixin
     :add-heading: Examples
     :heading-level: -
 

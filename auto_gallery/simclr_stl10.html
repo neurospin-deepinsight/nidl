@@ -314,7 +314,7 @@ available.</p>
 <span class="n">weights</span> <span class="o">=</span> <a href="../generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights" class="sphx-glr-backref-module-nidl-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Weights</span></a><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hf-hub:neurospin/simclr-resnet18-stl10&quot;</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">checkpointdir</span><span class="p">,</span>
-    <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-simclr-resnet18-stl10.pt&quot;</span>
+    <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-simclr-resnet18-stl10.pt&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -325,18 +325,12 @@ available.</p>
 we sample two different, random augmentations for each image in the batch.
 The easiest way to do this is by creating a transformation that, when being
 called, applies a set of data augmentations to an image twice. This is
-implemented in the class ContrastiveTransformations.</p>
+implemented in the class nidl.transforms.MultiViewsTransform.</p>
 <p>The contrastive learning framework can easily be extended to have more
 positive examples by sampling more than two augmentations of the same
 image. However, the most efficient training is usually obtained by using
 only two.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ContrastiveTransformations</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_transforms</span><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">base_transforms</span> <span class="o">=</span> <span class="n">base_transforms</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_views</span> <span class="o">=</span> <span class="n">n_views</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">base_transforms</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_views</span><span class="p">)]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">nidl.transforms</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/nidl.transforms.MultiViewsTransform.html#nidl.transforms.MultiViewsTransform" title="nidl.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">MultiViewsTransform</span></a>
 </pre></div>
 </div>
 <p>Next, we can look at the specific augmentations we want to apply. The choice
@@ -357,9 +351,14 @@ distinguish between images.</p>
     <span class="p">[</span>
         <span class="n">transforms</span><span class="o">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(),</span>
         <span class="n">transforms</span><span class="o">.</span><span class="n">RandomResizedCrop</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">96</span><span class="p">),</span>
-        <span class="n">transforms</span><span class="o">.</span><span class="n">RandomApply</span><span class="p">([</span>
-            <span class="n">transforms</span><span class="o">.</span><span class="n">ColorJitter</span><span class="p">(</span><span class="n">brightness</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                                   <span class="n">saturation</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)],</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span>
+        <span class="n">transforms</span><span class="o">.</span><span class="n">RandomApply</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">transforms</span><span class="o">.</span><span class="n">ColorJitter</span><span class="p">(</span>
+                    <span class="n">brightness</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">saturation</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="mf">0.1</span>
+                <span class="p">)</span>
+            <span class="p">],</span>
+            <span class="n">p</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="n">transforms</span><span class="o">.</span><span class="n">RandomGrayscale</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
         <span class="n">transforms</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
         <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
@@ -392,22 +391,24 @@ set in contrastive learning.</p>
     <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span>
     <span class="n">split</span><span class="o">=</span><span class="s2">&quot;unlabeled&quot;</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ContrastiveTransformations</span><span class="p">(</span><span class="n">contrast_transforms</span><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">transform</span><span class="o">=</span><a href="../generated/nidl.transforms.MultiViewsTransform.html#nidl.transforms.MultiViewsTransform" title="nidl.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><span class="n">contrast_transforms</span><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">train_data_contrast</span> <span class="o">=</span> <span class="n">STL10</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span>
     <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
     <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">ContrastiveTransformations</span><span class="p">(</span><span class="n">contrast_transforms</span><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">transform</span><span class="o">=</span><a href="../generated/nidl.transforms.MultiViewsTransform.html#nidl.transforms.MultiViewsTransform" title="nidl.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><span class="n">contrast_transforms</span><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Before starting with our implementation of SimCLR, let’s look at some example
 image pairs sampled with our augmentations:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">imgs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">img</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_images</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">unlabeled_data</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">img_grid</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">nrow</span><span class="o">=</span><span class="n">num_images</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                       <span class="n">pad_value</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">imgs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">img</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_images</span><span class="p">)</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">unlabeled_data</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span>
+<span class="p">)</span>
+<span class="n">img_grid</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span>
+    <span class="n">imgs</span><span class="p">,</span> <span class="n">nrow</span><span class="o">=</span><span class="n">num_images</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad_value</span><span class="o">=</span><span class="mf">0.9</span>
+<span class="p">)</span>
 <span class="n">img_grid</span> <span class="o">=</span> <span class="n">img_grid</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Augmented image examples of the STL10 dataset&quot;</span><span class="p">)</span>
@@ -423,7 +424,7 @@ image pairs sampled with our augmentations:</p>
     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">drop_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">val_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
     <span class="n">train_data_contrast</span><span class="p">,</span>
@@ -431,7 +432,7 @@ image pairs sampled with our augmentations:</p>
     <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -451,17 +452,16 @@ image to more negative examples, leading to overall smoother loss gradients.
 However, in our case, we experienced that a batch size of 256 was sufficient
 to get good results.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">hidden_dim</span> <span class="o">=</span> <span class="mi">128</span>
-<span class="n">encoder</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet18</span><span class="p">(</span>
-    <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">hidden_dim</span>
-<span class="p">)</span>
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet18</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">hidden_dim</span><span class="p">)</span>
 <span class="n">latent_size</span> <span class="o">=</span> <span class="n">encoder</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">out_features</span>
 <span class="n">encoder</span><span class="o">.</span><span class="n">latent_size</span> <span class="o">=</span> <span class="n">latent_size</span>
 <span class="n">encoder</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
 <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">ModelCheckpoint</span><span class="p">(</span>
-        <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc_top5&quot;</span><span class="p">),</span>
-    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+        <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc_top5&quot;</span>
+    <span class="p">),</span>
+    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">),</span>
 <span class="p">]</span>
 <span class="n">trainer_params</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;default_root_dir&quot;</span><span class="p">:</span> <span class="n">checkpointdir</span><span class="p">,</span>
@@ -471,12 +471,12 @@ to get good results.</p>
 <span class="p">}</span>
 <span class="n">model</span> <span class="o">=</span> <a href="../generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SimCLR</span></a><span class="p">(</span>
     <span class="n">encoder</span><span class="p">,</span>
-    <span class="n">hidden_dims</span><span class="o">=</span><span class="p">[</span><span class="n">encoder</span><span class="o">.</span><span class="n">latent_size</span> <span class="p">,</span> <span class="n">hidden_dim</span><span class="p">],</span>
+    <span class="n">hidden_dims</span><span class="o">=</span><span class="p">[</span><span class="n">encoder</span><span class="o">.</span><span class="n">latent_size</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">],</span>
     <span class="n">lr</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">,</span>
     <span class="n">temperature</span><span class="o">=</span><span class="mf">0.07</span><span class="p">,</span>
     <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
     <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">trainer_params</span>
+    <span class="o">**</span><span class="n">trainer_params</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">load_pretrained</span><span class="p">:</span>
@@ -512,22 +512,13 @@ gain in this simple setup.</p>
 500 images per class, while the test set has 800 images per class.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
 <span class="n">scale_transforms</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
-        <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))</span>
-    <span class="p">]</span>
+    <span class="p">[</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))]</span>
 <span class="p">)</span>
 <span class="n">train_img_data</span> <span class="o">=</span> <span class="n">STL10</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span>
-    <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
-    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">scale_transforms</span>
+    <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">scale_transforms</span>
 <span class="p">)</span>
 <span class="n">test_img_data</span> <span class="o">=</span> <span class="n">STL10</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span>
-    <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
-    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">scale_transforms</span>
+    <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">scale_transforms</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of training examples:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_img_data</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of test examples:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_img_data</span><span class="p">))</span>
@@ -537,10 +528,11 @@ gain in this simple setup.</p>
 output representations will be used as inputs to the Logistic Regression
 model.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">new_model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">([</span>
-    <span class="p">(</span><span class="s2">&quot;encoder&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">f</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;fc&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">latent_size</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">))</span>
-<span class="p">]))</span>
+<span class="n">new_model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;encoder&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">f</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;fc&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">latent_size</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">))]</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 <span class="n">new_model</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 <span class="n">new_model</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
 <span class="n">new_model</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
@@ -561,7 +553,7 @@ Here, we will only train the model with all the data available:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <a href="../generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights" class="sphx-glr-backref-module-nidl-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Weights</span></a><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hf-hub:neurospin/linear-resnet18-stl10&quot;</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">checkpointdir</span><span class="p">,</span>
-    <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-linear-resnet18-stl10.pt&quot;</span>
+    <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-linear-resnet18-stl10.pt&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">train_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
     <span class="n">train_img_data</span><span class="p">,</span>
@@ -569,27 +561,26 @@ Here, we will only train the model with all the data available:</p>
     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">test_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
     <span class="n">test_img_data</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
     <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">ModelCheckpoint</span><span class="p">(</span>
-        <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">),</span>
-    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+    <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">),</span>
+    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">),</span>
 <span class="p">]</span>
 <span class="n">trainer_params</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;default_root_dir&quot;</span><span class="p">:</span> <span class="n">checkpointdir</span><span class="p">,</span>
     <span class="s2">&quot;accelerator&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
     <span class="s2">&quot;max_epochs&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
     <span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
-    <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="mi">10</span>
+    <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">model</span> <span class="o">=</span> <a href="../generated/nidl.estimators.linear.LogisticRegression.html#nidl.estimators.linear.LogisticRegression" title="nidl.estimators.linear.LogisticRegression" class="sphx-glr-backref-module-nidl-estimators-linear sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LogisticRegression</span></a><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">new_model</span><span class="p">),</span>
@@ -597,7 +588,7 @@ Here, we will only train the model with all the data available:</p>
     <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
     <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
     <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">trainer_params</span>
+    <span class="o">**</span><span class="n">trainer_params</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">if</span> <span class="n">load_pretrained</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found pretrained model at </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">weight_file</span><span class="si">}</span><span class="s2">, loading...&quot;</span><span class="p">)</span>
@@ -658,7 +649,7 @@ first iterations or not.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <a href="../generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights" class="sphx-glr-backref-module-nidl-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Weights</span></a><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hf-hub:neurospin/resnet18-stl10&quot;</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">checkpointdir</span><span class="p">,</span>
-    <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-resnet18-stl10.pt&quot;</span>
+    <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-resnet18-stl10.pt&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
@@ -673,10 +664,7 @@ first iterations or not.</p>
     <span class="p">]</span>
 <span class="p">)</span>
 <span class="n">train_img_aug_data</span> <span class="o">=</span> <span class="n">STL10</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span>
-    <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
-    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><span class="n">train_transforms</span>
+    <span class="n">root</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">train_transforms</span>
 <span class="p">)</span>
 <span class="n">train_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
     <span class="n">train_img_data</span><span class="p">,</span>
@@ -684,20 +672,19 @@ first iterations or not.</p>
     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">ModelCheckpoint</span><span class="p">(</span>
-        <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">),</span>
-    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+    <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_acc&quot;</span><span class="p">),</span>
+    <span class="n">LearningRateMonitor</span><span class="p">(</span><span class="n">logging_interval</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">),</span>
 <span class="p">]</span>
 <span class="n">trainer_params</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;default_root_dir&quot;</span><span class="p">:</span> <span class="n">checkpointdir</span><span class="p">,</span>
     <span class="s2">&quot;accelerator&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
     <span class="s2">&quot;max_epochs&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
     <span class="s2">&quot;callbacks&quot;</span><span class="p">:</span> <span class="n">callbacks</span><span class="p">,</span>
-    <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="s2">&quot;check_val_every_n_epoch&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">model</span> <span class="o">=</span> <a href="../generated/nidl.estimators.linear.LogisticRegression.html#nidl.estimators.linear.LogisticRegression" title="nidl.estimators.linear.LogisticRegression" class="sphx-glr-backref-module-nidl-estimators-linear sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LogisticRegression</span></a><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet18</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
@@ -705,7 +692,7 @@ first iterations or not.</p>
     <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
     <span class="n">weight_decay</span><span class="o">=</span><span class="mf">2e-4</span><span class="p">,</span>
     <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">trainer_params</span>
+    <span class="o">**</span><span class="n">trainer_params</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">if</span> <span class="n">load_pretrained</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found pretrained model at </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">weight_file</span><span class="si">}</span><span class="s2">, loading...&quot;</span><span class="p">)</span>

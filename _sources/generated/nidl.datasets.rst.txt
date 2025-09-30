@@ -18,18 +18,6 @@ Common datasets.
     * `nidl.datasets.ImageDataFrameDataset <nidl.datasets.pandas_dataset.ImageDataFrameDataset.html>`_
     * `nidl.datasets.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
 
-nidl.datasets.base
-^^^^^^^^^^^^^^^^^^
-
-Base class to generate datasets.
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.datasets.base.BaseDataset <nidl.datasets.base.BaseDataset.html>`_
-    * `nidl.datasets.base.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
-    * `nidl.datasets.base.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
-
 nidl.datasets.pandas_dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -52,4 +40,16 @@ nidl.datasets.openbhb
 
   **Classes**:
     * `nidl.datasets.openbhb.OpenBHB <nidl.datasets.openbhb.OpenBHB.html>`_
+
+nidl.datasets.base
+^^^^^^^^^^^^^^^^^^
+
+Base class to generate datasets.
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.datasets.base.BaseDataset <nidl.datasets.base.BaseDataset.html>`_
+    * `nidl.datasets.base.BaseImageDataset <nidl.datasets.base.BaseImageDataset.html>`_
+    * `nidl.datasets.base.BaseNumpyDataset <nidl.datasets.base.BaseNumpyDataset.html>`_
 

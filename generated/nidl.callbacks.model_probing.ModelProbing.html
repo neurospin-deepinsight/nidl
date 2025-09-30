@@ -207,6 +207,18 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -217,11 +229,11 @@
                                 
                                     <li>SECTIONS</li>
                                     
+						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.adapt_dataloader_for_ddp'>Modelprobing.adapt_dataloader_for_ddp()</a> </li>                                    
+                                    
 						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.extract_features'>Modelprobing.extract_features()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.fit'>Modelprobing.fit()</a> </li>                                    
-                                    
-						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.linear_probing'>Modelprobing.linear_probing()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.log_metrics'>Modelprobing.log_metrics()</a> </li>                                    
                                     
@@ -234,6 +246,8 @@
 						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.on_validation_epoch_end'>Modelprobing.on_validation_epoch_end()</a> </li>                                    
                                     
 						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.predict'>Modelprobing.predict()</a> </li>                                    
+                                    
+						                <li> <a href='#nidl.callbacks.model_probing.ModelProbing.probing'>Modelprobing.probing()</a> </li>                                    
                                     
                                 
                             
@@ -291,53 +305,53 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.callbacks.model_probing.ModelProbing">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.callbacks.model_probing.</span></span><span class="sig-name descname"><span class="pre">ModelProbing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_train_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_val_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.callbacks.model_probing.</span></span><span class="sig-name descname"><span class="pre">ModelProbing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseEstimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_train_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_val_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Callback</span></code></p>
-<p>Callback implementing the basic logic of embedding model’s probing.</p>
+<p>Callback to probe the representation of an embedding estimator on a
+dataset.</p>
+<p>It has the following logic:</p>
 <ol class="arabic simple">
 <li><p>Embeds the input data (training+test) through the estimator using
-<cite>transform_step</cite> method.</p></li>
-<li><p>Train the probe on the training embedding</p></li>
-<li><p>Test the probe on the test embedding and log the metrics</p></li>
+<cite>transform_step</cite> method (handles distributed multi-gpu forward pass).</p></li>
+<li><p>Train the probe on the training embedding (handles multi-cpu training).</p></li>
+<li><p>Test the probe on the test embedding and log the metrics.</p></li>
 </ol>
 <p>This callback is abstract and should be inherited to implement
-the <cite>fit</cite>, <cite>predict</cite> and <cite>log_metrics</cite> methods (e.g. for Ridge regression,
-KNN regression, logistic regression, KNN classification, …).</p>
+the <cite>log_metrics</cite> method.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>train_dataloader</strong> : torch.utils.data.DataLoader</p>
 <blockquote>
-<div><p>Training dataloader yielding batches in the form (X, y)
+<div><p>Training dataloader yielding batches in the form <cite>(X, y)</cite>
 for further embedding and training of the probe.</p>
 </div></blockquote>
 <p><strong>test_dataloader</strong> : torch.utils.data.DataLoader</p>
 <blockquote>
-<div><p>Test dataloader yielding batches in the form (X, y)
+<div><p>Test dataloader yielding batches in the form <cite>(X, y)</cite>
 for further embedding and test of the probe.</p>
 </div></blockquote>
-<p><strong>probe_name</strong> : str or None, default=None</p>
+<p><strong>probe</strong> : sklearn.base.BaseEstimator</p>
 <blockquote>
-<div><p>Name of the probe displayed when logging the results.
-It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.
-If None, only &lt;metric_name&gt; is displayed.</p>
+<div><p>The probe model to be trained on the embedding. It must
+implement <cite>fit</cite> and <cite>predict</cite> methods on numpy array.</p>
 </div></blockquote>
 <p><strong>every_n_train_epochs</strong> : int or None, default=1</p>
 <blockquote>
-<div><p>Number of training epochs after which to run the linear probing.
+<div><p>Number of training epochs after which to run the probing.
 Disabled if None.</p>
 </div></blockquote>
 <p><strong>every_n_val_epochs</strong> : int or None, default=None</p>
 <blockquote>
-<div><p>Number of validation epochs after which to run the linear probing.
+<div><p>Number of validation epochs after which to run the probing.
 Disabled if None.</p>
 </div></blockquote>
 <p><strong>on_test_epoch_start</strong> : bool, default=False</p>
 <blockquote>
-<div><p>Whether to run the linear probing at the start of the test epoch.</p>
+<div><p>Whether to run the probing at the start of the test epoch.</p>
 </div></blockquote>
 <p><strong>on_test_epoch_end</strong> : bool, default=False</p>
 <blockquote>
-<div><p>Whether to run the linear probing at the end of the test epoch.</p>
+<div><p>Whether to run the probing at the end of the test epoch.</p>
 </div></blockquote>
 <p><strong>prog_bar</strong> : bool, default=True</p>
 <blockquote>
@@ -346,12 +360,18 @@ Disabled if None.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="nidl.callbacks.model_probing.ModelProbing.adapt_dataloader_for_ddp">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adapt_dataloader_for_ddp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.adapt_dataloader_for_ddp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.adapt_dataloader_for_ddp" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap user dataloader with DistributedSampler if in DDP mode.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.model_probing.ModelProbing.extract_features">
 <span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.extract_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.extract_features" title="Link to this definition">¶</a></dt>
 <dd><p>Extract features from a dataloader with the BaseEstimator.</p>
 <p>By default, it uses the <cite>transform_step</cite> logic applied on each batch to
 get the embeddings with the labels.
-The input dataloader should yield batches of the form (X, y) where X
+The input dataloader should yield batches of the form <cite>(X, y)</cite> where X
 is the input data and y is the label.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -362,14 +382,14 @@ is the input data and y is the label.</p>
 <p><strong>dataloader</strong> : torch.utils.data.DataLoader</p>
 <blockquote>
 <div><p>The dataloader to extract features from. It should yield batches of
-the form (X, y) where X is the input data and y is the label.</p>
+the form <cite>(X, y)</cite> where <cite>X</cite> is the input data and <cite>y</cite> is the label.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple of (X, y)</p>
+<dd class="field-even"><p>tuple of (z, y)</p>
 <blockquote>
-<div><p>Tuple of numpy arrays (X, y) where X is the extracted features
-and y is the corresponding labels.</p>
+<div><p>Tuple of numpy arrays (z, y) where z are the extracted features
+and y are the corresponding labels.</p>
 </div></blockquote>
 </dd>
 </dl>
@@ -377,31 +397,8 @@ and y is the corresponding labels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.model_probing.ModelProbing.fit">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.fit" title="Link to this definition">¶</a></dt>
-<dd><p>Fit the probe on the embeddings and labels of the training data.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nidl.callbacks.model_probing.ModelProbing.linear_probing">
-<span class="sig-name descname"><span class="pre">linear_probing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nidl.estimators.base.BaseEstimator.html#nidl.estimators.base.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><span class="pre">BaseEstimator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.linear_probing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.linear_probing" title="Link to this definition">¶</a></dt>
-<dd><p>Perform the linear probing on the given estimator.</p>
-<p>This method performs the following steps:
-1) Extracts the features from the training and test dataloaders
-2) Fits the probe on the training features and labels
-3) Makes predictions on the test features
-4) Computes and logs the metrics.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pl_module</strong> : BaseEstimator</p>
-<blockquote>
-<div><p>The BaseEstimator module that implements the ‘transform_step’.</p>
-</div></blockquote>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> : If the pl_module does not inherit from BaseEstimator or</p>
-<p><strong>from TransformerMixin.</strong></p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Fit the probe on the training data embeddings.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -457,8 +454,31 @@ and y is the corresponding labels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.model_probing.ModelProbing.predict">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.predict" title="Link to this definition">¶</a></dt>
-<dd><p>Predict the probe on new data X.</p>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Make predictions on new data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.callbacks.model_probing.ModelProbing.probing">
+<span class="sig-name descname"><span class="pre">probing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nidl.estimators.base.BaseEstimator.html#nidl.estimators.base.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><span class="pre">BaseEstimator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#ModelProbing.probing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.ModelProbing.probing" title="Link to this definition">¶</a></dt>
+<dd><p>Perform the probing on the given estimator.</p>
+<p>This method performs the following steps:
+1) Extracts the features from the training and test dataloaders
+2) Fits the probe on the training features and labels
+3) Makes predictions on the test features
+4) Computes and logs the metrics.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pl_module</strong> : BaseEstimator</p>
+<blockquote>
+<div><p>The BaseEstimator module that implements the <cite>transform_step</cite>.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> : If the pl_module does not inherit from <cite>BaseEstimator</cite> or</p>
+<p><strong>from `TransformerMixin`.</strong></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

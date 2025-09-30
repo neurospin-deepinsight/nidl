@@ -14,17 +14,17 @@ Search in API documentation of ``nidl``
     </div>
     <ul id='my-search-entries'>
         <li><a href='nidl.callbacks.check_typing.BatchTypingCallback.html'>nidl.callbacks.BatchTypingCallback</a></li>
-        <li><a href='nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html'>nidl.callbacks.KNeighborsClassifierCVCallback</a></li>
-        <li><a href='nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html'>nidl.callbacks.KNeighborsRegressorCVCallback</a></li>
-        <li><a href='nidl.callbacks.model_probing.LogisticRegressionCVCallback.html'>nidl.callbacks.LogisticRegressionCVCallback</a></li>
+        <li><a href='nidl.callbacks.model_probing.ClassificationProbingCallback.html'>nidl.callbacks.ClassificationProbingCallback</a></li>
         <li><a href='nidl.callbacks.model_probing.ModelProbing.html'>nidl.callbacks.ModelProbing</a></li>
-        <li><a href='nidl.callbacks.model_probing.RidgeCVCallback.html'>nidl.callbacks.RidgeCVCallback</a></li>
+        <li><a href='nidl.callbacks.multitask_probing.MultiTaskEstimator.html'>nidl.callbacks.MultiTaskEstimator</a></li>
+        <li><a href='nidl.callbacks.multitask_probing.MultitaskModelProbing.html'>nidl.callbacks.MultitaskModelProbing</a></li>
+        <li><a href='nidl.callbacks.model_probing.RegressionProbingCallback.html'>nidl.callbacks.RegressionProbingCallback</a></li>
         <li><a href='nidl.callbacks.check_typing.BatchTypingCallback.html'>nidl.callbacks.check_typing.BatchTypingCallback</a></li>
-        <li><a href='nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html'>nidl.callbacks.model_probing.KNeighborsClassifierCVCallback</a></li>
-        <li><a href='nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html'>nidl.callbacks.model_probing.KNeighborsRegressorCVCallback</a></li>
-        <li><a href='nidl.callbacks.model_probing.LogisticRegressionCVCallback.html'>nidl.callbacks.model_probing.LogisticRegressionCVCallback</a></li>
+        <li><a href='nidl.callbacks.model_probing.ClassificationProbingCallback.html'>nidl.callbacks.model_probing.ClassificationProbingCallback</a></li>
         <li><a href='nidl.callbacks.model_probing.ModelProbing.html'>nidl.callbacks.model_probing.ModelProbing</a></li>
-        <li><a href='nidl.callbacks.model_probing.RidgeCVCallback.html'>nidl.callbacks.model_probing.RidgeCVCallback</a></li>
+        <li><a href='nidl.callbacks.model_probing.RegressionProbingCallback.html'>nidl.callbacks.model_probing.RegressionProbingCallback</a></li>
+        <li><a href='nidl.callbacks.multitask_probing.MultiTaskEstimator.html'>nidl.callbacks.multitask_probing.MultiTaskEstimator</a></li>
+        <li><a href='nidl.callbacks.multitask_probing.MultitaskModelProbing.html'>nidl.callbacks.multitask_probing.MultitaskModelProbing</a></li>
         <li><a href='nidl.datasets.base.BaseImageDataset.html'>nidl.datasets.BaseImageDataset</a></li>
         <li><a href='nidl.datasets.base.BaseNumpyDataset.html'>nidl.datasets.BaseNumpyDataset</a></li>
         <li><a href='nidl.datasets.pandas_dataset.ImageDataFrameDataset.html'>nidl.datasets.ImageDataFrameDataset</a></li>

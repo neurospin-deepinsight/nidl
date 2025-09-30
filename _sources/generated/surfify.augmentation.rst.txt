@@ -27,19 +27,17 @@ Surface augmentations.
     * `surfify.augmentation.interval <surfify.augmentation.utils.interval.html>`_
     * `surfify.augmentation.multichannel_augmentation <surfify.augmentation.utils.multichannel_augmentation.html>`_
 
-surfify.augmentation.base
-^^^^^^^^^^^^^^^^^^^^^^^^^
+surfify.augmentation.mixup
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Augmentations are directly inspired by natural image transformations used to
-train CNNs.
+Original mixup augmentations.
 
 .. rst-class:: documentation-contents
 
   **Classes**:
-    * `surfify.augmentation.base.SurfBlur <surfify.augmentation.base.SurfBlur.html>`_
-    * `surfify.augmentation.base.SurfCutOut <surfify.augmentation.base.SurfCutOut.html>`_
-    * `surfify.augmentation.base.SurfNoise <surfify.augmentation.base.SurfNoise.html>`_
-    * `surfify.augmentation.base.SurfRotation <surfify.augmentation.base.SurfRotation.html>`_
+    * `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
+    * `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
+    * `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
 
 surfify.augmentation.utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -60,15 +58,17 @@ A module with common augmentation utility functions.
     * `surfify.augmentation.utils.listify <surfify.augmentation.utils.listify.html>`_
     * `surfify.augmentation.utils.multichannel_augmentation <surfify.augmentation.utils.multichannel_augmentation.html>`_
 
-surfify.augmentation.mixup
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+surfify.augmentation.base
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Original mixup augmentations.
+Augmentations are directly inspired by natural image transformations used to
+train CNNs.
 
 .. rst-class:: documentation-contents
 
   **Classes**:
-    * `surfify.augmentation.mixup.GroupMixUp <surfify.augmentation.mixup.GroupMixUp.html>`_
-    * `surfify.augmentation.mixup.HemiMixUp <surfify.augmentation.mixup.HemiMixUp.html>`_
-    * `surfify.augmentation.mixup.MixUpAugmentation <surfify.augmentation.mixup.MixUpAugmentation.html>`_
+    * `surfify.augmentation.base.SurfBlur <surfify.augmentation.base.SurfBlur.html>`_
+    * `surfify.augmentation.base.SurfCutOut <surfify.augmentation.base.SurfCutOut.html>`_
+    * `surfify.augmentation.base.SurfNoise <surfify.augmentation.base.SurfNoise.html>`_
+    * `surfify.augmentation.base.SurfRotation <surfify.augmentation.base.SurfRotation.html>`_
 

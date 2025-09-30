@@ -812,6 +812,10 @@ each step.</p></li>
 </div></blockquote>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Since we expect a tensor as output of the model, it is gathered across
+GPUs in the multi-gpu distributed case and the output is stored on the
+relevant device defined by the trainer’s strategy (cpu or gpu).</p>
 </dd></dl>
 
 <dl class="py method">

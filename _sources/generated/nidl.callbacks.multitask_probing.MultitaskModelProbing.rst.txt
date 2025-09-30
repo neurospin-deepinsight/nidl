@@ -6,11 +6,11 @@
 
      This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the :ref:`gallery <sphx_glr_auto_gallery>` for the big picture.
 
-.. autoclass:: nidl.callbacks.model_probing.LogisticRegressionCVCallback
+.. autoclass:: nidl.callbacks.multitask_probing.MultitaskModelProbing
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.callbacks.LogisticRegressionCVCallback nidl.callbacks.model_probing.LogisticRegressionCVCallback
+.. minigallery:: nidl.callbacks.MultitaskModelProbing nidl.callbacks.multitask_probing.MultitaskModelProbing
     :add-heading: Examples
     :heading-level: -
 

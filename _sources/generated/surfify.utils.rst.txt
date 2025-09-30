@@ -41,26 +41,21 @@ Suface utilities.
     * `surfify.utils.text2grid <surfify.utils.coord.text2grid.html>`_
     * `surfify.utils.text2ico <surfify.utils.coord.text2ico.html>`_
 
-surfify.utils.io
-^^^^^^^^^^^^^^^^
+surfify.utils.coord
+^^^^^^^^^^^^^^^^^^^
 
-Spherical i/o utilities.
+Coordinate system tools.
 
 .. rst-class:: documentation-contents
 
-  **Classes**:
-    * `surfify.utils.io.HidePrints <surfify.utils.io.HidePrints.html>`_
-
   **Functions**:
-    * `surfify.utils.io.compute_and_store <surfify.utils.io.compute_and_store.html>`_
-    * `surfify.utils.io.decompose_cifti <surfify.utils.io.decompose_cifti.html>`_
-    * `surfify.utils.io.read_freesurfer <surfify.utils.io.read_freesurfer.html>`_
-    * `surfify.utils.io.read_gifti <surfify.utils.io.read_gifti.html>`_
-    * `surfify.utils.io.surf_data_from_cifti <surfify.utils.io.surf_data_from_cifti.html>`_
-    * `surfify.utils.io.ungzip <surfify.utils.io.ungzip.html>`_
-    * `surfify.utils.io.volume_from_cifti <surfify.utils.io.volume_from_cifti.html>`_
-    * `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
-    * `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
+    * `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
+    * `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
+    * `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
+    * `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
+    * `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
+    * `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
+    * `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
 
 surfify.utils.sampling
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -97,19 +92,24 @@ Spherical sampling & associated utilities.
     * `surfify.utils.sampling.triangles_to_edges <surfify.utils.sampling.triangles_to_edges.html>`_
     * `surfify.utils.sampling.vertex_adjacency_graph <surfify.utils.sampling.vertex_adjacency_graph.html>`_
 
-surfify.utils.coord
-^^^^^^^^^^^^^^^^^^^
+surfify.utils.io
+^^^^^^^^^^^^^^^^
 
-Coordinate system tools.
+Spherical i/o utilities.
 
 .. rst-class:: documentation-contents
 
+  **Classes**:
+    * `surfify.utils.io.HidePrints <surfify.utils.io.HidePrints.html>`_
+
   **Functions**:
-    * `surfify.utils.coord.cart2sph <surfify.utils.coord.cart2sph.html>`_
-    * `surfify.utils.coord.find_corresponding_order <surfify.utils.coord.find_corresponding_order.html>`_
-    * `surfify.utils.coord.grid2text <surfify.utils.coord.grid2text.html>`_
-    * `surfify.utils.coord.ico2ico <surfify.utils.coord.ico2ico.html>`_
-    * `surfify.utils.coord.sph2cart <surfify.utils.coord.sph2cart.html>`_
-    * `surfify.utils.coord.text2grid <surfify.utils.coord.text2grid.html>`_
-    * `surfify.utils.coord.text2ico <surfify.utils.coord.text2ico.html>`_
+    * `surfify.utils.io.compute_and_store <surfify.utils.io.compute_and_store.html>`_
+    * `surfify.utils.io.decompose_cifti <surfify.utils.io.decompose_cifti.html>`_
+    * `surfify.utils.io.read_freesurfer <surfify.utils.io.read_freesurfer.html>`_
+    * `surfify.utils.io.read_gifti <surfify.utils.io.read_gifti.html>`_
+    * `surfify.utils.io.surf_data_from_cifti <surfify.utils.io.surf_data_from_cifti.html>`_
+    * `surfify.utils.io.ungzip <surfify.utils.io.ungzip.html>`_
+    * `surfify.utils.io.volume_from_cifti <surfify.utils.io.volume_from_cifti.html>`_
+    * `surfify.utils.io.write_freesurfer <surfify.utils.io.write_freesurfer.html>`_
+    * `surfify.utils.io.write_gifti <surfify.utils.io.write_gifti.html>`_
 

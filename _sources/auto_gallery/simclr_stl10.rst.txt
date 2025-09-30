@@ -82,7 +82,7 @@ Let's define some global parameters:
 
 .. GENERATED FROM PYTHON SOURCE LINES 53-56
 
-As in many tutorials before, we provide pre-trained models. If you are 
+As in many tutorials before, we provide pre-trained models. If you are
 running this notebook locally, make sure to have sufficient disk space
 available.
 
@@ -96,7 +96,7 @@ available.
     weights = Weights(
         name="hf-hub:neurospin/simclr-resnet18-stl10",
         data_dir=checkpointdir,
-        filepath="weights-simclr-resnet18-stl10.pt"
+        filepath="weights-simclr-resnet18-stl10.pt",
     )
 
 
@@ -109,32 +109,26 @@ To allow efficient training, we need to prepare the data loading such that
 we sample two different, random augmentations for each image in the batch.
 The easiest way to do this is by creating a transformation that, when being
 called, applies a set of data augmentations to an image twice. This is
-implemented in the class ContrastiveTransformations.
+implemented in the class nidl.transforms.MultiViewsTransform.
 
 The contrastive learning framework can easily be extended to have more
 positive examples by sampling more than two augmentations of the same
 image. However, the most efficient training is usually obtained by using
 only two.
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-88
+.. GENERATED FROM PYTHON SOURCE LINES 79-82
 
 .. code-block:: Python
 
 
-    class ContrastiveTransformations:
-        def __init__(self, base_transforms, n_views=2):
-            self.base_transforms = base_transforms
-            self.n_views = n_views
-
-        def __call__(self, x):
-            return [self.base_transforms(x) for i in range(self.n_views)]
+    from nidl.transforms import MultiViewsTransform
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 89-104
+.. GENERATED FROM PYTHON SOURCE LINES 83-98
 
 Next, we can look at the specific augmentations we want to apply. The choice
 of the data augmentation to use is the most crucial hyperparameter in SimCLR
-since it directly affects how the latent space is structured, and what 
+since it directly affects how the latent space is structured, and what
 patterns might be learned from the data.
 
 Overall, for our experiments, we apply a set of 5 transformations following
@@ -148,7 +142,7 @@ brightness scale highly varies in a dataset, the original settings can be
 more beneficial since the model can't rely on this information anymore to
 distinguish between images.
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-119
+.. GENERATED FROM PYTHON SOURCE LINES 98-118
 
 .. code-block:: Python
 
@@ -157,9 +151,14 @@ distinguish between images.
         [
             transforms.RandomHorizontalFlip(),
             transforms.RandomResizedCrop(size=96),
-            transforms.RandomApply([
-                transforms.ColorJitter(brightness=0.5, contrast=0.5,
-                                       saturation=0.5, hue=0.1)], p=0.8),
+            transforms.RandomApply(
+                [
+                    transforms.ColorJitter(
+                        brightness=0.5, contrast=0.5, saturation=0.5, hue=0.1
+                    )
+                ],
+                p=0.8,
+            ),
             transforms.RandomGrayscale(p=0.2),
             transforms.GaussianBlur(kernel_size=9),
             transforms.ToTensor(),
@@ -168,7 +167,7 @@ distinguish between images.
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-141
+.. GENERATED FROM PYTHON SOURCE LINES 119-140
 
 Dataset
 -------
@@ -192,7 +191,7 @@ transformations above: the unlabeled_data will be used to train our model
 via contrastive learning, and train_data_contrast will be used as a validation
 set in contrastive learning.
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-155
+.. GENERATED FROM PYTHON SOURCE LINES 140-154
 
 .. code-block:: Python
 
@@ -201,30 +200,32 @@ set in contrastive learning.
         root=datadir,
         split="unlabeled",
         download=True,
-        transform=ContrastiveTransformations(contrast_transforms, n_views=2),
+        transform=MultiViewsTransform(contrast_transforms, n_views=2),
     )
     train_data_contrast = STL10(
         root=datadir,
         split="train",
         download=True,
-        transform=ContrastiveTransformations(contrast_transforms, n_views=2),
+        transform=MultiViewsTransform(contrast_transforms, n_views=2),
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-158
+.. GENERATED FROM PYTHON SOURCE LINES 155-157
 
 Before starting with our implementation of SimCLR, let's look at some example
 image pairs sampled with our augmentations:
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-169
+.. GENERATED FROM PYTHON SOURCE LINES 157-170
 
 .. code-block:: Python
 
 
-    imgs = torch.stack([img for idx in range(num_images)
-                        for img in unlabeled_data[idx][0]], dim=0)
-    img_grid = torchvision.utils.make_grid(imgs, nrow=num_images, normalize=True,
-                                           pad_value=0.9)
+    imgs = torch.stack(
+        [img for idx in range(num_images) for img in unlabeled_data[idx][0]], dim=0
+    )
+    img_grid = torchvision.utils.make_grid(
+        imgs, nrow=num_images, normalize=True, pad_value=0.9
+    )
     img_grid = img_grid.permute(1, 2, 0)
     plt.figure(figsize=(10, 5))
     plt.title("Augmented image examples of the STL10 dataset")
@@ -232,11 +233,11 @@ image pairs sampled with our augmentations:
     plt.axis("off")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-171
+.. GENERATED FROM PYTHON SOURCE LINES 171-172
 
 And create the associated dataloaders:
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-190
+.. GENERATED FROM PYTHON SOURCE LINES 172-191
 
 .. code-block:: Python
 
@@ -248,7 +249,7 @@ And create the associated dataloaders:
         shuffle=True,
         drop_last=True,
         pin_memory=True,
-        num_workers=num_workers
+        num_workers=num_workers,
     )
     val_loader = data.DataLoader(
         train_data_contrast,
@@ -256,11 +257,11 @@ And create the associated dataloaders:
         shuffle=False,
         drop_last=False,
         pin_memory=True,
-        num_workers=num_workers
+        num_workers=num_workers,
     )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-207
+.. GENERATED FROM PYTHON SOURCE LINES 192-208
 
 Training
 --------
@@ -271,7 +272,7 @@ with ReLU activation in the hidden layer. Note that in the follow-up paper,
 SimCLRv2, the authors mention that larger/wider MLPs can boost the
 performance considerably. This is why we apply an MLP with four times
 larger hidden dimensions, but deeper MLPs showed to overfit on the given
-dataset. 
+dataset.
 
 A common observation in contrastive learning is that the larger the batch size,
 the better the models perform. A larger batch size allows us to compare each
@@ -279,23 +280,22 @@ image to more negative examples, leading to overall smoother loss gradients.
 However, in our case, we experienced that a batch size of 256 was sufficient
 to get good results.
 
-.. GENERATED FROM PYTHON SOURCE LINES 207-244
+.. GENERATED FROM PYTHON SOURCE LINES 208-244
 
 .. code-block:: Python
 
 
     hidden_dim = 128
-    encoder = torchvision.models.resnet18(
-        weights=None, num_classes=4 * hidden_dim
-    )
+    encoder = torchvision.models.resnet18(weights=None, num_classes=4 * hidden_dim)
     latent_size = encoder.fc.out_features
     encoder.latent_size = latent_size
     encoder.fc = nn.Identity()
 
     callbacks = [
         ModelCheckpoint(
-            save_weights_only=True, mode="max", monitor="val_acc_top5"),
-        LearningRateMonitor(logging_interval="epoch")
+            save_weights_only=True, mode="max", monitor="val_acc_top5"
+        ),
+        LearningRateMonitor(logging_interval="epoch"),
     ]
     trainer_params = {
         "default_root_dir": checkpointdir,
@@ -305,16 +305,16 @@ to get good results.
     }
     model = SimCLR(
         encoder,
-        hidden_dims=[encoder.latent_size , hidden_dim],
+        hidden_dims=[encoder.latent_size, hidden_dim],
         lr=5e-4,
         temperature=0.07,
         weight_decay=1e-4,
         random_state=42,
-        **trainer_params
+        **trainer_params,
     )
 
     if load_pretrained:
-        print(f"Found pretrained model at {weights.weight_file}, loading...") 
+        print(f"Found pretrained model at {weights.weight_file}, loading...")
         weights.load_pretrained(model)
         model.fitted_ = True
     else:
@@ -349,57 +349,49 @@ gain in this simple setup.
 The data we use is the training and test set of STL10. The training contains
 500 images per class, while the test set has 800 images per class.
 
-.. GENERATED FROM PYTHON SOURCE LINES 270-293
+.. GENERATED FROM PYTHON SOURCE LINES 270-284
 
 .. code-block:: Python
 
 
     batch_size = 64
     scale_transforms = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Normalize((0.5,), (0.5,))
-        ]
+        [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
     )
     train_img_data = STL10(
-        root=datadir,
-        split="train",
-        download=True,
-        transform=scale_transforms
+        root=datadir, split="train", download=True, transform=scale_transforms
     )
     test_img_data = STL10(
-        root=datadir,
-        split="test",
-        download=True,
-        transform=scale_transforms
+        root=datadir, split="test", download=True, transform=scale_transforms
     )
     print("Number of training examples:", len(train_img_data))
     print("Number of test examples:", len(test_img_data))
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 294-297
+.. GENERATED FROM PYTHON SOURCE LINES 285-288
 
 Next, we create a model where the encoder weights are froozen, i.e. the
 output representations will be used as inputs to the Logistic Regression
 model.
 
-.. GENERATED FROM PYTHON SOURCE LINES 297-308
+.. GENERATED FROM PYTHON SOURCE LINES 288-300
 
 .. code-block:: Python
 
 
     num_classes = 10
-    new_model = nn.Sequential(OrderedDict([
-        ("encoder", model.f),
-        ("fc", nn.Linear(latent_size, num_classes))
-    ]))
+    new_model = nn.Sequential(
+        OrderedDict(
+            [("encoder", model.f), ("fc", nn.Linear(latent_size, num_classes))]
+        )
+    )
     new_model.fc.weight.data.normal_(mean=0.0, std=0.01)
     new_model.fc.bias.data.zero_()
     new_model.requires_grad_(False)
     new_model.fc.requires_grad_(True)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 309-321
+.. GENERATED FROM PYTHON SOURCE LINES 301-313
 
 Finally, we train the Logistic Regression model and evaluate the model on the
 test set every 10 epochs to allow early stopping, but the low frequency of
@@ -414,7 +406,7 @@ intuition on how well the representations learned by contrastive learning
 can be transfered to a image recognition task like this classification.
 Here, we will only train the model with all the data available:
 
-.. GENERATED FROM PYTHON SOURCE LINES 321-381
+.. GENERATED FROM PYTHON SOURCE LINES 313-372
 
 .. code-block:: Python
 
@@ -422,7 +414,7 @@ Here, we will only train the model with all the data available:
     weights = Weights(
         name="hf-hub:neurospin/linear-resnet18-stl10",
         data_dir=checkpointdir,
-        filepath="weights-linear-resnet18-stl10.pt"
+        filepath="weights-linear-resnet18-stl10.pt",
     )
     train_loader = data.DataLoader(
         train_img_data,
@@ -430,27 +422,26 @@ Here, we will only train the model with all the data available:
         shuffle=True,
         drop_last=False,
         pin_memory=True,
-        num_workers=num_workers
+        num_workers=num_workers,
     )
     test_loader = data.DataLoader(
         test_img_data,
         batch_size=batch_size,
         shuffle=False,
         drop_last=False,
-        num_workers=num_workers
+        num_workers=num_workers,
     )
 
     callbacks = [
-        ModelCheckpoint(
-            save_weights_only=True, mode="max", monitor="val_acc"),
-        LearningRateMonitor(logging_interval="epoch")
+        ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc"),
+        LearningRateMonitor(logging_interval="epoch"),
     ]
     trainer_params = {
         "default_root_dir": checkpointdir,
         "accelerator": device,
         "max_epochs": 100,
         "callbacks": callbacks,
-        "check_val_every_n_epoch": 10
+        "check_val_every_n_epoch": 10,
     }
     model = LogisticRegression(
         model=deepcopy(new_model),
@@ -458,7 +449,7 @@ Here, we will only train the model with all the data available:
         lr=1e-3,
         weight_decay=1e-3,
         random_state=42,
-        **trainer_params
+        **trainer_params,
     )
     if load_pretrained:
         print(f"Found pretrained model at {weights.weight_file}, loading...")
@@ -479,7 +470,7 @@ Here, we will only train the model with all the data available:
     ##     torch.save(model.model.fc.state_dict(), _pretrained_filename)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 382-422
+.. GENERATED FROM PYTHON SOURCE LINES 373-413
 
 As one would expect, the classification performance improves the more data
 we have. However, with only 10 images per class, we can already classify more
@@ -522,7 +513,7 @@ Regression setup. Note that we allow the ResNet to perform validation
 every 2 epochs to also check whether the model overfits strongly in the
 first iterations or not.
 
-.. GENERATED FROM PYTHON SOURCE LINES 422-488
+.. GENERATED FROM PYTHON SOURCE LINES 413-475
 
 .. code-block:: Python
 
@@ -530,7 +521,7 @@ first iterations or not.
     weights = Weights(
         name="hf-hub:neurospin/resnet18-stl10",
         data_dir=checkpointdir,
-        filepath="weights-resnet18-stl10.pt"
+        filepath="weights-resnet18-stl10.pt",
     )
 
     batch_size = 64
@@ -545,10 +536,7 @@ first iterations or not.
         ]
     )
     train_img_aug_data = STL10(
-        root=datadir,
-        split="train",
-        download=True,
-        transform=train_transforms
+        root=datadir, split="train", download=True, transform=train_transforms
     )
     train_loader = data.DataLoader(
         train_img_data,
@@ -556,20 +544,19 @@ first iterations or not.
         shuffle=True,
         drop_last=False,
         pin_memory=True,
-        num_workers=num_workers
+        num_workers=num_workers,
     )
 
     callbacks = [
-        ModelCheckpoint(
-            save_weights_only=True, mode="max", monitor="val_acc"),
-        LearningRateMonitor(logging_interval="epoch")
+        ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc"),
+        LearningRateMonitor(logging_interval="epoch"),
     ]
     trainer_params = {
         "default_root_dir": checkpointdir,
         "accelerator": device,
         "max_epochs": 100,
         "callbacks": callbacks,
-        "check_val_every_n_epoch": 2
+        "check_val_every_n_epoch": 2,
     }
     model = LogisticRegression(
         model=torchvision.models.resnet18(weights=None, num_classes=10),
@@ -577,7 +564,7 @@ first iterations or not.
         lr=1e-3,
         weight_decay=2e-4,
         random_state=42,
-        **trainer_params
+        **trainer_params,
     )
     if load_pretrained:
         print(f"Found pretrained model at {weights.weight_file}, loading...")
@@ -593,7 +580,7 @@ first iterations or not.
     print(f"Accuracy: {100 * acc:4.2f}%")
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 489-519
+.. GENERATED FROM PYTHON SOURCE LINES 476-506
 
 The ResNet trained from scratch achieves ~73% on the test set. This
 is almost 7% less than the contrastive learning model, and even
@@ -612,18 +599,18 @@ that we can use to train simple classification models. With 500 images per
 label, it achieved an 8% higher accuracy than a similar model solely
 trained from supervision and performs on par with it when only using a
 tenth of the labeled data. Our experimental results are limited to a single
-dataset, but recent works such as Ting Chen et al. showed similar trends 
-for larger datasets like ImageNet. Besides the discussed hyperparameters, 
-the size of the model seems to be important in contrastive learning as 
-well. If a lot of unlabeled data is available, larger models can achieve 
-much stronger results and come close to their supervised baselines. 
-Further, there are also approaches for combining contrastive and 
-supervised learning, leading to performance gains beyond 
-supervision (see Khosla et al.). Moreover, contrastive learning is not 
-the only approach to self-supervised learning that has come up in the 
-last two years and showed great results. Other methods include 
-distillation-based methods like BYOL and redundancy reduction techniques 
-like Barlow Twins. There is a lot more to explore in the self-supervised 
+dataset, but recent works such as Ting Chen et al. showed similar trends
+for larger datasets like ImageNet. Besides the discussed hyperparameters,
+the size of the model seems to be important in contrastive learning as
+well. If a lot of unlabeled data is available, larger models can achieve
+much stronger results and come close to their supervised baselines.
+Further, there are also approaches for combining contrastive and
+supervised learning, leading to performance gains beyond
+supervision (see Khosla et al.). Moreover, contrastive learning is not
+the only approach to self-supervised learning that has come up in the
+last two years and showed great results. Other methods include
+distillation-based methods like BYOL and redundancy reduction techniques
+like Barlow Twins. There is a lot more to explore in the self-supervised
 domain, and more, impressive steps ahead are to be expected.
 
 **Estimated memory usage:**  0 MB

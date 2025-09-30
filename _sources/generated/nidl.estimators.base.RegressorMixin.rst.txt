@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.RegressorMixin nidl.estimators.base.RegressorMixin
+.. minigallery:: nidl.estimators.base.RegressorMixin nidl.estimators.RegressorMixin
     :add-heading: Examples
     :heading-level: -
 

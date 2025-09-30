@@ -148,13 +148,12 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegressionCV</span><span class="p">,</span> <span class="n">RidgeCV</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">classification_report</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridSearchCV</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.neighbors</span><span class="w"> </span><span class="kn">import</span> <span class="n">KNeighborsClassifier</span><span class="p">,</span> <span class="n">KNeighborsRegressor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils.multiclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">unique_labels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">rank_zero_only</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEstimator</span> <span class="k">as</span> <span class="n">sk_BaseEstimator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_classifier</span><span class="p">,</span> <span class="n">is_regressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">balanced_accuracy_score</span><span class="p">,</span> <span class="n">classification_report</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_array</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">DistributedSampler</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEstimator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">regression_report</span>
@@ -164,45 +163,46 @@
 <div class="viewcode-block" id="ModelProbing">
 <a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ModelProbing</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">pl</span><span class="o">.</span><span class="n">Callback</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback implementing the basic logic of embedding model&#39;s probing.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback to probe the representation of an embedding estimator on a</span>
+<span class="sd">    dataset.</span>
+
+<span class="sd">    It has the following logic:</span>
 
 <span class="sd">    1) Embeds the input data (training+test) through the estimator using</span>
-<span class="sd">       `transform_step` method.</span>
-<span class="sd">    2) Train the probe on the training embedding</span>
-<span class="sd">    3) Test the probe on the test embedding and log the metrics</span>
+<span class="sd">       `transform_step` method (handles distributed multi-gpu forward pass).</span>
+<span class="sd">    2) Train the probe on the training embedding (handles multi-cpu training).</span>
+<span class="sd">    3) Test the probe on the test embedding and log the metrics.</span>
 
 <span class="sd">    This callback is abstract and should be inherited to implement</span>
-<span class="sd">    the `fit`, `predict` and `log_metrics` methods (e.g. for Ridge regression,</span>
-<span class="sd">    KNN regression, logistic regression, KNN classification, ...).</span>
+<span class="sd">    the `log_metrics` method.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    train_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Training dataloader yielding batches in the form (X, y)</span>
+<span class="sd">        Training dataloader yielding batches in the form `(X, y)`</span>
 <span class="sd">        for further embedding and training of the probe.</span>
 
 <span class="sd">    test_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Test dataloader yielding batches in the form (X, y)</span>
+<span class="sd">        Test dataloader yielding batches in the form `(X, y)`</span>
 <span class="sd">        for further embedding and test of the probe.</span>
 
-<span class="sd">    probe_name: str or None, default=None</span>
-<span class="sd">        Name of the probe displayed when logging the results.</span>
-<span class="sd">        It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.</span>
-<span class="sd">        If None, only &lt;metric_name&gt; is displayed.</span>
+<span class="sd">    probe: sklearn.base.BaseEstimator</span>
+<span class="sd">        The probe model to be trained on the embedding. It must</span>
+<span class="sd">        implement `fit` and `predict` methods on numpy array.</span>
 
 <span class="sd">    every_n_train_epochs: int or None, default=1</span>
-<span class="sd">        Number of training epochs after which to run the linear probing.</span>
+<span class="sd">        Number of training epochs after which to run the probing.</span>
 <span class="sd">        Disabled if None.</span>
 
 <span class="sd">    every_n_val_epochs: int or None, default=None</span>
-<span class="sd">        Number of validation epochs after which to run the linear probing.</span>
+<span class="sd">        Number of validation epochs after which to run the probing.</span>
 <span class="sd">        Disabled if None.</span>
 
 <span class="sd">    on_test_epoch_start: bool, default=False</span>
-<span class="sd">        Whether to run the linear probing at the start of the test epoch.</span>
+<span class="sd">        Whether to run the probing at the start of the test epoch.</span>
 
 <span class="sd">    on_test_epoch_end: bool, default=False</span>
-<span class="sd">        Whether to run the linear probing at the end of the test epoch.</span>
+<span class="sd">        Whether to run the probing at the end of the test epoch.</span>
 
 <span class="sd">    prog_bar: bool, default=True</span>
 <span class="sd">        Whether to display the metrics in the progress bar.</span>
@@ -213,7 +213,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">train_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
         <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">probe_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">probe</span><span class="p">:</span> <span class="n">sk_BaseEstimator</span><span class="p">,</span>
         <span class="n">every_n_train_epochs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">every_n_val_epochs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">on_test_epoch_start</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -223,7 +223,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">train_dataloader</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_dataloader</span> <span class="o">=</span> <span class="n">test_dataloader</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span> <span class="o">=</span> <span class="n">probe_name</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="k">if</span> <span class="n">probe_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">probe</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">every_n_train_epochs</span> <span class="o">=</span> <span class="n">every_n_train_epochs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">every_n_val_epochs</span> <span class="o">=</span> <span class="n">every_n_val_epochs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_test_epoch_start</span> <span class="o">=</span> <span class="n">on_test_epoch_start</span>
@@ -234,29 +234,61 @@
 
 <div class="viewcode-block" id="ModelProbing.fit">
 <a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.fit">[docs]</a>
-    <span class="nd">@abstractmethod</span>
+    <span class="nd">@rank_zero_only</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the probe on the embeddings and labels of the training data.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the probe on the training data embeddings.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelProbing.predict">
 <a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.predict">[docs]</a>
-    <span class="nd">@abstractmethod</span>
+    <span class="nd">@rank_zero_only</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Predict the probe on new data X.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make predictions on new data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelProbing.log_metrics">
 <a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.log_metrics">[docs]</a>
     <span class="nd">@abstractmethod</span>
+    <span class="nd">@rank_zero_only</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log the metrics given the predictions and the true labels.&quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="ModelProbing.linear_probing">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.linear_probing">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">linear_probing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">:</span> <span class="n">BaseEstimator</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the linear probing on the given estimator.</span>
+<div class="viewcode-block" id="ModelProbing.adapt_dataloader_for_ddp">
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.adapt_dataloader_for_ddp">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adapt_dataloader_for_ddp</span><span class="p">(</span><span class="n">dataloader</span><span class="p">,</span> <span class="n">trainer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap user dataloader with DistributedSampler if in DDP mode.&quot;&quot;&quot;</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataloader</span><span class="o">.</span><span class="n">dataset</span>
+
+        <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Create a distributed sampler</span>
+            <span class="n">sampler</span> <span class="o">=</span> <span class="n">DistributedSampler</span><span class="p">(</span>
+                <span class="n">dataset</span><span class="p">,</span>
+                <span class="n">num_replicas</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">world_size</span><span class="p">,</span>
+                <span class="n">rank</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">global_rank</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Recreate the dataloader with this sampler</span>
+            <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span>
+                <span class="n">dataset</span><span class="p">,</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="n">dataloader</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                <span class="n">num_workers</span><span class="o">=</span><span class="n">dataloader</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                <span class="n">pin_memory</span><span class="o">=</span><span class="n">dataloader</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
+                <span class="n">collate_fn</span><span class="o">=</span><span class="n">dataloader</span><span class="o">.</span><span class="n">collate_fn</span><span class="p">,</span>
+                <span class="n">drop_last</span><span class="o">=</span><span class="n">dataloader</span><span class="o">.</span><span class="n">drop_last</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dataloader</span></div>
+
+
+<div class="viewcode-block" id="ModelProbing.probing">
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.probing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">probing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">:</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the probing on the given estimator.</span>
 
 <span class="sd">        This method performs the following steps:</span>
 <span class="sd">        1) Extracts the features from the training and test dataloaders</span>
@@ -267,12 +299,12 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        pl_module: BaseEstimator</span>
-<span class="sd">            The BaseEstimator module that implements the &#39;transform_step&#39;.</span>
+<span class="sd">            The BaseEstimator module that implements the `transform_step`.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
-<span class="sd">        ValueError: If the pl_module does not inherit from BaseEstimator or</span>
-<span class="sd">        from TransformerMixin.</span>
+<span class="sd">        ValueError: If the pl_module does not inherit from `BaseEstimator` or</span>
+<span class="sd">        from `TransformerMixin`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pl_module</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_estimator_is</span><span class="p">(</span>
@@ -316,7 +348,7 @@
 
 <span class="sd">        By default, it uses the `transform_step` logic applied on each batch to</span>
 <span class="sd">        get the embeddings with the labels.</span>
-<span class="sd">        The input dataloader should yield batches of the form (X, y) where X</span>
+<span class="sd">        The input dataloader should yield batches of the form `(X, y)` where X</span>
 <span class="sd">        is the input data and y is the label.</span>
 
 <span class="sd">        Parameters</span>
@@ -326,16 +358,20 @@
 
 <span class="sd">        dataloader: torch.utils.data.DataLoader</span>
 <span class="sd">            The dataloader to extract features from. It should yield batches of</span>
-<span class="sd">            the form (X, y) where X is the input data and y is the label.</span>
+<span class="sd">            the form `(X, y)` where `X` is the input data and `y` is the label.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        tuple of (X, y)</span>
-<span class="sd">            Tuple of numpy arrays (X, y) where X is the extracted features</span>
-<span class="sd">            and y is the corresponding labels.</span>
+<span class="sd">        tuple of (z, y)</span>
+<span class="sd">            Tuple of numpy arrays (z, y) where z are the extracted features</span>
+<span class="sd">            and y are the corresponding labels.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">is_training</span> <span class="o">=</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">training</span>  <span class="c1"># Save state</span>
+
+        <span class="n">dataloader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapt_dataloader_for_ddp</span><span class="p">(</span>
+            <span class="n">dataloader</span><span class="p">,</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">trainer</span>
+        <span class="p">)</span>
 
         <span class="n">pl_module</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
@@ -344,13 +380,25 @@
             <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
                 <span class="n">x_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="o">=</span> <span class="n">batch</span>
                 <span class="n">x_batch</span> <span class="o">=</span> <span class="n">x_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">pl_module</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">y_batch</span> <span class="o">=</span> <span class="n">y_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">pl_module</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
                 <span class="n">features</span> <span class="o">=</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">transform_step</span><span class="p">(</span>
                     <span class="n">x_batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span>
                 <span class="p">)</span>
-                <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
-                <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_batch</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+                <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_batch</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+
+        <span class="c1"># Concatenate the embeddings</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Gather across GPUs</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">all_gather</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">all_gather</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+        <span class="c1"># Reduce (world_size, batch, ...) to (world_size * batch, ...)</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">*</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">*</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
 
         <span class="k">if</span> <span class="n">is_training</span><span class="p">:</span>
             <span class="n">pl_module</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
@@ -366,7 +414,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">every_n_train_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter_train_epochs</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">every_n_train_epochs</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">linear_probing</span><span class="p">(</span><span class="n">pl_module</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">probing</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelProbing.on_validation_epoch_end">
@@ -376,45 +424,166 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">every_n_val_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter_val_epochs</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">every_n_val_epochs</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">linear_probing</span><span class="p">(</span><span class="n">pl_module</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">probing</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelProbing.on_test_epoch_start">
 <a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.on_test_epoch_start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_test_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_test_epoch_start</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">linear_probing</span><span class="p">(</span><span class="n">pl_module</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">probing</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ModelProbing.on_test_epoch_end">
 <a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.ModelProbing.on_test_epoch_end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_test_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_test_epoch_end</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">linear_probing</span><span class="p">(</span><span class="n">pl_module</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">probing</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">)</span></div>
 </div>
 
 
 
-<div class="viewcode-block" id="RidgeCVCallback">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.RidgeCVCallback.html#nidl.callbacks.RidgeCVCallback">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">RidgeCVCallback</span><span class="p">(</span><span class="n">ModelProbing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform Ridge regression on top of an embedding model.</span>
+<div class="viewcode-block" id="ClassificationProbingCallback">
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ClassificationProbingCallback.html#nidl.callbacks.ClassificationProbingCallback">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClassificationProbingCallback</span><span class="p">(</span><span class="n">ModelProbing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform classification on top of an embedding model.</span>
+
+<span class="sd">    Concretely this callback:</span>
+
+<span class="sd">    1) Embeds the input data through the torch model.</span>
+<span class="sd">    2) Fits the classification probe on the embedded data.</span>
+<span class="sd">    3) Logs the main classification metrics:</span>
+
+<span class="sd">       - precision (macro)</span>
+<span class="sd">       - recall (macro)</span>
+<span class="sd">       - f1-score (weighted and macro)</span>
+<span class="sd">       - accuracy (global)</span>
+<span class="sd">       - balanced accuracy</span>
+
+<span class="sd">    Please check this `User Guide &lt;https://scikit-learn.org/stable/modules/model_evaluation.html#classification-report&gt;`_</span>
+<span class="sd">    for more details on the classification metrics reported.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    train_dataloader: torch.utils.data.DataLoader</span>
+<span class="sd">        Training dataloader yielding batches in the form `(X, y)`</span>
+<span class="sd">        for further embedding and training of the probe.</span>
+
+<span class="sd">    test_dataloader: torch.utils.data.DataLoader</span>
+<span class="sd">        Test dataloader yielding batches in the form `(X, y)`</span>
+<span class="sd">        for further embedding and test of the probe.</span>
+
+<span class="sd">    probe: sklearn.base.BaseEstimator</span>
+<span class="sd">        The scikit-learn classifier to be trained on the embedding.</span>
+
+<span class="sd">    probe_name: str or None, default=None</span>
+<span class="sd">        Name of the probe displayed when logging the results.</span>
+<span class="sd">        It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.</span>
+<span class="sd">        If None,  &lt;probe_class_name&gt;/&lt;metric_name&gt; is displayed.</span>
+
+<span class="sd">    every_n_train_epochs: int or None, default=1</span>
+<span class="sd">        Number of training epochs after which to run the probing.</span>
+<span class="sd">        Disabled if None.</span>
+
+<span class="sd">    every_n_val_epochs: int or None, default=None</span>
+<span class="sd">        Number of validation epochs after which to run the probing.</span>
+<span class="sd">        Disabled if None.</span>
+
+<span class="sd">    on_test_epoch_start: bool, default=False</span>
+<span class="sd">        Whether to run the probing at the start of the test epoch.</span>
+
+<span class="sd">    on_test_epoch_end: bool, default=False</span>
+<span class="sd">        Whether to run the probing at the end of the test epoch.</span>
+
+<span class="sd">    prog_bar: bool, default=True</span>
+<span class="sd">        Whether to display the metrics in the progress bar.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">train_dataloader</span><span class="p">,</span>
+        <span class="n">test_dataloader</span><span class="p">,</span>
+        <span class="n">probe</span><span class="p">,</span>
+        <span class="n">probe_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">every_n_train_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">every_n_val_epochs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">on_test_epoch_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">on_test_epoch_end</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_classifier</span><span class="p">(</span><span class="n">probe</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The probe must be a classifier.&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">train_dataloader</span><span class="p">,</span>
+            <span class="n">test_dataloader</span><span class="p">,</span>
+            <span class="n">probe</span><span class="p">,</span>
+            <span class="n">every_n_train_epochs</span><span class="p">,</span>
+            <span class="n">every_n_val_epochs</span><span class="p">,</span>
+            <span class="n">on_test_epoch_start</span><span class="p">,</span>
+            <span class="n">on_test_epoch_end</span><span class="p">,</span>
+            <span class="n">prog_bar</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">probe_name</span>
+            <span class="k">if</span> <span class="n">probe_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">probe</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="ClassificationProbingCallback.log_metrics">
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.ClassificationProbingCallback.html#nidl.callbacks.ClassificationProbingCallback.log_metrics">[docs]</a>
+    <span class="nd">@rank_zero_only</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="c1"># Compute classification metrics</span>
+        <span class="n">metrics_report</span> <span class="o">=</span> <span class="n">classification_report</span><span class="p">(</span>
+            <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="c1"># Compute balanced accuracy separately</span>
+        <span class="n">bacc</span> <span class="o">=</span> <span class="n">balanced_accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}</span><span class="s2">/accuracy&quot;</span><span class="p">:</span> <span class="n">metrics_report</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">],</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}</span><span class="s2">/balanced_accuracy&quot;</span><span class="p">:</span> <span class="n">bacc</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}</span><span class="s2">/f1_macro&quot;</span><span class="p">:</span> <span class="n">metrics_report</span><span class="p">[</span><span class="s2">&quot;macro avg&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;f1-score&quot;</span>
+            <span class="p">],</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}</span><span class="s2">/precision_macro&quot;</span><span class="p">:</span> <span class="n">metrics_report</span><span class="p">[</span><span class="s2">&quot;macro avg&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;precision&quot;</span>
+            <span class="p">],</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}</span><span class="s2">/recall_macro&quot;</span><span class="p">:</span> <span class="n">metrics_report</span><span class="p">[</span><span class="s2">&quot;macro avg&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;recall&quot;</span>
+            <span class="p">],</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}</span><span class="s2">/f1_weighted&quot;</span><span class="p">:</span> <span class="n">metrics_report</span><span class="p">[</span><span class="s2">&quot;weighted avg&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;f1-score&quot;</span>
+            <span class="p">],</span>
+        <span class="p">}</span>
+        <span class="n">pl_module</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
+            <span class="n">summary</span><span class="p">,</span>
+            <span class="n">prog_bar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog_bar</span><span class="p">,</span>
+            <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="RegressionProbingCallback">
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.RegressionProbingCallback.html#nidl.callbacks.RegressionProbingCallback">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RegressionProbingCallback</span><span class="p">(</span><span class="n">ModelProbing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform regression on top of an embedding model.</span>
 
 <span class="sd">    Concretely this callback:</span>
 
 <span class="sd">    1) Embeds the input data through the estimator.</span>
-
-<span class="sd">    2) Performs n-fold CV to find the best L2 regularization strength.</span>
-
-<span class="sd">    3) Logs the main regression metrics by regressor and averaged,</span>
-<span class="sd">       including:</span>
+<span class="sd">    2) Fits the regression probe on the embedded data.</span>
+<span class="sd">    3) Logs the main regression metrics including:</span>
 
 <span class="sd">       - mean absolute error</span>
 <span class="sd">       - median absolute error</span>
 <span class="sd">       - root mean squared error</span>
 <span class="sd">       - mean squared error</span>
 <span class="sd">       - R² score</span>
-<span class="sd">       - pearsonr</span>
+<span class="sd">       - Pearson&#39;s r</span>
 <span class="sd">       - explained variance score</span>
 
 <span class="sd">       If multiple regressors are given (multivariate regression),</span>
@@ -423,554 +592,76 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    train_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Training dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and training of the ridge probe.</span>
+<span class="sd">        Training dataloader yielding batches in the form `(X, y)`</span>
+<span class="sd">        for further embedding and training of the probe.</span>
 
 <span class="sd">    test_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Test dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and test of the ridge probe.</span>
+<span class="sd">        Test dataloader yielding batches in the form `(X, y)`</span>
+<span class="sd">        for further embedding and test of the probe.</span>
+
+<span class="sd">    probe: sklearn.base.BaseEstimator</span>
+<span class="sd">        The scikit-learn regressor to be trained on the embedding.</span>
 
 <span class="sd">    probe_name: str or None, default=None</span>
 <span class="sd">        Name of the probe displayed when logging the results.</span>
 <span class="sd">        It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.</span>
-<span class="sd">        If None, only &lt;metric_name&gt; is displayed.</span>
+<span class="sd">        If None,  &lt;probe_class_name&gt;/&lt;metric_name&gt; is displayed.</span>
 
-<span class="sd">    alphas : tuple of floats, default=(0.1, 1.0, 10.0)</span>
-<span class="sd">        Arrays of `alpha` values to try in CV. It corresponds to the</span>
-<span class="sd">        regularization strength.</span>
+<span class="sd">    every_n_train_epochs: int or None, default=1</span>
+<span class="sd">        Number of training epochs after which to run the probing.</span>
+<span class="sd">        Disabled if None.</span>
 
-<span class="sd">    cv: int or cross-validation generator, default=5</span>
-<span class="sd">        How many folds to use for cross-validating the `alpha`</span>
-<span class="sd">        regularization strength in the `Ridge` regression.</span>
+<span class="sd">    every_n_val_epochs: int or None, default=None</span>
+<span class="sd">        Number of validation epochs after which to run the probing.</span>
+<span class="sd">        Disabled if None.</span>
 
-<span class="sd">    scoring: str in {&quot;r2&quot;, &quot;neg_mean_absolute_error&quot;,</span>
-<span class="sd">        &quot;neg_mean_squared_error&quot;, ...}, default=&quot;r2&quot;</span>
-<span class="sd">        Which scoring function to use to cross-validate the `alpha`</span>
-<span class="sd">        hyper-parameter. For a complete list of scoring options, check</span>
-<span class="sd">        https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring</span>
+<span class="sd">    on_test_epoch_start: bool, default=False</span>
+<span class="sd">        Whether to run the probing at the start of the test epoch.</span>
 
-<span class="sd">    kwargs: dict</span>
-<span class="sd">        Additional keyword arguments to pass to the `ModelProbing` constructor</span>
-<span class="sd">        (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).</span>
+<span class="sd">    on_test_epoch_end: bool, default=False</span>
+<span class="sd">        Whether to run the probing at the end of the test epoch.</span>
+
+<span class="sd">    prog_bar: bool, default=True</span>
+<span class="sd">        Whether to display the metrics in the progress bar.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">train_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">probe_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">alphas</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
-        <span class="n">cv</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">scoring</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r2&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">train_dataloader</span><span class="p">,</span>
+        <span class="n">test_dataloader</span><span class="p">,</span>
+        <span class="n">probe</span><span class="p">,</span>
+        <span class="n">probe_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">every_n_train_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">every_n_val_epochs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">on_test_epoch_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">on_test_epoch_end</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_regressor</span><span class="p">(</span><span class="n">probe</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The probe must be a regressor.&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">train_dataloader</span><span class="o">=</span><span class="n">train_dataloader</span><span class="p">,</span>
-            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">test_dataloader</span><span class="p">,</span>
-            <span class="n">probe_name</span><span class="o">=</span><span class="n">probe_name</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="n">train_dataloader</span><span class="p">,</span>
+            <span class="n">test_dataloader</span><span class="p">,</span>
+            <span class="n">probe</span><span class="p">,</span>
+            <span class="n">every_n_train_epochs</span><span class="p">,</span>
+            <span class="n">every_n_val_epochs</span><span class="p">,</span>
+            <span class="n">on_test_epoch_start</span><span class="p">,</span>
+            <span class="n">on_test_epoch_end</span><span class="p">,</span>
+            <span class="n">prog_bar</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="o">=</span> <span class="n">alphas</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scoring</span> <span class="o">=</span> <span class="n">scoring</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">RidgeCV</span><span class="p">(</span>
-            <span class="n">alphas</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas</span><span class="p">,</span>
-            <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span>
-            <span class="n">scoring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scoring</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">probe_name</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+            <span class="k">if</span> <span class="n">probe_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">probe</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">/&quot;</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="RidgeCVCallback.fit">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.RidgeCVCallback.html#nidl.callbacks.RidgeCVCallback.fit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="RidgeCVCallback.predict">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.RidgeCVCallback.html#nidl.callbacks.RidgeCVCallback.predict">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="RidgeCVCallback.log_metrics">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.RidgeCVCallback.html#nidl.callbacks.RidgeCVCallback.log_metrics">[docs]</a>
+<div class="viewcode-block" id="RegressionProbingCallback.log_metrics">
+<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.RegressionProbingCallback.html#nidl.callbacks.RegressionProbingCallback.log_metrics">[docs]</a>
+    <span class="nd">@rank_zero_only</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
         <span class="c1"># Compute regression metrics</span>
         <span class="n">metrics_report</span> <span class="o">=</span> <span class="n">regression_report</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># Log the results</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metrics_report</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">value_</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span>
-                    <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="p">}</span>
-                <span class="n">pl_module</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
-                    <span class="n">value_</span><span class="p">,</span>
-                    <span class="n">prog_bar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog_bar</span><span class="p">,</span>
-                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pl_module</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">value</span><span class="p">,</span>
-                    <span class="n">prog_bar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog_bar</span><span class="p">,</span>
-                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="KNeighborsRegressorCVCallback">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html#nidl.callbacks.KNeighborsRegressorCVCallback">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">KNeighborsRegressorCVCallback</span><span class="p">(</span><span class="n">ModelProbing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform KNN regression on top of an embedding model.</span>
-
-<span class="sd">    Concretely, this callback:</span>
-
-<span class="sd">    1. Embeds the input data through the torch model.</span>
-<span class="sd">    2. Performs n-fold cross-validation to find the best `n_neighbors`.</span>
-<span class="sd">    3. Logs the main regression metrics by regressor and averaged, including:</span>
-
-<span class="sd">       - mean absolute error</span>
-<span class="sd">       - median absolute error</span>
-<span class="sd">       - root mean squared error</span>
-<span class="sd">       - mean squared error</span>
-<span class="sd">       - R² score</span>
-<span class="sd">       - Pearson correlation coefficient</span>
-<span class="sd">       - explained variance score</span>
-
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    train_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Training dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and training of the KNN probe.</span>
-
-<span class="sd">    test_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Test dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and test of the KNN probe.</span>
-
-<span class="sd">    probe_name: str or None, default=None</span>
-<span class="sd">        Name of the probe displayed when logging the results.</span>
-<span class="sd">        It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.</span>
-<span class="sd">        If None, only &lt;metric_name&gt; is displayed.</span>
-
-<span class="sd">    n_neighbors: tuple of int, default=(2, 5, 10)</span>
-<span class="sd">        Arrays of `n_neighbors` values to try in CV.</span>
-<span class="sd">        It corresponds to the number of neighbors to use by the KNN on the</span>
-<span class="sd">        training set.</span>
-
-<span class="sd">    cv: int or cross-validation generator, default=5</span>
-<span class="sd">        How many folds to use for cross-validating the `alpha`</span>
-<span class="sd">        regularization strength in the `Ridge` regression.</span>
-
-<span class="sd">    n_jobs: int or None, default=None</span>
-<span class="sd">        Number of jobs to run in parallel.</span>
-<span class="sd">        ``None`` means 1 unless in a :obj:`joblib.parallel_backend`</span>
-<span class="sd">        context.</span>
-<span class="sd">        ``-1`` means using all processors.</span>
-
-<span class="sd">    scoring: str in {&quot;r2&quot;, &quot;neg_mean_absolute_error&quot;,</span>
-<span class="sd">        &quot;neg_mean_squared_error&quot;,  ...}, default=&quot;r2&quot;</span>
-<span class="sd">        Which scoring function to use to cross-validate the `n_neighbors`</span>
-<span class="sd">        hyper-parameter. For a complete list of scoring options, check</span>
-<span class="sd">        https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring</span>
-
-<span class="sd">    kwargs: dict</span>
-<span class="sd">        Additional keyword arguments to pass to the `ModelProbing` constructor</span>
-<span class="sd">        (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">train_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">probe_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-        <span class="n">cv</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">n_jobs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">scoring</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r2&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">train_dataloader</span><span class="o">=</span><span class="n">train_dataloader</span><span class="p">,</span>
-            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">test_dataloader</span><span class="p">,</span>
-            <span class="n">probe_name</span><span class="o">=</span><span class="n">probe_name</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scoring</span> <span class="o">=</span> <span class="n">scoring</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
-            <span class="n">KNeighborsRegressor</span><span class="p">(),</span>
-            <span class="n">param_grid</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;n_neighbors&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">},</span>
-            <span class="n">scoring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scoring</span><span class="p">,</span>
-            <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span>
-            <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span>
-        <span class="p">)</span>
-
-<div class="viewcode-block" id="KNeighborsRegressorCVCallback.fit">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html#nidl.callbacks.KNeighborsRegressorCVCallback.fit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the k-nearest neighbors regressor from the training dataset and</span>
-<span class="sd">        log the regression metrics.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : {array-like, sparse matrix} of shape (n_samples, n_features)</span>
-<span class="sd">            Training data.</span>
-
-<span class="sd">        y : {array-like, sparse matrix} of shape (n_samples,) or \</span>
-<span class="sd">                (n_samples, n_outputs)</span>
-<span class="sd">            Target values.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="KNeighborsRegressorCVCallback.predict">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html#nidl.callbacks.KNeighborsRegressorCVCallback.predict">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="KNeighborsRegressorCVCallback.log_metrics">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html#nidl.callbacks.KNeighborsRegressorCVCallback.log_metrics">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
-        <span class="c1"># Compute regression metrics</span>
-        <span class="n">metrics_report</span> <span class="o">=</span> <span class="n">regression_report</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># Log the results</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metrics_report</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">value_</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span>
-                    <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="p">}</span>
-                <span class="n">pl_module</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
-                    <span class="n">value_</span><span class="p">,</span>
-                    <span class="n">prog_bar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog_bar</span><span class="p">,</span>
-                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pl_module</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">value</span><span class="p">,</span>
-                    <span class="n">prog_bar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog_bar</span><span class="p">,</span>
-                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="LogisticRegressionCVCallback">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.LogisticRegressionCVCallback.html#nidl.callbacks.LogisticRegressionCVCallback">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">LogisticRegressionCVCallback</span><span class="p">(</span><span class="n">ModelProbing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Performs logistic regression on top of an embedding model.</span>
-
-<span class="sd">    Concretely this callback:</span>
-
-<span class="sd">    1) Embeds the input data through the torch model.</span>
-
-<span class="sd">    2) Performs n-fold CV to find the best L2 regularization strength.</span>
-
-<span class="sd">    3) Logs the main classification metrics for each class and averaged</span>
-<span class="sd">       across classes (weighted by class support and unweighted):</span>
-
-<span class="sd">       - precision</span>
-<span class="sd">       - recall</span>
-<span class="sd">       - f1-score</span>
-<span class="sd">       - support</span>
-<span class="sd">       - accuracy (global)</span>
-
-<span class="sd">    Please check this `User Guide &lt;https://scikit-learn.org/stable/modules/model_evaluation.html#classification-report&gt;`_</span>
-<span class="sd">    for more details on the classification metrics reported.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    train_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Training dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and training of the logistic regression</span>
-<span class="sd">        probe.</span>
-
-<span class="sd">    test_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Test dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and test of the logistic regression</span>
-<span class="sd">        probe.</span>
-
-<span class="sd">    probe_name: str or None, default=None</span>
-<span class="sd">        Name of the probe displayed when logging the results.</span>
-<span class="sd">        It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.</span>
-<span class="sd">        If None, only &lt;metric_name&gt; is displayed.</span>
-
-<span class="sd">    Cs : int or list of floats, default=10</span>
-<span class="sd">        Each of the values in Cs describes the inverse of regularization</span>
-<span class="sd">        strength. If Cs is as an int, then a grid of Cs values are chosen</span>
-<span class="sd">        in a logarithmic scale between 1e-4 and 1e4.</span>
-<span class="sd">        Like in support vector machines, smaller values specify stronger</span>
-<span class="sd">        regularization.</span>
-
-<span class="sd">    cv: int or cross-validation generator, default=5</span>
-<span class="sd">        How many folds to use for cross-validating the `C`</span>
-<span class="sd">        regularization strenght</span>
-<span class="sd">        in the `LogisticRegression`.</span>
-
-<span class="sd">    max_iter: int, default=100</span>
-<span class="sd">        Maximum number of iterations taken for the solver to converge.</span>
-
-<span class="sd">    n_jobs: int or None, default=None</span>
-<span class="sd">        Number of jobs to run in parallel.</span>
-<span class="sd">        ``None`` means 1 unless in a :obj:`joblib.parallel_backend`</span>
-<span class="sd">        context.</span>
-<span class="sd">        ``-1`` means using all processors.</span>
-
-<span class="sd">    scoring: str in {&quot;accuracy&quot;, &quot;balanced_accuracy&quot;, &quot;f1&quot;, ...},</span>
-<span class="sd">        default=&quot;balanced_accuracy&quot;</span>
-<span class="sd">        Which scoring function to use to cross-validate the `C`</span>
-<span class="sd">        hyper-parameter.</span>
-<span class="sd">        For a complete list of scoring options, check</span>
-<span class="sd">        https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring</span>
-
-<span class="sd">    linear_solver: str in {&#39;lbfgs&#39;, &#39;liblinear&#39;, &#39;newton-cg&#39;,</span>
-<span class="sd">        &#39;newton-cholesky&#39;, &#39;sag&#39;, &#39;saga&#39;}, default=&#39;lbfgs&#39;</span>
-<span class="sd">        Algorithm to use in the optimization problem.</span>
-
-<span class="sd">    kwargs: dict</span>
-<span class="sd">        Additional keyword arguments to pass to the `ModelProbing` constructor</span>
-<span class="sd">        (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">train_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">probe_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">Cs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">cv</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">n_jobs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">scoring</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">,</span>
-        <span class="n">linear_solver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">train_dataloader</span><span class="o">=</span><span class="n">train_dataloader</span><span class="p">,</span>
-            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">test_dataloader</span><span class="p">,</span>
-            <span class="n">probe_name</span><span class="o">=</span><span class="n">probe_name</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Cs</span> <span class="o">=</span> <span class="n">Cs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scoring</span> <span class="o">=</span> <span class="n">scoring</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">linear_solver</span> <span class="o">=</span> <span class="n">linear_solver</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">LogisticRegressionCV</span><span class="p">(</span>
-            <span class="n">Cs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Cs</span><span class="p">,</span>
-            <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span>
-            <span class="n">penalty</span><span class="o">=</span><span class="s2">&quot;l2&quot;</span><span class="p">,</span>
-            <span class="n">solver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_solver</span><span class="p">,</span>
-            <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
-            <span class="n">scoring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scoring</span><span class="p">,</span>
-            <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span>
-        <span class="p">)</span>
-
-<div class="viewcode-block" id="LogisticRegressionCVCallback.fit">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.LogisticRegressionCVCallback.html#nidl.callbacks.LogisticRegressionCVCallback.fit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model according to the given training data and log</span>
-<span class="sd">        the classification metrics.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : {array-like, sparse matrix} of shape (n_samples, n_features)</span>
-<span class="sd">            Training vector, where `n_samples` is the number of samples and</span>
-<span class="sd">            `n_features` is the number of features.</span>
-
-<span class="sd">        y : array-like of shape (n_samples,)</span>
-<span class="sd">            Target vector relative to X.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="LogisticRegressionCVCallback.predict">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.LogisticRegressionCVCallback.html#nidl.callbacks.LogisticRegressionCVCallback.predict">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="LogisticRegressionCVCallback.log_metrics">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.LogisticRegressionCVCallback.html#nidl.callbacks.LogisticRegressionCVCallback.log_metrics">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
-        <span class="n">labels</span> <span class="o">=</span> <span class="n">unique_labels</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y_true</span><span class="p">)</span>
-
-        <span class="c1"># Compute classification metrics</span>
-        <span class="n">metrics_report</span> <span class="o">=</span> <span class="n">classification_report</span><span class="p">(</span>
-            <span class="n">y_true</span><span class="p">,</span>
-            <span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">output_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">target_names</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;class </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">))],</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Log the results</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metrics_report</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">value_</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span>
-                    <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="p">}</span>
-                <span class="n">pl_module</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
-                    <span class="n">value_</span><span class="p">,</span>
-                    <span class="n">prog_bar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog_bar</span><span class="p">,</span>
-                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pl_module</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probe_name</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">value</span><span class="p">,</span>
-                    <span class="n">prog_bar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prog_bar</span><span class="p">,</span>
-                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="KNeighborsClassifierCVCallback">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html#nidl.callbacks.KNeighborsClassifierCVCallback">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">KNeighborsClassifierCVCallback</span><span class="p">(</span><span class="n">ModelProbing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Performs KNN classification on top of an embedding model.</span>
-<span class="sd">    Concretely this callback:</span>
-
-<span class="sd">    1) Embeds the input data through the torch model.</span>
-
-<span class="sd">    2) Performs n-fold CV to find the best `n_neighbors` neighbors.</span>
-
-<span class="sd">    3) Logs the main classification metrics for each class and averaged</span>
-<span class="sd">       across classes (weighted by class support and unweighted):</span>
-
-<span class="sd">       - precision</span>
-<span class="sd">       - recall</span>
-<span class="sd">       - f1-score</span>
-<span class="sd">       - support</span>
-<span class="sd">       - accuracy (global)</span>
-<span class="sd">        </span>
-<span class="sd">    Please check this `User Guide &lt;https://scikit-learn.org/stable/modules/model_evaluation.html#classification-report&gt;`_</span>
-<span class="sd">    for more details on the classification metrics reported.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    train_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Training dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and training of the KNN probe.</span>
-
-<span class="sd">    test_dataloader: torch.utils.data.DataLoader</span>
-<span class="sd">        Test dataloader yielding batches in the form (X, y)</span>
-<span class="sd">        for further embedding and test of the KNN probe.</span>
-<span class="sd">                </span>
-<span class="sd">    probe_name: str or None, default=None</span>
-<span class="sd">        Name of the probe displayed when logging the results.</span>
-<span class="sd">        It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.</span>
-<span class="sd">        If None, only &lt;metric_name&gt; is displayed.</span>
-
-<span class="sd">    n_neighbors: tuple of int, default=(2, 5, 10)</span>
-<span class="sd">        Array of `n_neighbors` values to try in CV.</span>
-<span class="sd">        It corresponds to the number of neighbors to use by the KNN on</span>
-<span class="sd">        the training set.</span>
-
-<span class="sd">    cv: int or cross-validation generator, default=5</span>
-<span class="sd">        How many folds to use for cross-validating the `n_neighbors`</span>
-<span class="sd">        hyper-parameter.</span>
-
-<span class="sd">    n_jobs: int or None, default=None</span>
-<span class="sd">        Number of jobs to run in parallel.</span>
-<span class="sd">        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.</span>
-<span class="sd">        ``-1`` means using all processors.</span>
-
-<span class="sd">    scoring: str in {&quot;accuracy&quot;, &quot;balanced_accuracy&quot;, &quot;f1&quot;, ...}, \</span>
-<span class="sd">        default=&quot;balanced_accuracy&quot;</span>
-<span class="sd">        Which scoring function to use to cross-validate the `n_neighbors`</span>
-<span class="sd">        hyper-parameter.</span>
-<span class="sd">        For a complete list of scoring options, check</span>
-<span class="sd">        https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring</span>
-
-<span class="sd">    kwargs: dict</span>
-<span class="sd">        Additional keyword arguments to pass to the `ModelProbing` constructor</span>
-<span class="sd">        (e.g. `every_n_train_epochs`, `every_n_val_epochs`, `prog_bar`, ...).</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">train_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">test_dataloader</span><span class="p">:</span> <span class="n">DataLoader</span><span class="p">,</span>
-        <span class="n">probe_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-        <span class="n">cv</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">n_jobs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">scoring</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;balanced_accuracy&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">train_dataloader</span><span class="o">=</span><span class="n">train_dataloader</span><span class="p">,</span>
-            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">test_dataloader</span><span class="p">,</span>
-            <span class="n">probe_name</span><span class="o">=</span><span class="n">probe_name</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scoring</span> <span class="o">=</span> <span class="n">scoring</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
-            <span class="n">KNeighborsClassifier</span><span class="p">(),</span>
-            <span class="n">param_grid</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;n_neighbors&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">},</span>
-            <span class="n">scoring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scoring</span><span class="p">,</span>
-            <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span>
-            <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span>
-        <span class="p">)</span>
-
-<div class="viewcode-block" id="KNeighborsClassifierCVCallback.fit">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html#nidl.callbacks.KNeighborsClassifierCVCallback.fit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the k-nearest neighbors classifier from the training dataset and</span>
-<span class="sd">        log the classification metrics.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : {array-like, sparse matrix} of shape (n_samples, n_features) or \</span>
-<span class="sd">                (n_samples, n_samples) if metric=&#39;precomputed&#39;</span>
-<span class="sd">            Training data.</span>
-
-<span class="sd">        y : {array-like, sparse matrix} of shape (n_samples,) or \</span>
-<span class="sd">                (n_samples, n_outputs)</span>
-<span class="sd">            Target values.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="KNeighborsClassifierCVCallback.predict">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html#nidl.callbacks.KNeighborsClassifierCVCallback.predict">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="KNeighborsClassifierCVCallback.log_metrics">
-<a class="viewcode-back" href="../../../generated/nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html#nidl.callbacks.KNeighborsClassifierCVCallback.log_metrics">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
-        <span class="c1"># Compute classification metrics</span>
-        <span class="n">labels</span> <span class="o">=</span> <span class="n">unique_labels</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y_true</span><span class="p">)</span>
-        <span class="n">metrics_report</span> <span class="o">=</span> <span class="n">classification_report</span><span class="p">(</span>
-            <span class="n">y_true</span><span class="p">,</span>
-            <span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">output_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
-            <span class="n">target_names</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;class </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">))],</span>
-        <span class="p">)</span>
 
         <span class="c1"># Log the results</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metrics_report</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

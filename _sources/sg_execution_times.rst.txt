@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:22.106** total execution time for 8 files **from all galleries**:
+**00:22.690** total execution time for 9 files **from all galleries**:
 
 .. container::
 
@@ -33,20 +33,23 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_augmentation.py` (``../examples/surfify/plot_augmentation.py``)
-     - 00:10.163
-     - 99.4
+     - 00:10.430
+     - 87.5
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_unet_segmentation.py` (``../examples/surfify/plot_unet_segmentation.py``)
-     - 00:05.330
-     - 565.4
+     - 00:05.473
+     - 564.8
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_match_icosahedron.py` (``../examples/surfify/plot_match_icosahedron.py``)
-     - 00:02.576
-     - 67.1
+     - 00:02.700
+     - 66.8
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_spherical_neighbors.py` (``../examples/surfify/plot_spherical_neighbors.py``)
-     - 00:02.254
-     - 194.1
+     - 00:02.279
+     - 194.4
    * - :ref:`sphx_glr_auto_gallery_surfify_plot_project_texture.py` (``../examples/surfify/plot_project_texture.py``)
-     - 00:01.783
-     - 89.5
+     - 00:01.807
+     - 89.7
+   * - :ref:`sphx_glr_auto_gallery_model_probing.py` (``../examples/model_probing.py``)
+     - 00:00.000
+     - 0.0
    * - :ref:`sphx_glr_auto_gallery_openbhb.py` (``../examples/openbhb.py``)
      - 00:00.000
      - 0.0

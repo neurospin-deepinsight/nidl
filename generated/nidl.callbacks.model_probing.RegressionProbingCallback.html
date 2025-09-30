@@ -111,30 +111,6 @@
                                         
                                         
                                     
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
-                                        
-                                        
-                                        
-                                            
-                                            
-                                    
-                                
-                                    
-                                        
-                                        
-                                        
-                                    
                                 
                                     
                                         
@@ -145,11 +121,7 @@
                                 
                                     <li>SECTIONS</li>
                                     
-						                <li> <a href='#nidl.callbacks.model_probing.RidgeCVCallback.fit'>Ridgecvcallback.fit()</a> </li>                                    
-                                    
-						                <li> <a href='#nidl.callbacks.model_probing.RidgeCVCallback.log_metrics'>Ridgecvcallback.log_metrics()</a> </li>                                    
-                                    
-						                <li> <a href='#nidl.callbacks.model_probing.RidgeCVCallback.predict'>Ridgecvcallback.predict()</a> </li>                                    
+						                <li> <a href='#nidl.callbacks.model_probing.RegressionProbingCallback.log_metrics'>Regressionprobingcallback.log_metrics()</a> </li>                                    
                                     
                                 
                             
@@ -206,23 +178,22 @@
 <p>This page is a reference documentation. It only explains the class signature, and not how to use it. Please refer to the <a class="reference internal" href="../auto_gallery/index.html#sphx-glr-auto-gallery"><span class="std std-ref">gallery</span></a> for the big picture.</p>
 </div>
 <dl class="py class">
-<dt class="sig sig-object py" id="nidl.callbacks.model_probing.RidgeCVCallback">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.callbacks.model_probing.</span></span><span class="sig-name descname"><span class="pre">RidgeCVCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">1.0,</span> <span class="pre">10.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'r2'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#RidgeCVCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.RidgeCVCallback" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.callbacks.model_probing.RegressionProbingCallback">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.callbacks.model_probing.</span></span><span class="sig-name descname"><span class="pre">RegressionProbingCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_train_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_val_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#RegressionProbingCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.RegressionProbingCallback" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.callbacks.model_probing.ModelProbing.html#nidl.callbacks.model_probing.ModelProbing" title="nidl.callbacks.model_probing.ModelProbing"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelProbing</span></code></a></p>
-<p>Perform Ridge regression on top of an embedding model.</p>
+<p>Perform regression on top of an embedding model.</p>
 <p>Concretely this callback:</p>
 <ol class="arabic">
 <li><p>Embeds the input data through the estimator.</p></li>
-<li><p>Performs n-fold CV to find the best L2 regularization strength.</p></li>
-<li><p>Logs the main regression metrics by regressor and averaged,
-including:</p>
+<li><p>Fits the regression probe on the embedded data.</p></li>
+<li><p>Logs the main regression metrics including:</p>
 <ul class="simple">
 <li><p>mean absolute error</p></li>
 <li><p>median absolute error</p></li>
 <li><p>root mean squared error</p></li>
 <li><p>mean squared error</p></li>
 <li><p>R² score</p></li>
-<li><p>pearsonr</p></li>
+<li><p>Pearson’s r</p></li>
 <li><p>explained variance score</p></li>
 </ul>
 <p>If multiple regressors are given (multivariate regression),
@@ -233,60 +204,52 @@ metrics are computed per regressor and averaged.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>train_dataloader</strong> : torch.utils.data.DataLoader</p>
 <blockquote>
-<div><p>Training dataloader yielding batches in the form (X, y)
-for further embedding and training of the ridge probe.</p>
+<div><p>Training dataloader yielding batches in the form <cite>(X, y)</cite>
+for further embedding and training of the probe.</p>
 </div></blockquote>
 <p><strong>test_dataloader</strong> : torch.utils.data.DataLoader</p>
 <blockquote>
-<div><p>Test dataloader yielding batches in the form (X, y)
-for further embedding and test of the ridge probe.</p>
+<div><p>Test dataloader yielding batches in the form <cite>(X, y)</cite>
+for further embedding and test of the probe.</p>
+</div></blockquote>
+<p><strong>probe</strong> : sklearn.base.BaseEstimator</p>
+<blockquote>
+<div><p>The scikit-learn regressor to be trained on the embedding.</p>
 </div></blockquote>
 <p><strong>probe_name</strong> : str or None, default=None</p>
 <blockquote>
 <div><p>Name of the probe displayed when logging the results.
 It will appear as &lt;probe_name&gt;/&lt;metric_name&gt; for each metric.
-If None, only &lt;metric_name&gt; is displayed.</p>
+If None,  &lt;probe_class_name&gt;/&lt;metric_name&gt; is displayed.</p>
 </div></blockquote>
-<p><strong>alphas</strong> : tuple of floats, default=(0.1, 1.0, 10.0)</p>
+<p><strong>every_n_train_epochs</strong> : int or None, default=1</p>
 <blockquote>
-<div><p>Arrays of <cite>alpha</cite> values to try in CV. It corresponds to the
-regularization strength.</p>
+<div><p>Number of training epochs after which to run the probing.
+Disabled if None.</p>
 </div></blockquote>
-<p><strong>cv</strong> : int or cross-validation generator, default=5</p>
+<p><strong>every_n_val_epochs</strong> : int or None, default=None</p>
 <blockquote>
-<div><p>How many folds to use for cross-validating the <cite>alpha</cite>
-regularization strength in the <cite>Ridge</cite> regression.</p>
+<div><p>Number of validation epochs after which to run the probing.
+Disabled if None.</p>
 </div></blockquote>
-<p><strong>scoring</strong> : str in {“r2”, “neg_mean_absolute_error”,</p>
+<p><strong>on_test_epoch_start</strong> : bool, default=False</p>
 <blockquote>
-<div><p>“neg_mean_squared_error”, …}, default=”r2”
-Which scoring function to use to cross-validate the <cite>alpha</cite>
-hyper-parameter. For a complete list of scoring options, check
-<a class="reference external" href="https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring">https://scikit-learn.org/1.4/modules/model_evaluation.html#scoring</a></p>
+<div><p>Whether to run the probing at the start of the test epoch.</p>
 </div></blockquote>
-<p><strong>kwargs</strong> : dict</p>
+<p><strong>on_test_epoch_end</strong> : bool, default=False</p>
 <blockquote>
-<div><p>Additional keyword arguments to pass to the <cite>ModelProbing</cite> constructor
-(e.g. <cite>every_n_train_epochs</cite>, <cite>every_n_val_epochs</cite>, <cite>prog_bar</cite>, …).</p>
+<div><p>Whether to run the probing at the end of the test epoch.</p>
+</div></blockquote>
+<p><strong>prog_bar</strong> : bool, default=True</p>
+<blockquote>
+<div><p>Whether to display the metrics in the progress bar.</p>
 </div></blockquote>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.callbacks.model_probing.RidgeCVCallback.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#RidgeCVCallback.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.RidgeCVCallback.fit" title="Link to this definition">¶</a></dt>
-<dd><p>Fit the probe on the embeddings and labels of the training data.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nidl.callbacks.model_probing.RidgeCVCallback.log_metrics">
-<span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#RidgeCVCallback.log_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.RidgeCVCallback.log_metrics" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.callbacks.model_probing.RegressionProbingCallback.log_metrics">
+<span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#RegressionProbingCallback.log_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.RegressionProbingCallback.log_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Log the metrics given the predictions and the true labels.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nidl.callbacks.model_probing.RidgeCVCallback.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nidl/callbacks/model_probing.html#RidgeCVCallback.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.model_probing.RidgeCVCallback.predict" title="Link to this definition">¶</a></dt>
-<dd><p>Predict the probe on new data X.</p>
 </dd></dl>
 
 </dd></dl>

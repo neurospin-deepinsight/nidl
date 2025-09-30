@@ -226,9 +226,9 @@ following structure:</p>
 </pre></div>
 </div>
 <p>The reported average is computed as the arithmetic mean
-across all regressors. If only one regressor is available, only the
-‘regressor 0’ is returned as ‘average’ would result in the same
-results.</p>
+across all regressors. If only one regressor is available, the
+metrics are directly reported (without specifying ‘regressor 0’ or the
+‘average’).</p>
 </div></blockquote>
 </dd>
 </dl>
@@ -242,9 +242,14 @@ results.</p>
 </div>
 <p>regressor 0     1.80   2.00   2.21   4.90  -0.34  0.92  0.55
 regressor 1     1.05   1.10   1.27   1.61  -2.95  0.44 -0.25</p>
-<blockquote>
-<div><p>average     1.42   1.55   1.74   3.26  -1.64  0.68  0.15</p>
-</div></blockquote>
+<p>average         1.42   1.55   1.74   3.26  -1.64  0.68  0.15</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y_true</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">5.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_pred</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">regression_report</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<span class="go">                MAE   MedAE   RMSE    MSE     R2   PCC  EVar</span>
+<span class="go">regressor 0    1.80   2.00   2.21   4.90  -0.34  0.92  0.55</span>
+</pre></div>
+</div>
 </dd></dl>
 
 

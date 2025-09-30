@@ -17,16 +17,6 @@ Common losses.
     * `nidl.losses.KernelMetric <nidl.losses.yaware_infonce.KernelMetric.html>`_
     * `nidl.losses.YAwareInfoNCE <nidl.losses.yaware_infonce.YAwareInfoNCE.html>`_
 
-nidl.losses.infonce
-^^^^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.losses.infonce.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
-
 nidl.losses.yaware_infonce
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -38,4 +28,14 @@ nidl.losses.yaware_infonce
     * `nidl.losses.yaware_infonce.KernelMetric <nidl.losses.yaware_infonce.KernelMetric.html>`_
     * `nidl.losses.yaware_infonce.PairwiseCosineSimilarity <nidl.losses.yaware_infonce.PairwiseCosineSimilarity.html>`_
     * `nidl.losses.yaware_infonce.YAwareInfoNCE <nidl.losses.yaware_infonce.YAwareInfoNCE.html>`_
+
+nidl.losses.infonce
+^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.losses.infonce.InfoNCE <nidl.losses.infonce.InfoNCE.html>`_
 

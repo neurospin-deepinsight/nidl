@@ -8,7 +8,7 @@
 
 .. autofunction:: surfify.utils.sampling.get_rectangular_projection
 
-.. minigallery:: surfify.utils.sampling.get_rectangular_projection surfify.utils.get_rectangular_projection
+.. minigallery:: surfify.utils.get_rectangular_projection surfify.utils.sampling.get_rectangular_projection
     :add-heading: Examples
     :heading-level: -
 

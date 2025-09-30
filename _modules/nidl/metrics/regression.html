@@ -184,7 +184,7 @@
 <span class="sd">        Sample weights for weighted Pearson&#39;s correlation.</span>
 
 <span class="sd">    multioutput : {&#39;raw_values&#39;, &#39;uniform_average&#39;} or array-like of shape \</span>
-<span class="sd">(n_outputs,), optional</span>
+<span class="sd">        (n_outputs,), optional</span>
 <span class="sd">        Defines aggregating of multiple output scores.</span>
 
 <span class="sd">        - &#39;raw_values&#39;: Returns a full set of scores in case of multioutput</span>
@@ -342,9 +342,9 @@
 <span class="sd">            }</span>
 
 <span class="sd">        The reported average is computed as the arithmetic mean</span>
-<span class="sd">        across all regressors. If only one regressor is available, only the</span>
-<span class="sd">        &#39;regressor 0&#39; is returned as &#39;average&#39; would result in the same</span>
-<span class="sd">        results.</span>
+<span class="sd">        across all regressors. If only one regressor is available, the</span>
+<span class="sd">        metrics are directly reported (without specifying &#39;regressor 0&#39; or the</span>
+<span class="sd">        &#39;average&#39;).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -357,7 +357,13 @@
 <span class="sd">    regressor 0     1.80   2.00   2.21   4.90  -0.34  0.92  0.55</span>
 <span class="sd">    regressor 1     1.05   1.10   1.27   1.61  -2.95  0.44 -0.25</span>
 
-<span class="sd">        average     1.42   1.55   1.74   3.26  -1.64  0.68  0.15</span>
+<span class="sd">    average         1.42   1.55   1.74   3.26  -1.64  0.68  0.15</span>
+
+<span class="sd">    &gt;&gt;&gt; y_true = [0.1, 5.1, 2.0, 4.0]</span>
+<span class="sd">    &gt;&gt;&gt; y_pred = [0.0, 2.0, 1.0, 1.0]</span>
+<span class="sd">    &gt;&gt;&gt; print(regression_report(y_true, y_pred))</span>
+<span class="sd">                    MAE   MedAE   RMSE    MSE     R2   PCC  EVar</span>
+<span class="sd">    regressor 0    1.80   2.00   2.21   4.90  -0.34  0.92  0.55</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
@@ -423,6 +429,8 @@
             <span class="n">report_dict</span><span class="p">[</span><span class="n">last_line_heading</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
                 <span class="nb">zip</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">avg</span><span class="p">])</span>
             <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">n_regressors</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">report_dict</span><span class="p">[</span><span class="n">target_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">report_dict</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">n_regressors</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>

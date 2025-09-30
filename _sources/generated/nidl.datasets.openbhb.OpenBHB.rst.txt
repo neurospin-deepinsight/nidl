@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.datasets.openbhb.OpenBHB nidl.datasets.OpenBHB
+.. minigallery:: nidl.datasets.OpenBHB nidl.datasets.openbhb.OpenBHB
     :add-heading: Examples
     :heading-level: -
 

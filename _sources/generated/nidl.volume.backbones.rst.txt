@@ -25,24 +25,6 @@ Definition of common volumic architectures.
     * `nidl.volume.backbones.resnet50 <nidl.volume.backbones.resnet3d.resnet50.html>`_
     * `nidl.volume.backbones.resnet50_trunc <nidl.volume.backbones.resnet3d.resnet50_trunc.html>`_
 
-nidl.volume.backbones.densenet3d
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.volume.backbones.densenet3d.DenseNet <nidl.volume.backbones.densenet3d.DenseNet.html>`_
-    * `nidl.volume.backbones.densenet3d._DenseBlock <nidl.volume.backbones.densenet3d._DenseBlock.html>`_
-    * `nidl.volume.backbones.densenet3d._DenseLayer <nidl.volume.backbones.densenet3d._DenseLayer.html>`_
-    * `nidl.volume.backbones.densenet3d._Transition <nidl.volume.backbones.densenet3d._Transition.html>`_
-
-  **Functions**:
-    * `nidl.volume.backbones.densenet3d._bn_function_factory <nidl.volume.backbones.densenet3d._bn_function_factory.html>`_
-    * `nidl.volume.backbones.densenet3d._densenet <nidl.volume.backbones.densenet3d._densenet.html>`_
-    * `nidl.volume.backbones.densenet3d.densenet121 <nidl.volume.backbones.densenet3d.densenet121.html>`_
-
 nidl.volume.backbones.alexnet3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -75,4 +57,22 @@ nidl.volume.backbones.resnet3d
     * `nidl.volume.backbones.resnet3d.resnet18_trunc <nidl.volume.backbones.resnet3d.resnet18_trunc.html>`_
     * `nidl.volume.backbones.resnet3d.resnet50 <nidl.volume.backbones.resnet3d.resnet50.html>`_
     * `nidl.volume.backbones.resnet3d.resnet50_trunc <nidl.volume.backbones.resnet3d.resnet50_trunc.html>`_
+
+nidl.volume.backbones.densenet3d
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.volume.backbones.densenet3d.DenseNet <nidl.volume.backbones.densenet3d.DenseNet.html>`_
+    * `nidl.volume.backbones.densenet3d._DenseBlock <nidl.volume.backbones.densenet3d._DenseBlock.html>`_
+    * `nidl.volume.backbones.densenet3d._DenseLayer <nidl.volume.backbones.densenet3d._DenseLayer.html>`_
+    * `nidl.volume.backbones.densenet3d._Transition <nidl.volume.backbones.densenet3d._Transition.html>`_
+
+  **Functions**:
+    * `nidl.volume.backbones.densenet3d._bn_function_factory <nidl.volume.backbones.densenet3d._bn_function_factory.html>`_
+    * `nidl.volume.backbones.densenet3d._densenet <nidl.volume.backbones.densenet3d._densenet.html>`_
+    * `nidl.volume.backbones.densenet3d.densenet121 <nidl.volume.backbones.densenet3d.densenet121.html>`_
 

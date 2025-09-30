@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.estimators.ClassifierMixin nidl.estimators.base.ClassifierMixin
+.. minigallery:: nidl.estimators.base.ClassifierMixin nidl.estimators.ClassifierMixin
     :add-heading: Examples
     :heading-level: -
 

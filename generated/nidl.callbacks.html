@@ -135,6 +135,18 @@
                                         
                                         
                                     
+                                        
+                                        
+                                        
+                                            
+                                            
+                                    
+                                
+                                    
+                                        
+                                        
+                                        
+                                    
                                 
                                     
                                         
@@ -147,9 +159,11 @@
                                     
 						                <li> <a href='#nidl-callbacks'>Nidl.callbacks</a> </li>                                    
                                     
-						                <li> <a href='#nidl-callbacks-model-probing'>Nidl.callbacks.model_probing</a> </li>                                    
-                                    
 						                <li> <a href='#nidl-callbacks-check-typing'>Nidl.callbacks.check_typing</a> </li>                                    
+                                    
+						                <li> <a href='#nidl-callbacks-multitask-probing'>Nidl.callbacks.multitask_probing</a> </li>                                    
+                                    
+						                <li> <a href='#nidl-callbacks-model-probing'>Nidl.callbacks.model_probing</a> </li>                                    
                                     
                                 
                             
@@ -209,24 +223,11 @@
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
 <li><p><a class="reference external" href="nidl.callbacks.check_typing.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html">nidl.callbacks.KNeighborsClassifierCVCallback</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html">nidl.callbacks.KNeighborsRegressorCVCallback</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.LogisticRegressionCVCallback.html">nidl.callbacks.LogisticRegressionCVCallback</a></p></li>
+<li><p><a class="reference external" href="nidl.callbacks.model_probing.ClassificationProbingCallback.html">nidl.callbacks.ClassificationProbingCallback</a></p></li>
 <li><p><a class="reference external" href="nidl.callbacks.model_probing.ModelProbing.html">nidl.callbacks.ModelProbing</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.RidgeCVCallback.html">nidl.callbacks.RidgeCVCallback</a></p></li>
-</ul>
-</dd>
-</dl>
-</section>
-<section id="nidl-callbacks-model-probing">
-<h2 style='border-bottom: 1px solid #d3dbd5'>nidl.callbacks.model_probing<a class="headerlink" href="#nidl-callbacks-model-probing" title="Link to this heading">¶</a></h2>
-<dl class="simple documentation-contents">
-<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.KNeighborsClassifierCVCallback.html">nidl.callbacks.model_probing.KNeighborsClassifierCVCallback</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.KNeighborsRegressorCVCallback.html">nidl.callbacks.model_probing.KNeighborsRegressorCVCallback</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.LogisticRegressionCVCallback.html">nidl.callbacks.model_probing.LogisticRegressionCVCallback</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.ModelProbing.html">nidl.callbacks.model_probing.ModelProbing</a></p></li>
-<li><p><a class="reference external" href="nidl.callbacks.model_probing.RidgeCVCallback.html">nidl.callbacks.model_probing.RidgeCVCallback</a></p></li>
+<li><p><a class="reference external" href="nidl.callbacks.multitask_probing.MultiTaskEstimator.html">nidl.callbacks.MultiTaskEstimator</a></p></li>
+<li><p><a class="reference external" href="nidl.callbacks.multitask_probing.MultitaskModelProbing.html">nidl.callbacks.MultitaskModelProbing</a></p></li>
+<li><p><a class="reference external" href="nidl.callbacks.model_probing.RegressionProbingCallback.html">nidl.callbacks.RegressionProbingCallback</a></p></li>
 </ul>
 </dd>
 </dl>
@@ -236,6 +237,27 @@
 <dl class="simple documentation-contents">
 <dt><strong>Classes</strong>:</dt><dd><ul class="simple">
 <li><p><a class="reference external" href="nidl.callbacks.check_typing.BatchTypingCallback.html">nidl.callbacks.check_typing.BatchTypingCallback</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="nidl-callbacks-multitask-probing">
+<h2 style='border-bottom: 1px solid #d3dbd5'>nidl.callbacks.multitask_probing<a class="headerlink" href="#nidl-callbacks-multitask-probing" title="Link to this heading">¶</a></h2>
+<dl class="simple documentation-contents">
+<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="nidl.callbacks.multitask_probing.MultiTaskEstimator.html">nidl.callbacks.multitask_probing.MultiTaskEstimator</a></p></li>
+<li><p><a class="reference external" href="nidl.callbacks.multitask_probing.MultitaskModelProbing.html">nidl.callbacks.multitask_probing.MultitaskModelProbing</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="nidl-callbacks-model-probing">
+<h2 style='border-bottom: 1px solid #d3dbd5'>nidl.callbacks.model_probing<a class="headerlink" href="#nidl-callbacks-model-probing" title="Link to this heading">¶</a></h2>
+<dl class="simple documentation-contents">
+<dt><strong>Classes</strong>:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="nidl.callbacks.model_probing.ClassificationProbingCallback.html">nidl.callbacks.model_probing.ClassificationProbingCallback</a></p></li>
+<li><p><a class="reference external" href="nidl.callbacks.model_probing.ModelProbing.html">nidl.callbacks.model_probing.ModelProbing</a></p></li>
+<li><p><a class="reference external" href="nidl.callbacks.model_probing.RegressionProbingCallback.html">nidl.callbacks.model_probing.RegressionProbingCallback</a></p></li>
 </ul>
 </dd>
 </dl>

@@ -10,6 +10,18 @@ nidl
 
 Deep learning for NeuroImaging in Python.
 
+nidl.transforms
+^^^^^^^^^^^^^^^
+
+
+
+.. rst-class:: documentation-contents
+
+  **Classes**:
+    * `nidl.transforms.Identity <nidl.transforms.Identity.html>`_
+    * `nidl.transforms.MultiViewsTransform <nidl.transforms.MultiViewsTransform.html>`_
+    * `nidl.transforms.Transform <nidl.transforms.Transform.html>`_
+
 nidl.experiment
 ^^^^^^^^^^^^^^^
 
@@ -23,16 +35,4 @@ nidl.experiment
     * `nidl.experiment.get_env <nidl.experiment.get_env.html>`_
     * `nidl.experiment.load_interface <nidl.experiment.load_interface.html>`_
     * `nidl.experiment.update_params <nidl.experiment.update_params.html>`_
-
-nidl.transforms
-^^^^^^^^^^^^^^^
-
-
-
-.. rst-class:: documentation-contents
-
-  **Classes**:
-    * `nidl.transforms.Identity <nidl.transforms.Identity.html>`_
-    * `nidl.transforms.MultiViewsTransform <nidl.transforms.MultiViewsTransform.html>`_
-    * `nidl.transforms.Transform <nidl.transforms.Transform.html>`_
 

@@ -10,7 +10,7 @@
      :members:
      :show-inheritance:
 
-.. minigallery:: nidl.volume.transforms.preprocessing.spatial.Resample nidl.volume.transforms.preprocessing.spatial.resample.Resample
+.. minigallery:: nidl.volume.transforms.preprocessing.spatial.resample.Resample nidl.volume.transforms.preprocessing.spatial.Resample
     :add-heading: Examples
     :heading-level: -
 
