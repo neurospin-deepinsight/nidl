@@ -61,7 +61,7 @@ class RobustRescaling(VolumeTransform):
         Keyword arguments given to :class:`nidl.transforms.Transform`.
 
     Notes
-    ----------
+    -----
     If the input volume has constant values, the normalized output is set to
     its minimum value by convention.
 

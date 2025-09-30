@@ -51,7 +51,7 @@ Featured works
 .. grid::
 
   .. grid-item-card::
-    :link: auto_examples/simclr_stl10.html
+    :link: auto_examples/plot_openbhb.html
     :link-type: url
     :columns: 12 12 12 12
     :class-card: sd-shadow-sm
@@ -101,14 +101,16 @@ Featured works
 
         .. div:: sd-font-weight-bold
 
-          Computing a connectome with sparse inverse covariance
+          SimCLR
 
-        C Ambroise et al.: Multi-modal Latent Variable Model could help
-        individuals stratification - application to HBN cohort, OHBM 2021.
+        T Chen et al.: `A Simple Framework for Contrastive Learning of Visual 
+        Representations
+        <https://proceedings.mlr.press/v119/chen20j/chen20j.pdf>`_, 
+        ICML 2020.
 
 
   .. grid-item-card::
-    :link: auto_examples/simclr_stl10.html
+    :link: auto_examples/plot_yaware_openbhb.html
     :link-type: url
     :columns: 12 12 12 12
     :class-card: sd-shadow-sm

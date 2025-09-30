@@ -309,10 +309,10 @@ sbm_model.fit(
 # %%
 # We first extract the embeddings of the training and test sets for both VBM
 # and SBM data.
-Z_train_vbm = vbm_model.transform(dataloader_vbm_train)
-Z_test_vbm = vbm_model.transform(dataloader_vbm_test)
-Z_train_sbm = sbm_model.transform(dataloader_sbm_train)
-Z_test_sbm = sbm_model.transform(dataloader_sbm_test)
+Z_train_vbm = vbm_model.transform(dataloader_vbm_train).cpu()
+Z_test_vbm = vbm_model.transform(dataloader_vbm_test).cpu()
+Z_train_sbm = sbm_model.transform(dataloader_sbm_train).cpu()
+Z_test_sbm = sbm_model.transform(dataloader_sbm_test).cpu()
 
 # %%
 # We also extract the ages of the subjects for coloring the points in the

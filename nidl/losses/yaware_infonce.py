@@ -66,7 +66,7 @@ class KernelMetric(BaseEstimator):
           `(n_features, n_features)`
     
     Notes
-    ----------
+    -----
     Scott's Rule [1]_ estimates the bandwidth as:
 
     .. math::
@@ -132,7 +132,7 @@ class KernelMetric(BaseEstimator):
             matrix).
 
         Returns
-        ----------
+        -------
         self: KernelMetric
         """
         X = check_array(self.atleast_2d(X))
@@ -241,7 +241,7 @@ class KernelMetric(BaseEstimator):
         """Compute Scott's factor.
 
         Returns
-        ----------
+        -------
         s: float
             Scott's factor.
         """
@@ -252,7 +252,7 @@ class KernelMetric(BaseEstimator):
         """Compute the Silverman factor.
 
         Returns
-        ----------
+        -------
         s : float
             The silverman factor.
         """
@@ -419,7 +419,7 @@ class YAwareInfoNCE(nn.Module):
             If None, the standard InfoNCE loss is returned.
 
         Returns
-        ----------
+        -------
         loss: torch.Tensor
             The y-Aware InfoNCE loss computed between `z1` and `z2`.
         """

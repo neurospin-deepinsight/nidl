@@ -235,7 +235,7 @@ class BaseEstimator(pl.LightningModule):
             returns transformed samples.
 
         Notes
-        ----------
+        -----
         Since we expect a tensor as output of the model, it is gathered across
         GPUs in the multi-gpu distributed case and the output is stored on the
         relevant device defined by the trainer's strategy (cpu or gpu).

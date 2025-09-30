@@ -10,8 +10,8 @@ from typing import Union
 
 import numpy as np
 
-from ...preprocessing.spatial.resize import Resize
 from .....transforms import TypeTransformInput, VolumeTransform
+from ...preprocessing.spatial.resize import Resize
 
 
 class RandomResizedCrop(VolumeTransform):

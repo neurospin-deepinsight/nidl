@@ -48,7 +48,7 @@ class ZNormalization(VolumeTransform):
         Keyword arguments given to :class:`nidl.transforms.Transform`.
 
     Notes
-    ----------
+    -----
     If the input volume has constant values, the output will have almost
     constant non-deterministic values.
 

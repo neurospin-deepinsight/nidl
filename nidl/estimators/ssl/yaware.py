@@ -146,6 +146,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
            meta-data for 3D MRI classification." MICCAI, 2021.
            https://arxiv.org/abs/2106.08808
     """
+
     def __init__(
         self,
         encoder: Union[nn.Module, type[nn.Module]],
@@ -221,7 +222,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             The index of the dataloader (ignored).
 
         Returns
-        ----------
+        -------
         loss: Tensor
             Training loss computed on this batch of data.
         """
@@ -308,7 +309,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             The index of the dataloader (ignored).
 
         Returns
-        ----------
+        -------
         features: torch.Tensor
             The encoded features returned by the encoder.
 
@@ -331,7 +332,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             - ((V1, V2), y): two views and an auxiliary label or variable.
 
         Returns
-        ----------
+        -------
         V1 : torch.Tensor
             First view of the input.
         V2 : torch.Tensor
@@ -363,6 +364,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         return V1, V2, y
 
     def configure_optimizers(self):
+        """Instantiate the required optimizer and setup the scheduler."""
         known_optimizers = {
             "adam": torch.optim.Adam,
             "adamW": torch.optim.AdamW,
@@ -435,7 +437,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             Additional keyword arguments for `self.all_gather`.
 
         Returns
-        ----------
+        -------
         tensor: torch.Tensor
             The gathered and flattened tensor.
         """
@@ -519,7 +521,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             The method used to calculate the bandwidth in kernel.
 
         Returns
-        ----------
+        -------
         loss: nn.Module
             The y-Aware InfoNCE loss function.
         """

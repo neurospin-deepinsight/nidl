@@ -20,7 +20,7 @@ shared across projects.
 
 Lightning provides a large set of callbacks described
 `here <https://lightning.ai/docs/pytorch/stable/extensions/callbacks.html>`_.
-We propose in nidl original monitoring callbacks as weell as
+We propose in nidl original monitoring callbacks as well as
 neuroimaging focused callbacks.
 
 
@@ -55,8 +55,7 @@ Classes for all neuroimaging callbacks.
    :template: class.rst
 
     BatchTypingCallback
-    KNeighborsClassifierCVCallback
-    KNeighborsRegressorCVCallback
-    LogisticRegressionCVCallback
+    ClassificationProbingCallback
+    RegressionProbingCallback
+    MultitaskModelProbing
     ModelProbing
-    RidgeCVCallback
