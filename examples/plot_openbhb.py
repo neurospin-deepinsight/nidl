@@ -193,7 +193,7 @@ plotting.plot_stat_map(
 def map_freesurfer_destrieux_data(roi_values, labels, hemi="left"):
     # Load Destrieux atlas
     fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    fs_labels = [label.decode("utf-8") for label in fsaverage["labels"]]
+    fs_labels = list(fsaverage["labels"])
     map_hemi = fsaverage[f"map_{hemi}"]
 
     # Map ROI values to vertex-wise data using the labels
