@@ -6,8 +6,10 @@
 # for details.
 ##########################################################################
 
-"""Common losses."""
+""" Common losses.
+"""
 
 from .barlowtwins import BarlowTwins
+from .beta_vae import BetaVAELoss
 from .infonce import InfoNCE
 from .yaware_infonce import KernelMetric, YAwareInfoNCE

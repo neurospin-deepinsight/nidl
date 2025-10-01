@@ -6,12 +6,7 @@
 # for details.
 ##########################################################################
 
-"""Common callbacks."""
+""" AutoEncoder estimators.
+"""
 
-from .check_typing import BatchTypingCallback
-from .model_probing import (
-    ClassificationProbingCallback,
-    ModelProbing,
-    RegressionProbingCallback,
-)
-from .multitask_probing import MultiTaskEstimator, MultitaskModelProbing
+from .vae import VAE
