@@ -187,7 +187,7 @@ linkcheck_ignore = [
     # give a 403 Client Error: Forbidden for url:
     r"https://sites.wustl.edu/oasisbrains/.*",
     # similarly below are publishers that do not like doi redirects:
-    r"https://doi.org/.*"
+    r"https://doi.org/.*",
 ]
 
 linkcheck_exclude_documents = [r".*/sg_execution_times.rst"]
@@ -288,7 +288,7 @@ html_favicon = "logos/favicon.ico"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["images", "themes"]
+html_static_path = ["images", "themes", "_static"]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -426,6 +426,8 @@ def setup(app):
 # -- sphinxext.opengraph configuration -------------------------------------
 
 ogp_site_url = "https://neurospin-deepinsight.github.io/nidl"
-ogp_image = "https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png"
+ogp_image = (
+    "https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png"
+)
 ogp_use_first_image = True
 ogp_site_name = "Nidl"
