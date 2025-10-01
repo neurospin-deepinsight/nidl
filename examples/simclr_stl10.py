@@ -22,21 +22,21 @@ importing our standard libraries below:
 """
 
 import os
+from collections import OrderedDict
+from copy import deepcopy
+
 import matplotlib.pyplot as plt
-import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.utils.data as data
 import torchvision
-
-from collections import OrderedDict
-from copy import deepcopy
-from nidl.utils import Weights
-from nidl.estimators.ssl import SimCLR
-from nidl.estimators.linear import LogisticRegression
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from torchvision import transforms
 from torchvision.datasets import STL10
+
+from nidl.estimators.linear import LogisticRegression
+from nidl.estimators.ssl import SimCLR
+from nidl.utils import Weights
 
 # %%
 # Let's define some global parameters:
