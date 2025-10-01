@@ -1,3 +1,12 @@
+---
+# Workflow to check code format.
+#
+# To run this check locally from the repository folder:
+#
+# .. code-block:: bash
+#
+#   $ ruff check nidl
+###
 name: "RUFF"
 
 on:
@@ -7,6 +16,7 @@ on:
   pull_request:
     branches:
       - "*"
+  workflow_dispatch:
 
 jobs:
   ruff:

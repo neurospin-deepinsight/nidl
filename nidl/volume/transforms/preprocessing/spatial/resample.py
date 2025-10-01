@@ -16,7 +16,7 @@ import torch
 from nibabel.orientations import aff2axcodes
 from sklearn.utils.validation import check_array
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class Resample(VolumeTransform):

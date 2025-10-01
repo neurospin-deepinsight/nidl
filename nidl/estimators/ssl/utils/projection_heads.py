@@ -43,9 +43,7 @@ class ProjectionHead(nn.Module):
     >>>     (256, 256, nn.BatchNorm1d(256), nn.ReLU()),
     >>>     (256, 128, None, None)
     >>> ])
-
     """
-
     def __init__(
         self,
         blocks: list[
@@ -84,7 +82,7 @@ class SimCLRProjectionHead(ProjectionHead):
     References
     ----------
     .. [1] Chen, T., et al. "A Simple Framework for Contrastive Learning of
-        Visual Representations." ICML, 2020. https://arxiv.org/abs/2002.05709
+           Visual Representations." ICML, 2020. https://arxiv.org/abs/2002.05709
     """
 
     def __init__(
@@ -121,9 +119,7 @@ class YAwareProjectionHead(ProjectionHead):
     .. [2] Chen, T., et al. "A Simple Framework for Contrastive Learning of
            Visual Representations." ICML, 2020. https://arxiv.org/abs/2002.05709
 
-
     """
-
     def __init__(
         self,
         input_dim: int = 2048,

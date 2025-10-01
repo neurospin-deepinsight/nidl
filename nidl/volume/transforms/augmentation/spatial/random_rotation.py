@@ -13,7 +13,7 @@ import numpy as np
 import torch
 from nibabel.orientations import aff2axcodes
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomRotation(VolumeTransform):
@@ -28,12 +28,10 @@ class RandomRotation(VolumeTransform):
         "IS" (Inferior-Posterior). In that case, RAS-formated affine matrix is
         required when the transformation is called. If a tuple of pairs is
         given, multiple rotations are eventually applied around each plane.
-
     rotation_probability : float, default=1.0
         Probability to apply rotation for each axis pair.
-
     kwargs : dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments.
     
     Examples
     --------

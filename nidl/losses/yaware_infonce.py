@@ -45,13 +45,11 @@ class KernelMetric(BaseEstimator):
     .. math::
         H \\propto \\mathrm{diag}(\\hat{\\Sigma})
 
-
     Parameters
     ----------
     kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'},\
         default='gaussian'
         The kernel applied to the distance between samples.
-
     bandwidth: {'scott', 'silverman'} or float or list of float,\
         default="scott"
         The method used to calculate the estimator bandwidth:
@@ -68,7 +66,7 @@ class KernelMetric(BaseEstimator):
           `(n_features, n_features)`
     
     Notes
-    ----------
+    -----
     Scott's Rule [1]_ estimates the bandwidth as:
 
     .. math::
@@ -134,7 +132,7 @@ class KernelMetric(BaseEstimator):
             matrix).
 
         Returns
-        ----------
+        -------
         self: KernelMetric
         """
         X = check_array(self.atleast_2d(X))
@@ -243,8 +241,8 @@ class KernelMetric(BaseEstimator):
         """Compute Scott's factor.
 
         Returns
-        ----------
-        s : float
+        -------
+        s: float
             Scott's factor.
         """
         check_is_fitted(self, attributes=["n_", "d_"])
@@ -254,7 +252,7 @@ class KernelMetric(BaseEstimator):
         """Compute the Silverman factor.
 
         Returns
-        ----------
+        -------
         s : float
             The silverman factor.
         """
@@ -269,7 +267,7 @@ class KernelMetric(BaseEstimator):
             Input data.
 
         Returns
-        ----------
+        -------
         S: array of shape (n_samples, n_samples)
             Similarity matrix between input data.
         """
@@ -355,7 +353,6 @@ class YAwareInfoNCE(nn.Module):
         'cosine'}, default='gaussian'
         Kernel to compute the weighting matrix between auxiliary variables.
         See PhD thesis, Dufumier 2022 page 94-95.
-
     bandwidth: Union[float, int, List[float], array, KernelMetric], default=1.0
         The method used to calculate the bandwidth (:math:`\\sigma^2` in [1]_)
         between auxiliary variables:
@@ -370,7 +367,6 @@ class YAwareInfoNCE(nn.Module):
           features in `y`.
         - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`
           method to compute the similarity matrix between auxiliary variables.
-
     temperature: float, default=0.1
         Temperature used to scale the dot-product between embedded vectors
 
@@ -416,16 +412,14 @@ class YAwareInfoNCE(nn.Module):
         ----------
         z1: torch.Tensor of shape (batch_size, n_features)
             First embedded view.
-
         z2: torch.Tensor of shape (batch_size, n_features)
             Second embedded view.
-
         labels: Optional[torch.Tensor] of shape (batch_size, n_labels)
             Auxiliary variables associated to the input data.
             If None, the standard InfoNCE loss is returned.
 
         Returns
-        ----------
+        -------
         loss: torch.Tensor
             The y-Aware InfoNCE loss computed between `z1` and `z2`.
         """

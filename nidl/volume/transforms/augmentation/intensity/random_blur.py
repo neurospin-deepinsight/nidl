@@ -13,13 +13,13 @@ import numpy as np
 import torch
 from scipy.ndimage import gaussian_filter
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomGaussianBlur(VolumeTransform):
     """Blur a 3d volume using a Gaussian filter with random kernel size.
 
-    It handles a :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles a `np.ndarray` or `torch.Tensor` as input and
     returns a consistent output (same type and shape). Input shape must be
     :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
 
@@ -34,9 +34,8 @@ class RandomGaussianBlur(VolumeTransform):
         If six values :math:`(a_1, b_1, a_2, b_2, a_3, b_3)` are provided, then
         one standard deviation per spatial dimension is sampled
         :math:`\\sigma_i \\sim \\mathcal{U}(a_i, b_i)` for :math:`i=1,2,3`.
-
     kwargs: dict
-           Keyword arguments given to base :class:`nidl.transforms.Transform`.
+           Keyword arguments.
     """
 
     def __init__(
@@ -64,7 +63,7 @@ class RandomGaussianBlur(VolumeTransform):
             channels.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Blurred volume. Output type and shape are the same as input.
 
@@ -135,7 +134,7 @@ class RandomGaussianBlur(VolumeTransform):
             Name to display when raising errors.
 
         Returns
-        ----------
+        -------
         interval: tuple of float
             The checked interval(s) as tuple of float.
 

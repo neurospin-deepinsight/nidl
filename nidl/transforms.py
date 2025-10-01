@@ -6,6 +6,11 @@
 # for details.
 ##########################################################################
 
+
+""" This modules details the public API you should use and implement for a
+nidl compatible transform, as well as the transforms available in nidl.
+"""
+
 import numbers
 import random
 from abc import ABC, abstractmethod
@@ -28,14 +33,14 @@ class Transform(ABC):
        its dimension. The output should be formatted with verified shape
        and type.
 
-    2) (optional) calling to :meth:`random.random` to know whether the
+    2) (optional) calling to :func:`random.random` to know whether the
        transformation is applied or not (depending on a probability :math:`p`).
 
     3) calling to :meth:`apply_transform` for applying the transformation on
        the formatted data. This abstract method should be implemented in every
        subclass to specify the actual transformation.
 
-    Transformations in nidl are compliant with :mod:`torchvision.transforms`
+    Transformations in nidl are compliant with `torchvision.transforms`
     module and it can be used in conjonction.
 
     Spatial augmentation currently implemented (change geometry):
@@ -67,7 +72,6 @@ class Transform(ABC):
         Probability to apply the transformation.
         If float, it should be between 0 and 1 (included).
         If None (default), the transformation is always applied.
-
     """
 
     def __init__(self, p: Union[float, None] = None):
@@ -81,15 +85,13 @@ class Transform(ABC):
         data: TypeTransformInput
             Input data (usually :class:`numpy.ndarray` or :class:`torch.Tensor`
             to be transformed.
-
         *args: Any
             Additional positional arguments given to :meth:`apply_transform`.
-
         **kwargs: dict
             Additional keyword arguments given to :meth:`apply_transform`.
 
         Returns
-        ----------
+        -------
         data_transformed: Any
             Transformed data.
         """
@@ -108,18 +110,18 @@ class Transform(ABC):
 
         Input data must be a :class:`numpy.ndarray` or :class:`torch.Tensor`.
 
-         Parameters
-         ----------
-         data: TypeTransformInput
-             Input data to be transformed.
+        Parameters
+        ----------
+        data: TypeTransformInput
+            Input data to be transformed.
 
-         Returns
-         ----------
-         data: Any
-             The formatted data.
+        Returns
+        -------
+        data: Any
+            The formatted data.
 
         Raises
-        ----------
+        ------
         ValueError
             If the input data is not :class:`numpy.ndarray` or
             :class:`torch.Tensor`
@@ -141,15 +143,13 @@ class Transform(ABC):
         ----------
         data_parsed: Any
             Input data with type and shape already checked.
-
         *args: Any
             Additional positional arguments.
-
         **kwargs: dict
             Additional keyword arguments.
 
         Returns
-        ----------
+        -------
         data: Any
             The transformed data.
         """
@@ -200,17 +200,15 @@ class Transform(ABC):
         ----------
         interval: (float, float)
             The interval to check.
-
         check_min: float or None, default=None
             If float, check that lower bound of `interval` is superior to
             this (inclusive).
-
         check_max: float or None, default=None
             If float, check that upper bound of `interval` is inferior to
             this (inclusive).
 
         Returns
-        ----------
+        -------
         interval: (float, float)
             The checked interval as tuple of float.
 
@@ -261,17 +259,16 @@ class Transform(ABC):
         ----------
         shape: int or tuple of int
             The shape to check.
-
         length: int or None, default=None
             The length of shape (optional).
 
         Returns
-        ----------
+        -------
         shape: tuple of int
             The checked shape as tuple of int.
 
         Raises
-        ----------
+        ------
         ValueError
             If shape has incorrect format.
         """
@@ -313,12 +310,11 @@ class Identity(Transform):
         ----------
         data_parsed: Any
             Input data with type checked.
-
         kwargs: dict
             Additional keyword arguments. Ignored.
 
         Returns
-        ----------
+        -------
         data: Any
             Same as input.
         """
@@ -339,24 +335,22 @@ class MultiViewsTransform(Transform):
         same input using the same transformation applied `n_views` times.
         If a sequence is given, it applies this sequence of transforms to
         the input in the same order.
-
     n_views: int or None, default=None
         Number of views to generate if `transforms` is a Transform.
         If n_views != 1 and `transforms` is a sequence, a ValueError
         is raised.
         If None, it is set to 1 if  `transforms` is a Transform and ignored
         otherwise.
-
     kwargs: dict
         Additional keyword arguments given to Transform.
 
     Returns
-    ----------
+    -------
     data: list of array or torch.Tensor
         List of transformed data.
 
     Notes
-    ----------
+    -----
     The data are not parsed by this transformation. It should be handled
     elsewhere.
     """
@@ -414,3 +408,36 @@ class MultiViewsTransform(Transform):
 
     def apply_transform(self, x: Any, **kwargs) -> list[TypeTransformInput]:
         return [transform(x, **kwargs) for transform in self.transforms]
+
+
+class VolumeTransform(Transform):
+    """Transformation applied to a 3d volume."""
+
+    def parse_data(self, data: TypeTransformInput) -> TypeTransformInput:
+        """Checks if the input data shape is 3d or 4d.
+
+        Parameters
+        ----------
+        data: np.ndarray or torch.Tensor
+            The input data with shape :math:`(C, H, W, D)` or
+            :math:`(H, W, D)`
+
+        Returns
+        -------
+        np.ndarray or torch.Tensor
+            Data with type and shape checked.
+
+        Raises
+        ------
+        ValueError
+            If the input data is not :class:`numpy.ndarray` or
+            :class:`torch.Tensor` or if the shape is not 3d or 4d.
+        """
+        data = super().parse_data(data)
+
+        if len(data.shape) not in [3, 4]:
+            raise ValueError(
+                "Input data must be 3d or 4d (channel+spatial dimensions), "
+                f"got {len(data.shape)}"
+            )
+        return data

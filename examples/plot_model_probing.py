@@ -204,14 +204,14 @@ plt.show()
 #
 # We can now create the probing callback that will train a logistic regression
 # classifier on the learned representation during SimCLR training. The probing
-# is performed every epoch on the training and test sets. The classification
+# is performed every 2 epochs on the training and test sets. The classification
 # metrics are logged to TensorBoard by default.
 
 callback = ClassificationProbingCallback(
     train_xy_loader,
     test_xy_loader,
     probe=LogisticRegression(max_iter=200),
-    every_n_train_epochs=1,
+    every_n_train_epochs=2,
 )
 
 
@@ -326,7 +326,7 @@ plt.show()
 
 # %%
 # Probing of y-Aware representation on age and sex prediction
-# --------------------------------------------------------------
+# -----------------------------------------------------------
 #
 # We have previously seen a simple case where only one classification task is
 # being monitored during training. We can also monitor a mixed of classification
@@ -347,7 +347,7 @@ latent_size = 32
 
 # %%
 # OpenBHB dataset and data augmentations
-# -----------------------------------------
+# --------------------------------------
 #
 # We consider the gray matter and CSF volumes on some **regions of
 # interests** in the Neuromorphometrics atlas across subjects in

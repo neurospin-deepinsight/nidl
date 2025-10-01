@@ -101,7 +101,7 @@ class OpenBHB(Dataset):
 
 
     Examples
-    ----------
+    --------
     Load the VBM modality from the training split and get the age target:
 
     >>> dataset = OpenBHB(
@@ -132,7 +132,7 @@ class OpenBHB(Dataset):
 
 
     Notes
-    ----------
+    -----
     The data are downloaded exclusively from the `OpenBHB repository
     <https://huggingface.co/datasets/benoit-dufumier/openBHB>`_ in the
     HuggingFace either on-the-fly (lazy download) or during initialization
@@ -323,7 +323,7 @@ class OpenBHB(Dataset):
             Which participants to include in the dataset.
 
         Returns
-        ----------
+        -------
         samples: list of tuple
             List of samples in the form ({id: path}, target), where:
 
@@ -334,7 +334,7 @@ class OpenBHB(Dataset):
               (e.g., age, sex, site), or None if `target` is not set.
 
         Notes
-        ----------
+        -----
         Expects the following file under the root directory:
         `<root>/participants.tsv`. If not present, it is downloaded
         automatically from the Hugging Face.
@@ -428,16 +428,16 @@ class OpenBHB(Dataset):
         image, along with the associated region names (abbreviations).
 
         Returns
-        ----------
+        -------
         dict
             A dictionary containing:
 
-            - `data` : :class:`nibabel.Nifti1Image`, the atlas image.
+            - `data` : :class:`nibabel.nifti1.Nifti1Image`, the atlas image.
             - `labels` : list of region names (string) corresponding to
               integer labels in the atlas.
 
         Notes
-        ----------
+        -----
         Expects the following files under the resource directory:
 
         - `<root>/resource/neuromorphometrics.nii` : NIfTI atlas file
@@ -447,8 +447,8 @@ class OpenBHB(Dataset):
         Hugging Face.
 
         See Also
-        ----------
-        nibabel.load : Function used to load the NIfTI image.
+        --------
+        :func:`nibabel.nifti1.load`: Function used to load the NIfTI image.
         """
         niipath = self.get_or_download_file(
             os.path.join(self.root, "resource", "neuromorphometrics.nii")
@@ -467,19 +467,19 @@ class OpenBHB(Dataset):
         (TPM) registered to MNI152 space.
 
         Returns
-        ----------
+        -------
         nii : nibabel.Nifti1Image, shape (121, 145, 121)
             A 3D NIfTI image containing the CAT12 gray matter TPM.
 
         Notes
-        ----------
+        -----
         The template file is expected at:
         `<root>/resource/cat12vbm_space-MNI152_desc-gm_TPM.nii.gz`. If the file
         is not available locally, it will be downloaded from the Hugging Face.
 
         See Also
-        ----------
-        nibabel.load : Function used to load the NIfTI image.
+        --------
+        :func:`nibabel.nifti1.load`: Function used to load the NIfTI image.
         """
         nii = nibabel.load(
             self.get_or_download_file(
@@ -499,20 +499,20 @@ class OpenBHB(Dataset):
         MNI152 space.
 
         Returns
-        ----------
-        nii : nibabel.Nifti1Image, shape (182, 218, 182)
+        -------
+        nii: nibabel.Nifti1Image, shape (182, 218, 182)
             A 3D NIfTI image containing the quasi-raw MNI152 brain template.
 
         Notes
-        ----------
+        -----
         The template file is expected at:
         `<root>/resource/quasiraw_space-MNI152_desc-brain_T1w.nii.gz`. If the
         file is not present locally, it is automatically downloaded from the
         Hugging Face.
 
         See Also
-        ----------
-        nibabel.load : Function used to load the NIfTI image.
+        --------
+        :func:`nibabel.nifti1.load`: Function used to load the NIfTI image.
         """
         nii = nibabel.load(
             self.get_or_download_file(
@@ -543,12 +543,12 @@ class OpenBHB(Dataset):
             left hemisphere. Final length is divided by two.
 
         Returns
-        ----------
+        -------
         labels: list of string
             List of region names on the given atlas.
 
         Notes
-        ----------
+        -----
         The resource file is expected at: `<root>/resource/resources.json`. If
         it is not present locally, it is automatically downloaded from the
         Hugging Face.
@@ -576,13 +576,13 @@ class OpenBHB(Dataset):
         First 142 features are GM volumes, last 142 are CSF volumes.
 
         Returns
-        ----------
+        -------
         labels: list of string
             List of region names on the Neuromorphometrics atlas where
             "vbm_roi" features have been computed.
 
         Notes
-        ----------
+        -----
         The resource file is expected at: `<root>/resource/resources.json`
         """
         resource = self.get_resource()
@@ -595,13 +595,13 @@ class OpenBHB(Dataset):
         The feature names are extracted from the resource file.
 
         Returns
-        ----------
+        -------
         features: list of string
             List of 7 feature names corresponding to "fs_destrieux_roi" and
             "fs_desikan_roi" data in OpenBHB.
 
         Notes
-        ----------
+        -----
         The resource file is expected at: `<root>/resource/resources.json`. If
         it is not present locally, it is automatically downloaded from the
         Hugging Face.
@@ -617,12 +617,12 @@ class OpenBHB(Dataset):
         present locally, it is automatically downloaded from the Hugging Face.
 
         Returns
-        ----------
+        -------
         features: list of string
             List of 8 feature names corresponding to "fs_xhemi".
 
         Notes
-        ----------
+        -----
         The resource file is expected at: `<root>/resource/resources.json`
         """
         resource = self.get_resource()
@@ -642,7 +642,7 @@ class OpenBHB(Dataset):
             Index of the sample to retrieve.
 
         Returns
-        ----------
+        -------
         sample : array or dict of array
             The loaded sample. If unimodal, this is a single NumPy array of
             shape:
@@ -665,7 +665,7 @@ class OpenBHB(Dataset):
             `{<target>: <value>}`.
 
         Notes
-        ----------
+        -----
         - If `self.target` is None, only the `sample` is returned.
         - If `self.transforms` or `self.target_transforms` are specified, they
           are applied to the sample and target respectively.
