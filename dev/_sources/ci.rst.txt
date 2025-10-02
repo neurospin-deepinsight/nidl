@@ -1,0 +1,75 @@
+.. _continuous integration:
+
+
+Continuous integration
+======================
+
+Continuous Integration (CI) tests are implemented via GithHub workflows.
+
+
+Documentation build and deploy
+------------------------------
+
+.. using a mermaid flowchart: https://mermaid.js.org/syntax/flowchart.html
+
+.. mermaid:: mermaid/doc_deploy.mmd
+
+The development docs are built using GitHub Actions.
+
+The workflow ``.github/workflows/documentation.yml`` builds the doc and
+deploy it to https://neurospin-deepinsight.github.io/nidl on the ``dev``
+(respectively ``stable``).
+
+On pull-request a successful build of the doc by
+``.github/workflows/documentation.yml`` has no trigger.
+
+
+GitHub Actions Specification
+----------------------------
+
+
+
+documentation.yml
+^^^^^^^^^^^^^^^^^
+
+Workflow file: `documentation.yml <https://github.com/nilearn/nilearn/blob/main/.github/workflows/documentation.yml>`_
+
+Workflow to build the documentation.
+
+- check the quality of the doc strings.
+- build doc and upload it as artifact.
+
+To run this check locally from the `doc` folder:
+
+.. code-block:: bash
+
+  $ cd ./doc
+  $ make html-strict
+
+
+linters.yml
+^^^^^^^^^^^
+
+Workflow file: `linters.yml <https://github.com/nilearn/nilearn/blob/main/.github/workflows/linters.yml>`_
+
+Workflow to check code format.
+
+To run this check locally from the repository folder:
+
+.. code-block:: bash
+
+  $ ruff check nidl
+
+
+testing.yml
+^^^^^^^^^^^
+
+Workflow file: `testing.yml <https://github.com/nilearn/nilearn/blob/main/.github/workflows/testing.yml>`_
+
+Workflow to check code using unit tests.
+
+To run this check locally from the repository folder:
+
+.. code-block:: bash
+
+  $ nosetests --with-coverage --cover-package=nidl --verbosity=2
