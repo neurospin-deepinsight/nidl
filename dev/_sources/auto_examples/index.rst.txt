@@ -43,7 +43,7 @@ Examples
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Presentation of the OpenBHB dataset and baseline models for age and sex predictions</div>
+      <div class="sphx-glr-thumbnail-title">Presentation of the OpenBHB dataset</div>
     </div>
 
 

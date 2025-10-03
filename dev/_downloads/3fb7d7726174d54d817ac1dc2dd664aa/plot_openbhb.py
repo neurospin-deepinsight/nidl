@@ -1,22 +1,19 @@
 """
-Presentation of the OpenBHB dataset and baseline models for age and sex predictions
-===================================================================================
+Presentation of the OpenBHB dataset
+===================================
 
 This notebook introduces the OpenBHB dataset [1]_, a large-scale, multi-site
 brain MRI dataset. It is designed to perform benchmarking of machine learning
 and deep learning models on neuroimaging data.
 
-We will demonstrate how to use OpenBHB for two important prediction tasks:
+We will demonstrate how to use OpenBHB for:
 
 - **Age prediction**
 - **Sex classification**
+- **Brain aging trajectories modeling**
 
-These serve as simple entry points for evaluating model performance and
-potential bias across imaging sites.
-
-.. [1] Dufumier et al., "OpenBHB: a Large-Scale Multi-Site Brain MRI Dataset
-       for Age Prediction and Debiasing," NeuroImage, 2022.
-       https://www.sciencedirect.com/science/article/pii/S1053811922007522
+We will start by visualizing the available resources in OpenBHB and then we will
+demonstrate how to perform these prediction tasks.
 
 
 Load the packages
@@ -33,13 +30,15 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from nilearn import datasets, plotting
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel, WhiteKernel
 from sklearn.linear_model import LogisticRegression, Ridge
 from sklearn.metrics import (
     accuracy_score,
     r2_score,
 )
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from nidl.datasets import OpenBHB
 
@@ -307,7 +306,6 @@ for ax, dat, title in zip(axes, data, titles):
         figure=fig,
     )
 
-
 # %%
 # Fit machine learning models for age and sex prediction
 # ------------------------------------------------------
@@ -463,3 +461,158 @@ plt.show()
 # age and sex. Nevertheless, it would be interesting to check whether combining the
 # modalities would improve the result, which would mean that they provide complementary
 # information. This is left as an exercise to the reader.
+
+# %%
+# Modeling brain aging trajectories
+# ---------------------------------
+#
+# Since brain morphometric features have been computed for all subjects in
+# OpenBHB, we can study the brain atrophy patterns across subjects age [2]_.
+# Specifically, we will use gray matter volumes computed on the
+# Neuromorphometrics atlas for each subject to regress a Gaussian Process
+# Regression (GPR) against age. This way, we will estimate the mean and
+# standard variation of the GM volume trajectories.
+
+
+# %%
+# We start by formatting correctly the previous data before fitting the GPR.
+
+df = pd.DataFrame(
+    np.concatenate((X_train["vbm_roi"], X_test["vbm_roi"])),
+    columns=dataset_train.get_vbm_roi_labels(),
+)
+age = np.concatenate((y_train_age, y_test_age))
+sex = np.concatenate((y_train_sex, y_test_sex))
+tiv = np.array(dataset_train.get_participants()["tiv"])
+
+# Mapping region codes to clean names
+region_map = {
+    "Hip": "Hippocampus",
+    "Amy": "Amygdala",
+    "LatVen": "Lateral Ventricles",
+    "Cau": "Caudate",
+    "Put": "Putamen",
+    "Pal": "Pallidum",
+    "ThaPro": "Thalamus",
+    "Acc": "Nucleus Accumbens",
+    "FusGy": "Fusiform Gyrus",
+    "MidFroGy": "Middle Frontal Gyrus",
+    "PoCGy": "Postcentral Gyrus",
+    "PrcGy": "Precentral Gyrus",
+}
+
+regions = list(region_map.values())
+
+
+# Average left/right regions + normalize by TIV
+def average_hemispheres_and_tiv_normalized(df):
+    avg_data = {}
+    for region, region_name in region_map.items():
+        l_col = f"l{region}_GM_Vol"
+        r_col = f"r{region}_GM_Vol"
+        if l_col in df.columns and r_col in df.columns:
+            avg_data[region_name] = (df[l_col] + df[r_col]) / 2
+        avg_data[region_name] = avg_data[region_name] / tiv
+    return pd.DataFrame(avg_data)
+
+
+df = average_hemispheres_and_tiv_normalized(df)
+df["age"] = age
+df["sex"] = sex
+
+# %%
+# We can now fit the GPR model to obtain brain aging trajectories
+# of gray matter volumes:
+gpr_results = {}
+for sex in ["male", "female"]:
+    df_sex = df[df["sex"] == sex]
+    X = df_sex["age"].values.reshape(-1, 1)
+    X_orig = np.copy(X)
+    y = df_sex[regions].values
+
+    X = MinMaxScaler().fit_transform(X)
+
+    # Define kernel: Constant * RBF
+    kernel = ConstantKernel(1.0, (0.1, 10.0)) * RBF() + WhiteKernel(
+        noise_level=0.05, noise_level_bounds=(1e-4, 1.0)
+    )
+
+    # Fit Gaussian Process
+    gpr = GaussianProcessRegressor(
+        kernel=kernel,
+        alpha=1e-7,
+        normalize_y=True,
+        random_state=42,
+    )
+    gpr.fit(X, y)
+
+    # Predictions with uncertainty
+    X_grid = np.linspace(X.min(), X.max(), 200).reshape(-1, 1)
+    y_mean, y_std = gpr.predict(X_grid, return_std=True)
+    X_grid = np.linspace(X_orig.min(), X_orig.max(), 200).reshape(-1, 1)
+    gpr_results[sex] = (X_grid, y_mean, y_std)
+
+# %%
+# Finally, we plot the brain trajectories per brain region:
+sns.set_theme(style="whitegrid")
+sex_palette = {
+    "male": "skyblue",
+    "female": "salmon",
+}
+n_cols = 3
+n_rows = int(np.ceil(len(regions) / n_cols))
+fig, axes = plt.subplots(
+    n_rows, n_cols, figsize=(18, n_rows * 3.5), sharex=True
+)
+axes = axes.flatten()
+for i, region in enumerate(regions):
+    ax = axes[i]
+    sns.scatterplot(
+        data=df,
+        x="age",
+        y=region,
+        hue="sex",
+        palette=sex_palette,
+        ax=ax,
+        alpha=0.7,
+        s=40,
+    )
+    ax.legend(title="Sex")
+
+    for sex in ["male", "female"]:
+        # Plot
+        X_grid, y_mean, y_std = gpr_results[sex]
+        y_mean, y_std = y_mean[:, i], y_std[:, i]
+        ax.plot(X_grid, y_mean, color=sex_palette[sex], lw=2)
+        ax.fill_between(
+            X_grid.ravel(),
+            y_mean - 1.96 * y_std,
+            y_mean + 1.96 * y_std,
+            color="blue",
+            alpha=0.1,
+        )
+        ax.legend()
+        ax.set_title(region, fontsize=13)
+        ax.set_xlabel("Age")
+        ax.set_ylabel("GM volume (TIV-normalized)")
+
+plt.tight_layout(rect=[0, 0, 0.9, 1])
+plt.show()
+
+# %%
+# Observations: We retrieve some results from the literature [2]_, [3]_
+# in particular regarding the earlier atrophy of the thalamus compared to
+# hippocampus and amygdala (relatively preserved until 50-60 years old) and
+# global atrophy early-on of pre-central and post-central gryus.
+
+# %%
+# References
+# ----------
+# .. [1] Dufumier et al., OpenBHB: a Large-Scale Multi-Site Brain MRI Dataset
+#        for Age Prediction and Debiasing, NeuroImage, 2022.
+#        https://www.sciencedirect.com/science/article/pii/S1053811922007522
+# .. [2] Bethlehem et al., Brain charts for the human lifespan, Nature 2022
+#        https://www.nature.com/articles/s41586-022-04554-y.pdf
+# .. [3] Subcortical volumes across the lifespan: Data from 18,605 healthy
+#        individuals aged 3–90 years, Hum. Brain Mapping, 2022
+#        https://onlinelibrary.wiley.com/doi/pdf/10.1002/hbm.25320
