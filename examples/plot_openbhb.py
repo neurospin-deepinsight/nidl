@@ -15,10 +15,6 @@ We will demonstrate how to use OpenBHB for:
 We will start by visualizing the available resources in OpenBHB and then we will
 demonstrate how to perform these prediction tasks.
 
-.. [1] Dufumier et al., "OpenBHB: a Large-Scale Multi-Site Brain MRI Dataset
-       for Age Prediction and Debiasing," NeuroImage, 2022.
-       https://www.sciencedirect.com/science/article/pii/S1053811922007522
-
 
 Load the packages
 -----------------
@@ -468,7 +464,7 @@ plt.show()
 
 # %%
 # Modeling brain aging trajectories
-# ------------------------------------
+# ---------------------------------
 #
 # Since brain morphometric features have been computed for all subjects in
 # OpenBHB, we can study the brain atrophy patterns across subjects age [2]_.
@@ -476,9 +472,7 @@ plt.show()
 # Neuromorphometrics atlas for each subject to regress a Gaussian Process
 # Regression (GPR) against age. This way, we will estimate the mean and
 # standard variation of the GM volume trajectories.
-#
-# .. [2] Bethlehem et al., Brain charts for the human lifespan. Nature 2022
-#        https://www.nature.com/articles/s41586-022-04554-y.pdf
+
 
 # %%
 # We start by formatting correctly the previous data before fitting the GPR.
@@ -604,3 +598,21 @@ for i, region in enumerate(regions):
 
 plt.tight_layout(rect=[0, 0, 0.9, 1])
 plt.show()
+
+# %%
+# Observations: We retrieve some results from the literature [2]_, [3]_
+# in particular regarding the earlier atrophy of the thalamus compared to
+# hippocampus and amygdala (relatively preserved until 50-60 years old) and
+# global atrophy early-on of pre-central and post-central gryus.
+
+# %%
+# References
+# ----------
+# .. [1] Dufumier et al., OpenBHB: a Large-Scale Multi-Site Brain MRI Dataset
+#        for Age Prediction and Debiasing, NeuroImage, 2022.
+#        https://www.sciencedirect.com/science/article/pii/S1053811922007522
+# .. [2] Bethlehem et al., Brain charts for the human lifespan, Nature 2022
+#        https://www.nature.com/articles/s41586-022-04554-y.pdf
+# .. [3] Subcortical volumes across the lifespan: Data from 18,605 healthy
+#        individuals aged 3–90 years, Hum. Brain Mapping, 2022
+#        https://onlinelibrary.wiley.com/doi/pdf/10.1002/hbm.25320
