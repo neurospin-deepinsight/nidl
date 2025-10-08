@@ -136,17 +136,34 @@ class YAwareProjectionHead(ProjectionHead):
 
 class BarlowTwinsProjectionHead(ProjectionHead):
     """Projection head used for BarlowTwins contrastive learning.
+
+    It implements the upscaling of layer sizes
+    (hidden and output layers of size 8192),
+    with 3-layer MLPs as in [1]_ or [2]_
+
+    References
+    ----------
+    .. [1] Zbontar, J., et al., "Barlow Twins: Self-Supervised Learning
+           via Redundancy Reduction." PMLR, 2021.
+           https://proceedings.mlr.press/v139/zbontar21a
+    .. [2] Siddiqui, S., et al., "Blockwise Self-Supervised Learning at Scale"
+           TMLR, 2024.
+           https://openreview.net/forum?id=M2m618iIPk
+
     """
 
     def __init__(
         self,
         input_dim: int = 2048,
-        hidden_dim: int = 512,
-        output_dim: int = 128,
+        hidden_dim: int = 8192,
+        output_dim: int = 8192,
     ):
         super().__init__(
             [
-                (input_dim, hidden_dim, None, nn.ReLU()),
+                (input_dim, hidden_dim, nn.BatchNorm1d(hidden_dim),
+                nn.ReLU()),
+                (hidden_dim, hidden_dim, nn.BatchNorm1d(hidden_dim),
+                nn.ReLU()),
                 (hidden_dim, output_dim, None, None),
             ]
         )

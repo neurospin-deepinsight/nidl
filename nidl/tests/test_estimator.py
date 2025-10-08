@@ -108,7 +108,7 @@ class TestEstimators(unittest.TestCase):
                 BarlowTwins,
                 {
                     "encoder": self._encoder,
-                    "projection_head": SimCLRProjectionHead(
+                    "projection_head": BarlowTwinsProjectionHead(
                         input_dim=self._encoder.latent_size, output_dim=3
                     ),
                     "projection_head_kwargs": { # ignored
