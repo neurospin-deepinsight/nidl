@@ -67,7 +67,7 @@ class TestLosses(unittest.TestCase):
 
     def test_barlowtwins_str(self):
         loss_fn = BarlowTwinsLoss(lambd=0.01)
-        self.assertEqual(str(loss_fn), "BarlowTwins(lambd=0.01)")
+        self.assertEqual(str(loss_fn), "BarlowTwinsLoss(lambd=0.01)")
 
     def test_barlowtwins_loss_batch_gt_1(self):
         # Typical batch size > 1
