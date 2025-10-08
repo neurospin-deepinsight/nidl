@@ -10,34 +10,30 @@ from typing import Union
 
 import numpy as np
 
+from .....transforms import TypeTransformInput, VolumeTransform
 from ...preprocessing.spatial.resize import Resize
-from ...volume_transform import TypeTransformInput, VolumeTransform
 
 
 class RandomResizedCrop(VolumeTransform):
     """Crop a random portion of a 3d volume and resize it.
 
-    It is a generalization of :class:`torchvision.transforms.RandomResizedCrop`
+    It is a generalization of `torchvision.transforms.RandomResizedCrop`
     to the 3d case.
 
-    It handles :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles `np.ndarray` or `torch.Tensor` as input and
     returns a consistent output (same type).
     
-
     Parameters
     ----------
     target_shape: int or tuple of (int, int, int)
         Expected output shape. If int, apply the same size across all
         dimensions.
-
     scale: tuple of (float, float), default=(0.08, 1.0)
         Specifies lower and upper bounds for the random area of the crop,
         before resizing. The scale is defined with respect to the area of the
         original image.
-
     ratio: tuple of (float, float), default=(1.0, 1.33)
         Range of the aspect ratio of the crop, before resizing.
-    
     interpolation: str in {'nearest', 'linear', 'bspline', 'cubic', \
         'gaussian', 'label_gaussian', 'hamming', 'cosine', 'welch', \
         'lanczos', 'blackman'}, default='linear'
@@ -45,13 +41,11 @@ class RandomResizedCrop(VolumeTransform):
         nidl for scalar images, offers a good compromise between image
         quality and speed and is a solid choice for data augmentation during
         training.
-        Check :class:`nidl.volume.transforms.Resample` for more details.
-
     kwargs: dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given.
     
     Notes
-    ----------
+    -----
     In 3d, we define the "aspect ratio" as the ratio between each dimension
     size relatively to their geometric mean. It is a simple generalization
     from 2d to nd and we don't particularize any dimension. The aspect ratio
@@ -120,7 +114,7 @@ class RandomResizedCrop(VolumeTransform):
             :math:`(H, W, D)`. Cropped area is the same across channels.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Cropped and resized data. Output type is the same as input.
         """

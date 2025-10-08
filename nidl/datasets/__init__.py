@@ -6,7 +6,9 @@
 # for details.
 ##########################################################################
 
-"""Common datasets."""
+""" This modules details the public API you should use and implement for a
+nidl compatible dataset, as well as the datasets available in nidl.
+"""
 
 from .base import BaseImageDataset, BaseNumpyDataset
 from .openbhb import OpenBHB

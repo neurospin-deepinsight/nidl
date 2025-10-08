@@ -6,3 +6,13 @@
 # for details.
 ##########################################################################
 
+from .intensity import (
+    RandomGaussianBlur,
+    RandomGaussianNoise,
+)
+from .spatial import (
+    RandomErasing,
+    RandomFlip,
+    RandomResizedCrop,
+    RandomRotation,
+)

@@ -11,7 +11,7 @@ from typing import Callable, Optional
 import numpy as np
 import torch
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class ZNormalization(VolumeTransform):
@@ -48,7 +48,7 @@ class ZNormalization(VolumeTransform):
         Keyword arguments given to :class:`nidl.transforms.Transform`.
 
     Notes
-    ----------
+    -----
     If the input volume has constant values, the output will have almost
     constant non-deterministic values.
 

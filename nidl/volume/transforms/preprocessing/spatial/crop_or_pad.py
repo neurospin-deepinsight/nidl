@@ -11,7 +11,7 @@ from typing import Union
 import numpy as np
 import torch
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class CropOrPad(VolumeTransform):

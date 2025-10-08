@@ -13,13 +13,13 @@ import numpy as np
 import torch
 from nibabel.orientations import aff2axcodes
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomFlip(VolumeTransform):
     """Reverse the order of elements in a 3d volume along the given axes.
 
-    It handles a :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles a `np.ndarray` or `torch.Tensor` as input and
     returns a consistent output (same type and shape). Input shape must be
     :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
 
@@ -33,15 +33,13 @@ class RandomFlip(VolumeTransform):
         specifying volume orientation must be provided when the transformation
         is called. Check `Nibabel documentation on image orientation
         <https://nipy.org/nibabel/coordinate_systems.html>`_.
-
     flip_probability: float, default=1.0
         Per-axis probability to flip the volume.
-
     kwargs: dict
-        Keyword arguments given to base :class:`nidl.transforms.Transform`.
+        Keyword arguments.
 
     Notes
-    ----------
+    -----
     Current implementation always returns a new tensor/array without sharing
     memory with the input data.
 
@@ -81,7 +79,7 @@ class RandomFlip(VolumeTransform):
             If None, the identity matrix is used, assuming RAS orientation.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Flipped volume with same type and shape as the input.
         """

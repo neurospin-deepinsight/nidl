@@ -42,32 +42,24 @@ class ModelProbing(ABC, pl.Callback):
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form `(X, y)`
         for further embedding and training of the probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form `(X, y)`
         for further embedding and test of the probe.
-
     probe: sklearn.base.BaseEstimator
         The probe model to be trained on the embedding. It must
         implement `fit` and `predict` methods on numpy array.
-
     every_n_train_epochs: int or None, default=1
         Number of training epochs after which to run the probing.
         Disabled if None.
-
     every_n_val_epochs: int or None, default=None
         Number of validation epochs after which to run the probing.
         Disabled if None.
-
     on_test_epoch_start: bool, default=False
-        Whether to run the probing at the start of the test epoch.
-
+        Whether to run the linear probing at the start of the test epoch.
     on_test_epoch_end: bool, default=False
-        Whether to run the probing at the end of the test epoch.
-
+        Whether to run the linear probing at the end of the test epoch.
     prog_bar: bool, default=True
         Whether to display the metrics in the progress bar.
-
     """
 
     def __init__(
@@ -199,7 +191,6 @@ class ModelProbing(ABC, pl.Callback):
         ----------
         pl_module: BaseEstimator
             The BaseEstimator module that implements the 'transform_step'.
-
         dataloader: torch.utils.data.DataLoader
             The dataloader to extract features from. It should yield batches of
             the form `(X, y)` where `X` is the input data and `y` is the label.
@@ -296,38 +287,29 @@ class ClassificationProbingCallback(ModelProbing):
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form `(X, y)`
         for further embedding and training of the probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form `(X, y)`
         for further embedding and test of the probe.
-
     probe: sklearn.base.BaseEstimator
         The scikit-learn classifier to be trained on the embedding.
-
     probe_name: str or None, default=None
         Name of the probe displayed when logging the results.
         It will appear as <probe_name>/<metric_name> for each metric.
         If None,  <probe_class_name>/<metric_name> is displayed.
-
     every_n_train_epochs: int or None, default=1
         Number of training epochs after which to run the probing.
         Disabled if None.
-
     every_n_val_epochs: int or None, default=None
         Number of validation epochs after which to run the probing.
         Disabled if None.
-
     on_test_epoch_start: bool, default=False
         Whether to run the probing at the start of the test epoch.
-
     on_test_epoch_end: bool, default=False
         Whether to run the probing at the end of the test epoch.
-
     prog_bar: bool, default=True
         Whether to display the metrics in the progress bar.
 
     """
-
     def __init__(
         self,
         train_dataloader,
@@ -408,46 +390,34 @@ class RegressionProbingCallback(ModelProbing):
        - Pearson's r
        - explained variance score
 
-       If multiple regressors are given (multivariate regression),
-       metrics are computed per regressor and averaged.
-
     Parameters
     ----------
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form `(X, y)`
         for further embedding and training of the probe.
-
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form `(X, y)`
         for further embedding and test of the probe.
-
     probe: sklearn.base.BaseEstimator
         The scikit-learn regressor to be trained on the embedding.
-
     probe_name: str or None, default=None
         Name of the probe displayed when logging the results.
         It will appear as <probe_name>/<metric_name> for each metric.
         If None,  <probe_class_name>/<metric_name> is displayed.
-
     every_n_train_epochs: int or None, default=1
         Number of training epochs after which to run the probing.
         Disabled if None.
-
     every_n_val_epochs: int or None, default=None
         Number of validation epochs after which to run the probing.
         Disabled if None.
-
     on_test_epoch_start: bool, default=False
         Whether to run the probing at the start of the test epoch.
-
     on_test_epoch_end: bool, default=False
         Whether to run the probing at the end of the test epoch.
-
     prog_bar: bool, default=True
         Whether to display the metrics in the progress bar.
 
     """
-
     def __init__(
         self,
         train_dataloader,
