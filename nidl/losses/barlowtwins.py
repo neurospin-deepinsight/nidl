@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 
 
-class BarlowTwins(nn.Module):
+class BarlowTwinsLoss(nn.Module):
     """Implementation of the redundancy-reduction loss [1]_.
 
     Compute the Barlow Twins loss, which reduces redundancy
