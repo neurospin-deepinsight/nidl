@@ -97,7 +97,7 @@ dataloader_ssl_vbm = DataLoader(
     OpenBHB(
         data_dir,
         modality="vbm_roi",
-        target="age",
+        target=None,
         transforms=MultiViewsTransform(contrast_transforms, n_views=2),
     ),
     batch_size=batch_size,
@@ -108,7 +108,7 @@ dataloader_ssl_vbm_test = DataLoader(
     OpenBHB(
         data_dir,
         modality="vbm_roi",
-        target="age",
+        target=None,
         split="val",
         transforms=MultiViewsTransform(contrast_transforms, n_views=2),
     ),
@@ -139,7 +139,7 @@ dataloader_ssl_sbm = DataLoader(
     OpenBHB(
         data_dir,
         modality="fs_desikan_roi",
-        target="age",
+        target=None,
         transforms=MultiViewsTransform(
             transforms.Compose([sbm_transform, contrast_transforms]), n_views=2
         ),
@@ -152,7 +152,7 @@ dataloader_ssl_sbm_test = DataLoader(
     OpenBHB(
         data_dir,
         modality="fs_desikan_roi",
-        target="age",
+        target=None,
         split="val",
         transforms=MultiViewsTransform(
             transforms.Compose([sbm_transform, contrast_transforms]), n_views=2
@@ -324,8 +324,8 @@ def plot_mds_side_by_side(Z_vbm, Z_sbm, y_vbm, y_sbm):
     mds = MDS(n_components=2, n_init=4, max_iter=300)
 
     # Fit-transform embeddings
-    Z_vbm_mds = mds.fit_transform(Z_vbm)
-    Z_sbm_mds = mds.fit_transform(Z_sbm)
+    Z_vbm_mds = mds.fit_transform(Z_vbm.cpu())
+    Z_sbm_mds = mds.fit_transform(Z_sbm.cpu())
 
     # Side-by-side plots
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -362,8 +362,8 @@ plot_mds_side_by_side(Z_test_vbm, Z_test_sbm, y_test_vbm, y_test_sbm)
 
 def evaluate_and_predict(model, Z_train, Z_test, y_train, y_test):
     """Train model and return predictions + metrics."""
-    model.fit(Z_train, y_train)
-    y_pred = model.predict(Z_test)
+    model.fit(Z_train.cpu(), y_train)
+    y_pred = model.predict(Z_test.cpu())
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
     return y_pred, mae, r2

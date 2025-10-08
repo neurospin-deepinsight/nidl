@@ -249,7 +249,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
             The index of the dataloader (ignored).
         """
 
-        V1, V2, y = self.parse_batch(batch)
+        V1, V2 = self.parse_batch(batch)
         Z1, Z2 = (
             self.projection_head(self.encoder(V1)),
             self.projection_head(self.encoder(V2)),
@@ -298,14 +298,14 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
 
     def parse_batch(
         self, batch: Any
-    ) -> tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Parses the batch to extract the two views and the auxiliary
         variable.
 
         Parameters
         ----------
         batch: Any
-            Parse a batch input and return V1, V2, and y.
+            Parse a batch input and return V1, V2.
             The batch is:
 
             - (V1, V2): two views of the same sample.
