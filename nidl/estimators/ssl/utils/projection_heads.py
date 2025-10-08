@@ -139,26 +139,7 @@ class YAwareProjectionHead(ProjectionHead):
 
 
 class BarlowTwinsProjectionHead(ProjectionHead):
-    """Projection head used for yAware contrastive learning.
-
-    This module implements the projection head :math:`z_{\\theta_2}` as
-    described in yAware [1]_, which is a simple multilayer perceptron (MLP)
-    similar to that used in SimCLR [2]_. It maps feature representations into
-    a space where contrastive loss can be applied.
-
-    Typically, this MLP consists of one hidden layer followed by a
-    non-linearity (ReLU) and a final linear projection.
-
-    References
-    ----------
-    .. [1] Dufumier, B., et al., "Contrastive learning with continuous proxy
-           meta-data for 3D MRI classification." MICCAI, 2021.
-           https://arxiv.org/abs/2106.08808
-
-    .. [2] Chen, T., et al. "A Simple Framework for Contrastive Learning of
-           Visual Representations." ICML, 2020. https://arxiv.org/abs/2002.05709
-
-
+    """Projection head used for BarlowTwins contrastive learning.
     """
 
     def __init__(

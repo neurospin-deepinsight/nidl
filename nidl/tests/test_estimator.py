@@ -22,8 +22,15 @@ from nidl.estimators import (
     RegressorMixin,
     TransformerMixin,
 )
-from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
-from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
+from nidl.estimators.ssl import (
+    BarlowTwins,
+    SimCLR,
+    YAwareContrastiveLearning,
+)
+from nidl.estimators.ssl.utils.projection_heads import (
+    BarlowTwinsProjectionHead,
+    SimCLRProjectionHead,
+)
 from nidl.estimators.autoencoders import VAE
 from nidl.estimators.linear import LogisticRegression
 from nidl.losses.yaware_infonce import KernelMetric
@@ -92,6 +99,25 @@ class TestEstimators(unittest.TestCase):
                     "lr": 5e-4,
                     "temperature": 0.07,
                     "weight_decay": 1e-4,
+                    "max_epochs": 2,
+                    "random_state": 42,
+                    "limit_train_batches": 3,
+                },
+            ),
+            (
+                BarlowTwins,
+                {
+                    "encoder": self._encoder,
+                    "projection_head": SimCLRProjectionHead(
+                        input_dim=self._encoder.latent_size, output_dim=3
+                    ),
+                    "projection_head_kwargs": { # ignored
+                        "input_dim": self._encoder.latent_size,
+                        "output_dim": 3,
+                    },
+                    "learning_rate": 5e-4,
+                    "lambd": 0.005,
+                    "optimizer_kwargs": {"weight_decay": 1e-4},
                     "max_epochs": 2,
                     "random_state": 42,
                     "limit_train_batches": 3,
