@@ -78,7 +78,7 @@ class BarlowTwinsLoss(nn.Module):
             Second embedded view.
 
         Returns
-        ----------
+        -------
         loss: torch.Tensor
             The BarlowTwins loss computed between `z1` and `z2`.
         """

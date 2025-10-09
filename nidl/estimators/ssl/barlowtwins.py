@@ -206,7 +206,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
             The index of the dataloader (ignored).
 
         Returns
-        ----------
+        -------
         loss: Tensor
             Training loss computed on this batch of data.
         """
@@ -290,7 +290,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
             The index of the dataloader (ignored).
 
         Returns
-        ----------
+        -------
         features: torch.Tensor
             The encoded features returned by the encoder.
 
