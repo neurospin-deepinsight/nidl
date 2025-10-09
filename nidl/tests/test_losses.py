@@ -13,6 +13,7 @@ import torch
 from torch.distributions import Normal, Laplace, Bernoulli
 
 from nidl.losses import (
+    BarlowTwinsLoss,
     InfoNCE,
     YAwareInfoNCE,
     KernelMetric,
@@ -49,6 +50,64 @@ class TestLosses(unittest.TestCase):
                     )
                     assert loss_low >= 0, "InfoNCE loss should be positive."
     
+    def test_barlowtwins(self):
+        """Test BarlowTwins loss is computed correctly.
+        """
+        lambd = 0.
+        for batch_size in [5, 10]:
+            for n_embedding in [5, 10]:
+                z1 = torch.rand(
+                    batch_size, n_embedding)
+                barlowtwins = BarlowTwinsLoss(lambd)
+                loss = barlowtwins(z1, z1)
+                assert np.allclose(loss.numpy(), 0., atol=1e-10), (
+                    "For an autocorrelation, diagonal elements should be equal "
+                    "to 1, thus the invariance term should be equal to 0"
+                )
+
+    def test_barlowtwins_str(self):
+        loss_fn = BarlowTwinsLoss(lambd=0.01)
+        self.assertEqual(str(loss_fn), "BarlowTwinsLoss(lambd=0.01)")
+
+    def test_barlowtwins_loss_batch_gt_1(self):
+        # Typical batch size > 1
+        torch.manual_seed(0)
+        z1 = torch.randn(4, 5)
+        z2 = torch.randn(4, 5)
+
+        loss_fn = BarlowTwinsLoss(lambd=0.01)
+        loss = loss_fn(z1, z2)
+
+        self.assertIsInstance(loss, torch.Tensor)
+        self.assertEqual(loss.dim(), 0)  # should be scalar tensor
+        self.assertGreater(loss.item(), 0)  # loss should be positive
+
+    def test_barlowtwins_loss_batch_eq_1(self):
+        # Edge case: batch size = 1
+        torch.manual_seed(0)
+        z1 = torch.randn(1, 5)
+        z2 = torch.randn(1, 5)
+
+        loss_fn = BarlowTwinsLoss(lambd=0.01)
+        loss = loss_fn(z1, z2)
+
+        self.assertIsInstance(loss, torch.Tensor)
+        self.assertEqual(loss.dim(), 0)  # should be scalar tensor
+
+    def test_barlowtwins_gradients(self):
+        # Check that the loss is differentiable
+        z1 = torch.randn(4, 5, requires_grad=True)
+        z2 = torch.randn(4, 5, requires_grad=True)
+
+        loss_fn = BarlowTwinsLoss()
+        loss = loss_fn(z1, z2)
+        loss.backward()
+
+        self.assertIsNotNone(z1.grad)
+        self.assertIsNotNone(z2.grad)
+        self.assertEqual(z1.grad.shape, z1.shape)
+        self.assertEqual(z2.grad.shape, z2.shape)
+
     def test_yaware(self):
         """ Test y-Aware loss is computed correctly.
         """

@@ -9,6 +9,7 @@
 """ Common losses.
 """
 
+from .barlowtwins import BarlowTwinsLoss
 from .beta_vae import BetaVAELoss
 from .infonce import InfoNCE
 from .yaware_infonce import KernelMetric, YAwareInfoNCE

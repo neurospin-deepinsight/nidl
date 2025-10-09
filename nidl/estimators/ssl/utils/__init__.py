@@ -7,6 +7,7 @@
 ##########################################################################
 
 from .projection_heads import (
+    BarlowTwinsProjectionHead,
     ProjectionHead,
     SimCLRProjectionHead,
     YAwareProjectionHead,
