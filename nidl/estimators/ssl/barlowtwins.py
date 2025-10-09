@@ -56,7 +56,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
 
         Ignored if `encoder` is instantiated.
 
-    projection_head : nn.Module or class or None, default=YAwareProjectionHead
+    projection_head : nn.Module or class or None, default=BarlowTwinsProjectionHead
         Which projection head to use for the model. If None, no projection head
         is used and the encoder output is directly used for loss computation.
         Otherwise, a :class:`~torch.nn.Module` is expected. In general,
