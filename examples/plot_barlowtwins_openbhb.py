@@ -99,6 +99,7 @@ dataloader_ssl_vbm = DataLoader(
         modality="vbm_roi",
         target=None,
         transforms=MultiViewsTransform(contrast_transforms, n_views=2),
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
@@ -111,6 +112,7 @@ dataloader_ssl_vbm_test = DataLoader(
         target=None,
         split="val",
         transforms=MultiViewsTransform(contrast_transforms, n_views=2),
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
@@ -141,8 +143,10 @@ dataloader_ssl_sbm = DataLoader(
         modality="fs_desikan_roi",
         target=None,
         transforms=MultiViewsTransform(
-            transforms.Compose([sbm_transform, contrast_transforms]), n_views=2
+            transforms.Compose([sbm_transform, contrast_transforms]),
+            n_views=2
         ),
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
@@ -155,8 +159,10 @@ dataloader_ssl_sbm_test = DataLoader(
         target=None,
         split="val",
         transforms=MultiViewsTransform(
-            transforms.Compose([sbm_transform, contrast_transforms]), n_views=2
+            transforms.Compose([sbm_transform, contrast_transforms]),
+            n_views=2
         ),
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
@@ -174,6 +180,7 @@ dataloader_vbm_train = DataLoader(
         target="age",
         split="train",
         transforms=vbm_transform,
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
@@ -187,6 +194,7 @@ dataloader_vbm_test = DataLoader(
         target="age",
         split="val",
         transforms=vbm_transform,
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
@@ -200,6 +208,7 @@ dataloader_sbm_train = DataLoader(
         target="age",
         split="train",
         transforms=sbm_transform,
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
@@ -212,6 +221,7 @@ dataloader_sbm_test = DataLoader(
         target="age",
         split="val",
         transforms=sbm_transform,
+        streaming=False,
     ),
     batch_size=batch_size,
     num_workers=num_workers,
