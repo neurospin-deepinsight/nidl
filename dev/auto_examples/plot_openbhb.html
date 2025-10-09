@@ -233,6 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -384,7 +385,7 @@ and deep learning models on neuroimaging data.</p>
 <li><p><strong>Sex classification</strong></p></li>
 <li><p><strong>Brain aging trajectories modeling</strong></p></li>
 </ul>
-<p>We will start by visualizing the available resources in OpenBHB and then we will
+<p>We will start by visualizing the available resources in OpenBHB, then we will
 demonstrate how to perform these prediction tasks.</p>
 <section id="load-the-packages">
 <h2>Load the packages<a class="headerlink" href="#load-the-packages" title="Link to this heading">¶</a></h2>
@@ -467,7 +468,7 @@ being in the same physical space across subjects.</p></li>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(121, 145, 121)
 
-&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f6bdfea0380&gt;
+&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f2b3145acc0&gt;
 </pre></div>
 </div>
 </section>
@@ -521,7 +522,7 @@ a brain template using the Neuromorphometrics atlas**:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f6af2bc91c0&gt;
+<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f2b312a81a0&gt;
 </pre></div>
 </div>
 </section>
@@ -746,12 +747,10 @@ in millimiter.</p></li>
 <img src="../_images/sphx_glr_plot_openbhb_005.png" srcset="../_images/sphx_glr_plot_openbhb_005.png" alt="Cortical thickness (in $mm$), Sulcal depth (in $mm$), Curvature" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
 [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
 [fetch_surf_fsaverage]
-Downloaded 2113536 of 34242788 bytes (6.2%%,   15.2s remaining)
+Downloaded 13967360 of 34242788 bytes (40.8%%,    1.5s remaining)
 [fetch_surf_fsaverage]
-Downloaded 15491072 of 34242788 bytes (45.2%%,    2.4s remaining)
-[fetch_surf_fsaverage]
-Downloaded 29483008 of 34242788 bytes (86.1%%,    0.5s remaining)
-[fetch_surf_fsaverage]  ...done. (6 seconds, 0 min)
+Downloaded 26959872 of 34242788 bytes (78.7%%,    0.5s remaining)
+[fetch_surf_fsaverage]  ...done. (10 seconds, 0 min)
 
 [fetch_surf_fsaverage] Extracting data from /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
 [fetch_surf_fsaverage] .. done.
@@ -1086,8 +1085,8 @@ individuals aged 3–90 years, Hum. Brain Mapping, 2022
 <a class="reference external" href="https://onlinelibrary.wiley.com/doi/pdf/10.1002/hbm.25320">https://onlinelibrary.wiley.com/doi/pdf/10.1002/hbm.25320</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 44.010 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2610 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 45.065 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2645 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9891edd964521be9e6f154fc1a8056c6/plot_openbhb.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_openbhb.ipynb</span></code></a></p>

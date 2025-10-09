@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/modules/generated/nidl.transforms.Transform.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:description" content="Examples using nidl.transforms.Transform: Model probing callback of embedding estimators Weakly Supervised Contrastive Learning with y-Aware" />
+<meta property="og:description" content="Examples using nidl.transforms.Transform: Model probing callback of embedding estimators Self-supervised Learning with BarlowTwins Weakly Supervised Contrastive Learning with y-Aware" />
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_model_probing_thumb.png" />
 <meta property="og:image:alt" content="" />
-<meta name="description" content="Examples using nidl.transforms.Transform: Model probing callback of embedding estimators Weakly Supervised Contrastive Learning with y-Aware" />
+<meta name="description" content="Examples using nidl.transforms.Transform: Model probing callback of embedding estimators Self-supervised Learning with BarlowTwins Weakly Supervised Contrastive Learning with y-Aware" />
 <link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.transforms.Identity" href="nidl.transforms.Identity.html"><link rel="prev" title="nidl.transforms: Available augmentations" href="../augmentation.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
@@ -233,6 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -378,16 +379,16 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.transforms.Transform<a class="headerlink" href="#nidl-transforms-transform" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.transforms.Transform">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.transforms.</span></span><span class="sig-name descname"><span class="pre">Transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/transforms.py#L26"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.transforms.</span></span><span class="sig-name descname"><span class="pre">Transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/transforms.py#L26"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Abstract class for all nidl transformations.</p>
 <p>The general logic for any transformation when called is:</p>
 <ol class="arabic simple">
 <li><p>calling to  <a class="reference internal" href="#nidl.transforms.Transform.parse_data" title="nidl.transforms.Transform.parse_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse_data</span></code></a> for parsing the input data, a
-<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git86474ce ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>, and validate
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git4308b8a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>, and validate
 its dimension. The output should be formatted with verified shape
 and type.</p></li>
-<li><p>(optional) calling to <a class="reference external" href="https://docs.python.org/3/library/random.html#random.random" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">random.random</span></code></a> to know whether the
+<li><p>(optional) calling to <a class="reference external" href="https://docs.python.org/3/library/random.html#random.random" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">random.random</span></code></a> to know whether the
 transformation is applied or not (depending on a probability <img class="math" src="../../_images/math/141bbefb74014fc5e43499901bf78607ae335583.png" alt="p"/>).</p></li>
 <li><p>calling to <a class="reference internal" href="#nidl.transforms.Transform.apply_transform" title="nidl.transforms.Transform.apply_transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_transform</span></code></a> for applying the transformation on
 the formatted data. This abstract method should be implemented in every
@@ -435,12 +436,12 @@ If None (default), the transformation is always applied.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.Transform.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/transforms.py#L80"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.__call__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/transforms.py#L80"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.__call__" title="Link to this definition">¶</a></dt>
 <dd><p>Transform the input data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>data: TypeTransformInput</strong></dt><dd><p>Input data (usually <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git86474ce ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>
+<dt><strong>data: TypeTransformInput</strong></dt><dd><p>Input data (usually <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git4308b8a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>
 to be transformed.</p>
 </dd>
 <dt><strong>*args: Any</strong></dt><dd><p>Additional positional arguments given to <a class="reference internal" href="#nidl.transforms.Transform.apply_transform" title="nidl.transforms.Transform.apply_transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_transform</span></code></a>.</p>
@@ -460,12 +461,12 @@ to be transformed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.Transform.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/transforms.py#L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/transforms.py#L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.Transform.apply_transform">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_parsed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/transforms.py#L137"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.apply_transform" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_parsed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/transforms.py#L137"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.apply_transform" title="Link to this definition">¶</a></dt>
 <dd><p>Apply the transformation on the data parsed by <a class="reference internal" href="#nidl.transforms.Transform.parse_data" title="nidl.transforms.Transform.parse_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse_data</span></code></a>.
 This should be implemented in all subclasses.</p>
 <dl class="field-list simple">
@@ -495,9 +496,9 @@ This should be implemented in all subclasses.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.Transform.parse_data">
-<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/transforms.py#L108"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.parse_data" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">parse_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/transforms.py#L108"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.parse_data" title="Link to this definition">¶</a></dt>
 <dd><p>Parse the input data and returns formatted data.</p>
-<p>Input data must be a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git86474ce ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>.</p>
+<p>Input data must be a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git4308b8a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -514,7 +515,7 @@ This should be implemented in all subclasses.</p>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ValueError</dt><dd><p>If the input data is not <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or
-<a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git86474ce ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a></p>
+<a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch vmain (2.10.0a0+git4308b8a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a></p>
 </dd>
 </dl>
 </dd>
@@ -523,7 +524,7 @@ This should be implemented in all subclasses.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.Transform.parse_probability">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probability</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/transforms.py#L158"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.parse_probability" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probability</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/transforms.py#L158"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.Transform.parse_probability" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the probability is correct.</p>
 <p>In details, it checks whether it is a scalar (int or float) between
 0 and 1 (included).</p>
@@ -550,6 +551,9 @@ This should be implemented in all subclasses.</p>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This notebook will show you how to investigate the data representation given by an embedding estimator during training  (such as SimCLR, y-Aware Contrastive Learning or Barlow Twins) using the notion of &quot;probing&quot;. A standard machine learning model (e.g. linear or SVM) is trained and evaluated on the data embedding for a given task as the model is being fitted. It allows the user to understand what concepts are learned by the model."><img alt="" src="../../_images/sphx_glr_plot_model_probing_thumb.png" />
 <p><a class="reference internal" href="../../auto_examples/plot_model_probing.html#sphx-glr-auto-examples-plot-model-probing-py"><span class="std std-ref">Model probing callback of embedding estimators</span></a></p>
   <div class="sphx-glr-thumbnail-title">Model probing callback of embedding estimators</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a BarlowTwins Learning model [1]_ on the OpenBHB dataset using NIDL."><img alt="" src="../../_images/sphx_glr_plot_barlowtwins_openbhb_thumb.png" />
+<p><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html#sphx-glr-auto-examples-plot-barlowtwins-openbhb-py"><span class="std std-ref">Self-supervised Learning with BarlowTwins</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Self-supervised Learning with BarlowTwins</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a y-Aware Contrastive Learning model on the OpenBHB dataset using NIDL. As in the original paper [1]_, we will use age as a weak label to guide the contrastive learning process. The model will be trained to bring representations of samples with similar ages closer together in the feature space, while pushing apart samples with dissimilar ages. This approach leverages the age information to enhance the quality of the learned representations, making them more relevant for downstream tasks such as age prediction or disease classification."><img alt="" src="../../_images/sphx_glr_plot_yaware_openbhb_thumb.png" />
 <p><a class="reference internal" href="../../auto_examples/plot_yaware_openbhb.html#sphx-glr-auto-examples-plot-yaware-openbhb-py"><span class="std std-ref">Weakly Supervised Contrastive Learning with y-Aware</span></a></p>
   <div class="sphx-glr-thumbnail-title">Weakly Supervised Contrastive Learning with y-Aware</div>

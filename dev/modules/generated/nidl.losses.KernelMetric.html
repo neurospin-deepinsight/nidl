@@ -231,6 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -376,7 +377,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.losses.KernelMetric<a class="headerlink" href="#nidl-losses-kernelmetric" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">KernelMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">KernelMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
 <p>Interface for fast weighting matrix computation.</p>
 <p>It computes a weighting matrix <img class="math" src="../../_images/math/1fbee781f84569077719a167b64e12064360fac1.png" alt="W"/> between input samples based on
@@ -469,11 +470,11 @@ Analysis”. Monographs on Statistics and Applied Probability.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Cosine">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cosine</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L319"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Cosine" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cosine</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L319"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Cosine" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Cosine.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L320"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Cosine.__call__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L320"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Cosine.__call__" title="Link to this definition">¶</a></dt>
 <dd><p>Call self as a function.</p>
 </dd></dl>
 
@@ -481,11 +482,11 @@ Analysis”. Monographs on Statistics and Applied Probability.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Epanechnikov">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Epanechnikov</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L307"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Epanechnikov" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Epanechnikov</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L307"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Epanechnikov" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Epanechnikov.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L308"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Epanechnikov.__call__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L308"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Epanechnikov.__call__" title="Link to this definition">¶</a></dt>
 <dd><p>Call self as a function.</p>
 </dd></dl>
 
@@ -493,11 +494,11 @@ Analysis”. Monographs on Statistics and Applied Probability.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Exponential">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Exponential</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L311"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Exponential" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Exponential</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L311"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Exponential" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Exponential.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L312"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Exponential.__call__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L312"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Exponential.__call__" title="Link to this definition">¶</a></dt>
 <dd><p>Call self as a function.</p>
 </dd></dl>
 
@@ -505,11 +506,11 @@ Analysis”. Monographs on Statistics and Applied Probability.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Gaussian">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Gaussian</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L303"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Gaussian" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Gaussian</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L303"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Gaussian" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Gaussian.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L304"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Gaussian.__call__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L304"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Gaussian.__call__" title="Link to this definition">¶</a></dt>
 <dd><p>Call self as a function.</p>
 </dd></dl>
 
@@ -517,11 +518,11 @@ Analysis”. Monographs on Statistics and Applied Probability.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Linear">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Linear</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L315"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Linear" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Linear</span></span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L315"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Linear" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.Linear.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L316"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Linear.__call__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L316"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.Linear.__call__" title="Link to this definition">¶</a></dt>
 <dd><p>Call self as a function.</p>
 </dd></dl>
 
@@ -529,17 +530,17 @@ Analysis”. Monographs on Statistics and Applied Probability.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L101"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L101"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.atleast_2d">
-<span class="sig-name descname"><span class="pre">atleast_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L290"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.atleast_2d" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">atleast_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L290"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.atleast_2d" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L125"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.fit" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L125"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the bandwidth in the kernel density estimation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -559,12 +560,12 @@ matrix).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.fit_pairwise">
-<span class="sig-name descname"><span class="pre">fit_pairwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L286"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.fit_pairwise" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit_pairwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L286"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.fit_pairwise" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.pairwise">
-<span class="sig-name descname"><span class="pre">pairwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L262"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.pairwise" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pairwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L262"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.pairwise" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -583,7 +584,7 @@ matrix).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.scotts_factor">
-<span class="sig-name descname"><span class="pre">scotts_factor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L240"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.scotts_factor" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">scotts_factor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L240"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.scotts_factor" title="Link to this definition">¶</a></dt>
 <dd><p>Compute Scott’s factor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -597,7 +598,7 @@ matrix).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.set_bandwidth">
-<span class="sig-name descname"><span class="pre">set_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L143"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.set_bandwidth" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L143"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.set_bandwidth" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the estimator bandwidth. Implementation from scipy.</p>
 <p>The new bandwidth calculated after a call to <cite>set_bandwidth</cite> is used
 for subsequent evaluation of the estimated density.</p>
@@ -613,7 +614,7 @@ for subsequent evaluation of the estimated density.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.KernelMetric.silverman_factor">
-<span class="sig-name descname"><span class="pre">silverman_factor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/51b2dcc/nidl/losses/yaware_infonce.py#L251"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.silverman_factor" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">silverman_factor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L251"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.KernelMetric.silverman_factor" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the Silverman factor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

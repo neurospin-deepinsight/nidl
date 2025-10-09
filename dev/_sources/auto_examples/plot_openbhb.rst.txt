@@ -31,7 +31,7 @@ We will demonstrate how to use OpenBHB for:
 - **Sex classification**
 - **Brain aging trajectories modeling**
 
-We will start by visualizing the available resources in OpenBHB and then we will
+We will start by visualizing the available resources in OpenBHB, then we will
 demonstrate how to perform these prediction tasks.
 
 
@@ -173,7 +173,7 @@ different modalities:
 
     (121, 145, 121)
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f6bdfea0380>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f2b3145acc0>
 
 
 
@@ -250,7 +250,7 @@ a brain template using the Neuromorphometrics atlas**:
  .. code-block:: none
 
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f6af2bc91c0>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f2b312a81a0>
 
 
 
@@ -522,10 +522,9 @@ the left hemisphere using the higher-resolution fsaverage7 template:
 
     [fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
     [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
-    [fetch_surf_fsaverage]     Downloaded 2113536 of 34242788 bytes (6.2%%,   15.2s remaining)
-    [fetch_surf_fsaverage]     Downloaded 15491072 of 34242788 bytes (45.2%%,    2.4s remaining)
-    [fetch_surf_fsaverage]     Downloaded 29483008 of 34242788 bytes (86.1%%,    0.5s remaining)
-    [fetch_surf_fsaverage]  ...done. (6 seconds, 0 min)
+    [fetch_surf_fsaverage]     Downloaded 13967360 of 34242788 bytes (40.8%%,    1.5s remaining)
+    [fetch_surf_fsaverage]     Downloaded 26959872 of 34242788 bytes (78.7%%,    0.5s remaining)
+    [fetch_surf_fsaverage]  ...done. (10 seconds, 0 min)
 
     [fetch_surf_fsaverage] Extracting data from /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
     [fetch_surf_fsaverage] .. done.
@@ -966,9 +965,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 44.010 seconds)
+   **Total running time of the script:** (2 minutes 45.065 seconds)
 
-**Estimated memory usage:**  2610 MB
+**Estimated memory usage:**  2645 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_openbhb.py:

@@ -108,7 +108,34 @@ Featured works
         <https://proceedings.mlr.press/v119/chen20j/chen20j.pdf>`_, 
         ICML 2020.
 
+  .. grid-item-card::
+    :link: auto_examples/plot_barlowtwins_openbhb.html
+    :link-type: url
+    :columns: 12 12 12 12
+    :class-card: sd-shadow-sm
+    :margin: 2 2 auto auto
 
+    .. grid::
+      :gutter: 3
+      :margin: 0
+      :padding: 0
+
+      .. grid-item::
+        :columns: 12 4 4 4
+
+        .. image:: _images/sphx_glr_simclr_stl10_thumb.png
+
+      .. grid-item::
+        :columns: 12 8 8 8
+
+        .. div:: sd-font-weight-bold
+
+          BarlowTwins
+
+        Zbonta et al.: `Barlow Twins, Self-Supervised Learning via Redundancy Reduction
+        <http://proceedings.mlr.press/v139/zbontar21a/zbontar21a.pdf>`_, 
+        PMLR 2021.
+        
   .. grid-item-card::
     :link: auto_examples/plot_yaware_openbhb.html
     :link-type: url

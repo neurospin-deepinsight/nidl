@@ -12,7 +12,7 @@ We will demonstrate how to use OpenBHB for:
 - **Sex classification**
 - **Brain aging trajectories modeling**
 
-We will start by visualizing the available resources in OpenBHB and then we will
+We will start by visualizing the available resources in OpenBHB, then we will
 demonstrate how to perform these prediction tasks.
 
 

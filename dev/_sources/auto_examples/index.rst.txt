@@ -66,6 +66,23 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a BarlowTwins Learning model [1]_ on the OpenBHB dataset using NIDL.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_barlowtwins_openbhb_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_barlowtwins_openbhb.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Self-supervised Learning with BarlowTwins</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a y-Aware Contrastive Learning model on the OpenBHB dataset using NIDL. As in the original paper [1]_, we will use age as a weak label to guide the contrastive learning process. The model will be trained to bring representations of samples with similar ages closer together in the feature space, while pushing apart samples with dissimilar ages. This approach leverages the age information to enhance the quality of the learned representations, making them more relevant for downstream tasks such as age prediction or disease classification.">
 
 .. only:: html
@@ -94,6 +111,7 @@ Examples
    /auto_examples/plot_model_probing
    /auto_examples/plot_openbhb
    /auto_examples/simclr_stl10
+   /auto_examples/plot_barlowtwins_openbhb
    /auto_examples/plot_yaware_openbhb
 
 
