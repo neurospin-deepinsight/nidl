@@ -17,7 +17,7 @@ from torch.optim import Optimizer
 
 from ...losses import BarlowTwinsLoss
 from ..base import BaseEstimator, TransformerMixin
-from .utils.projection_heads import YAwareProjectionHead
+from .utils.projection_heads import BarlowTwinsProjectionHead
 
 
 class BarlowTwins(TransformerMixin, BaseEstimator):
@@ -144,7 +144,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         encoder_kwargs: Optional[dict[str, Any]] = None,
         projection_head: Union[
             nn.Module, type[nn.Module], None
-        ] = YAwareProjectionHead,
+        ] = BarlowTwinsProjectionHead,
         projection_head_kwargs: Optional[dict[str, Any]] = None,
         lambd: float = 0.005,
         optimizer: Union[str, Optimizer, type[Optimizer]] = "adam",
