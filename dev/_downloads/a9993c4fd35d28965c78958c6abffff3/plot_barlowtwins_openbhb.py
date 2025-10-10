@@ -1,9 +1,9 @@
 """
-Self-supervised Learning with BarlowTwins
+Self-Supervised Learning with Barlow Twins
 ===================================================
 
-This tutorial will show you how to fit and evaluate a BarlowTwins
-Learning model [1]_ on the OpenBHB dataset using NIDL.
+This tutorial will show you how to fit and evaluate a Barlow Twins
+model [1]_ on the OpenBHB dataset using NIDL.
 
 We will follow these steps using the NIDL library:
 
@@ -30,7 +30,7 @@ As for the neuroimaging data, we will investigate two input representations:
   thickness, mean curvature, gray matter volume and surface area averaged
   within each ROI of the Desikan-Killiany atlas (68 regions).
 
-  The BarlowTwins model will be trained individually on both
+  The Barlow Twins model will be trained individually on both
   representations and we will compare their performance on age prediction.
 
   .. [1] Zbontar, J., et al., "Barlow Twins: Self-Supervised Learning
@@ -67,8 +67,8 @@ latent_size = 32
 
 
 # %%
-# OpenBHB datasets and data augmentations for Contrastive Learning
-# ----------------------------------------------------------------
+# OpenBHB datasets and data augmentations for Barlow Twins training
+# -----------------------------------------------------------------
 #
 # We will use the OpenBHB dataset for pre-training the models. We will focus
 # on the VBM ROI representation and the SBM ROI representation for this
@@ -143,8 +143,7 @@ dataloader_ssl_sbm = DataLoader(
         modality="fs_desikan_roi",
         target=None,
         transforms=MultiViewsTransform(
-            transforms.Compose([sbm_transform, contrast_transforms]),
-            n_views=2
+            transforms.Compose([sbm_transform, contrast_transforms]), n_views=2
         ),
         streaming=False,
     ),
@@ -159,8 +158,7 @@ dataloader_ssl_sbm_test = DataLoader(
         target=None,
         split="val",
         transforms=MultiViewsTransform(
-            transforms.Compose([sbm_transform, contrast_transforms]),
-            n_views=2
+            transforms.Compose([sbm_transform, contrast_transforms]), n_views=2
         ),
         streaming=False,
     ),
@@ -239,7 +237,7 @@ dataloader_sbm_test.dataset.target = None
 # Training of BarlowTwins models
 # -----------------------------------------------
 #
-# We can now instantiate and train two BarlowTwins models (one
+# We can now instantiate and train two Barlow Twins models (one
 # for VBM and another for SBM).
 
 # %%

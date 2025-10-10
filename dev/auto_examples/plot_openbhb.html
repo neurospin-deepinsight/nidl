@@ -233,7 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -265,12 +265,16 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.KernelMetric.html">nidl.losses.KernelMetric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -376,14 +380,14 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="presentation-of-the-openbhb-dataset">
 <span id="sphx-glr-auto-examples-plot-openbhb-py"></span><h1>Presentation of the OpenBHB dataset<a class="headerlink" href="#presentation-of-the-openbhb-dataset" title="Link to this heading">¶</a></h1>
-<p>This notebook introduces the OpenBHB dataset <a class="footnote-reference brackets" href="#id5" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, a large-scale, multi-site
+<p>This notebook introduces the OpenBHB dataset <a class="footnote-reference brackets" href="#id9" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, a large-scale, multi-site
 brain MRI dataset. It is designed to perform benchmarking of machine learning
 and deep learning models on neuroimaging data.</p>
 <p>We will demonstrate how to use OpenBHB for:</p>
 <ul class="simple">
-<li><p><strong>Age prediction</strong></p></li>
-<li><p><strong>Sex classification</strong></p></li>
-<li><p><strong>Brain aging trajectories modeling</strong></p></li>
+<li><p><strong>Age prediction</strong> <a class="footnote-reference brackets" href="#id12" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a></p></li>
+<li><p><strong>Sex classification</strong> <a class="footnote-reference brackets" href="#id13" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a></p></li>
+<li><p><strong>Brain aging trajectories modeling</strong> <a class="footnote-reference brackets" href="#id10" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id14" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a></p></li>
 </ul>
 <p>We will start by visualizing the available resources in OpenBHB, then we will
 demonstrate how to perform these prediction tasks.</p>
@@ -468,7 +472,7 @@ being in the same physical space across subjects.</p></li>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(121, 145, 121)
 
-&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f2b3145acc0&gt;
+&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f0ebc7f4e90&gt;
 </pre></div>
 </div>
 </section>
@@ -522,7 +526,7 @@ a brain template using the Neuromorphometrics atlas**:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f2b312a81a0&gt;
+<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f0dcf619b50&gt;
 </pre></div>
 </div>
 </section>
@@ -747,10 +751,14 @@ in millimiter.</p></li>
 <img src="../_images/sphx_glr_plot_openbhb_005.png" srcset="../_images/sphx_glr_plot_openbhb_005.png" alt="Cortical thickness (in $mm$), Sulcal depth (in $mm$), Curvature" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
 [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
 [fetch_surf_fsaverage]
-Downloaded 13967360 of 34242788 bytes (40.8%%,    1.5s remaining)
+Downloaded 6905856 of 34242788 bytes (20.2%%,    4.1s remaining)
 [fetch_surf_fsaverage]
-Downloaded 26959872 of 34242788 bytes (78.7%%,    0.5s remaining)
-[fetch_surf_fsaverage]  ...done. (10 seconds, 0 min)
+Downloaded 16056320 of 34242788 bytes (46.9%%,    2.4s remaining)
+[fetch_surf_fsaverage]
+Downloaded 22331392 of 34242788 bytes (65.2%%,    1.7s remaining)
+[fetch_surf_fsaverage]
+Downloaded 28082176 of 34242788 bytes (82.0%%,    0.9s remaining)
+[fetch_surf_fsaverage]  ...done. (8 seconds, 0 min)
 
 [fetch_surf_fsaverage] Extracting data from /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
 [fetch_surf_fsaverage] .. done.
@@ -929,7 +937,7 @@ information. This is left as an exercise to the reader.</p>
 <section id="modeling-brain-aging-trajectories">
 <h2>Modeling brain aging trajectories<a class="headerlink" href="#modeling-brain-aging-trajectories" title="Link to this heading">¶</a></h2>
 <p>Since brain morphometric features have been computed for all subjects in
-OpenBHB, we can study the brain atrophy patterns across subjects age <a class="footnote-reference brackets" href="#id6" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
+OpenBHB, we can study the brain atrophy patterns across subjects age <a class="footnote-reference brackets" href="#id10" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
 Specifically, we will use gray matter volumes computed on the
 Neuromorphometrics atlas for each subject to regress a Gaussian Process
 Regression (GPR) against age. This way, we will estimate the mean and
@@ -1058,7 +1066,7 @@ of gray matter volumes:</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_openbhb_008.png" srcset="../_images/sphx_glr_plot_openbhb_008.png" alt="Hippocampus, Amygdala, Lateral Ventricles, Caudate, Putamen, Pallidum, Thalamus, Nucleus Accumbens, Fusiform Gyrus, Middle Frontal Gyrus, Postcentral Gyrus, Precentral Gyrus" class = "sphx-glr-single-img"/><p>Observations: We retrieve some results from the literature <a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id7" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
+<img src="../_images/sphx_glr_plot_openbhb_008.png" srcset="../_images/sphx_glr_plot_openbhb_008.png" alt="Hippocampus, Amygdala, Lateral Ventricles, Caudate, Putamen, Pallidum, Thalamus, Nucleus Accumbens, Fusiform Gyrus, Middle Frontal Gyrus, Postcentral Gyrus, Precentral Gyrus" class = "sphx-glr-single-img"/><p>Observations: We retrieve some results from the literature <a class="footnote-reference brackets" href="#id10" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id11" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
 in particular regarding the earlier atrophy of the thalamus compared to
 hippocampus and amygdala (relatively preserved until 50-60 years old) and
 global atrophy early-on of pre-central and post-central gryus.</p>
@@ -1066,27 +1074,45 @@ global atrophy early-on of pre-central and post-central gryus.</p>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id5" role="doc-footnote">
+<aside class="footnote brackets" id="id9" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Dufumier et al., OpenBHB: a Large-Scale Multi-Site Brain MRI Dataset
 for Age Prediction and Debiasing, NeuroImage, 2022.
 <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811922007522">https://www.sciencedirect.com/science/article/pii/S1053811922007522</a></p>
 </aside>
-<aside class="footnote brackets" id="id6" role="doc-footnote">
+<aside class="footnote brackets" id="id10" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id6">2</a>,<a role="doc-backlink" href="#id7">3</a>)</span>
 <p>Bethlehem et al., Brain charts for the human lifespan, Nature 2022
 <a class="reference external" href="https://www.nature.com/articles/s41586-022-04554-y.pdf">https://www.nature.com/articles/s41586-022-04554-y.pdf</a></p>
 </aside>
-<aside class="footnote brackets" id="id7" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id11" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">3</a><span class="fn-bracket">]</span></span>
 <p>Subcortical volumes across the lifespan: Data from 18,605 healthy
 individuals aged 3–90 years, Hum. Brain Mapping, 2022
 <a class="reference external" href="https://onlinelibrary.wiley.com/doi/pdf/10.1002/hbm.25320">https://onlinelibrary.wiley.com/doi/pdf/10.1002/hbm.25320</a></p>
 </aside>
+<aside class="footnote brackets" id="id12" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">4</a><span class="fn-bracket">]</span></span>
+<p>Cole et al., Predicting brain age with deep learning from raw imaging
+data results in a reliable and heritable biomarker, NeuroImage, 2017
+<a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811917306407">https://www.sciencedirect.com/science/article/pii/S1053811917306407</a></p>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 45.065 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2645 MB</p>
+<aside class="footnote brackets" id="id13" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">5</a><span class="fn-bracket">]</span></span>
+<p>Ryali et al., Deep learning models reveal replicable, generalizable,
+and behaviorally relevant sex differences in human functional brain
+organization, Proceedings of the National Academy of Sciences, 2024
+<a class="reference external" href="https://www.pnas.org/doi/10.1073/pnas.2310012121">https://www.pnas.org/doi/10.1073/pnas.2310012121</a></p>
+</aside>
+<aside class="footnote brackets" id="id14" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">6</a><span class="fn-bracket">]</span></span>
+<p>Raznahan et al., How does your cortex grow?, J. Neurosci., 2011
+<a class="reference external" href="https://www.jneurosci.org/content/31/19/7174">https://www.jneurosci.org/content/31/19/7174</a></p>
+</aside>
+</aside>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 47.903 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2620 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9891edd964521be9e6f154fc1a8056c6/plot_openbhb.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_openbhb.ipynb</span></code></a></p>

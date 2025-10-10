@@ -233,7 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -265,12 +265,16 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.KernelMetric.html">nidl.losses.KernelMetric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -375,10 +379,19 @@
 nidl compatible estimator, as well as the estimators available in nidl.</p>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
-<p>An estimator is an object that fits a model based on some training data and
-is capable of inferring some properties on new data. It can be, a classifier,
-a clustering, a regressor or a transformer. All estimators implement the
-fit method.</p>
+<p>An estimator is an object that fits a model based on some
+training data and is capable of inferring some properties on new data. It can
+be, a classifier, a clustering algorithm, a regressor or a transformer (in the
+“scikit-learn” sense). All estimators implement a <code class="docutils literal notranslate"><span class="pre">fit</span></code> method. Behind the hood,
+it inherits from a <code class="docutils literal notranslate"><span class="pre">pytorch_lightning.LightningModule</span></code>, and thus
+benefits from all the features of the <code class="docutils literal notranslate"><span class="pre">pytorch_lightning</span></code> library:</p>
+<ul class="simple">
+<li><p>Distributed multi-GPU training</p></li>
+<li><p>Logging and visualization</p></li>
+<li><p>Clear organization of the training and evaluation code</p></li>
+<li><p>Automatic checkpointing and early stopping</p></li>
+<li><p>Callback logic</p></li>
+</ul>
 <section id="instanciation">
 <h3>Instanciation<a class="headerlink" href="#instanciation" title="Link to this heading">¶</a></h3>
 <p>The estimator <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.__init__" title="nidl.estimators.BaseEstimator.__init__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a> method might accept
@@ -403,10 +416,10 @@ as arguments:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>train_dataloader</p></td>
-<td><p>torch DataLoader [(n_samples, n_channels, n_features)]</p></td>
+<td><p>torch DataLoader [(n_samples, *)]</p></td>
 </tr>
 <tr class="row-odd"><td><p>val_dataloader</p></td>
-<td><p>torch DataLoader [(n_samples, n_channels, n_features)]</p></td>
+<td><p>torch DataLoader [(n_samples, *)]</p></td>
 </tr>
 </tbody>
 </table>
@@ -441,7 +454,7 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 </section>
 <section id="base-classes">
 <h2>Base Classes<a class="headerlink" href="#base-classes" title="Link to this heading">¶</a></h2>
-<p>Base classes for all estimators and various utility functions.</p>
+<p>Base classes for all nidl estimators.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -468,8 +481,8 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
   LightningModule &lt;|-- BaseEstimator
     </pre></section>
 <section id="self-supervised-learning">
-<h2>Self Supervised Learning<a class="headerlink" href="#self-supervised-learning" title="Link to this heading">¶</a></h2>
-<p>Self supervised learning estimators, losses and associated tools.</p>
+<h2>Self-Supervised Learning<a class="headerlink" href="#self-supervised-learning" title="Link to this heading">¶</a></h2>
+<p>Self-supervised learning estimators, losses and associated tools.</p>
 <section id="estimators">
 <h3>Estimators<a class="headerlink" href="#estimators" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -480,6 +493,9 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning" title="nidl.estimators.ssl.YAwareContrastiveLearning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YAwareContrastiveLearning</span></code></a>(encoder[, ...])</p></td>
 <td><p>y-Aware Contrastive Learning <a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html#r8ad1d13554f2-1" id="id2"><span>[R8ad1d13554f2-1]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#nidl.estimators.ssl.BarlowTwins" title="nidl.estimators.ssl.BarlowTwins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwins</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
+<td><p>Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#rf18316f97edd-1" id="id3"><span>[Rf18316f97edd-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -499,13 +515,13 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.InfoNCE.html#nidl.losses.InfoNCE" title="nidl.losses.InfoNCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InfoNCE</span></code></a>([temperature])</p></td>
-<td><p>Normalized temperature cross-entropy loss derived from Chen et al., ICML 2020.</p></td>
+<td><p>Implementation of the InfoNCE loss <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-1" id="id4"><span>[Re38fc64e0ed4-1]</span></a>, <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-2" id="id5"><span>[Re38fc64e0ed4-2]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#nidl.losses.YAwareInfoNCE" title="nidl.losses.YAwareInfoNCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YAwareInfoNCE</span></code></a>([kernel, bandwidth, temperature])</p></td>
-<td><p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#ra2feb9ab43ec-1" id="id3"><span>[Ra2feb9ab43ec-1]</span></a>.</p></td>
+<td><p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#ra2feb9ab43ec-1" id="id6"><span>[Ra2feb9ab43ec-1]</span></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.KernelMetric.html#nidl.losses.KernelMetric" title="nidl.losses.KernelMetric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KernelMetric</span></code></a>([kernel, bandwidth])</p></td>
-<td><p>Interface for fast weighting matrix computation.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#nidl.losses.BarlowTwinsLoss" title="nidl.losses.BarlowTwinsLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwinsLoss</span></code></a>([lambd])</p></td>
+<td><p>Implementation of the Barlow Twins loss <a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#re83c9b545e4a-1" id="id7"><span>[Re83c9b545e4a-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -524,6 +540,41 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html#nidl.estimators.ssl.utils.YAwareProjectionHead" title="nidl.estimators.ssl.utils.YAwareProjectionHead"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YAwareProjectionHead</span></code></a>([input_dim, ...])</p></td>
 <td><p>Projection head used for yAware contrastive learning.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#nidl.estimators.ssl.utils.BarlowTwinsProjectionHead" title="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwinsProjectionHead</span></code></a>([input_dim, ...])</p></td>
+<td><p>Projection head used for Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#r86bff2d09119-1" id="id8"><span>[R86bff2d09119-1]</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="autoencoders">
+<h2>Autoencoders<a class="headerlink" href="#autoencoders" title="Link to this heading">¶</a></h2>
+<p>Autoencoder estimators and losses.</p>
+<section id="id9">
+<h3>Estimators<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#nidl.estimators.autoencoders.VAE" title="nidl.estimators.autoencoders.VAE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VAE</span></code></a>(encoder, decoder, encoder_out_dim, ...)</p></td>
+<td><p>Variational Auto-Encoder (VAE) <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-1" id="id10"><span>[Rfc808ee91d8e-1]</span></a> <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-2" id="id11"><span>[Rfc808ee91d8e-2]</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre align="center" class="mermaid align-center">
+        classDiagram
+  BaseEstimator &lt;|-- VAE
+  TransformerMixin &lt;|-- VAE
+    </pre></section>
+<section id="id12">
+<h3>Losses<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#nidl.losses.BetaVAELoss" title="nidl.losses.BetaVAELoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetaVAELoss</span></code></a>([beta, default_dist])</p></td>
+<td><p>Compute the Beta-VAE loss <a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#rd208eb1f92d3-1" id="id13"><span>[Rd208eb1f92d3-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -599,10 +650,15 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 </ul>
 </li>
 <li><a class="reference internal" href="#base-classes">Base Classes</a></li>
-<li><a class="reference internal" href="#self-supervised-learning">Self Supervised Learning</a><ul>
+<li><a class="reference internal" href="#self-supervised-learning">Self-Supervised Learning</a><ul>
 <li><a class="reference internal" href="#estimators">Estimators</a></li>
 <li><a class="reference internal" href="#losses">Losses</a></li>
 <li><a class="reference internal" href="#tools">Tools</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#autoencoders">Autoencoders</a><ul>
+<li><a class="reference internal" href="#id9">Estimators</a></li>
+<li><a class="reference internal" href="#id12">Losses</a></li>
 </ul>
 </li>
 </ul>

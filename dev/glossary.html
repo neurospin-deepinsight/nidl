@@ -233,7 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -265,12 +265,16 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.KernelMetric.html">nidl.losses.KernelMetric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -464,6 +468,23 @@ strongly this <a class="reference internal" href="#term-voxel"><span class="xref
 imaging that is used in brain mapping to evaluate regional interactions that
 occur in a resting or task-negative state, when an explicit task is not being
 performed.</p>
+</dd>
+<dt id="term-self-supervised-learning">self-supervised learning<a class="headerlink" href="#term-self-supervised-learning" title="Link to this term">¶</a></dt><dd><p><a class="reference external" href="https://en.wikipedia.org/wiki/Self-supervised_learning">Self-supervised learning</a> is a form of unsupervised learning where the
+data itself provides the supervision. In particular, it allows to learn the
+statistical dependencies between the input variables without relying on labels.
+The idea is to create surrogate tasks from the data that can be used to learn
+useful representations.
+For instance, in computer vision, a common self-supervised task is to
+learn an invariant representation to a set of stochastic data augmentations
+(like random crops, rotations or blur). The main challenge is to avoid
+representation collapse where the model learns a trivial solution (e.g. a constant
+representation). Various methods have been proposed to prevent this collapse,
+such as contrastive learning, redundancy reduction, or clustering-based methods.</p>
+<p>In neuroimaging, self-supervised learning can be used to learn
+representations of brain images without relying on labeled data,
+which can be scarce or expensive to obtain. These learned representations
+can then be fine-tuned for specific downstream tasks, such as disease
+classification or cognitive state prediction.</p>
 </dd>
 <dt id="term-SNR">SNR<a class="headerlink" href="#term-SNR" title="Link to this term">¶</a></dt><dd><p><a class="reference external" href="https://en.wikipedia.org/wiki/Signal-to-noise_ratio">SNR</a> stands for “Signal to Noise Ratio” and is a measure comparing the level
 of a given signal to the level of the background noise.</p>

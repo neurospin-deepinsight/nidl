@@ -8,7 +8,7 @@
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/introduction.html" />
 <meta property="og:site_name" content="Nidl" />
 <meta property="og:description" content="What is nidl?: nidl is a Python library to perform distributed training and evaluation of deep learning models on large-scale neuroimaging data (anatomical volumes and surfaces, fMRI). It follows t..." />
-<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_simclr_stl10_thumb.png" />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_yaware_openbhb_thumb.png" />
 <meta property="og:image:alt" content="Basic nidl example: Playing with estimators" />
 <meta name="description" content="What is nidl?: nidl is a Python library to perform distributed training and evaluation of deep learning models on large-scale neuroimaging data (anatomical volumes and surfaces, fMRI). It follows t..." />
 <link rel="search" title="Search" href="search.html"><link rel="next" title="5. Supervised Learning" href="supervised_learning/index.html"><link rel="prev" title="User guide" href="user_guide.html">
@@ -233,7 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -265,12 +265,16 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.KernelMetric.html">nidl.losses.KernelMetric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -377,13 +381,10 @@
 <p><code class="docutils literal notranslate"><span class="pre">nidl</span></code> is a Python library to perform distributed training and evaluation
 of deep learning models on large-scale neuroimaging data (anatomical
 volumes and surfaces, fMRI).</p>
-<dl class="simple">
-<dt>It follows the PyTorch design for the training logic and the scikit-learn</dt><dd><p>API for the models (in particular fit, predict and transform).</p>
-</dd>
-</dl>
+<p>It follows the PyTorch design for the training logic and the scikit-learn
+API for the models (in particular fit, predict and transform).</p>
 <p><a class="reference internal" href="supervised_learning/index.html#supervised-learning"><span class="std std-ref">Supervised</span></a>, <a class="reference internal" href="self_supervised_learning/index.html#self-supervised-learning"><span class="std std-ref">self-supervised</span></a> and
-unsupervised models are available (with
-pre-trained weights) along with open datasets.</p>
+unsupervised models are available (with pre-trained weights) along with open datasets.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is ok if these terms don’t make sense to you yet:
@@ -420,8 +421,8 @@ Going through them should give you a precise overview of what you can achieve
 with this package.</p>
 <p>For new-comers, we recommend going through the following examples in the
 suggested order:</p>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="A simple example..."><img alt="Basic nidl example: Playing with estimators" src="_images/sphx_glr_simclr_stl10_thumb.png" />
-<p><a class="reference internal" href="auto_examples/simclr_stl10.html#sphx-glr-auto-examples-simclr-stl10-py"><span class="std std-ref">Self-Supervised Contrastive Learning with SimCLR</span></a></p>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="A simple example..."><img alt="Basic nidl example: Playing with estimators" src="_images/sphx_glr_plot_yaware_openbhb_thumb.png" />
+<p><a class="reference internal" href="auto_examples/plot_yaware_openbhb.html#sphx-glr-auto-examples-plot-yaware-openbhb-py"><span class="std std-ref">Weakly Supervised Contrastive Learning with y-Aware</span></a></p>
 <div class="sphx-glr-thumbnail-title">
     Basic nidl example: Playing with estimators
 </div>
@@ -431,12 +432,15 @@ suggested order:</p>
 <p>On top of this guide, there is a lot of content available outside of <code class="docutils literal notranslate"><span class="pre">nidl</span></code>
 that could be of interest to new-comers:</p>
 <ol class="arabic simple">
-<li><p><a class="reference external" href="https://www.cambridge.org/be/universitypress/subjects/statistics-probability/statistics-life-sciences-medicine-and-health/handbook-functional-mri-data-analysis">Handbook of Functional MRI Data Analysis</a>
-by Russel Poldrack, Jeanette Mumford and Thomas Nichols.</p></li>
-<li><p>The documentation of <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> explains each method with tips on practical use and examples: <a class="extlink-sklearn reference external" href="https://scikit-learn.org/stable/">https://scikit-learn.org/stable/</a>.
-While not specific to neuroimaging, it is often a recommended read.</p></li>
+<li><p><a class="reference external" href="https://www.cambridge.org/highereducation/books/introduction-to-human-neuroimaging/1CC7D90DB2F353BB5232F6845557A22C/structural-imaging-methods/7536BA642E292F419C6A54F15D16AF8C">Introduction to Human Neuroimaging</a>
+by Hans Op de Beeck and Chie Nakatani.</p></li>
+<li><p><a class="reference external" href="https://pytorch.org/tutorials/">PyTorch tutorials</a> are a great resource to
+learn about deep learning and PyTorch.</p></li>
+<li><p><a class="reference external" href="https://pytorch-lightning.readthedocs.io/en/latest/notebooks.html">Pytorch-Lightning tutorials</a>
+are a great resource to learn about PyTorch-Lightning, the high-level framework
+used in <code class="docutils literal notranslate"><span class="pre">nidl</span></code> to handle the training and evaluation loops.</p></li>
 <li><p>(For Python beginners) A quick and gentle introduction to scientific computing
-with Python with the <a class="reference external" href="https://lectures.scientific-python.org/">scientififc Python lectures</a>.
+with Python with the <a class="reference external" href="https://lectures.scientific-python.org/">scientific Python lectures</a>.
 Moreover, you can use <code class="docutils literal notranslate"><span class="pre">nidl</span></code> with <a class="reference external" href="https://jupyter.org/">Jupyter</a> notebooks or
 <a class="reference external" href="https://ipython.org/">IPython</a> sessions. They provide an interactive
 environment that greatly facilitates debugging and visualization.</p></li>
@@ -455,24 +459,12 @@ The interested reader can dive into the following articles for more content.</p>
 <p><strong>Diagnosis and prognosis</strong></p>
 <p>Predicting a clinical score or even treatment response
 from brain imaging with <a class="reference internal" href="supervised_learning/index.html#supervised-learning"><span class="std std-ref">supervised
-learning</span></a> e.g. Mourão-Miranda <em>et al.</em><a class="footnote-reference brackets" href="#footcite-mourao-miranda2012" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
-<p><strong>Information mapping</strong></p>
-<p>Using the prediction accuracy of a classifier
-to characterize relationships between brain images and stimuli. (e.g.
-Kriegeskorte <em>et al.</em><a class="footnote-reference brackets" href="#footcite-kriegeskorte2006" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>)</p>
+learning</span></a> e.g. Wen <em>et al.</em><a class="footnote-reference brackets" href="#footcite-wen2020" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <p><strong>Transfer learning</strong></p>
-<p>Measuring how much an estimator trained on one
-specific psychological process/task can predict the neural activity
-underlying another specific psychological process/task
-(e.g. discriminating left from
-right eye movements also discriminates additions from subtractions <a class="footnote-reference brackets" href="#footcite-knops2009" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>)</p>
-<p><strong>High-dimensional multivariate statistics</strong></p>
-<p>From a statistical point of view, machine learning implements
-statistical estimation of models with a large number of parameters.
-Tricks pulled in machine learning (e.g. regularization) can
-make this estimation possible despite the usually
-small number of observations in the neuroimaging domain <a class="footnote-reference brackets" href="#footcite-varoquaux2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.
-This usage of machine learning requires some understanding of the models.</p>
+<p>Measuring how much an estimator pre-trained on a pretext task (e.g.
+<a class="reference internal" href="glossary.html#term-self-supervised-learning"><span class="xref std std-term">self-supervised learning</span></a>) can be fine-tuned to solve a
+clinical task like predicting a clinical score or a mental condition
+Dufumier <em>et al.</em><a class="footnote-reference brackets" href="#footcite-dufumier2024" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
 <p><strong>Data mining / exploration</strong></p>
 <p>Data-driven exploration of brain images. This includes the extraction of
 the major brain networks from <a class="reference internal" href="glossary.html#term-resting-state"><span class="xref std std-term">resting-state</span></a> data (“resting-state networks”)
@@ -480,23 +472,15 @@ or movie-watching data as well as the discovery of connectionally coherent
 functional modules (“connectivity-based parcellation”).</p>
 <section id="references">
 <h2><span class="section-number">4.1. </span>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<div class="docutils container" id="id5">
+<div class="docutils container" id="id4">
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="footcite-mourao-miranda2012" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Janaina Mourão-Miranda, Leticia Oliveira, Cecile D. Ladouceur, Andre Marquand, Michael Brammer, Boris Birmaher, David Axelson, and Mary L. Phillips. Pattern Recognition and Functional Neuroimaging Help to Discriminate Healthy Adolescents at Risk for Mood Disorders from Low Risk Adolescents. <em>PLoS ONE</em>, 7(2):e29482, February 2012. <a class="reference external" href="https://doi.org/10.1371/journal.pone.0029482">doi:10.1371/journal.pone.0029482</a>.</p>
+<aside class="footnote brackets" id="footcite-wen2020" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>Junhao Wen, Elina Thibeau-Sutre, Mauricio Diaz-Melo, Jorge Samper-González, Alexandre Routier, Simona Bottani, Didier Dormont, Stanley Durrleman, Ninon Burgos, Olivier Colliot, and others. Convolutional neural networks for classification of alzheimer’s disease: overview and reproducible evaluation. <em>Medical image analysis</em>, 63:101694, 2020.</p>
 </aside>
-<aside class="footnote brackets" id="footcite-kriegeskorte2006" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Nikolaus Kriegeskorte, Rainer Goebel, and Peter Bandettini. Information-based functional brain mapping. <em>Proceedings of the National Academy of Sciences</em>, 103(10):3863–3868, 2006. <a class="reference external" href="https://doi.org/10.1073/pnas.0600244103">doi:10.1073/pnas.0600244103</a>.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-knops2009" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
-<p>André Knops, Bertrand Thirion, Edward M. Hubbard, Vincent Michel, and Stanislas Dehaene. Recruitment of an Area Involved in Eye Movements During Mental Arithmetic. <em>Science</em>, 324(5934):1583–1585, June 2009. <a class="reference external" href="https://doi.org/10.1126/science.1171599">doi:10.1126/science.1171599</a>.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-varoquaux2012" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
-<p>Gaël Varoquaux, Alexandre Gramfort, and Bertrand Thirion. Small-sample brain mapping: sparse recovery on spatially correlated designs with randomization and clustering. <em>arXiv</em>, 2012. <a class="reference external" href="https://arxiv.org/abs/1206.6447">arXiv:1206.6447</a>.</p>
+<aside class="footnote brackets" id="footcite-dufumier2024" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>Benoit Dufumier, Pietro Gori, Sara Petiton, Robin Louiset, Jean-Francois Mangin, Antoine Grigis, and Edouard Duchesnay. Exploring the potential of representation and transfer learning for anatomical neuroimaging: application to psychiatry. <em>NeuroImage</em>, 296:120665, 2024.</p>
 </aside>
 </aside>
 </div>

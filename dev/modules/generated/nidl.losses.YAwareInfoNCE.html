@@ -9,7 +9,7 @@
 <meta property="og:site_name" content="Nidl" />
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
-<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.losses.KernelMetric" href="nidl.losses.KernelMetric.html"><link rel="prev" title="nidl.losses.InfoNCE" href="nidl.losses.InfoNCE.html">
+<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.losses.BarlowTwinsLoss" href="nidl.losses.BarlowTwinsLoss.html"><link rel="prev" title="nidl.losses.InfoNCE" href="nidl.losses.InfoNCE.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -231,7 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -263,12 +263,16 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.losses.YAwareInfoNCE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nidl.losses.KernelMetric.html">nidl.losses.KernelMetric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -377,25 +381,26 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.losses.YAwareInfoNCE<a class="headerlink" href="#nidl-losses-yawareinfonce" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.YAwareInfoNCE">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">YAwareInfoNCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L324"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.YAwareInfoNCE" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch vmain (2.10.0a0+git4308b8a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">YAwareInfoNCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/c111ff3/nidl/losses/yaware_infonce.py#L324"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.YAwareInfoNCE" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch vmain (2.10.0a0+gita6fa4f9 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
 <p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="#ra2feb9ab43ec-1" id="id1">[1]</a>.</p>
 <p>Compute the y-Aware InfoNCE loss, which integrates auxiliary
 information into contrastive learning by weighting sample pairs.</p>
-<p>Given a mini-batch of size <img class="math" src="../../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/>, two embeddings <img class="math" src="../../_images/math/25e1d0f27471fc48a5066ec25b700df2e725728e.png" alt="z_1"/> and
-<img class="math" src="../../_images/math/6441921587e886c3a91cd217680c4f079d061a08.png" alt="z_2"/> representing two views of the same samples and a weighting
-matrix <img class="math" src="../../_images/math/1fbee781f84569077719a167b64e12064360fac1.png" alt="W"/> computed using auxiliary variables <img class="math" src="../../_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/>, the loss is:</p>
+<p>Given a mini-batch of size <img class="math" src="../../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/>, two embeddings
+<img class="math" src="../../_images/math/a8ed793adc530ee558f51432380fbb4c32e64b92.png" alt="z_1=(z_1^i)_{i\in [1..n]}"/> and <img class="math" src="../../_images/math/a8d1c880cea7fc069abd04ee734f13104e808121.png" alt="z_2=(z_2^i)_{i\in [1..n]}"/>
+representing two views of the same samples and a weighting
+matrix <img class="math" src="../../_images/math/1a7e5f971008b0d1a70afa5dbb1c903fa4f59699.png" alt="W=(w_{i,j})_{i,j\in [1..n]}"/> computed using auxiliary
+variables <img class="math" src="../../_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/>, the loss is:</p>
 <div class="math-wrapper docutils container">
 <div class="math">
-<p><img src="../../_images/math/620b5d582decf8817504416627f70cc74e92dc1d.png" alt="\ell = -\frac{1}{n} \sum_{i,j} \frac{W_{i,j}}{\sum_{k=1}^{n}         W_{i, k}} \log \frac{\exp(\text{sim}(z_1^{i}, z_2^{j}) / \tau)}         {\sum_{k=1}^{n} \exp(\text{sim}(z_1^{i}, z_2^{k}) / \tau)}"/></p>
+<p><img src="../../_images/math/cceae7663636afb3b73d698b1c895546008d00aa.png" alt="\mathcal{L}_{NCE}^y = -\frac{1}{n} \sum_{i,j} \frac{w_{i,j}}         {\sum_{k=1}^{n} w_{i, k}} \log \frac{\exp(\text{sim}(z_1^{i},         z_2^{j}) / \tau)}{\sum_{k=1}^{n} \exp(\text{sim}(z_1^{i}, z_2^{k})        / \tau)}"/></p>
 </div></div>
-<p>where <img class="math" src="../../_images/math/a2c2594d4f443c4af74c679d026ee83673a001a3.png" alt="sim"/> is the cosine similarity and <img class="math" src="../../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/> is the
-temperature.</p>
-<p><img class="math" src="../../_images/math/1fbee781f84569077719a167b64e12064360fac1.png" alt="W"/> is computed with a kernel <img class="math" src="../../_images/math/52ddc0cde6d632f631533173562fe3ca375b1f32.png" alt="K"/> (e.g. Gaussian) and bandwidth
-<img class="math" src="../../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> as:</p>
+<p>where <img class="math" src="../../_images/math/a2c2594d4f443c4af74c679d026ee83673a001a3.png" alt="sim"/> is the cosine similarity,  <img class="math" src="../../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/> is the
+temperature and <img class="math" src="../../_images/math/ac42a59b43ace91ace7aa8b237c7705e7eadc7fb.png" alt="w_{i,j}"/> is computed with a kernel <img class="math" src="../../_images/math/52ddc0cde6d632f631533173562fe3ca375b1f32.png" alt="K"/>
+(e.g. Gaussian) and bandwidth <img class="math" src="../../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> as:</p>
 <div class="math-wrapper docutils container">
 <div class="math">
-<p><img src="../../_images/math/9214419675fd383ecf57238eb61723600af191fa.png" alt="W_{i,j} = K\left( H^{-\frac{1}{2}} (y_i-y_j) \right)"/></p>
+<p><img src="../../_images/math/8f474cdae8d4ebe46867db21d29b1cd496eb76db.png" alt="w_{i,j} = K\left( H^{-\frac{1}{2}} (y_i-y_j) \right)"/></p>
 </div></div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -414,8 +419,8 @@ features in <cite>y</cite>.</p></li>
 <li><p>If bandwidth is a 2d array, it must be of shape
 <cite>(n_features, n_features)</cite> where <cite>n_features</cite> is the number of
 features in <cite>y</cite>.</p></li>
-<li><p>If <cite>bandwidth</cite> is <a class="reference internal" href="nidl.losses.KernelMetric.html#nidl.losses.KernelMetric" title="nidl.losses.KernelMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelMetric</span></code></a>, it uses the <cite>pairwise</cite>
-method to compute the similarity matrix between auxiliary variables.</p></li>
+<li><p>If <cite>bandwidth</cite> is <cite>KernelMetric</cite>, it uses the <cite>pairwise</cite> method to
+compute the similarity matrix between auxiliary variables.</p></li>
 </ul>
 </dd>
 <dt><strong>temperature: float, default=0.1</strong></dt><dd><p>Temperature used to scale the dot-product between embedded vectors</p>
@@ -435,13 +440,13 @@ meta-data for 3D MRI classification.” MICCAI, 2021.
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.YAwareInfoNCE.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L382"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.YAwareInfoNCE.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/c111ff3/nidl/losses/yaware_infonce.py#L383"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.YAwareInfoNCE.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.YAwareInfoNCE.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/yaware_infonce.py#L404"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.YAwareInfoNCE.forward" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/c111ff3/nidl/losses/yaware_infonce.py#L405"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.YAwareInfoNCE.forward" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -472,12 +477,12 @@ If None, the standard InfoNCE loss is returned.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="nidl.losses.KernelMetric.html">
+          <a class="next-page" href="nidl.losses.BarlowTwinsLoss.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">nidl.losses.KernelMetric</div>
+                <div class="title">nidl.losses.BarlowTwinsLoss</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

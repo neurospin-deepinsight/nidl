@@ -119,6 +119,25 @@ Request.
         imaging that is used in brain mapping to evaluate regional interactions that
         occur in a resting or task-negative state, when an explicit task is not being
         performed.
+    
+    self-supervised learning
+        `Self-supervised learning`_ is a form of unsupervised learning where the
+        data itself provides the supervision. In particular, it allows to learn the 
+        statistical dependencies between the input variables without relying on labels.  
+        The idea is to create surrogate tasks from the data that can be used to learn
+        useful representations. 
+        For instance, in computer vision, a common self-supervised task is to
+        learn an invariant representation to a set of stochastic data augmentations
+        (like random crops, rotations or blur). The main challenge is to avoid
+        representation collapse where the model learns a trivial solution (e.g. a constant
+        representation). Various methods have been proposed to prevent this collapse,
+        such as contrastive learning, redundancy reduction, or clustering-based methods.
+
+        In neuroimaging, self-supervised learning can be used to learn
+        representations of brain images without relying on labeled data,
+        which can be scarce or expensive to obtain. These learned representations
+        can then be fine-tuned for specific downstream tasks, such as disease
+        classification or cognitive state prediction.
 
     SNR
         `SNR`_ stands for "Signal to Noise Ratio" and is a measure comparing the level
@@ -254,6 +273,9 @@ Request.
 
 .. _`Resting state`:
     https://en.wikipedia.org/wiki/Resting_state_fMRI
+
+.. _`Self-supervised learning`:
+    https://en.wikipedia.org/wiki/Self-supervised_learning
 
 .. _`SNR`:
     https://en.wikipedia.org/wiki/Signal-to-noise_ratio

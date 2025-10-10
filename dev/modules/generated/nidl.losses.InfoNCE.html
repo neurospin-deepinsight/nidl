@@ -9,7 +9,7 @@
 <meta property="og:site_name" content="Nidl" />
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
-<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.losses.YAwareInfoNCE" href="nidl.losses.YAwareInfoNCE.html"><link rel="prev" title="nidl.estimators.ssl.YAwareContrastiveLearning" href="nidl.estimators.ssl.YAwareContrastiveLearning.html">
+<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.losses.YAwareInfoNCE" href="nidl.losses.YAwareInfoNCE.html"><link rel="prev" title="nidl.estimators.ssl.BarlowTwins" href="nidl.estimators.ssl.BarlowTwins.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -231,7 +231,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-supervised Learning with BarlowTwins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -263,12 +263,16 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nidl.losses.KernelMetric.html">nidl.losses.KernelMetric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -377,27 +381,64 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.losses.InfoNCE<a class="headerlink" href="#nidl-losses-infonce" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.losses.InfoNCE">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">InfoNCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/infonce.py#L14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.InfoNCE" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch vmain (2.10.0a0+git4308b8a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
-<p>Normalized temperature cross-entropy loss derived from Chen et al.,
-ICML 2020. See <a class="reference external" href="https://doi.org/10.48550/arXiv.2002.05709">https://doi.org/10.48550/arXiv.2002.05709</a> for details.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.losses.</span></span><span class="sig-name descname"><span class="pre">InfoNCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/c111ff3/nidl/losses/infonce.py#L14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.InfoNCE" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch vmain (2.10.0a0+gita6fa4f9 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<p>Implementation of the InfoNCE loss <a class="reference internal" href="#re38fc64e0ed4-1" id="id1">[1]</a>, <a class="reference internal" href="#re38fc64e0ed4-2" id="id2">[2]</a>.</p>
+<p>This loss function encourages the model to maximize the similarity
+between positive pairs while minimizing the similarity between
+negative pairs.</p>
+<p>Given a mini-batch of size <img class="math" src="../../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/>, we obtain two embeddings
+<img class="math" src="../../_images/math/ba65f69dd9c400da3caba2f9bea6a428880c7e02.png" alt="z_{i}"/> and <img class="math" src="../../_images/math/07168ce1e33ae1f8355ea28518c95ff834c57f40.png" alt="z_{j}"/> representing two different augmented
+views of the same sample. The <strong>InfoNCE</strong> (or NT-Xent) loss used in
+is defined as:</p>
+<div class="math-wrapper docutils container">
+<div class="math">
+<p><img src="../../_images/math/ab5b0b7ea2133f9c61419fa9277c49540468e324.png" alt="\mathcal{L}_i
+= -\log
+\frac{
+    \exp\!\big(\operatorname{sim}(z_i, z_j)/\tau\big)
+}{
+    \sum\limits_{k=1}^{2N}
+    \mathbf{1}_{[k \ne i]}\,
+    \exp\!\big(\operatorname{sim}(z_i, z_k)/\tau\big)
+}"/></p>
+</div></div>
+<p>where <img class="math" src="../../_images/math/4d133e2fce07d46901e7a1cb6f80aaabaae57922.png" alt="\operatorname{sim}(z_i, z_j)"/> denotes the cosine similarity
+between the normalized embeddings <img class="math" src="../../_images/math/c0d0f97cd9bb4e6571e2689163f9f2989b304f55.png" alt="z_i"/> and <img class="math" src="../../_images/math/1a2da53015c9d2f2c52257723f812bf512b6818e.png" alt="z_j"/>, and
+<img class="math" src="../../_images/math/4579c0d6252cc39bba63a5f196a0373aec5a90d4.png" alt="\tau &gt; 0"/> is a temperature parameter controlling the concentration
+of the distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>temperature: float, default=0.1</strong></dt><dd><p>scale logits by the inverse of the temperature.</p>
+<dt><strong>temperature: float, default=0.1</strong></dt><dd><p>Scale logits by the inverse of the temperature.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="re38fc64e0ed4-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Aaron van den Oord, Yazhe Li, and Oriol Vinyals. “Representation
+learning with contrastive predictive coding.” arXiv preprint
+arXiv:1807.03748 (2018).</p>
+</div>
+<div class="citation" id="re38fc64e0ed4-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton.
+“A simple framework for contrastive learning of visual
+representations.” In ICML 2020.</p>
+</div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.InfoNCE.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/infonce.py#L24"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.InfoNCE.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/c111ff3/nidl/losses/infonce.py#L58"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.InfoNCE.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.losses.InfoNCE.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/435818a/nidl/losses/infonce.py#L28"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.InfoNCE.forward" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neuropsin-deepinsight/nidl/blob/c111ff3/nidl/losses/infonce.py#L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.losses.InfoNCE.forward" title="Link to this definition">¶</a></dt>
 <dd><p>Forward implementation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -435,14 +476,14 @@ ICML 2020. See <a class="reference external" href="https://doi.org/10.48550/arXi
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="nidl.estimators.ssl.YAwareContrastiveLearning.html">
+          <a class="prev-page" href="nidl.estimators.ssl.BarlowTwins.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">nidl.estimators.ssl.YAwareContrastiveLearning</div>
+                <div class="title">nidl.estimators.ssl.BarlowTwins</div>
                 
               </div>
             </a>
