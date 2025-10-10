@@ -81,9 +81,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
 
     lambd : float, default=5e-3
         lambda value in the BarlowTwins loss. Trading off the importance of
-        the redundancy reduction term vs the data augmentation invariance term.
-        In the loss, it is divided by the :math:`D`, the output projector
-        dimension.
+        the redundancy reduction term over the invariance term.
 
     optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
         default="adam"
@@ -485,7 +483,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
 
         Parameters
         ----------
-        temperature: float
+        lambd: float
             The lambda parameter for the BarlowTwins loss.
 
         Returns

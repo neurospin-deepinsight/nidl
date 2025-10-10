@@ -20,11 +20,11 @@ class BarlowTwinsLoss(nn.Module):
     :math:`z^{(1)}_b` and :math:`z^{(2)}_b` representing
     two outputs of dimension :math:`D` of the same sample:
 
-    .. math::`
-        \mathcal{L}_{BT} \\triangleq
+    .. math::
+        \mathcal{L}_{BT} =
         \\underbrace{\sum_{i} \\left( 1 - C_{ii} \\right)^{2}
         }_{\\text{invariance term}}
-        + \\frac{\lambda}{D} \,
+        + \lambda
         \\underbrace{\sum_{i} \sum_{j \\neq i} C_{ij}^{2}
         }_{\\text{redundancy reduction term}}
 
@@ -46,10 +46,8 @@ class BarlowTwinsLoss(nn.Module):
     Parameters
     ----------
     lambd: float, default=5e-3
-        trading off the importance of the redundancy reduction term.
-        In the loss, it is divided by the :math:`D`, the output
-        dimension.
-
+        Trading off the importance of the redundancy reduction term over
+        the invariance term.
 
     References
     ----------
@@ -90,8 +88,6 @@ class BarlowTwinsLoss(nn.Module):
             z1_norm = (z1 - z1.mean(0)) / z1.std(0)  # NxD
             z2_norm = (z2 - z2.mean(0)) / z2.std(0)  # NxD
 
-        lbd = self.lambd / D
-
         # cross-correlation matrix
         if N == 1:
             c = torch.mm(z1_norm.T, z2_norm)
@@ -102,7 +98,7 @@ class BarlowTwinsLoss(nn.Module):
         c_diff = (c - torch.eye(D, device=z1.device)).pow(2)  # DxD
 
         # multiply off-diagonal elems of c_diff by lambd
-        c_diff[~torch.eye(D, dtype=bool)] *= lbd
+        c_diff[~torch.eye(D, dtype=bool)] *= self.lambd
         loss_invariance = c_diff[torch.eye(D, dtype=bool)].sum()
         loss_redundancy = c_diff[~torch.eye(D, dtype=bool)].sum()
         loss = loss_invariance + loss_redundancy
