@@ -11,10 +11,18 @@
 Introduction
 ------------
 
-An estimator is an object that fits a model based on some training data and
-is capable of inferring some properties on new data. It can be, a classifier,
-a clustering, a regressor or a transformer. All estimators implement the
-fit method.
+An estimator is an object that fits a model based on some 
+training data and is capable of inferring some properties on new data. It can
+be, a classifier, a clustering algorithm, a regressor or a transformer (in the
+"scikit-learn" sense). All estimators implement a ``fit`` method. Behind the hood,
+it inherits from a ``pytorch_lightning.LightningModule``, and thus
+benefits from all the features of the ``pytorch_lightning`` library:
+
+- Distributed multi-GPU training
+- Logging and visualization
+- Clear organization of the training and evaluation code
+- Automatic checkpointing and early stopping
+- Callback logic
 
 
 Instanciation
@@ -40,9 +48,9 @@ as arguments:
 ================ ======================================================
 Parameters
 ================ ======================================================
-train_dataloader torch DataLoader [(n_samples, n_channels, n_features)]
+train_dataloader torch DataLoader [(n_samples, \*)]
 
-val_dataloader   torch DataLoader [(n_samples, n_channels, n_features)]
+val_dataloader   torch DataLoader [(n_samples, \*)]
 ================ ======================================================
 
 Build as a ``LightningModule``, the :meth:`~BaseEstimator.fit` method gets
@@ -83,7 +91,7 @@ the :meth:`~BaseEstimator.predict_step` methods.
 Base Classes
 ------------
 
-Base classes for all estimators and various utility functions.
+Base classes for all nidl estimators.
 
 .. currentmodule:: nidl.estimators
 
@@ -102,10 +110,10 @@ Base classes for all estimators and various utility functions.
    :align: center
 
 
-Self Supervised Learning
+Self-Supervised Learning
 ------------------------
 
-Self supervised learning estimators, losses and associated tools.
+Self-supervised learning estimators, losses and associated tools.
 
 
 Estimators
@@ -119,6 +127,7 @@ Estimators
 
     SimCLR
     YAwareContrastiveLearning
+    BarlowTwins
 
 .. autoclasstree:: nidl.estimators.ssl
    :strict:
@@ -136,7 +145,7 @@ Losses
 
     InfoNCE
     YAwareInfoNCE
-    KernelMetric
+    BarlowTwinsLoss
 
 
 Tools
@@ -151,3 +160,37 @@ Tools
     ProjectionHead
     SimCLRProjectionHead
     YAwareProjectionHead
+    BarlowTwinsProjectionHead
+
+
+Autoencoders
+------------
+
+Autoencoder estimators and losses.
+
+Estimators
+..........
+
+.. currentmodule:: nidl.estimators.autoencoders
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    VAE
+
+.. autoclasstree:: nidl.estimators.autoencoders
+   :strict:
+   :align: center
+
+
+Losses
+......
+
+.. currentmodule:: nidl.losses
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    BetaVAELoss

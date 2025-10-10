@@ -59,9 +59,8 @@ class BetaVAELoss:
     .. [1] Irina Higgins et al., "beta-VAE: Learning Basic Visual Concepts with
        a Constrained Variational Framework", ICLR 2017.
     """
-    def __init__(
-            self, beta: float = 4.0,
-            default_dist: str = "normal"):
+
+    def __init__(self, beta: float = 4.0, default_dist: str = "normal"):
         self.beta = beta
         self.default_dist = default_dist
         if default_dist not in {"normal", "laplace", "bernoulli"}:
@@ -71,7 +70,7 @@ class BetaVAELoss:
             )
 
     def __call__(self, x, p, q):
-        """ Compute the loss.
+        """Compute the loss.
 
         Parameters
         ----------
@@ -79,7 +78,7 @@ class BetaVAELoss:
             The input data.
         p: torch.distributions or torch.Tensor
             Decoder distribution :math:`p(x | z)` for a given latent code `z`
-            if `p` is :class:`torch.distributions`. If `p` is `torch.Tensor`,
+            if `p` is :mod:`torch.distributions`. If `p` is `torch.Tensor`,
             it should be the distribution mean for Normal or Laplacian
             distribution or probability of success for Bernouilli
             distribution.
@@ -88,7 +87,7 @@ class BetaVAELoss:
             function).
 
         Returns
-        ----------
+        -------
         losses: dict
             Dictionary containing the beta-VAE loss ("loss") along with all
             composite terms: the reconstruction loss "rec_loss" and KL loss
@@ -101,7 +100,7 @@ class BetaVAELoss:
         return {"rec_loss": rec_loss, "kl_loss": kl_loss, "loss": loss}
 
     def reconstruction_loss(self, p, data):
-        """ Computes the per image reconstruction loss for a batch of data
+        """Computes the per image reconstruction loss for a batch of data
         (i.e. negative log likelihood).
 
         The distribution of the likelihood on the each pixel implicitely
@@ -139,7 +138,7 @@ class BetaVAELoss:
         return loss
 
     def kl_normal_loss(self, q):
-        """ Computes the KL divergence between a normal distribution
+        """Computes the KL divergence between a normal distribution
         with diagonal covariance and a unit normal distribution.
 
         Parameters
@@ -152,7 +151,7 @@ class BetaVAELoss:
         return dimension_wise_kl.sum()
 
     def _parse_distribution(self, p):
-        """ Check that the input parameter is a valid distribution.
+        """Check that the input parameter is a valid distribution.
 
         If a tensor is given, it will be converted automatically to the
         specified default distributon.

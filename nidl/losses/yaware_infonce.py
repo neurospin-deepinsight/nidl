@@ -365,8 +365,8 @@ class YAwareInfoNCE(nn.Module):
         - If bandwidth is a 2d array, it must be of shape
           `(n_features, n_features)` where `n_features` is the number of
           features in `y`.
-        - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`
-          method to compute the similarity matrix between auxiliary variables.
+        - If `bandwidth` is `KernelMetric`, it uses the `pairwise` method to
+          compute the similarity matrix between auxiliary variables.
     temperature: float, default=0.1
         Temperature used to scale the dot-product between embedded vectors
 

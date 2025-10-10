@@ -11,7 +11,7 @@ import torch.nn as nn
 
 
 class BarlowTwinsLoss(nn.Module):
-    """Implementation of the redundancy-reduction loss [1]_.
+    """Implementation of the Barlow Twins loss [1]_.
 
     Compute the Barlow Twins loss, which reduces redundancy
     between the components of the outputs.
@@ -47,8 +47,8 @@ class BarlowTwinsLoss(nn.Module):
     ----------
     lambd: float, default=5e-3
         trading off the importance of the redundancy reduction term.
-        In the loss, it is divided by the :math:`D`,
-        the dimension of the output
+        In the loss, it is divided by the :math:`D`, the output
+        dimension.
 
 
     References
@@ -63,11 +63,7 @@ class BarlowTwinsLoss(nn.Module):
         super().__init__()
         self.lambd = lambd
 
-    def forward(
-            self,
-            z1: torch.Tensor,
-            z2: torch.Tensor
-    ):
+    def forward(self, z1: torch.Tensor, z2: torch.Tensor):
         """
         Parameters
         ----------
@@ -88,12 +84,11 @@ class BarlowTwinsLoss(nn.Module):
         N = z1.size(0)
         D = z1.size(1)
         if N == 1:
-            z1_norm = (z1 - z1.mean(0))
-            z2_norm = (z2 - z2.mean(0))
+            z1_norm = z1 - z1.mean(0)
+            z2_norm = z2 - z2.mean(0)
         else:
             z1_norm = (z1 - z1.mean(0)) / z1.std(0)  # NxD
             z2_norm = (z2 - z2.mean(0)) / z2.std(0)  # NxD
-
 
         lbd = self.lambd / D
 
@@ -116,4 +111,3 @@ class BarlowTwinsLoss(nn.Module):
 
     def __str__(self):
         return f"{type(self).__name__}(lambd={self.lambd})"
-
