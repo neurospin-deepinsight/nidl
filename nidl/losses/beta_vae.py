@@ -33,7 +33,7 @@ class BetaVAELoss:
     :math:`\beta`, which leads to the Beta-VAE loss function:
 
     .. math::
-        L_{VAE}(\theta, \phi) = L_{MSE}(\theta, \phi) -
+        L_{VAE}(\theta, \phi) = L_{rec}(\theta, \phi) -
                                   \beta L_{KL}(\theta, \phi)
 
     When :math:`\beta=1`, it corresponds to a VAE loss. If :math:`\beta>1`,

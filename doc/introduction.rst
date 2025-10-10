@@ -10,11 +10,10 @@ of deep learning models on large-scale neuroimaging data (anatomical
 volumes and surfaces, fMRI). 
 
 It follows the PyTorch design for the training logic and the scikit-learn
- API for the models (in particular fit, predict and transform). 
+API for the models (in particular fit, predict and transform). 
 
 :ref:`Supervised <supervised_learning>`, :ref:`self-supervised <self_supervised_learning>` and
-unsupervised models are available (with
-pre-trained weights) along with open datasets. 
+unsupervised models are available (with pre-trained weights) along with open datasets. 
 
 
 .. note::
@@ -77,10 +76,10 @@ suggested order:
 
 .. only:: html
 
-    .. image:: _images/sphx_glr_simclr_stl10_thumb.png
+    .. image:: _images/sphx_glr_plot_yaware_openbhb_thumb.png
         :alt: Basic nidl example: Playing with estimators
 
-    :ref:`sphx_glr_auto_examples_simclr_stl10.py`
+    :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py`
 
 .. raw:: html
 
@@ -103,15 +102,15 @@ that could be of interest to new-comers:
 1.  `Introduction to Human Neuroimaging <https://www.cambridge.org/highereducation/books/introduction-to-human-neuroimaging/1CC7D90DB2F353BB5232F6845557A22C/structural-imaging-methods/7536BA642E292F419C6A54F15D16AF8C>`_
     by Hans Op de Beeck and Chie Nakatani.
 
-2. `PyTorch tutorials <https://pytorch.org/tutorials/>`_ are a great resource to learn
-    about deep learning and PyTorch.
+2.  `PyTorch tutorials <https://pytorch.org/tutorials/>`_ are a great resource to
+    learn about deep learning and PyTorch.
 
-3. `Pytorch-Lightning tutorials <https://pytorch-lightning.readthedocs.io/en/latest/notebooks.html>`_
-    are a great resource to learn about PyTorch-Lightning, the high-level
-    framework used in ``nidl`` to handle the training and evaluation loops.
+3.  `Pytorch-Lightning tutorials <https://pytorch-lightning.readthedocs.io/en/latest/notebooks.html>`_
+    are a great resource to learn about PyTorch-Lightning, the high-level framework
+    used in ``nidl`` to handle the training and evaluation loops.
 
 4.  (For Python beginners) A quick and gentle introduction to scientific computing
-    with Python with the `scientififc Python lectures <https://lectures.scientific-python.org/>`_.
+    with Python with the `scientific Python lectures <https://lectures.scientific-python.org/>`_.
     Moreover, you can use ``nidl`` with `Jupyter <https://jupyter.org/>`_ notebooks or
     `IPython <https://ipython.org/>`_ sessions. They provide an interactive
     environment that greatly facilitates debugging and visualization.
