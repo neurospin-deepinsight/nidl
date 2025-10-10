@@ -328,23 +328,24 @@ class YAwareInfoNCE(nn.Module):
     Compute the y-Aware InfoNCE loss, which integrates auxiliary
     information into contrastive learning by weighting sample pairs.
 
-    Given a mini-batch of size :math:`n`, two embeddings :math:`z_1` and
-    :math:`z_2` representing two views of the same samples and a weighting
-    matrix :math:`W` computed using auxiliary variables :math:`y`, the loss is:
+    Given a mini-batch of size :math:`n`, two embeddings
+    :math:`z_1=(z_1^i)_{i\in [1..n]}` and :math:`z_2=(z_2^i)_{i\in [1..n]}`
+    representing two views of the same samples and a weighting
+    matrix :math:`W=(w_{i,j})_{i,j\in [1..n]}` computed using auxiliary
+    variables :math:`y`, the loss is:
 
     .. math::
-        \\ell = -\\frac{1}{n} \\sum_{i,j} \\frac{W_{i,j}}{\\sum_{k=1}^{n} \
-        W_{i, k}} \\log \\frac{\\exp(\\text{sim}(z_1^{i}, z_2^{j}) / \\tau)} \
-        {\\sum_{k=1}^{n} \\exp(\\text{sim}(z_1^{i}, z_2^{k}) / \\tau)}
+        \mathcal{L}_{NCE}^y = -\\frac{1}{n} \\sum_{i,j} \\frac{w_{i,j}} \
+        {\\sum_{k=1}^{n} w_{i, k}} \\log \\frac{\\exp(\\text{sim}(z_1^{i}, \
+        z_2^{j}) / \\tau)}{\\sum_{k=1}^{n} \\exp(\\text{sim}(z_1^{i}, z_2^{k})\
+        / \\tau)}
 
-    where :math:`sim` is the cosine similarity and :math:`\\tau` is the
-    temperature.
-
-    :math:`W` is computed with a kernel :math:`K` (e.g. Gaussian) and bandwidth
-    :math:`H` as:
+    where :math:`sim` is the cosine similarity,  :math:`\\tau` is the
+    temperature and :math:`w_{i,j}` is computed with a kernel :math:`K`
+    (e.g. Gaussian) and bandwidth :math:`H` as:
 
     .. math::
-        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (y_i-y_j) \\right)
+        w_{i,j} = K\\left( H^{-\\frac{1}{2}} (y_i-y_j) \\right)
 
     
     Parameters
@@ -365,8 +366,8 @@ class YAwareInfoNCE(nn.Module):
         - If bandwidth is a 2d array, it must be of shape
           `(n_features, n_features)` where `n_features` is the number of
           features in `y`.
-        - If `bandwidth` is :class:`~KernelMetric`, it uses the `pairwise`
-          method to compute the similarity matrix between auxiliary variables.
+        - If `bandwidth` is `KernelMetric`, it uses the `pairwise` method to
+          compute the similarity matrix between auxiliary variables.
     temperature: float, default=0.1
         Temperature used to scale the dot-product between embedded vectors
 

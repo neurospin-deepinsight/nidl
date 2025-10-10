@@ -23,7 +23,7 @@ Nidl
         :class-title: sd-text-primary
         :margin: 2 2 0 0
 
-        Get started with Nilearn
+        Get started with Nidl
 
     .. grid-item-card:: :fas:`th` Examples
         :link: auto_examples/index.html
@@ -130,7 +130,7 @@ Featured works
 
         .. div:: sd-font-weight-bold
 
-          BarlowTwins
+          Barlow Twins
 
         Zbonta et al.: `Barlow Twins, Self-Supervised Learning via Redundancy Reduction
         <http://proceedings.mlr.press/v139/zbontar21a/zbontar21a.pdf>`_, 

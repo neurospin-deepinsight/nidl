@@ -8,9 +8,9 @@ and deep learning models on neuroimaging data.
 
 We will demonstrate how to use OpenBHB for:
 
-- **Age prediction**
-- **Sex classification**
-- **Brain aging trajectories modeling**
+- **Age prediction** [4]_
+- **Sex classification** [5]_
+- **Brain aging trajectories modeling** [2]_, [6]_
 
 We will start by visualizing the available resources in OpenBHB, then we will
 demonstrate how to perform these prediction tasks.
@@ -616,3 +616,12 @@ plt.show()
 # .. [3] Subcortical volumes across the lifespan: Data from 18,605 healthy
 #        individuals aged 3–90 years, Hum. Brain Mapping, 2022
 #        https://onlinelibrary.wiley.com/doi/pdf/10.1002/hbm.25320
+# .. [4] Cole et al., Predicting brain age with deep learning from raw imaging
+#        data results in a reliable and heritable biomarker, NeuroImage, 2017
+#        https://www.sciencedirect.com/science/article/pii/S1053811917306407
+# .. [5] Ryali et al., Deep learning models reveal replicable, generalizable,
+#        and behaviorally relevant sex differences in human functional brain
+#        organization, Proceedings of the National Academy of Sciences, 2024
+#        https://www.pnas.org/doi/10.1073/pnas.2310012121
+# .. [6] Raznahan et al., How does your cortex grow?, J. Neurosci., 2011
+#        https://www.jneurosci.org/content/31/19/7174

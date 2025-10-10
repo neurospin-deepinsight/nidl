@@ -10,11 +10,10 @@ of deep learning models on large-scale neuroimaging data (anatomical
 volumes and surfaces, fMRI). 
 
 It follows the PyTorch design for the training logic and the scikit-learn
- API for the models (in particular fit, predict and transform). 
+API for the models (in particular fit, predict and transform). 
 
 :ref:`Supervised <supervised_learning>`, :ref:`self-supervised <self_supervised_learning>` and
-unsupervised models are available (with
-pre-trained weights) along with open datasets. 
+unsupervised models are available (with pre-trained weights) along with open datasets. 
 
 
 .. note::
@@ -77,10 +76,10 @@ suggested order:
 
 .. only:: html
 
-    .. image:: _images/sphx_glr_simclr_stl10_thumb.png
+    .. image:: _images/sphx_glr_plot_yaware_openbhb_thumb.png
         :alt: Basic nidl example: Playing with estimators
 
-    :ref:`sphx_glr_auto_examples_simclr_stl10.py`
+    :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py`
 
 .. raw:: html
 
@@ -100,17 +99,22 @@ Finding help
 On top of this guide, there is a lot of content available outside of ``nidl``
 that could be of interest to new-comers:
 
-1.  `Handbook of Functional MRI Data Analysis <https://www.cambridge.org/be/universitypress/subjects/statistics-probability/statistics-life-sciences-medicine-and-health/handbook-functional-mri-data-analysis>`_
-    by Russel Poldrack, Jeanette Mumford and Thomas Nichols.
+1.  `Introduction to Human Neuroimaging <https://www.cambridge.org/highereducation/books/introduction-to-human-neuroimaging/1CC7D90DB2F353BB5232F6845557A22C/structural-imaging-methods/7536BA642E292F419C6A54F15D16AF8C>`_
+    by Hans Op de Beeck and Chie Nakatani.
 
-2.  The documentation of ``scikit-learn`` explains each method with tips on practical use and examples: :sklearn:`\ `.
-    While not specific to neuroimaging, it is often a recommended read.
+2.  `PyTorch tutorials <https://pytorch.org/tutorials/>`_ are a great resource to
+    learn about deep learning and PyTorch.
 
-3.  (For Python beginners) A quick and gentle introduction to scientific computing
-    with Python with the `scientififc Python lectures <https://lectures.scientific-python.org/>`_.
+3.  `Pytorch-Lightning tutorials <https://pytorch-lightning.readthedocs.io/en/latest/notebooks.html>`_
+    are a great resource to learn about PyTorch-Lightning, the high-level framework
+    used in ``nidl`` to handle the training and evaluation loops.
+
+4.  (For Python beginners) A quick and gentle introduction to scientific computing
+    with Python with the `scientific Python lectures <https://lectures.scientific-python.org/>`_.
     Moreover, you can use ``nidl`` with `Jupyter <https://jupyter.org/>`_ notebooks or
     `IPython <https://ipython.org/>`_ sessions. They provide an interactive
     environment that greatly facilitates debugging and visualization.
+
 
 Besides, you can find help on :neurostars:`neurostars <>` for questions
 related to ``nidl`` and to computational neuroscience in general.
@@ -129,30 +133,14 @@ We give a non-exhaustive list of such important applications.
 
 Predicting a clinical score or even treatment response
 from brain imaging with :ref:`supervised
-learning <supervised_learning>` e.g. :footcite:t:`Mourao-miranda2012`.
-
-**Information mapping**
-
-Using the prediction accuracy of a classifier
-to characterize relationships between brain images and stimuli. (e.g.
-:footcite:t:`Kriegeskorte2006`)
+learning <supervised_learning>` e.g. :footcite:t:`Wen2020`.
 
 **Transfer learning**
 
-Measuring how much an estimator trained on one
-specific psychological process/task can predict the neural activity
-underlying another specific psychological process/task
-(e.g. discriminating left from
-right eye movements also discriminates additions from subtractions :footcite:p:`Knops2009`)
-
-**High-dimensional multivariate statistics**
-
-From a statistical point of view, machine learning implements
-statistical estimation of models with a large number of parameters.
-Tricks pulled in machine learning (e.g. regularization) can
-make this estimation possible despite the usually
-small number of observations in the neuroimaging domain :footcite:p:`Varoquaux2012`.
-This usage of machine learning requires some understanding of the models.
+Measuring how much an estimator pre-trained on a pretext task (e.g.
+:term:`self-supervised learning`) can be fine-tuned to solve a
+clinical task like predicting a clinical score or a mental condition
+:footcite:t:`Dufumier2024`.
 
 **Data mining / exploration**
 
