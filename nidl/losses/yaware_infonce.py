@@ -328,7 +328,7 @@ class YAwareInfoNCE(nn.Module):
     Compute the y-Aware InfoNCE loss, which integrates auxiliary
     information into contrastive learning by weighting sample pairs.
 
-    Given a mini-batch of size :math:`n`, two embeddings 
+    Given a mini-batch of size :math:`n`, two embeddings
     :math:`z_1=(z_1^i)_{i\in [1..n]}` and :math:`z_2=(z_2^i)_{i\in [1..n]}`
     representing two views of the same samples and a weighting
     matrix :math:`W=(w_{i,j})_{i,j\in [1..n]}` computed using auxiliary
