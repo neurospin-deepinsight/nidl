@@ -173,7 +173,7 @@ different modalities:
 
     (121, 145, 121)
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fc072d3b860>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fa9d1e900b0>
 
 
 
@@ -250,7 +250,7 @@ a brain template using the Neuromorphometrics atlas**:
  .. code-block:: none
 
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fc163704d10>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fa9e5857620>
 
 
 
@@ -973,9 +973,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 32.632 seconds)
+   **Total running time of the script:** (2 minutes 34.314 seconds)
 
-**Estimated memory usage:**  2630 MB
+**Estimated memory usage:**  2619 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_openbhb.py:
