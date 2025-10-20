@@ -39,4 +39,3 @@ URL = "https://github.com/neurospin-deepinsight/nidl"
 AUTHOR = """
 nidl developers
 """
-AUTHOR_EMAIL = "antoine.grigis@cea.fr"
