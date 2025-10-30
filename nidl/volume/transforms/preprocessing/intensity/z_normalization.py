@@ -73,7 +73,7 @@ class ZNormalization(VolumeTransform):
             The input data with shape :math:`(C, H, W, D)` or :math:`(H, W, D)`
 
         Returns
-        ----------
+        -------
         array or torch.Tensor
             The z-normalized data per channel with same type as input.
         """

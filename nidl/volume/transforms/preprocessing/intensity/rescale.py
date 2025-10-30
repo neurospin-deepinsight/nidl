@@ -114,7 +114,7 @@ class RobustRescaling(VolumeTransform):
             The input data with shape :math:`(C, H, W, D)` or :math:`(H, W, D)`
 
         Returns
-        ----------
+        -------
         array or torch.Tensor
             The rescaled data with same type as input.
         """

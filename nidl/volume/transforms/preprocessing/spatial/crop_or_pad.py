@@ -64,7 +64,7 @@ class CropOrPad(VolumeTransform):
             all channels.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Cropped or padded data with same type as input and
             shape `target_shape`.
