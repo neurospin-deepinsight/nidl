@@ -22,9 +22,9 @@ class RandomErasing(VolumeTransform):
     values (i.e. random erasing [1]_, very similar to cutout [2]_ but with
     arbitrary aspect ratio). It is an extension of
     `torchvision.transforms.RandomErasing` to the 3d case and it can
-    eventually erase multiple random boxes. It handles `np.ndarray` or
-    `torch.Tensor` as input and returns a consistent output (same type
-    and shape).
+    eventually erase multiple random boxes. It handles :class:`numpy.ndarray`
+    or :class:`torch.Tensor` as input and returns a consistent output (same
+    type and shape).
 
     Parameters
     ----------

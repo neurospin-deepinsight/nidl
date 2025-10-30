@@ -36,7 +36,7 @@ class RobustRescaling(VolumeTransform):
     :math:`(o_{\text{min}}, o_{\text{max}})` defines the target output
     intensity range.
 
-    It handles a :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles a :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type and shape). Input shape must be
     :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
 
@@ -114,7 +114,7 @@ class RobustRescaling(VolumeTransform):
             The input data with shape :math:`(C, H, W, D)` or :math:`(H, W, D)`
 
         Returns
-        ----------
+        -------
         array or torch.Tensor
             The rescaled data with same type as input.
         """

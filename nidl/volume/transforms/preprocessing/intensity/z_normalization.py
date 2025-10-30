@@ -27,9 +27,9 @@ class ZNormalization(VolumeTransform):
     is the data mean, :math:`\\sigma(x)` is the data std, and
     :math:`\\epsilon` is a small constant added for numerical stability.
 
-    It can handle a :class:`np.ndarray` or :class:`torch.Tensor` as input and
-    it returns a consistent output (same type and shape). Input shape must be
-    :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
+    It can handle a :class:`numpy.ndarray` or :class:`torch.Tensor` as input
+    and it returns a consistent output (same type and shape). Input shape must
+    be :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
 
 
     Parameters
@@ -73,7 +73,7 @@ class ZNormalization(VolumeTransform):
             The input data with shape :math:`(C, H, W, D)` or :math:`(H, W, D)`
 
         Returns
-        ----------
+        -------
         array or torch.Tensor
             The z-normalized data per channel with same type as input.
         """

@@ -20,7 +20,7 @@ class Resize(Resample):
 
     This transformation resizes a 3d volume to a new target shape,
     implicitely modifying the physical spacing. Internally, it uses SimpleITK
-    for fast and robust resampling. It handles :class:`np.ndarray` or
+    for fast and robust resampling. It handles :class:`numpy.ndarray` or
     :class:`torch.Tensor` as input and returns a consistent output (same type).
     Input shape must be :math:`(C, H, W, D)` or :math:`(H, W, D)`.
     
@@ -86,7 +86,7 @@ class Resize(Resample):
             :math:`(H, W, D)`. The channel dimension is never resized.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Resampled data with shape :math:`(H', W', D')`  or
             :math:`(C, H', W', D')` and same type as input.

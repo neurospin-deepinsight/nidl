@@ -1,5 +1,5 @@
-:mod:`nidl.transforms`: Available augmentations
-===============================================
+:mod:`nidl.transforms`: Available transformations
+=================================================
 
 .. automodule:: nidl.transforms
    :no-members:
@@ -62,6 +62,33 @@ Base classes for all augmentations and various utility functions.
 
 Volume
 ------
+
+Preprocessing
+.............
+
+Classes that implement useful spatial and intensity pre-processing
+transformations on brain 3D volumes.
+
+.. currentmodule:: nidl.volume.transforms.preprocessing
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    RobustRescaling
+    ZNormalization
+    CropOrPad
+    Resample
+    Resize
+
+.. autoclasstree:: nidl.volume.transforms.preprocessing
+   :strict:
+   :align: center
+
+
+
+Augmentations
+.............
 
 Classes that implement augmentations on brain 3D volumes and various utility
 functions.
