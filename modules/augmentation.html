@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="nidl.transforms: Available augmentations" />
+<meta property="og:title" content="nidl.transforms: Available transformations" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/modules/augmentation.html" />
 <meta property="og:site_name" content="Nidl" />
@@ -15,7 +15,7 @@
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>nidl.transforms: Available augmentations - Nidl</title>
+        <title>nidl.transforms: Available transformations - Nidl</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=2da93098" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -289,11 +289,16 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available augmentations</a><input aria-label="Toggle navigation of nidl.transforms: Available augmentations" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.Transform.html">nidl.transforms.Transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.Identity.html">nidl.transforms.Identity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.MultiViewsTransform.html">nidl.transforms.MultiViewsTransform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.VolumeTransform.html">nidl.transforms.VolumeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.RobustRescaling.html">nidl.volume.transforms.preprocessing.RobustRescaling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.ZNormalization.html">nidl.volume.transforms.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.CropOrPad.html">nidl.volume.transforms.preprocessing.CropOrPad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.Resample.html">nidl.volume.transforms.preprocessing.Resample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.Resize.html">nidl.volume.transforms.preprocessing.Resize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.augmentation.RandomGaussianBlur.html">nidl.volume.transforms.augmentation.RandomGaussianBlur</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.augmentation.RandomGaussianNoise.html">nidl.volume.transforms.augmentation.RandomGaussianNoise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.transforms.augmentation.RandomErasing.html">nidl.volume.transforms.augmentation.RandomErasing</a></li>
@@ -374,7 +379,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="module-nidl.transforms">
-<span id="nidl-transforms-available-augmentations"></span><h1><a class="reference internal" href="#module-nidl.transforms" title="nidl.transforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code></a>: Available augmentations<a class="headerlink" href="#module-nidl.transforms" title="Link to this heading">¶</a></h1>
+<span id="nidl-transforms-available-transformations"></span><h1><a class="reference internal" href="#module-nidl.transforms" title="nidl.transforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code></a>: Available transformations<a class="headerlink" href="#module-nidl.transforms" title="Link to this heading">¶</a></h1>
 <p>This modules details the public API you should use and implement for a
 nidl compatible transform, as well as the transforms available in nidl.</p>
 <section id="introduction">
@@ -389,7 +394,7 @@ as an argument, as this is left to the <a class="reference internal" href="gener
 </section>
 <section id="composability">
 <h3>Composability<a class="headerlink" href="#composability" title="Link to this heading">¶</a></h3>
-<p>Transforms can be composed using the <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="(in Torchvision vmain (0.25.0a0+faffd5c))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchvision.transforms.Compose</span></code></a>
+<p>Transforms can be composed using the <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="(in Torchvision vmain (0.25.0a0+218d2ab))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchvision.transforms.Compose</span></code></a>
 class to create directed acyclic graphs defining the probability that each
 transform will be applied.</p>
 </section>
@@ -427,6 +432,41 @@ deterministic behaviour.</p>
 </section>
 <section id="volume">
 <h2>Volume<a class="headerlink" href="#volume" title="Link to this heading">¶</a></h2>
+<section id="preprocessing">
+<h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">¶</a></h3>
+<p>Classes that implement useful spatial and intensity pre-processing
+transformations on brain 3D volumes.</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.RobustRescaling.html#nidl.volume.transforms.preprocessing.RobustRescaling" title="nidl.volume.transforms.preprocessing.RobustRescaling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RobustRescaling</span></code></a>([out_min_max, percentiles, ...])</p></td>
+<td><p>Rescale intensities in a 3d volume to a given range.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.ZNormalization.html#nidl.volume.transforms.preprocessing.ZNormalization" title="nidl.volume.transforms.preprocessing.ZNormalization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZNormalization</span></code></a>([masking_fn, eps])</p></td>
+<td><p>Normalize a 3d volume by removing the mean and scaling to unit variance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.CropOrPad.html#nidl.volume.transforms.preprocessing.CropOrPad" title="nidl.volume.transforms.preprocessing.CropOrPad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CropOrPad</span></code></a>(target_shape[, padding_mode, ...])</p></td>
+<td><p>Crop and/or pad a 3d volume to match the target shape.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.Resample.html#nidl.volume.transforms.preprocessing.Resample" title="nidl.volume.transforms.preprocessing.Resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resample</span></code></a>([target, interpolation])</p></td>
+<td><p>Resample a 3d volume to a different physical space.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.volume.transforms.preprocessing.Resize.html#nidl.volume.transforms.preprocessing.Resize" title="nidl.volume.transforms.preprocessing.Resize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resize</span></code></a>(target_shape[, interpolation])</p></td>
+<td><p>Resize a 3d volume to match a target shape.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre align="center" class="mermaid align-center">
+        classDiagram
+  Resample &lt;|-- Resize
+  VolumeTransform &lt;|-- CropOrPad
+  VolumeTransform &lt;|-- Resample
+  VolumeTransform &lt;|-- RobustRescaling
+  VolumeTransform &lt;|-- ZNormalization
+    </pre></section>
+<section id="augmentations">
+<h3>Augmentations<a class="headerlink" href="#augmentations" title="Link to this heading">¶</a></h3>
 <p>Classes that implement augmentations on brain 3D volumes and various utility
 functions.</p>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -462,6 +502,7 @@ functions.</p>
   VolumeTransform &lt;|-- RandomResizedCrop
   VolumeTransform &lt;|-- RandomRotation
     </pre></section>
+</section>
 <section id="surface">
 <h2>Surface<a class="headerlink" href="#surface" title="Link to this heading">¶</a></h2>
 <p>Classes that implement augmentations on brain surface and various utility
@@ -529,7 +570,7 @@ functions.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available augmentations</a><ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a><ul>
 <li><a class="reference internal" href="#instanciation">Instanciation</a></li>
 <li><a class="reference internal" href="#composability">Composability</a></li>
@@ -537,7 +578,11 @@ functions.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#base-classes">Base Classes</a></li>
-<li><a class="reference internal" href="#volume">Volume</a></li>
+<li><a class="reference internal" href="#volume">Volume</a><ul>
+<li><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+<li><a class="reference internal" href="#augmentations">Augmentations</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#surface">Surface</a></li>
 </ul>
 </li>

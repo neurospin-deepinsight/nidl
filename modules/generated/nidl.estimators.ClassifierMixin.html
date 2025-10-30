@@ -287,11 +287,16 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available augmentations</a><input aria-label="Toggle navigation of nidl.transforms: Available augmentations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.Transform.html">nidl.transforms.Transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.Identity.html">nidl.transforms.Identity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.MultiViewsTransform.html">nidl.transforms.MultiViewsTransform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.VolumeTransform.html">nidl.transforms.VolumeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.preprocessing.RobustRescaling.html">nidl.volume.transforms.preprocessing.RobustRescaling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.preprocessing.ZNormalization.html">nidl.volume.transforms.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.preprocessing.CropOrPad.html">nidl.volume.transforms.preprocessing.CropOrPad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.preprocessing.Resample.html">nidl.volume.transforms.preprocessing.Resample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.preprocessing.Resize.html">nidl.volume.transforms.preprocessing.Resize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.augmentation.RandomGaussianBlur.html">nidl.volume.transforms.augmentation.RandomGaussianBlur</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.augmentation.RandomGaussianNoise.html">nidl.volume.transforms.augmentation.RandomGaussianNoise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.transforms.augmentation.RandomErasing.html">nidl.volume.transforms.augmentation.RandomErasing</a></li>
@@ -381,7 +386,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.ClassifierMixin<a class="headerlink" href="#nidl-estimators-classifiermixin" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.ClassifierMixin">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.</span></span><span class="sig-name descname"><span class="pre">ClassifierMixin</span></span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/12d038d/nidl/estimators/base.py#L611"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ClassifierMixin" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nidl.estimators.</span></span><span class="sig-name descname"><span class="pre">ClassifierMixin</span></span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/17e05de/nidl/estimators/base.py#L611"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ClassifierMixin" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mixin class for all classifiers in nidl.</p>
 <p>This mixin sets the estimator type to <cite>classifier</cite> through the

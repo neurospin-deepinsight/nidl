@@ -289,11 +289,16 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available augmentations</a><input aria-label="Toggle navigation of nidl.transforms: Available augmentations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.Transform.html">nidl.transforms.Transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.Identity.html">nidl.transforms.Identity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.MultiViewsTransform.html">nidl.transforms.MultiViewsTransform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.VolumeTransform.html">nidl.transforms.VolumeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.RobustRescaling.html">nidl.volume.transforms.preprocessing.RobustRescaling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.ZNormalization.html">nidl.volume.transforms.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.CropOrPad.html">nidl.volume.transforms.preprocessing.CropOrPad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.Resample.html">nidl.volume.transforms.preprocessing.Resample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.Resize.html">nidl.volume.transforms.preprocessing.Resize</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomGaussianBlur.html">nidl.volume.transforms.augmentation.RandomGaussianBlur</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomGaussianNoise.html">nidl.volume.transforms.augmentation.RandomGaussianNoise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomErasing.html">nidl.volume.transforms.augmentation.RandomErasing</a></li>
@@ -472,7 +477,7 @@ being in the same physical space across subjects.</p></li>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(121, 145, 121)
 
-&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fca35ef7dd0&gt;
+&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7febf0343cb0&gt;
 </pre></div>
 </div>
 </section>
@@ -526,7 +531,7 @@ a brain template using the Neuromorphometrics atlas**:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fca35ef6150&gt;
+<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7feccdd1f2c0&gt;
 </pre></div>
 </div>
 </section>
@@ -751,10 +756,10 @@ in millimiter.</p></li>
 <img src="../_images/sphx_glr_plot_openbhb_005.png" srcset="../_images/sphx_glr_plot_openbhb_005.png" alt="Cortical thickness (in $mm$), Sulcal depth (in $mm$), Curvature" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
 [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
 [fetch_surf_fsaverage]
-Downloaded 720896 of 34242788 bytes (2.1%%,   46.5s remaining)
+Downloaded 688128 of 34242788 bytes (2.0%%,   48.8s remaining)
 [fetch_surf_fsaverage]
-Downloaded 19955712 of 34242788 bytes (58.3%%,    1.4s remaining)
-[fetch_surf_fsaverage]  ...done. (19 seconds, 0 min)
+Downloaded 19562496 of 34242788 bytes (57.1%%,    1.5s remaining)
+[fetch_surf_fsaverage]  ...done. (6 seconds, 0 min)
 
 [fetch_surf_fsaverage] Extracting data from /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
 [fetch_surf_fsaverage] .. done.
@@ -1107,8 +1112,8 @@ organization, Proceedings of the National Academy of Sciences, 2024
 <a class="reference external" href="https://www.jneurosci.org/content/31/19/7174">https://www.jneurosci.org/content/31/19/7174</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 54.122 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2640 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 49.343 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2643 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9891edd964521be9e6f154fc1a8056c6/plot_openbhb.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_openbhb.ipynb</span></code></a></p>
