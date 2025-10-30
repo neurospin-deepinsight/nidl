@@ -44,6 +44,7 @@ class ProjectionHead(nn.Module):
     >>>     (256, 128, None, None)
     >>> ])
     """
+
     def __init__(
         self,
         blocks: list[
@@ -120,6 +121,7 @@ class YAwareProjectionHead(ProjectionHead):
            Visual Representations." ICML, 2020. https://arxiv.org/abs/2002.05709
 
     """
+
     def __init__(
         self,
         input_dim: int = 2048,
@@ -135,7 +137,7 @@ class YAwareProjectionHead(ProjectionHead):
 
 
 class BarlowTwinsProjectionHead(ProjectionHead):
-    """Projection head used for BarlowTwins contrastive learning.
+    """Projection head used for Barlow Twins [1]_.
 
     It implements the upscaling of layer sizes
     (hidden and output layers of size 8192),
@@ -160,10 +162,13 @@ class BarlowTwinsProjectionHead(ProjectionHead):
     ):
         super().__init__(
             [
-                (input_dim, hidden_dim, nn.BatchNorm1d(hidden_dim),
-                nn.ReLU()),
-                (hidden_dim, hidden_dim, nn.BatchNorm1d(hidden_dim),
-                nn.ReLU()),
+                (input_dim, hidden_dim, nn.BatchNorm1d(hidden_dim), nn.ReLU()),
+                (
+                    hidden_dim,
+                    hidden_dim,
+                    nn.BatchNorm1d(hidden_dim),
+                    nn.ReLU(),
+                ),
                 (hidden_dim, output_dim, None, None),
             ]
         )

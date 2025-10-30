@@ -76,7 +76,6 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: doc/_build/html
-        destination_dir: dev
 
   build:
 

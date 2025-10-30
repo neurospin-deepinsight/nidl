@@ -11,7 +11,7 @@ import torch.nn as nn
 
 
 class BarlowTwinsLoss(nn.Module):
-    """Implementation of the redundancy-reduction loss [1]_.
+    """Implementation of the Barlow Twins loss [1]_.
 
     Compute the Barlow Twins loss, which reduces redundancy
     between the components of the outputs.
@@ -20,11 +20,11 @@ class BarlowTwinsLoss(nn.Module):
     :math:`z^{(1)}_b` and :math:`z^{(2)}_b` representing
     two outputs of dimension :math:`D` of the same sample:
 
-    .. math::`
-        \mathcal{L}_{BT} \\triangleq
+    .. math::
+        \mathcal{L}_{BT} =
         \\underbrace{\sum_{i} \\left( 1 - C_{ii} \\right)^{2}
         }_{\\text{invariance term}}
-        + \\frac{\lambda}{D} \,
+        + \lambda
         \\underbrace{\sum_{i} \sum_{j \\neq i} C_{ij}^{2}
         }_{\\text{redundancy reduction term}}
 
@@ -46,10 +46,8 @@ class BarlowTwinsLoss(nn.Module):
     Parameters
     ----------
     lambd: float, default=5e-3
-        trading off the importance of the redundancy reduction term.
-        In the loss, it is divided by the :math:`D`,
-        the dimension of the output
-
+        Trading off the importance of the redundancy reduction term over
+        the invariance term.
 
     References
     ----------
@@ -63,11 +61,7 @@ class BarlowTwinsLoss(nn.Module):
         super().__init__()
         self.lambd = lambd
 
-    def forward(
-            self,
-            z1: torch.Tensor,
-            z2: torch.Tensor
-    ):
+    def forward(self, z1: torch.Tensor, z2: torch.Tensor):
         """
         Parameters
         ----------
@@ -88,14 +82,11 @@ class BarlowTwinsLoss(nn.Module):
         N = z1.size(0)
         D = z1.size(1)
         if N == 1:
-            z1_norm = (z1 - z1.mean(0))
-            z2_norm = (z2 - z2.mean(0))
+            z1_norm = z1 - z1.mean(0)
+            z2_norm = z2 - z2.mean(0)
         else:
             z1_norm = (z1 - z1.mean(0)) / z1.std(0)  # NxD
             z2_norm = (z2 - z2.mean(0)) / z2.std(0)  # NxD
-
-
-        lbd = self.lambd / D
 
         # cross-correlation matrix
         if N == 1:
@@ -107,7 +98,7 @@ class BarlowTwinsLoss(nn.Module):
         c_diff = (c - torch.eye(D, device=z1.device)).pow(2)  # DxD
 
         # multiply off-diagonal elems of c_diff by lambd
-        c_diff[~torch.eye(D, dtype=bool)] *= lbd
+        c_diff[~torch.eye(D, dtype=bool)] *= self.lambd
         loss_invariance = c_diff[torch.eye(D, dtype=bool)].sum()
         loss_redundancy = c_diff[~torch.eye(D, dtype=bool)].sum()
         loss = loss_invariance + loss_redundancy
@@ -116,4 +107,3 @@ class BarlowTwinsLoss(nn.Module):
 
     def __str__(self):
         return f"{type(self).__name__}(lambd={self.lambd})"
-

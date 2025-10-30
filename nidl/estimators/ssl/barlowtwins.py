@@ -21,18 +21,24 @@ from .utils.projection_heads import BarlowTwinsProjectionHead
 
 
 class BarlowTwins(TransformerMixin, BaseEstimator):
-    """BarlowTwins Learning [1]_.
+    """Barlow Twins [1]_.
 
-    BarlowTwins learning is a self-supervised learning framework for
-    learning visual representations by reducing the redundancy between
-    the comonents of the outputs. The framework consists of:
+    Barlow Twins is a self-supervised learning model for learning visual
+    representations by i) imposing invariance to data augmentation and
+    ii) reducing the redundancy between output features. Contrary to
+    contrastive methods, it does **not** rely on negative samples.
+    The framework consists of:
 
     1) Data Augmentation - Generates two augmented views of an image.
     2) Encoder (Backbone Network) - Maps images to feature embeddings
        (e.g., 3D-ResNet).
-    3) Projection Head - Maps features to a latent space for contrastive
-       loss optimization.
-    4) Redundancy Reduction Loss (BarlowTwins).
+    3) Projection Head - Maps features to a latent space for Barlow Twins
+       loss optimization. The projector dimension in Barlow Twins is typically
+       very high (e.g., 8192 or 16384) compared to the features dimension
+       (e.g., 2048 in ResNet-50). This is a key difference with other SSL
+       methods.
+    4) Redundancy reduction loss in addition to a data augmentation invariance
+       loss.
 
 
     Parameters
@@ -62,21 +68,20 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         is used and the encoder output is directly used for loss computation.
         Otherwise, a :class:`~torch.nn.Module` is expected. In general,
         the uninstantiated class should be passed, although instantiated
-        modules will also work. By default, a 2-layer MLP with ReLU activation,
-        2048-d hidden units, and 128-d output dimensions is used.
+        modules will also work. By default, a 3-layer MLP with ReLU activation,
+        Batch Normalization, 2048-d input dimension, 8192-d hidden units, and
+        8192-d output dimensions is used.
 
     projection_head_kwargs : dict or None, default=None
         Arguments for building the projection head. By default, input dimension
-        is 2048-d and output dimension is 128-d. These can be changed by
+        is 2048-d and output dimension is 8192-d. These can be changed by
         passing a dictionary with keys 'input_dim' and 'output_dim'.
         'input_dim' must be equal to the encoder's output dimension.
         Ignored if `projection_head` is instantiated.
 
     lambd : float, default=5e-3
         lambda value in the BarlowTwins loss. Trading off the importance of
-        the redundancy reduction term.
-        In the loss, it is divided by the :math:`D`,
-        the dimension of the output.
+        the redundancy reduction term over the invariance term.
 
     optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
         default="adam"
@@ -90,7 +95,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
               (see "Decoupled Weight Decay Regularization", Loshchilov and
               Hutter, ICLR 2019).
               
-        - An instance or subclass of ``torch.optim.Optimizer``.
+        - An instance or subclass of :class:`~torch.optim.Optimizer`.
 
     optimizer_kwargs : dict or None, default=None
         Arguments for the optimizer ('adam' by default). By default:
@@ -297,9 +302,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         """
         return self.encoder(batch)
 
-    def parse_batch(
-        self, batch: Any
-    ) -> tuple[torch.Tensor, torch.Tensor]:
+    def parse_batch(self, batch: Any) -> tuple[torch.Tensor, torch.Tensor]:
         """Parses the batch to extract the two views and the auxiliary
         variable.
 
@@ -333,6 +336,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         return V1, V2
 
     def configure_optimizers(self):
+        """Instantiate the required optimizer and setup the scheduler."""
         known_optimizers = {
             "adam": torch.optim.Adam,
             "adamW": torch.optim.AdamW,
@@ -474,12 +478,12 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         self,
         lambd: float,
     ) -> nn.Module:
-        """Builds the barlowTwinsloss function with the
-        specified lambda parameter.
+        """Builds the Barlow Twins loss object with the specified lambda
+        parameter.
 
         Parameters
         ----------
-        temperature: float
+        lambd: float
             The lambda parameter for the BarlowTwins loss.
 
         Returns
@@ -487,6 +491,4 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         loss: nn.Module
             The BarlowTwins loss function.
         """
-        return BarlowTwinsLoss(
-            lambd=lambd
-        )
+        return BarlowTwinsLoss(lambd=lambd)

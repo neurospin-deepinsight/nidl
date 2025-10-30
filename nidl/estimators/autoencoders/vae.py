@@ -17,9 +17,9 @@ from ..base import BaseEstimator, TransformerMixin
 
 
 class VAE(TransformerMixin, BaseEstimator):
-    r""" Variational Auto-Encoder (VAE) [1]_ [2]_.
+    r"""Variational Auto-Encoder (VAE) [1]_ [2]_.
 
-    See Also: :class:`~nidl.lossess.beta_vae.BetaVAELoss`
+    See Also: :class:`~nidl.losses.beta_vae.BetaVAELoss`
 
     A VAE is a probabilistic generative model that learns a latent
     representation of input data and reconstructs it. It implements `fit` and
@@ -108,19 +108,21 @@ class VAE(TransformerMixin, BaseEstimator):
     .. [2] Irina Higgins et al., "beta-VAE: Learning Basic Visual Concepts with
        a Constrained Variational Framework", ICLR 2017.
     """
+
     def __init__(
-            self,
-            encoder: nn.Module,
-            decoder: nn.Module,
-            encoder_out_dim: int,
-            latent_dim: int,
-            beta: float = 1.0,
-            default_dist: str = "normal",
-            stochastic_transform: bool = True,
-            lr: float = 1e-4,
-            weight_decay: float = 0.01,
-            random_state: Optional[int] = None,
-            **kwargs):
+        self,
+        encoder: nn.Module,
+        decoder: nn.Module,
+        encoder_out_dim: int,
+        latent_dim: int,
+        beta: float = 1.0,
+        default_dist: str = "normal",
+        stochastic_transform: bool = True,
+        lr: float = 1e-4,
+        weight_decay: float = 0.01,
+        random_state: Optional[int] = None,
+        **kwargs,
+    ):
         super().__init__(
             random_state=random_state,
             ignore=["callbacks", "encoder", "decoder"],
@@ -139,10 +141,8 @@ class VAE(TransformerMixin, BaseEstimator):
         self.fc_mu = nn.Linear(self.encoder_out_dim, self.latent_dim)
         self.fc_logvar = nn.Linear(self.encoder_out_dim, self.latent_dim)
 
-    def forward(
-            self,
-            x: torch.Tensor) -> torch.Tensor:
-        """ Encode the input and sample from the posterior distribution q(z|x).
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Encode the input and sample from the posterior distribution q(z|x).
 
         Parameters
         ----------
@@ -150,7 +150,7 @@ class VAE(TransformerMixin, BaseEstimator):
             Input data given to the encoder.
 
         Returns
-        ----------
+        -------
         z: torch.Tensor, shape (batch_size, latent_dim)
             Latent vector sampled from the posterior distribution.
         """
@@ -161,11 +161,12 @@ class VAE(TransformerMixin, BaseEstimator):
         return z
 
     def training_step(
-            self,
-            batch: torch.Tensor,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
-        """ Perform one training step and computes and logs training losses.
+        self,
+        batch: torch.Tensor,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
+        """Perform one training step and computes and logs training losses.
 
         Three losses are logged: the beta-VAE loss ("loss"), the reconstruction
         loss ("rec_loss") and the KL divergence loss ("kl_loss").
@@ -180,7 +181,7 @@ class VAE(TransformerMixin, BaseEstimator):
             Ignored.
 
         Returns
-        ----------
+        -------
         losses: dict
             Dictionary with "loss", "rec_loss", "kl_loss" as keys.
         """
@@ -195,11 +196,12 @@ class VAE(TransformerMixin, BaseEstimator):
         return losses
 
     def validation_step(
-            self,
-            batch: torch.Tensor,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
-        """ Perform one validation step and computes and logs validation
+        self,
+        batch: torch.Tensor,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
+        """Perform one validation step and computes and logs validation
         losses.
 
         Three losses are logged: the beta-VAE loss ("loss"), the reconstruction
@@ -215,7 +217,7 @@ class VAE(TransformerMixin, BaseEstimator):
             Ignored.
 
         Returns
-        ----------
+        -------
         losses: dict
             Dictionary with "loss", "rec_loss", "kl_loss" as keys.
         """
@@ -226,11 +228,12 @@ class VAE(TransformerMixin, BaseEstimator):
         return losses
 
     def transform_step(
-            self,
-            batch: torch.Tensor,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0):
-        """ Transform the input data to the latent space.
+        self,
+        batch: torch.Tensor,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
+        """Transform the input data to the latent space.
 
         By default, the latent vector is obtained by sampling according to the
         posterior distribution :math:`q(z | x)`. It is just the mean of the
@@ -246,7 +249,7 @@ class VAE(TransformerMixin, BaseEstimator):
             Ignored.
 
         Returns
-        ----------
+        -------
         z: torch.Tensor, shape (batch_size, latent_dim)
             The latent vector.
         """
@@ -259,8 +262,7 @@ class VAE(TransformerMixin, BaseEstimator):
         return mu
 
     def configure_optimizers(self):
-        """ Declare an :class:`~torch.optim.AdamW` optimizer.
-        """
+        """Declare an :class:`~torch.optim.AdamW` optimizer."""
         optimizer = optim.AdamW(
             self.parameters(),
             lr=self.lr,
@@ -277,17 +279,15 @@ class VAE(TransformerMixin, BaseEstimator):
             Number of samples to generate.
 
         Returns
-        ----------
+        -------
         x: torch.Tensor
             Generated samples.
         """
         z = torch.randn(n_samples, self.latent_dim)
         return self.decoder(z)
 
-    def _run_step(
-            self,
-            x: torch.Tensor):
-        """ Encode the input and sample from the posterior distribution q(z|x).
+    def _run_step(self, x: torch.Tensor):
+        """Encode the input and sample from the posterior distribution q(z|x).
 
         Parameters
         ----------
@@ -307,12 +307,8 @@ class VAE(TransformerMixin, BaseEstimator):
         q, z = self._sample(mu, log_var)
         return self.decoder(z), q
 
-    def _sample(
-            self,
-            mu: torch.Tensor,
-            log_var: torch.Tensor):
-        """ Reparameterization trick: samples latent vector.
-        """
+    def _sample(self, mu: torch.Tensor, log_var: torch.Tensor):
+        """Reparameterization trick: samples latent vector."""
         std = torch.exp(log_var / 2)
         q = torch.distributions.Normal(mu, std)
         z = q.rsample()

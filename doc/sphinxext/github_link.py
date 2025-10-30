@@ -94,7 +94,7 @@ def make_linkcode_resolve(domain, info):
     See https://www.sphinx-doc.org/en/master/usage/extensions/linkcode.html
     """
     package = "nidl"
-    url_fmt = "https://github.com/neuropsin-deepinsight/nidl/blob/{revision}/{package}/{path}#L{lineno}"
+    url_fmt = "https://github.com/neurospin-deepinsight/nidl/blob/{revision}/{package}/{path}#L{lineno}"
     revision = _get_git_revision()
     return _linkcode_resolve(
         domain, info, revision=revision, package=package, url_fmt=url_fmt

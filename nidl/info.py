@@ -10,10 +10,10 @@
 # Module current version
 version_major = 0
 version_minor = 0
-version_micro = 0
+version_micro = 1
 
 # Expected by setup.py: string of form "X.Y.Z"
-__version__ = f"{version_major}.{version_minor}.{version_micro}.dev"
+__version__ = f"{version_major}.{version_minor}.{version_micro}"
 
 # Project descriptions
 NAME = "nidl"
@@ -39,4 +39,3 @@ URL = "https://github.com/neurospin-deepinsight/nidl"
 AUTHOR = """
 nidl developers
 """
-AUTHOR_EMAIL = "antoine.grigis@cea.fr"

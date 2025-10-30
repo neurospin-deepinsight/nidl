@@ -11,7 +11,7 @@ authors = [
     {name = "Benoit Dufumier", email="benoit.dufumier@cea.fr"},
     {name = "Joël Chavas", email="joel.chavas@cea.fr"}
 ]
-license = {text = "CeCILL-B"}
+license = "CECILL-B"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Environment :: Console",
