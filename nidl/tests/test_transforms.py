@@ -12,17 +12,12 @@ import numpy as np
 import torch
 
 from nidl.transforms import MultiViewsTransform, Identity
-from nidl.volume.transforms.augmentation.spatial import (
+from nidl.volume.transforms.augmentation import (
     RandomRotation, RandomFlip, RandomResizedCrop, RandomErasing,
-)
-from nidl.volume.transforms.augmentation.intensity import (
     RandomGaussianBlur, RandomGaussianNoise
 )
-from nidl.volume.transforms.preprocessing.intensity import (
-    ZNormalization, RobustRescaling
-)
-from nidl.volume.transforms.preprocessing.spatial import (
-    CropOrPad, Resize, Resample
+from nidl.volume.transforms.preprocessing import (
+    ZNormalization, RobustRescaling, CropOrPad, Resize, Resample   
 )
 
 
@@ -493,6 +488,14 @@ class TestRandomResizedCrop(unittest.TestCase):
         out = transform(arr)
         self.assertGreaterEqual(out.min(), 0.0)
         self.assertLessEqual(out.max(), 1.0)
+    
+    def test_sample_3d_box_returns_full_volume(self):
+        in_shape = (10, 10, 10)
+        # Use an impossible scale so cbrt(target_volume) > each dim even with ratio=1
+        slices = RandomResizedCrop._sample_3d_box(
+            in_shape=in_shape, scale=(2.0, 2.0), ratio=(1.0, 1.0)
+        )
+        assert slices == [slice(0, 10), slice(0, 10), slice(0, 10)]
 
     def test_multiple_runs_different_results(self):
         arr = np.random.rand(*self.shape)

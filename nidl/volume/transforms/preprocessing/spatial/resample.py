@@ -30,7 +30,7 @@ class Resample(VolumeTransform):
 
     Internally, it uses SimpleITK for fast and robust resampling.
 
-    It handles :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type).
 
     Input shape must be :math:`(C, H, W, D)` or :math:`(H, W, D)`.

@@ -20,7 +20,7 @@ class RandomResizedCrop(VolumeTransform):
     It is a generalization of `torchvision.transforms.RandomResizedCrop`
     to the 3d case.
 
-    It handles `np.ndarray` or `torch.Tensor` as input and
+    It handles :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type).
     
     Parameters
@@ -101,7 +101,7 @@ class RandomResizedCrop(VolumeTransform):
         # If not possible, fallback to unit ratio.
         box = try_sample_box((1.0, 1.0))
         if box is None:  # returns whole volume
-            return [slice(None) for _ in range(in_shape)]
+            return [slice(0, d) for d in in_shape]
         return box
 
     def apply_transform(self, data: TypeTransformInput) -> TypeTransformInput:
