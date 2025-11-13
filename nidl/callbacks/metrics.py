@@ -1,4 +1,5 @@
 import inspect
+import numbers
 from typing import Callable
 
 import numpy as np
@@ -30,9 +31,11 @@ class MetricsCallback(pl.Callback):
     :class:`torchmetrics` metrics, scikit-learn metrics and custom metric
     functions for metrics computation.
 
-    *Important:* we assume that the model's step methods (training_step,
-    validation_step, test_step) return a dict of outputs that contain all the
-    necessary information to compute the metrics. Some keys in this dict should
+    Notes
+    -----
+    We assume that the model's step methods (training_step, validation_step,
+    test_step) return a dict of outputs that contain all the necessary
+    information to compute the metrics. Some keys in this dict should
     match those specified in the `needs` argument. The values should be
     tensors or numpy arrays.
 
@@ -80,21 +83,28 @@ class MetricsCallback(pl.Callback):
           if different metrics need different arguments from the outputs. The
           same logic applies per-metric as above.
 
-    compute_per_step: bool, default=False
+    compute_per_training_step: bool, default=True
         Ignored for :class:`torchmetrics.Metric` instances, which always handle
         per-step updates internally. For other metrics (e.g. sklearn metrics or
-        custom functions), whether to compute the metrics at each step (batch)
-        or only at the end of the epoch. If True, metrics are computed at each
-        step and averaged at the end of the epoch. This is useful for metrics
-        that can be computed batch-wise (e.g. accuracy). If False, all needed
-        outputs are collected and the metric is computed only once, ensuring
-        exact results but requiring more memory.
+        custom functions), whether to compute the metrics at each training step
+        (batch) or only at the end of the epoch. If True, metrics are computed
+        at each training step and averaged at the end of the epoch. This is
+        useful for metrics that can be computed batch-wise (e.g. accuracy) or
+        for efficiency. If False, all needed outputs are collected and the
+        metric is computed only once, ensuring exact results but requiring more
+        memory.
 
-    compute_on_cpu: bool, default=True
+    compute_per_val_step: bool, default=False
+        Same as `compute_per_training_step` but for validation.
+
+    compute_per_test_step: bool, default=False
+        Same as `compute_per_training_step` but for test.
+
+    compute_on_cpu: bool, default=False
         Whether to move the collected outputs to CPU for metrics computation.
         This is useful to avoid GPU memory issues when using metrics that
-        require all outputs to be in memory at once (i.e.
-        `compute_per_step=False`).
+        require all outputs to be in memory at once. If False, outputs are kept
+        on GPU if they were on GPU.
 
     every_n_train_steps: Union[int, None], default=1
         Frequency (in training steps) to compute and log metrics during
@@ -121,14 +131,13 @@ class MetricsCallback(pl.Callback):
     A simple use-case for classification metrics during training and
     validation. We assume that the model's training_step and validation_step
     return the logits as "preds" and targets as "targets" in their outputs
-    dictionary:
+    dictionary (matching signature of the metrics):
 
     >>> from nidl.callbacks import MetricsCallback
     >>> from torchmetrics.metrics import Accuracy, F1Score
     >>> metrics = {"acc": Accuracy(), "f1": F1Score()}
     >>> metrics_callback = MetricsCallback(
     ...     metrics=metrics,
-    ...     needs=["preds", "targets"], # applies to all metrics
     ...     every_n_train_epochs=1,
     ...     every_n_val_epochs=1,
     ...     on_test_end=True,
@@ -155,8 +164,10 @@ class MetricsCallback(pl.Callback):
         self,
         metrics: MetricsType,
         needs: NeedsType = None,
-        compute_per_step: bool = False,
-        compute_on_cpu=True,
+        compute_per_training_step: bool = False,
+        compute_per_val_step: bool = False,
+        compute_per_test_step: bool = False,
+        compute_on_cpu=False,
         every_n_train_steps: int | None = 1,
         every_n_train_epochs: int | None = None,
         every_n_val_epochs: int | None = 1,
@@ -164,6 +175,17 @@ class MetricsCallback(pl.Callback):
         prog_bar=True,
     ):
         super().__init__()
+
+        if (
+            every_n_train_epochs is not None
+            and every_n_train_epochs > 0
+            and every_n_train_steps is not None
+            and every_n_train_steps > 0
+        ):
+            raise ValueError(
+                "`every_n_train_epochs` and `every_n_train_steps` are "
+                "mutually exclusive; please set only one of them."
+            )
 
         self.metrics = metrics
         self.needs = needs
@@ -178,19 +200,19 @@ class MetricsCallback(pl.Callback):
         self._train_collector = MetricsCollection(
             self.metrics,
             self.needs,
-            compute_per_step=compute_per_step,
+            compute_per_step=compute_per_training_step,
             compute_on_cpu=compute_on_cpu,
         )
         self._val_collector = MetricsCollection(
             self.metrics,
             self.needs,
-            compute_per_step=compute_per_step,
+            compute_per_step=compute_per_val_step,
             compute_on_cpu=compute_on_cpu,
         )
         self._test_collector = MetricsCollection(
             self.metrics,
             self.needs,
-            compute_per_step=compute_per_step,
+            compute_per_step=compute_per_test_step,
             compute_on_cpu=compute_on_cpu,
         )
 
@@ -334,7 +356,7 @@ class MetricsCollection:
         metrics: MetricsType,
         needs: NeedsType,
         compute_per_step: bool = False,
-        compute_on_cpu=True,
+        compute_on_cpu: bool = False,
     ):
         self.global_metrics_args = self.is_global_metrics_args(needs)
         self.metrics = self._parse_metrics(metrics)
@@ -357,9 +379,8 @@ class MetricsCollection:
             if self._is_torchmetric(metric):
                 metric.update(*args, **kwargs)
             elif self.compute_per_step:
-                self.metrics_cache[name].append(
-                    self._parse_output(metric(*args, **kwargs))
-                )
+                value = metric(*args, **kwargs)
+                self.metrics_cache[name].append(value)
             else:
                 # Collect the outputs for later computation
                 # This is memory-intensive for large datasets!
@@ -384,24 +405,31 @@ class MetricsCollection:
         """
 
         scalars = {}
-
+        args, kwargs = None, None
         for name, metric in self.metrics.items():
             if self._is_torchmetric(metric):
                 value = metric.compute()
             else:
                 if self.compute_per_step:
                     # Average over step-wise computations
-                    values = torch.stack(self.metrics_cache[name])
-                    value = trainer.strategy.reduce(
-                        values.mean(), reduce_op="mean"
+                    values = self.stack(self.metrics_cache[name])
+                    value = self.reduce(
+                        trainer, values.mean(), reduce_op="mean"
                     )
                 else:
-                    (args, kwargs) = self.concat_outputs(
-                        self.outputs_cache[name]
-                    )
                     # Gather across devices before computing the metric
-                    args = self.gather(trainer, args)
-                    kwargs = self.gather(trainer, kwargs)
+                    if self.global_metrics_args and args is None:
+                        (args, kwargs) = self.concat_outputs(
+                            self.outputs_cache
+                        )
+                        args = self.gather(trainer, args)
+                        kwargs = self.gather(trainer, kwargs)
+                    if not self.global_metrics_args:
+                        (args, kwargs) = self.concat_outputs(
+                            self.outputs_cache[name]
+                        )
+                        args = self.gather(trainer, args)
+                        kwargs = self.gather(trainer, kwargs)
                     value = metric(*args, **kwargs)
             scalars[name] = value
         return scalars
@@ -429,15 +457,104 @@ class MetricsCollection:
         n_args = len(first_args)
         for idx in range(n_args):
             arg_tensors = [outputs[0][idx] for outputs in outputs_list]
-            args.append(torch.cat(arg_tensors, dim=0))
+            args.append(self.concat(arg_tensors))
 
         # Concatenate keyword arguments
         kwargs = {}
         for key in first_kwargs:
             kwarg_tensors = [outputs[1][key] for outputs in outputs_list]
-            kwargs[key] = torch.cat(kwarg_tensors, dim=0)
+            kwargs[key] = self.concat(kwarg_tensors)
 
         return args, kwargs
+
+    def stack(self, tensors, dim=0):
+        """Stack a list of tensors or numpy arrays along a
+        given dimension."""
+        if len(tensors) == 0:
+            raise ValueError("cat(): Expected a non-empty list of Tensors")
+        if isinstance(tensors[0], torch.Tensor):
+            return torch.stack(tensors, dim=dim)
+        elif isinstance(tensors[0], (np.ndarray, np.generic, numbers.Number)):
+            return np.stack(tensors, axis=dim)
+        else:
+            raise TypeError(
+                "Tensors must be either torch.Tensor or np.ndarray,"
+                f"got {type(tensors[0])}"
+            )
+
+    def concat(self, tensors, dim=0):
+        """Concatenate a list of tensors or numpy arrays along a
+        given dimension."""
+        if len(tensors) == 0:
+            raise ValueError("cat(): Expected a non-empty list of Tensors")
+        if isinstance(tensors[0], torch.Tensor):
+            return torch.cat(tensors, dim=dim)
+        elif isinstance(tensors[0], (np.ndarray, np.generic, numbers.Number)):
+            return np.concatenate(tensors, axis=dim)
+        else:
+            raise TypeError(
+                "Tensors must be either torch.Tensor or np.ndarray,"
+                f"got {type(tensors[0])}"
+            )
+
+    @torch.no_grad()
+    def gather(self, trainer, obj):
+        strat = trainer.strategy
+        world_size = getattr(
+            strat, "world_size", getattr(trainer, "world_size", 1)
+        )
+        if world_size <= 1:
+            return obj
+
+        def _g(t):
+            from_numpy = isinstance(t, np.ndarray)
+            if from_numpy:
+                t = torch.from_numpy(t)
+            t = t.detach()
+            if t.device.type == "cpu":
+                device_for_ddp = trainer.lightning_module.device
+                t = t.to(device_for_ddp)
+            g = strat.all_gather(t, sync_grads=False)
+            g = g.reshape(-1, *t.shape[1:]) if g.dim() == t.dim() + 1 else g
+            # Move back to CPU if needed
+            g = g.cpu() if self.compute_on_cpu or from_numpy else g
+            if from_numpy:
+                g = g.numpy()
+            return g
+
+        if isinstance(obj, (torch.Tensor, np.ndarray)):
+            return _g(obj)
+        if isinstance(obj, list):
+            return [_g(x) for x in obj]
+        elif isinstance(obj, dict):
+            return {k: _g(v) for k, v in obj.items()}
+        else:
+            raise TypeError(
+                "obj must be np.array, torch.Tensor, list or dict of Tensors"
+            )
+
+    @torch.no_grad()
+    def reduce(self, trainer, t, reduce_op="mean"):
+        strat = trainer.strategy
+        world_size = getattr(strat, "world_size", None)
+        if world_size is None:
+            # Fallback: infer from trainer (works for most cases)
+            world_size = getattr(trainer, "world_size", 1)
+        # Not distributed → return as-is
+        if world_size <= 1:
+            return t
+        if isinstance(t, np.ndarray):
+            t = torch.from_numpy(t)
+        elif isinstance(t, (np.generic, numbers.Number)):
+            t = torch.tensor(t)
+        # Distributed → move to root device and reduce
+        root = trainer.strategy.root_device
+        device = t.device
+        # Move only if needed (e.g., NCCL requires CUDA)
+        if t.device != root:
+            t = t.to(root)
+        y = trainer.strategy.reduce(t, reduce_op=reduce_op).to(device)
+        return y
 
     def is_global_metrics_args(self, needs: NeedsType) -> bool:
         """Check if the `needs` mapping applies to all metrics globally."""
@@ -500,15 +617,13 @@ class MetricsCollection:
         if isinstance(output, torch.Tensor):
             t = output.detach()
         elif isinstance(output, np.ndarray):
-            t = torch.from_numpy(output)
+            return output
         else:
             raise ValueError(
                 "Output value must be a torch.Tensor or np.ndarray,"
                 f"got {type(output)}"
             )
-        # If we are going to store (compute_per_step=False), move to CPU
-        if self.compute_on_cpu and not self.compute_per_step:
-            # BUT: only do this for caching; gather() will move back for DDP
+        if self.compute_on_cpu:
             t = t.cpu()
         return t
 
@@ -607,7 +722,7 @@ class MetricsCollection:
         Normalize `needs` into:
         { metric_name:
             [ output_key | prepare_fn ]               # positional
-            | { arg_name: (output_key | prepare_fn) }   # keyword
+            | { arg_name: (output_key | prepare_fn) } # keyword
         }
 
         Rules:
@@ -681,28 +796,3 @@ class MetricsCollection:
             and hasattr(metric, "compute")
             and hasattr(metric, "reset")
         )
-
-    @torch.no_grad()
-    def gather(self, trainer, obj):
-        strat = trainer.strategy
-
-        def _g(t):
-            if not torch.is_tensor(t):
-                return t
-            t = t.detach()
-            if t.device.type == "cpu":
-                device_for_ddp = trainer.lightning_module.device
-                t = t.to(device_for_ddp)
-            g = strat.all_gather(t, sync_grads=False)
-            g = g.reshape(-1, *t.shape[1:]) if g.dim() == t.dim() + 1 else g
-            # Move back to CPU if user requested compute_on_cpu
-            return g.cpu() if self.compute_on_cpu else g
-
-        if isinstance(obj, torch.Tensor):
-            return _g(obj)
-        if isinstance(obj, list):
-            return [_g(x) for x in obj]
-        elif isinstance(obj, dict):
-            return {k: _g(v) for k, v in obj.items()}
-        else:
-            raise TypeError("obj must be list or dict of tensors")
