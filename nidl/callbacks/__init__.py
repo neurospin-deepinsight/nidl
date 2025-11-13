@@ -6,11 +6,12 @@
 # for details.
 ##########################################################################
 
-""" This modules details the public API you should use and implement for a
+"""This modules details the public API you should use and implement for a
 nidl compatible callback, as well as the callbacks available in nidl.
 """
 
 from .check_typing import BatchTypingCallback
+from .metrics import MetricsCallback
 from .model_probing import (
     ClassificationProbingCallback,
     ModelProbing,
