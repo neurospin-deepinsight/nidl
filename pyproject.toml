@@ -54,8 +54,8 @@ doc = [
 ]
 
 [project.urls]
-Source = "https://github.com/neurospin-deppinsight/nidl"
-Tracker = "https://github.com/neurospin-deppinsight/nidl/issues"
+Source = "https://github.com/neurospin-deepinsight/nidl"
+Tracker = "https://github.com/neurospin-deepinsight/nidl/issues"
 
 [tool.setuptools]
 platforms = ["Linux", "OSX"]
