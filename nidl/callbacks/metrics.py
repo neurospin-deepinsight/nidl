@@ -5,6 +5,7 @@ from typing import Callable
 import numpy as np
 import pytorch_lightning as pl
 import torch
+from pytorch_lightning.trainer.states import TrainerFn
 
 MetricsType = Callable | list[Callable] | dict[str, Callable]
 
@@ -22,109 +23,126 @@ class MetricsCallback(pl.Callback):
 
     This callback will:
 
-    1) Collect the model's outputs after each training/validation/test step.
-    2) Compute the required metrics on the collected outputs, either batch-wise
+    1. Collect the model's outputs after each training/validation/test step.
+    2. Compute the required metrics on the collected outputs, either batch-wise
        or epoch-wise (depending on the use-case).
-    3) Log the metrics after each iteration or epoch.
+    3. Log the metrics after each iteration or epoch.
 
-    It handles multi-GPU distributed training setups. It is compatible with
-    :class:`torchmetrics` metrics, scikit-learn metrics and custom metric
-    functions for metrics computation.
-
-    Notes
-    -----
-    We assume that the model's step methods (training_step, validation_step,
-    test_step) return a dict of outputs that contain all the necessary
-    information to compute the metrics. Some keys in this dict should
-    match those specified in the `needs` argument. The values should be
-    tensors or numpy arrays.
+    It handles multi-GPU / distributed training setups. It is compatible with
+    `torchmetrics <https://lightning.ai/docs/torchmetrics/stable/
+    all-metrics.html>`_ metrics,
+    `scikit-learn <https://scikit-learn.org/stable/api/sklearn.metrics.html>`_
+    metrics, and custom metric functions for metrics computation.
 
     Parameters
     ----------
-    metrics: dict[str, Callable] or list[Callable] or Callable
-        A list of metrics (callables including :class:`torchmetrics.Metric`
+    metrics : dict[str, Callable] or list[Callable] or Callable
+        A list of metrics (callables including ``torchmetrics.Metric``
         and sklearn metrics) to be computed on the model's outputs.
         If a dict is provided, the keys will be used as the metric names
-        when logging. If a Callable or list of Callable is provided, the metric
-        names will be inferred from the function or class names.
+        when logging. If a ``Callable`` or ``list[Callable]`` is provided,
+        the metric names will be inferred from the function or class names.
 
-    needs: NeedsType, default=None
+    needs : NeedsType, optional
         A mapping defining which outputs from the model are needed to compute
-        the metrics. It can be either:
+        the metrics.
 
-        - None: the needed arguments are inferred automatically from the
-          metric signatures and parsed from the model outputs. It will throw an
-          error if the required arguments are not found in the outputs or if
-          there are ambiguities.
+        It can be either:
 
-        - List[str | Callable] or dict[str, str | Callable]:
-          applies to ALL metrics, e.g.
-          * ["logits", "labels"] (positional arguments) if the metric
-            needs "preds" and "targets" as positional arguments, and these are
-            found in the model outputs under the keys "logits" and "labels".
+        * ``None``:
+          the needed arguments are inferred automatically from the metric
+          signatures and parsed from the model outputs. It will raise an error
+          if the required arguments are not found in the outputs or if there
+          are ambiguities.
 
-          * {
-                "preds": lambda outputs: outputs["logits"].softmax(dim=-1),
-                "targets": "labels"
-            }
-            if the metric needs "preds" and "targets" as keyword arguments, and
-            these are found in the model outputs under the keys "logits" (with
-            pre-processing required) and "labels" (used as-is) respectively.
+        * ``list[str | Callable]`` or ``dict[str, str | Callable]``:
+          applies to **all** metrics.
 
-        - dict[str, List[str | Callable] | dict[str, str | Callable]]:
-          per-metric overrides, keyed by metric name, e.g.
-          {
-            "Accuracy": [
-                lambda outputs: outputs["logits"].softmax(dim=-1),
-                "labels"
-                ],
-            "Uniformity": {"z1": "Z1", "z2": "Z2"}
-          }
+          For example, positional arguments:
+
+          .. code-block:: python
+
+              ["logits", "labels"]
+
+          if the metric needs ``preds`` and ``targets`` as positional arguments,
+          and these are found in the model outputs under the keys
+          ``"logits"`` and ``"labels"``.
+
+          Or keyword arguments:
+
+          .. code-block:: python
+
+              {
+                  "preds": lambda outputs: outputs["logits"].softmax(dim=-1),
+                  "targets": "labels",
+              }
+
+          if the metric needs ``preds`` and ``targets`` as keyword arguments,
+          and these are found in the model outputs under the keys ``"logits"``
+          (with pre-processing required) and ``"labels"`` (used as-is),
+          respectively.
+
+        * ``dict[str, list[str | Callable] | dict[str, str | Callable]]``:
+          per-metric overrides, keyed by metric name.
+
+          For example:
+
+          .. code-block:: python
+
+              {
+                  "Accuracy": [
+                      lambda outputs: outputs["logits"].softmax(dim=-1),
+                      "labels",
+                  ],
+                  "Alignment": {"z1": "Z1", "z2": "Z2"},
+              }
+
           if different metrics need different arguments from the outputs. The
-          same logic applies per-metric as above.
+          same logic applies per metric as above.
 
-    compute_per_training_step: bool, default=True
-        Ignored for :class:`torchmetrics.Metric` instances, which always handle
+    compute_per_training_step : bool, default=True
+        Ignored for ``torchmetrics.Metric`` instances, which always handle
         per-step updates internally. For other metrics (e.g. sklearn metrics or
         custom functions), whether to compute the metrics at each training step
-        (batch) or only at the end of the epoch. If True, metrics are computed
-        at each training step and averaged at the end of the epoch. This is
-        useful for metrics that can be computed batch-wise (e.g. accuracy) or
-        for efficiency. If False, all needed outputs are collected and the
-        metric is computed only once, ensuring exact results but requiring more
-        memory.
+        (batch) or only at the end of the epoch. If ``True``, metrics are
+        computed at each training step and averaged at the end of the epoch.
+        This is useful for metrics that can be computed batch-wise (e.g.
+        accuracy) or for efficiency. If ``False``, all needed outputs are
+        collected and the metric is computed only once, ensuring exact results
+        but requiring more memory.
 
-    compute_per_val_step: bool, default=False
-        Same as `compute_per_training_step` but for validation.
+    compute_per_val_step : bool, default=False
+        Same as ``compute_per_training_step`` but for validation.
 
-    compute_per_test_step: bool, default=False
-        Same as `compute_per_training_step` but for test.
+    compute_per_test_step : bool, default=False
+        Same as ``compute_per_training_step`` but for test.
 
-    compute_on_cpu: bool, default=False
+    compute_on_cpu : bool, default=False
         Whether to move the collected outputs to CPU for metrics computation.
         This is useful to avoid GPU memory issues when using metrics that
-        require all outputs to be in memory at once. If False, outputs are kept
-        on GPU if they were on GPU.
+        require all outputs to be in memory at once. If ``False``, outputs are
+        kept on the original device (GPU or CPU).
 
-    every_n_train_steps: Union[int, None], default=1
+    every_n_train_steps : int or None, default=1
         Frequency (in training steps) to compute and log metrics during
-        training. If 0 or None, metrics are not computed during training. This
-        is mutually exclusive with `every_n_train_epochs`.
+        training. If ``0`` or ``None``, metrics are not computed during
+        training. This is mutually exclusive with ``every_n_train_epochs``.
 
-    every_n_train_epochs: Union[int, None], default=None
+    every_n_train_epochs : int or None, default=None
         Frequency (in epochs) to compute and log metrics during training.
-        If 0 or None, metrics are not computed during training. This is
-        mutually exclusive with `every_n_train_steps`.
+        If ``0`` or ``None``, metrics are not computed during training. This is
+        mutually exclusive with ``every_n_train_steps``.
 
-    every_n_val_epochs: Union[int, None], default=1
+    every_n_val_epochs : int or None, default=1
         Frequency (in epochs) to compute and log metrics during validation.
-        If 0 or None, metrics are not computed during validation.
+        If ``0`` or ``None``, metrics are not computed during validation.
 
-    on_test_end: bool, default=False
+    on_test_end : bool, default=False
         Whether to compute and log metrics at the end of the test.
 
-    prog_bar: bool, default=True
+    prog_bar : bool, default=True
         Whether to display the metrics in the progress bar.
+
 
     Examples
     --------
@@ -149,22 +167,42 @@ class MetricsCallback(pl.Callback):
     and "z2":
 
     >>> from nidl.callbacks import MetricsCallback
-    >>> from nidl.metrics.ssl import Alignment, ContrastiveAccuracy, Uniformity
-    >>> metrics = [ContrastiveAccuracy(), Alignment(), Uniformity()]
+    >>> from nidl.metrics.ssl import alignment_score
+    >>> metrics = {"alignment": alignment_score}
     >>> metrics_callback = MetricsCallback(
     ...     metrics=metrics,
-    ...     needs={"z1": "Z1", "z2": "Z2"}, # applies to all metrics
+    ...     needs={
+    ...         "alignment: {"z1": "Z1", "z2": "Z2"},
+    ...     }
     ...     every_n_train_epochs=1,
     ...     every_n_val_epochs=None,
     ...     on_test_end=False,
     ... )
+
+    Notes
+    -----
+    We assume that the model's step methods (training_step, validation_step,
+    test_step) return a dict of outputs that contain all the necessary
+    information to compute the metrics. Some keys in this dict should
+    match those specified in the `needs` argument. The values should be
+    tensors or numpy arrays.
+
+    If scikit-learn metrics or custom functions are used and
+    `compute_per_(training|val|test)_step` is False, the entire outputs needed
+    for metric computations must fit in memory (either CPU or GPU).
+    We advise using `compute_on_cpu=True` in this case to avoid GPU memory
+    issues.
+
+    We recommend using `torchmetrics.Metric` instances whenever possible, as
+    they handle memory efficiently in a distributed fashion.
+
     """
 
     def __init__(
         self,
         metrics: MetricsType,
         needs: NeedsType = None,
-        compute_per_training_step: bool = False,
+        compute_per_training_step: bool = True,
         compute_per_val_step: bool = False,
         compute_per_test_step: bool = False,
         compute_on_cpu=False,
@@ -227,8 +265,22 @@ class MetricsCallback(pl.Callback):
     ):
         """Compute and log metrics using the collected outputs."""
 
+        def append_stage(scalars):
+            """Append the current stage to each metric name."""
+            stage = "unknown"
+            if getattr(trainer, "training", False):
+                stage = "train"
+            if getattr(trainer, "validating", False):
+                stage = "val"
+            if getattr(trainer, "testing", False):
+                stage = "test"
+            return {f"{k}/{stage}": v for k, v in scalars.items()}
+
         # Gather all tensors and compute metrics
         scalars = collector.compute(trainer)
+
+        # Append the correct stage for each metric (train, val, test)
+        scalars = append_stage(scalars)
 
         # Log the metrics on rank-zero only
         if trainer.is_global_zero:
@@ -255,7 +307,7 @@ class MetricsCallback(pl.Callback):
             and trainer.current_epoch % self.every_n_train_epochs == 0
         )
         if collect_train_outputs:
-            self._train_collector.collect(outputs)
+            self._train_collector.collect(outputs, pl_module=pl_module)
 
         if (
             self.every_n_train_steps is not None
@@ -283,13 +335,13 @@ class MetricsCallback(pl.Callback):
             and self.counter_val_epochs % self.every_n_val_epochs == 0
         )
         if collect_val_outputs:
-            self._val_collector.collect(outputs)
+            self._val_collector.collect(outputs, pl_module=pl_module)
 
     def on_test_batch_end(
         self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0
     ):
         if self._on_test_end:
-            self._test_collector.collect(outputs)
+            self._test_collector.collect(outputs, pl_module=pl_module)
 
     def on_train_epoch_end(self, trainer, pl_module):
         if (
@@ -306,11 +358,11 @@ class MetricsCallback(pl.Callback):
             )
 
     def on_validation_epoch_end(self, trainer, pl_module):
-        self.counter_val_epochs += 1
         if (
             self.every_n_val_epochs is not None
             and self.every_n_val_epochs > 0
             and self.counter_val_epochs % self.every_n_val_epochs == 0
+            and not getattr(trainer, "sanity_checking", False)
         ):
             self.compute_metrics_and_log(
                 trainer,
@@ -319,6 +371,7 @@ class MetricsCallback(pl.Callback):
                 on_step=False,
                 on_epoch=True,
             )
+        self.counter_val_epochs += 1
 
     def on_test_epoch_end(self, trainer, pl_module):
         if self._on_test_end:
@@ -339,16 +392,6 @@ class MetricsCollection:
     metrics. It can handle either `torchmetrics.Metric` instances,
     scikit-learn metrics or custom metric functions.
 
-    Notes
-    -----
-    If scikit-learn metrics or custom functions are used and `compute_per_step`
-    is False, the entire outputs needed for metric computations must fit in
-    memory (either CPU or GPU). We advise using `compute_on_cpu=True` in this
-    case to avoid GPU memory issues.
-
-    We recommend using `torchmetrics.Metric` instances whenever possible, as
-    they handle memory efficiently in a distributed fashion.
-
     """
 
     def __init__(
@@ -368,7 +411,7 @@ class MetricsCollection:
             self.outputs_cache = []
         self.metrics_cache = {name: [] for name in self.metrics}
 
-    def collect(self, outputs):
+    def collect(self, outputs, pl_module):
         """Collect outputs from a training/validation/test step."""
         if self.global_metrics_args:
             args, kwargs = self._parse_and_filter_outputs(outputs)
@@ -377,6 +420,7 @@ class MetricsCollection:
             if not self.global_metrics_args:
                 (args, kwargs) = self._parse_and_filter_outputs(outputs, name)
             if self._is_torchmetric(metric):
+                metric = metric.to(pl_module.device)
                 metric.update(*args, **kwargs)
             elif self.compute_per_step:
                 value = metric(*args, **kwargs)

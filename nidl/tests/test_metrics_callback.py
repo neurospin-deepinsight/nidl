@@ -146,7 +146,7 @@ class TestTorchMetricsCPU(unittest.TestCase):
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
         # Torchmetrics Accuracy should be 1.0 on our synthetic data
-        acc_val = float(trainer.callback_metrics["acc"])
+        acc_val = float(trainer.callback_metrics["acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 class TestSklearnCPU(unittest.TestCase):
@@ -169,7 +169,7 @@ class TestSklearnCPU(unittest.TestCase):
         )
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
-        acc_val = float(trainer.callback_metrics["sk_acc"])
+        acc_val = float(trainer.callback_metrics["sk_acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
     def test_sklearn_accuracy_epoch_end_cpu_numpy_path(self):
@@ -195,7 +195,7 @@ class TestSklearnCPU(unittest.TestCase):
         )
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
-        acc_val = float(trainer.callback_metrics["sk_acc_np"])
+        acc_val = float(trainer.callback_metrics["sk_acc_np/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 class TestCustomMetricsCPU(unittest.TestCase):
@@ -229,7 +229,7 @@ class TestCustomMetricsCPU(unittest.TestCase):
         )
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
-        acc_val = float(trainer.callback_metrics["custom_acc"])
+        acc_val = float(trainer.callback_metrics["custom_acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 @unittest.skipUnless(torch.cuda.is_available(), "CUDA not available")
@@ -255,7 +255,7 @@ class TestGPU(unittest.TestCase):
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb],
                               accelerator="gpu", devices=1)
-        acc_val = float(trainer.callback_metrics["acc"])
+        acc_val = float(trainer.callback_metrics["acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
     def test_sklearn_per_step_gpu_scalars(self):
@@ -276,7 +276,7 @@ class TestGPU(unittest.TestCase):
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb],
                               accelerator="gpu", devices=1)
-        acc_val = float(trainer.callback_metrics["sk_acc"])
+        acc_val = float(trainer.callback_metrics["sk_acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 # ------------- Distributed tests (CPU-DDP) -------------
@@ -313,7 +313,7 @@ class TestDistributedCPU(unittest.TestCase):
             strategy="ddp",         # Lightning will use gloo on CPU
         )
         # Reduced value should still be 1.0 on rank zero
-        acc_val = float(trainer.callback_metrics["sk_acc"])
+        acc_val = float(trainer.callback_metrics["sk_acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
     @unittest.skipUnless(_HAS_TORCHMETRICS, "torchmetrics not installed")
@@ -341,7 +341,7 @@ class TestDistributedCPU(unittest.TestCase):
             devices=2,
             strategy="ddp",
         )
-        acc_val = float(trainer.callback_metrics["acc"])
+        acc_val = float(trainer.callback_metrics["acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 # ------------- Distributed tests (CUDA-DDP) -------------
@@ -375,7 +375,7 @@ class TestDistributedCUDA(unittest.TestCase):
             devices=2,
             strategy="ddp",
         )
-        acc_val = float(trainer.callback_metrics["sk_acc"])
+        acc_val = float(trainer.callback_metrics["sk_acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
     @unittest.skipUnless(_HAS_TORCHMETRICS, "torchmetrics not installed")
@@ -403,7 +403,7 @@ class TestDistributedCUDA(unittest.TestCase):
             devices=2,
             strategy="ddp",
         )
-        acc_val = float(trainer.callback_metrics["acc"])
+        acc_val = float(trainer.callback_metrics["acc/train"])
         self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 # ------------- Edge cases -------------
@@ -438,8 +438,8 @@ class TestEdgeCases(unittest.TestCase):
         )
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
-        self.assertAlmostEqual(float(trainer.callback_metrics["m1"]), 1.0, places=6)
-        self.assertAlmostEqual(float(trainer.callback_metrics["m2"]), 1.0, places=6)
+        self.assertAlmostEqual(float(trainer.callback_metrics["m1/train"]), 1.0, places=6)
+        self.assertAlmostEqual(float(trainer.callback_metrics["m2/train"]), 1.0, places=6)
 
     def test_numpy_scalar_and_python_scalar_outputs(self):
         seed_everything()
@@ -462,8 +462,8 @@ class TestEdgeCases(unittest.TestCase):
         )
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
-        self.assertAlmostEqual(float(trainer.callback_metrics["np_scalar"]), 1.0, places=6)
-        self.assertAlmostEqual(float(trainer.callback_metrics["py_scalar"]), 1.0, places=6)
+        self.assertAlmostEqual(float(trainer.callback_metrics["np_scalar/train"]), 1.0, places=6)
+        self.assertAlmostEqual(float(trainer.callback_metrics["py_scalar/train"]), 1.0, places=6)
 
 
 if __name__ == "__main__":
