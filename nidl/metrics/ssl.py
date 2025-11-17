@@ -1,3 +1,11 @@
+##########################################################################
+# NSAp - Copyright (C) CEA, 2025
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
+
 import numpy as np
 import torch
 
@@ -17,9 +25,10 @@ def alignment_score(
     .. math::
 
         \\text{Alignment}(z_1, z_2)
-        = \\sum_{i=1}^n \\, \\lVert z_1^{(i)} - z_2^{(i)} \\rVert_2^{\\alpha}
+        = \\frac{1}{n}\\sum_{i=1}^n
+        \\lVert z_1^{(i)} - z_2^{(i)} \\rVert_2^{\\alpha}
 
-    with :math:`z_1=(z_1^{(1)}, ..., z_1^{(n)}`and
+    with :math:`z_1=(z_1^{(1)}, ..., z_1^{(n)}` and
     :math:`z_2=(z_2^{(1)}, ..., z_2^{(n)}`
 
     Parameters
@@ -93,10 +102,8 @@ def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
 
     .. math::
 
-        U(z) = \\log \\sum_{i \\ne j}
-               \\left[
+        U(z) = \\log \\frac{1}{n(n-1)}\\sum_{i \\ne j}
                \\exp\\left(-t \\, \\lVert z_i - z_j \\rVert_2^2 \\right)
-               \\right]
 
     where all vectors are first normalized to lie on the unit hypersphere.
 
