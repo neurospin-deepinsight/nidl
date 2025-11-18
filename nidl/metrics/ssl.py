@@ -107,8 +107,8 @@ def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
 
     where all vectors are first normalized to lie on the unit hypersphere.
 
-    Lower uniformity values indicate a *more uniform* distribution of points,
-    which is generally considered better for contrastive representation learning.
+    Lower uniformity values  = more uniform distribution, which is generally
+    considered better for contrastive representation learning.
 
     Parameters
     ----------

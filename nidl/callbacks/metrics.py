@@ -13,7 +13,6 @@ from typing import Callable
 import numpy as np
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.trainer.states import TrainerFn
 
 MetricsType = Callable | list[Callable] | dict[str, Callable]
 
@@ -72,8 +71,8 @@ class MetricsCallback(pl.Callback):
 
               ["logits", "labels"]
 
-          if the metric needs ``preds`` and ``targets`` as positional arguments,
-          and these are found in the model outputs under the keys
+          if the metric needs ``preds`` and ``targets`` as positional
+          arguments, and these are found in the model outputs under the keys
           ``"logits"`` and ``"labels"``.
 
           Or keyword arguments:
