@@ -367,7 +367,7 @@ test_ssl_loader = DataLoader(
 # Now, we create the callback that will compute and log the self-supervised
 # metrics during training and validation.
 #
-# *Important remark*: uniformity score cannot be aggregated with a simple
+# **Important remark**: uniformity score cannot be aggregated with a simple
 # average over batch as the alignment score. Here, we perform an exact
 # computation of the uniformity score on the *validation set* only. The score
 # on the training set is just an approximation but we don't require exact
