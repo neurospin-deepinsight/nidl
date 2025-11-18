@@ -18,8 +18,10 @@ MetricsType = Union[Callable, list[Callable], dict[str, Callable]]
 
 NeedsType = Union[
     list[Union[str, Callable]],
-    dict[str, str | Callable],
-    dict[Union[str, list[str | Callable], dict[str, str | Callable]]],
+    dict[str, Union[str, Callable]],
+    dict[
+        str, Union[list[Union[str, Callable]], dict[str, Union[str, Callable]]]
+    ],
     None,
 ]
 
@@ -213,9 +215,9 @@ class MetricsCallback(pl.Callback):
         compute_per_val_step: bool = False,
         compute_per_test_step: bool = False,
         compute_on_cpu=False,
-        every_n_train_steps: int | None = 1,
-        every_n_train_epochs: int | None = None,
-        every_n_val_epochs: int | None = 1,
+        every_n_train_steps: Union[int, None] = 1,
+        every_n_train_epochs: Union[int, None] = None,
+        every_n_val_epochs: Union[int, None] = 1,
         on_test_end: bool = False,
         prog_bar=True,
     ):
@@ -718,7 +720,7 @@ class MetricsCollection:
         return names
 
     def _validate_kw_mapping(
-        self, name: str, mapping: dict[str, str | Callable]
+        self, name: str, mapping: dict[str, Union[str, Callable]]
     ) -> None:
         if not isinstance(mapping, dict):
             raise TypeError(
