@@ -8,20 +8,20 @@
 
 import inspect
 import numbers
-from typing import Callable
+from typing import Callable, Union
 
 import numpy as np
 import pytorch_lightning as pl
 import torch
 
-MetricsType = Callable | list[Callable] | dict[str, Callable]
+MetricsType = Union[Callable, list[Callable], dict[str, Callable]]
 
-NeedsType = (
-    list[str | Callable]
-    | dict[str, str | Callable]
-    | dict[str, list[str | Callable] | dict[str, str | Callable]]
-    | None
-)
+NeedsType = Union[
+    list[Union[str, Callable]],
+    dict[str, str | Callable],
+    dict[Union[str, list[str | Callable], dict[str, str | Callable]]],
+    None,
+]
 
 
 class MetricsCallback(pl.Callback):
