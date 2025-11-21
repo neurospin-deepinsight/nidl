@@ -7,6 +7,7 @@
 ##########################################################################
 
 from collections.abc import Callable
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -77,7 +78,7 @@ class DCL(nn.Module):
 
     def __init__(self,
             temperature: float = 0.1,
-            pos_weight_fn: Callable[[Tensor, Tensor], Tensor] | None = None,
+            pos_weight_fn: Optional[Callable[[Tensor, Tensor], Tensor]] = None,
           ):
         super().__init__()
         # Check parameters
@@ -156,7 +157,8 @@ class DCLW(DCL):
         \\exp\\!\\big(\\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\\sigma\\big)
         }
 
-    where :math:`N` is the batch size, :math:`\\operatorname{sim}(z_i^(1), z_i^(2))`
+    where :math:`N` is the batch size,
+    :math:`\\operatorname{sim}(z_i^(1), z_i^(2))`
     denotes the cosine similarity between the normalized embeddings
     :math:`z_i^(1)` and :math:`z_i^(2)`, and :math:`\\sigma > 0` is a
     temperature parameter controlling the concentration of the distribution.
@@ -172,7 +174,7 @@ class DCLW(DCL):
     ----------
     .. [1] Yeh, Chun-Hsiao, et al. "Decoupled contrastive learning."
            European conference on computer vision.
-           Cham: Springer Nature Switzerland,
+           Cham: Springer Nature Switzerland, 2022.
            https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136860653.pdf
 
     """
