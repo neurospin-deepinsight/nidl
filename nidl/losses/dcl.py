@@ -7,7 +7,7 @@
 ##########################################################################
 
 from collections.abc import Callable
-from typing import Optional
+from typing import Optional, Union
 
 import torch
 import torch.nn as nn
@@ -83,12 +83,12 @@ class DCL(nn.Module):
         super().__init__()
         # Check parameters
         if temperature < 0:
-            raise ValueError(f'temperature parameter should be \
-                             positive (got {temperature})')
-        if not isinstance(pos_weight_fn, Callable):
-            raise ValueError('pos_weight_fn should be a callable function \
-                             that takes 2 tensors as input and outputs a \
-                             tensor.')
+            raise ValueError("temperature parameter should be "
+                             f"positive (got {temperature})")
+        if not isinstance(pos_weight_fn, Union[Callable, None]):
+            raise ValueError("pos_weight_fn should be a callable function "
+                             "that takes 2 tensors as input and outputs a "
+                             "tensor.")
 
         self.temperature = temperature
         self.pos_weight_fn = pos_weight_fn
@@ -136,8 +136,8 @@ class DCL(nn.Module):
         return loss
 
     def __repr__(self):
-        return f"{type(self).__name__}(temperature={self.temperature},\
-            pos_weight_fn={self.pos_weight_fn})"
+        return (f"{type(self).__name__}(temperature={self.temperature}, "
+            f"pos_weight_fn={self.pos_weight_fn})")
 
 class DCLW(DCL):
     """Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.
