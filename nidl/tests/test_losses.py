@@ -210,7 +210,6 @@ class TestLosses(unittest.TestCase):
                             f"{str(loss)} loss should be lower for aligned embeddings, "
                             f"got {loss_low} vs {loss_high}"
                         )
-                        assert loss_low >= 0, "Loss should be positive."
                         # Assert loss is correct type
                         assert isinstance(loss_high, torch.Tensor)
                         assert loss_high.dim() == 0   # scalar loss

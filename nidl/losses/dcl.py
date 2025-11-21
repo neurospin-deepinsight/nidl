@@ -127,7 +127,7 @@ class DCL(nn.Module):
         # Extract similarity from positive pairs and apply weights
         pos_sim = cos_sim[pos_mask]
         if self.pos_weight_fn is not None:
-            pos_sim = self.pos_weight_fn(z1, z2) * pos_sim
+            pos_sim = self.pos_weight_fn(z1, z2).repeat(2) * pos_sim
         # Extract similarity from negative pairs only (here is the decoupling)
         neg_sim = cos_sim.masked_fill(pos_mask, -9e15)
         # DCL loss
