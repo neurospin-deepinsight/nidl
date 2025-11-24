@@ -85,10 +85,10 @@ class DCL(nn.Module):
         if temperature < 0:
             raise ValueError("temperature parameter should be "
                              f"positive (got {temperature})")
-        if not isinstance(pos_weight_fn, Union[Callable, None]):
-            raise ValueError("pos_weight_fn should be a callable function "
-                             "that takes 2 tensors as input and outputs a "
-                             "tensor.")
+        if not (isinstance(pos_weight_fn, Callable) or pos_weight_fn is None):
+            raise ValueError("pos_weight_fn should be None or a callable "
+                             "function that takes 2 tensors as input and "
+                             "outputs a tensor.")
 
         self.temperature = temperature
         self.pos_weight_fn = pos_weight_fn
