@@ -7,7 +7,7 @@
 ##########################################################################
 
 from collections.abc import Callable
-from typing import Optional, Union
+from typing import Optional
 
 import torch
 import torch.nn as nn
