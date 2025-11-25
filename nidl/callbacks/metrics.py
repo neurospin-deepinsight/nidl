@@ -440,7 +440,7 @@ class MetricsCollection:
                 if self.global_metrics_args and not global_outputs_cached:
                     self.outputs_cache.append((args, kwargs))
                     global_outputs_cached = True
-                else:
+                elif not self.global_metrics_args:
                     self.outputs_cache[name].append((args, kwargs))
 
     def compute(self, trainer):
