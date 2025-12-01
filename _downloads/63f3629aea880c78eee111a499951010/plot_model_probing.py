@@ -97,7 +97,7 @@ test_xy_dataset = MNIST(
 
 contrast_transforms = transforms.Compose(
     [
-        transforms.RandomResizedCrop(size=28),
+        transforms.RandomResizedCrop(size=28, scale=(0.8, 1.0)),
         transforms.GaussianBlur(kernel_size=3),
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,)),
@@ -211,7 +211,7 @@ callback = ClassificationProbingCallback(
     train_xy_loader,
     test_xy_loader,
     probe=LogisticRegression(max_iter=200),
-    every_n_train_epochs=2,
+    every_n_train_epochs=3,
 )
 
 
@@ -256,11 +256,11 @@ model = SimCLR(
     encoder=encoder,
     random_state=42,
     limit_train_batches=100,
-    max_epochs=10,
+    max_epochs=30,
     temperature=0.1,
     hidden_dims=[64, 32],
-    lr=1e-4,
-    weight_decay=1e-4,
+    lr=3e-4,
+    weight_decay=5e-5,
     enable_checkpointing=False,
     callbacks=callback,  # <-- key part for probing
 )

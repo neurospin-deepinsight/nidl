@@ -20,8 +20,9 @@ shared across projects.
 
 Lightning provides a large set of callbacks described
 `here <https://lightning.ai/docs/pytorch/stable/extensions/callbacks.html>`_.
-We propose in nidl original monitoring callbacks as well as
-neuroimaging focused callbacks.
+We propose in nidl critical callbacks for model probing and metrics
+computation. It allows a better decoupling of the model training and evaluation
+logic from the actual implementation of these functionalities.
 
 
 .. autoclasstree:: nidl.callbacks
@@ -29,24 +30,10 @@ neuroimaging focused callbacks.
    :align: center
 
 
-Monitoring
-----------
+Probing callbacks
+-----------------
 
-Classes for all monitoring callbacks.
-
-.. currentmodule:: nidl.callbacks
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    BatchTypingCallback
-
-
-Neuroimaging
-------------
-
-Classes for all neuroimaging callbacks.
+Classes for all callbacks performing model's probing.
 
 .. currentmodule:: nidl.callbacks
 
@@ -54,8 +41,35 @@ Classes for all neuroimaging callbacks.
    :toctree: generated/
    :template: class.rst
 
-    BatchTypingCallback
     ClassificationProbingCallback
     RegressionProbingCallback
     MultitaskModelProbing
     ModelProbing
+
+
+Metrics callback
+----------------
+
+Classes for all callbacks performing metrics computation.
+
+.. currentmodule:: nidl.callbacks
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    MetricsCallback
+
+Typing callback
+----------------
+
+Classes for all callbacks checking the batch format given by a dataloader
+against the expected type.
+
+.. currentmodule:: nidl.callbacks
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    BatchTypingCallback

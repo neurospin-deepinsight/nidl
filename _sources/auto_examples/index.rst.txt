@@ -83,6 +83,23 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="The current logic in nidl is to separate the implementation of the actual model (i.e. everything required to fit the model on data) from everything else, such as metrics computation and logging. This is usually performed to check the behavior of a model during training or validation but it is not essential for fitting.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_metrics_callback_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_metrics_callback.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Visualization of metrics during training of PyTorch-Lightning models</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a y-Aware Contrastive Learning model on the OpenBHB dataset using NIDL. As in the original paper [1]_, we will use age as a weak label to guide the contrastive learning process. The model will be trained to bring representations of samples with similar ages closer together in the feature space, while pushing apart samples with dissimilar ages. This approach leverages the age information to enhance the quality of the learned representations, making them more relevant for downstream tasks such as age prediction or disease classification.">
 
 .. only:: html
@@ -112,6 +129,7 @@ Examples
    /auto_examples/plot_openbhb
    /auto_examples/simclr_stl10
    /auto_examples/plot_barlowtwins_openbhb
+   /auto_examples/plot_metrics_callback
    /auto_examples/plot_yaware_openbhb
 
 

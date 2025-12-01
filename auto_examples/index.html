@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/auto_examples/index.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:description" content="Model probing callback of embedding estimators Presentation of the OpenBHB dataset Self-Supervised Contrastive Learning with SimCLR Self-Supervised Learning with Barlow Twins Weakly Supervised Cont..." />
+<meta property="og:description" content="Model probing callback of embedding estimators Presentation of the OpenBHB dataset Self-Supervised Contrastive Learning with SimCLR Self-Supervised Learning with Barlow Twins Visualization of metri..." />
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_model_probing_thumb.png" />
 <meta property="og:image:alt" content="" />
-<meta name="description" content="Model probing callback of embedding estimators Presentation of the OpenBHB dataset Self-Supervised Contrastive Learning with SimCLR Self-Supervised Learning with Barlow Twins Weakly Supervised Cont..." />
+<meta name="description" content="Model probing callback of embedding estimators Presentation of the OpenBHB dataset Self-Supervised Contrastive Learning with SimCLR Self-Supervised Learning with Barlow Twins Visualization of metri..." />
 <link rel="search" title="Search" href="../search.html"><link rel="next" title="Model probing callback of embedding estimators" href="plot_model_probing.html"><link rel="prev" title="Quickstart" href="../quickstart.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
@@ -234,6 +234,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
 </li>
@@ -315,12 +316,19 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ClassificationProbingCallback.html">nidl.callbacks.ClassificationProbingCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.RegressionProbingCallback.html">nidl.callbacks.RegressionProbingCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.MultitaskModelProbing.html">nidl.callbacks.MultitaskModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbing.html">nidl.callbacks.ModelProbing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/metrics.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.metrics</span></code>: Available metrics</a><input aria-label="Toggle navigation of nidl.metrics: Available metrics" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.pearson_r.html">nidl.metrics.pearson_r</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.alignment_score.html">nidl.metrics.alignment_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.uniformity_score.html">nidl.metrics.uniformity_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.contrastive_accuracy_score.html">nidl.metrics.contrastive_accuracy_score</a></li>
 </ul>
 </li>
 </ul>
@@ -392,6 +400,9 @@
 </div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a Barlow Twins model [1]_ on the OpenBHB dataset using NIDL."><img alt="" src="../_images/sphx_glr_plot_barlowtwins_openbhb_thumb.png" />
 <p><a class="reference internal" href="plot_barlowtwins_openbhb.html#sphx-glr-auto-examples-plot-barlowtwins-openbhb-py"><span class="std std-ref">Self-Supervised Learning with Barlow Twins</span></a></p>
   <div class="sphx-glr-thumbnail-title">Self-Supervised Learning with Barlow Twins</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="The current logic in nidl is to separate the implementation of the actual model (i.e. everything required to fit the model on data) from everything else, such as metrics computation and logging. This is usually performed to check the behavior of a model during training or validation but it is not essential for fitting."><img alt="" src="../_images/sphx_glr_plot_metrics_callback_thumb.png" />
+<p><a class="reference internal" href="plot_metrics_callback.html#sphx-glr-auto-examples-plot-metrics-callback-py"><span class="std std-ref">Visualization of metrics during training of PyTorch-Lightning models</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Visualization of metrics during training of PyTorch-Lightning models</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a y-Aware Contrastive Learning model on the OpenBHB dataset using NIDL. As in the original paper [1]_, we will use age as a weak label to guide the contrastive learning process. The model will be trained to bring representations of samples with similar ages closer together in the feature space, while pushing apart samples with dissimilar ages. This approach leverages the age information to enhance the quality of the learned representations, making them more relevant for downstream tasks such as age prediction or disease classification."><img alt="" src="../_images/sphx_glr_plot_yaware_openbhb_thumb.png" />
 <p><a class="reference internal" href="plot_yaware_openbhb.html#sphx-glr-auto-examples-plot-yaware-openbhb-py"><span class="std std-ref">Weakly Supervised Contrastive Learning with y-Aware</span></a></p>
   <div class="sphx-glr-thumbnail-title">Weakly Supervised Contrastive Learning with y-Aware</div>
