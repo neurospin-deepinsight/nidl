@@ -95,12 +95,14 @@ class BarlowTwinsLoss(nn.Module):
             c = torch.mm(z1_norm.T, z2_norm) / (N - 1)  # DxD
 
         # loss
-        c_diff = (c - torch.eye(D, device=z1.device)).pow(2)  # DxD
+        diag_mask = torch.eye(D, device=z1.device)
+        c_diff = (c - diag_mask).pow(2)  # DxD
 
         # multiply off-diagonal elems of c_diff by lambd
-        c_diff[~torch.eye(D, dtype=bool)] *= self.lambd
-        loss_invariance = c_diff[torch.eye(D, dtype=bool)].sum()
-        loss_redundancy = c_diff[~torch.eye(D, dtype=bool)].sum()
+        diag_mask_bool = torch.eye(D, dtype=bool, device=z1.device)
+        c_diff[~diag_mask_bool] *= self.lambd
+        loss_invariance = c_diff[diag_mask_bool].sum()
+        loss_redundancy = c_diff[~diag_mask_bool].sum()
         loss = loss_invariance + loss_redundancy
 
         return loss
