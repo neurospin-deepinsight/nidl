@@ -15,3 +15,4 @@ the :ref:`user guide <user_guide>` for more information and usage examples.
    augmentation.rst
    datasets.rst
    callbacks.rst
+   metrics.rst
