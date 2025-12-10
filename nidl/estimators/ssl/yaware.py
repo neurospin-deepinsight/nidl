@@ -292,6 +292,10 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         # Returns everything needed for further logging/metrics computation
         return outputs
 
+    def test_step(self, batch, batch_idx):
+        """Skip the test step."""
+        return None
+
     def transform_step(
         self,
         batch: torch.Tensor,

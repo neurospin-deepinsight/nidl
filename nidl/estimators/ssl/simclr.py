@@ -233,8 +233,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         return outputs
 
     def test_step(self, batch, batch_idx):
-        # Lightning just needs this method to exist.
-        return {}
+        """Skip the test step."""
+        return None
 
     def transform_step(
         self,
