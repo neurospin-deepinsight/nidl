@@ -33,22 +33,19 @@ class ModelProbingCV(pl.Callback):
     3) Compute and log the scores computed between the true and predicted
        targets for each CV split.
 
-    Steps 2 and 3 are handled mostly by scikit-learn with
-    :meth:`sklearn.cross_validate`.
-
     The probing can be performed at the end of training epochs, validation
     epochs, and/or at the start/end of the test epoch.
 
     The metrics logged depend on the `scoring` parameter:
 
-    - If a single score is provided, it logs `fold{i}/test_score` for each
-      fold `i`.
+    - If a single score is provided, it logs ``fold{i}/test_score`` for each
+      fold ``i``.
     - If multiple scores are provided, it logs each score with its name, such
-      as `fold{i}/test_accuracy` or `fold{i}/test_auc` for each fold `i`.
+      as ``fold{i}/test_accuracy`` or ``fold{i}/test_auc`` for each fold ``i``.
 
-    Eventually, a `prefix_score` can be added to the score names when logging,
-    such as "ridge_" or "logreg_" (giving `fold{i}/ridge_test_accuracy" or
-    "fold{i}/logreg_test_accuracy").
+    Eventually, a ``prefix_score`` can be added to the score names when
+    logging, such as ``ridge_`` or ``logreg_`` (giving
+    ``fold{i}/ridge_test_accuracy`` or ``fold{i}/logreg_test_accuracy``).
 
     Parameters
     ----------
@@ -91,14 +88,16 @@ class ModelProbingCV(pl.Callback):
         - An iterable yielding (train, test) splits as arrays of indices.
 
         For int/None inputs, if the probe is a classifier and ``y`` is
-        either binary or multiclass, :class:`StratifiedKFold` is used. In all
-        other cases, :class:`KFold` is used. These splitters are instantiated
-        with `shuffle=False` so the splits will be the same across calls.
+        either binary or multiclass,
+        :class:`~sklearn.model_selection.StratifiedKFold` is used. In all
+        other cases, :class:`~sklearn.model_selection.KFold` is used.
+        These splitters are instantiated with `shuffle=False` so the splits
+        will be the same across calls.
 
     n_jobs : int, default=None
         Number of jobs to run in parallel. Training the probe and computing
         the score are parallelized over the cross-validation splits.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
+        ``None`` means 1 unless in a ``joblib.parallel_backend`` context.
         ``-1`` means using all processors.
 
     every_n_train_epochs: int or None, default=1
@@ -119,8 +118,8 @@ class ModelProbingCV(pl.Callback):
         Whether to display the metrics in the progress bar.
 
     prefix_score: str, default=""
-        Prefix to add to the score name when logging, such as "ridge_" or
-        "logreg_".
+        Prefix to add to the score name when logging, such as ``ridge_`` or
+        ``logreg_``.
     """
 
     def __init__(
@@ -149,7 +148,6 @@ class ModelProbingCV(pl.Callback):
         self._on_test_epoch_end = on_test_epoch_end
         self.prog_bar = prog_bar
         self.prefix_score = prefix_score
-        self.counter_train_epochs = 0
         self.counter_val_epochs = 0
 
     @rank_zero_only
@@ -202,6 +200,13 @@ class ModelProbingCV(pl.Callback):
                 sampler=sampler,
                 collate_fn=dataloader.collate_fn,
                 drop_last=dataloader.drop_last,
+                timeout=dataloader.timeout,
+                worker_init_fn=dataloader.worker_init_fn,
+                multiprocessing_context=dataloader.multiprocessing_context,
+                prefetch_factor=dataloader.prefetch_factor,
+                persistent_workers=dataloader.persistent_workers,
+                pin_memory_device=dataloader.pin_memory_device,
+                in_order=dataloader.in_order,
             )
         else:
             return dataloader
@@ -273,9 +278,7 @@ class ModelProbingCV(pl.Callback):
         """
         is_training = pl_module.training  # Save state
 
-        dataloader = self.adapt_dataloader_for_ddp(
-            dataloader, pl_module.trainer
-        )
+        dataloader = self.adapt_dataloader_for_ddp(dataloader, trainer)
 
         pl_module.eval()
         X, y = [], []
@@ -284,7 +287,7 @@ class ModelProbingCV(pl.Callback):
             for batch_idx, batch in tqdm(
                 enumerate(dataloader),
                 desc="Extracting features",
-                disable=(not self.prog_bar or not trainer.is_global_zero),
+                disable=(not trainer.is_global_zero),
                 leave=False,
             ):
                 x_batch, y_batch = batch
@@ -305,7 +308,7 @@ class ModelProbingCV(pl.Callback):
         y = pl_module.all_gather(y).cpu().numpy()
 
         # Reduce (world_size, batch, ...) to (world_size * batch, ...)
-        if X.ndim > 2 and pl_module.trainer.world_size > 1:
+        if pl_module.trainer.world_size > 1:
             X = X.reshape(X.shape[0] * X.shape[1], *X.shape[2:])
             y = y.reshape(y.shape[0] * y.shape[1], *y.shape[2:])
 
@@ -336,10 +339,10 @@ class ModelProbingCV(pl.Callback):
         return X, y
 
     def on_train_epoch_end(self, trainer, pl_module):
-        self.counter_train_epochs += 1
         if (
             self.every_n_train_epochs is not None
-            and self.counter_train_epochs % self.every_n_train_epochs == 0
+            and self.every_n_train_epochs > 0
+            and trainer.current_epoch % self.every_n_train_epochs == 0
         ):
             self.probing(trainer, pl_module)
 
@@ -349,6 +352,8 @@ class ModelProbingCV(pl.Callback):
             and self.counter_val_epochs % self.every_n_val_epochs == 0
         ):
             self.probing(trainer, pl_module)
+
+        self.counter_val_epochs += 1
 
     def on_test_epoch_start(self, trainer, pl_module):
         if self._on_test_epoch_start:

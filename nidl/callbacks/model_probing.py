@@ -16,6 +16,7 @@ from sklearn.base import BaseEstimator as sk_BaseEstimator
 from sklearn.metrics import check_scoring
 from sklearn.utils.validation import check_array
 from torch.utils.data import DataLoader, DistributedSampler
+from tqdm import tqdm
 
 from nidl.estimators.base import BaseEstimator
 from nidl.utils.validation import _estimator_is
@@ -35,15 +36,15 @@ class ModelProbing(pl.Callback):
     The probing can be performed at the end of training epochs, validation
     epochs, and/or at the start/end of the test epoch.
 
-    The metrics logged depend on the `scoring` parameter:
+    The metrics logged depend on the ``scoring`` parameter:
 
-    - If a single score is provided, it logs `test_score`.
+    - If a single score is provided, it logs ``test_score``.
     - If multiple scores are provided, it logs each score with its name
-      (e.g. "test_accuracy", "test_auc").
+      (such as  ``test_accuracy``, ``test_auc``).
 
     Eventually, a `prefix_score` can be added to the score names when logging,
-    such as "ridge_" or "logreg_" (giving "ridge_test_accuracy" or
-    "logreg_test_accuracy").
+    such as ``ridge_`` or ``logreg_`` (giving ``ridge_test_r2`` or
+    ``logreg_test_accuracy``).
 
     Parameters
     ----------
@@ -100,7 +101,7 @@ class ModelProbing(pl.Callback):
     prefix_score: str, default=""
         Prefix to add to the score name when logging. This can be useful when
         using multiple `ModelProbing` callbacks to distinguish the logged
-        metrics, such as "ridge_" or "logreg_".
+        metrics, such as ``"ridge_"`` or ``"logreg_"``.
 
     Examples
     --------
@@ -139,7 +140,6 @@ class ModelProbing(pl.Callback):
         self._on_test_epoch_end = on_test_epoch_end
         self.prog_bar = prog_bar
         self.prefix_score = prefix_score
-        self.counter_train_epochs = 0
         self.counter_val_epochs = 0
 
         self.scorers = check_scoring(self.probe, scoring=self.scoring)
@@ -187,6 +187,7 @@ class ModelProbing(pl.Callback):
                 num_replicas=trainer.world_size,
                 rank=trainer.global_rank,
                 shuffle=False,
+                drop_last=False,
             )
             # Recreate the dataloader with this sampler
             return DataLoader(
@@ -197,6 +198,13 @@ class ModelProbing(pl.Callback):
                 sampler=sampler,
                 collate_fn=dataloader.collate_fn,
                 drop_last=dataloader.drop_last,
+                timeout=dataloader.timeout,
+                worker_init_fn=dataloader.worker_init_fn,
+                multiprocessing_context=dataloader.multiprocessing_context,
+                prefetch_factor=dataloader.prefetch_factor,
+                persistent_workers=dataloader.persistent_workers,
+                pin_memory_device=dataloader.pin_memory_device,
+                in_order=dataloader.in_order,
             )
         else:
             return dataloader
@@ -231,9 +239,11 @@ class ModelProbing(pl.Callback):
 
         # Embed the data
         X_train, y_train = self.extract_features(
-            pl_module, self.train_dataloader
+            trainer, pl_module, self.train_dataloader
         )
-        X_test, y_test = self.extract_features(pl_module, self.test_dataloader)
+        X_test, y_test = self.extract_features(
+            trainer, pl_module, self.test_dataloader
+        )
 
         # Check arrays
         X_train, y_train = (
@@ -251,7 +261,7 @@ class ModelProbing(pl.Callback):
         # Compute/Log metrics
         self.log_metrics(pl_module, X_test, y_test)
 
-    def extract_features(self, pl_module, dataloader):
+    def extract_features(self, trainer, pl_module, dataloader):
         """Extract features from a dataloader with the BaseEstimator.
 
         By default, it uses the `transform_step` logic applied on each batch to
@@ -261,6 +271,8 @@ class ModelProbing(pl.Callback):
 
         Parameters
         ----------
+        trainer: pl.Trainer
+            The pytorch-lightning trainer instance.
         pl_module: BaseEstimator
             The BaseEstimator module that implements the 'transform_step'.
         dataloader: torch.utils.data.DataLoader
@@ -276,15 +288,18 @@ class ModelProbing(pl.Callback):
         """
         is_training = pl_module.training  # Save state
 
-        dataloader = self.adapt_dataloader_for_ddp(
-            dataloader, pl_module.trainer
-        )
+        dataloader = self.adapt_dataloader_for_ddp(dataloader, trainer)
 
         pl_module.eval()
         X, y = [], []
 
         with torch.no_grad():
-            for batch_idx, batch in enumerate(dataloader):
+            for batch_idx, batch in tqdm(
+                enumerate(dataloader),
+                desc="Extracting features",
+                disable=(not trainer.is_global_zero),
+                leave=False,
+            ):
                 x_batch, y_batch = batch
                 x_batch = x_batch.to(pl_module.device)
                 y_batch = y_batch.to(pl_module.device)
@@ -303,7 +318,7 @@ class ModelProbing(pl.Callback):
         y = pl_module.all_gather(y).cpu().numpy()
 
         # Reduce (world_size, batch, ...) to (world_size * batch, ...)
-        if X.ndim > 2 and pl_module.trainer.world_size > 1:
+        if pl_module.trainer.world_size > 1:
             X = X.reshape(X.shape[0] * X.shape[1], *X.shape[2:])
             y = y.reshape(y.shape[0] * y.shape[1], *y.shape[2:])
 
@@ -313,10 +328,10 @@ class ModelProbing(pl.Callback):
         return X, y
 
     def on_train_epoch_end(self, trainer, pl_module):
-        self.counter_train_epochs += 1
         if (
             self.every_n_train_epochs is not None
-            and self.counter_train_epochs % self.every_n_train_epochs == 0
+            and self.every_n_train_epochs > 0
+            and trainer.current_epoch % self.every_n_train_epochs == 0
         ):
             self.probing(trainer, pl_module)
 
@@ -326,6 +341,8 @@ class ModelProbing(pl.Callback):
             and self.counter_val_epochs % self.every_n_val_epochs == 0
         ):
             self.probing(trainer, pl_module)
+
+        self.counter_val_epochs += 1
 
     def on_test_epoch_start(self, trainer, pl_module):
         if self._on_test_epoch_start:

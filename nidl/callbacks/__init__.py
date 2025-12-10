@@ -12,9 +12,5 @@ nidl compatible callback, as well as the callbacks available in nidl.
 
 from .check_typing import BatchTypingCallback
 from .metrics import MetricsCallback
-from .model_probing import (
-    ClassificationProbingCallback,
-    ModelProbing,
-    RegressionProbingCallback,
-)
-from .multitask_probing import MultiTaskEstimator, MultitaskModelProbing
+from .model_probing import ModelProbing
+from .model_probing_cv import ModelProbingCV
