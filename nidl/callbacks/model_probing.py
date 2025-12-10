@@ -6,24 +6,22 @@
 # for details.
 ##########################################################################
 
-from abc import ABC, abstractmethod
+import numbers
 from typing import Union
 
 import pytorch_lightning as pl
 import torch
 from pytorch_lightning.utilities import rank_zero_only
 from sklearn.base import BaseEstimator as sk_BaseEstimator
-from sklearn.base import is_classifier, is_regressor
-from sklearn.metrics import balanced_accuracy_score, classification_report
+from sklearn.metrics import check_scoring
 from sklearn.utils.validation import check_array
 from torch.utils.data import DataLoader, DistributedSampler
 
 from nidl.estimators.base import BaseEstimator
-from nidl.metrics import regression_report
 from nidl.utils.validation import _estimator_is
 
 
-class ModelProbing(ABC, pl.Callback):
+class ModelProbing(pl.Callback):
     """Callback to probe the representation of an embedding estimator on a
     dataset.
 
@@ -32,34 +30,89 @@ class ModelProbing(ABC, pl.Callback):
     1) Embeds the input data (training+test) through the estimator using
        `transform_step` method (handles distributed multi-gpu forward pass).
     2) Train the probe on the training embedding (handles multi-cpu training).
-    3) Test the probe on the test embedding and log the metrics.
+    3) Evaluate the probe on the test embedding and log the scores.
 
-    This callback is abstract and should be inherited to implement
-    the `log_metrics` method.
+    The probing can be performed at the end of training epochs, validation
+    epochs, and/or at the start/end of the test epoch.
+
+    The metrics logged depend on the `scoring` parameter:
+
+    - If a single score is provided, it logs `test_score`.
+    - If multiple scores are provided, it logs each score with its name
+      (e.g. "test_accuracy", "test_auc").
+
+    Eventually, a `prefix_score` can be added to the score names when logging,
+    such as "ridge_" or "logreg_" (giving "ridge_test_accuracy" or
+    "logreg_test_accuracy").
 
     Parameters
     ----------
     train_dataloader: torch.utils.data.DataLoader
         Training dataloader yielding batches in the form `(X, y)`
         for further embedding and training of the probe.
+
     test_dataloader: torch.utils.data.DataLoader
         Test dataloader yielding batches in the form `(X, y)`
         for further embedding and test of the probe.
+
     probe: sklearn.base.BaseEstimator
         The probe model to be trained on the embedding. It must
         implement `fit` and `predict` methods on numpy array.
+
+    scoring: str, callable, list, tuple, or dict, default=None
+        Strategy to evaluate the performance of the `probe` on the test
+        set. The scores are logged into the
+        :class:`~pytorch_lightning.core.module.LightningModule` during
+        training/validation/test according to the configuration of the
+        callback.
+
+        If `scoring` represents a single score, one can use:
+
+        - a single string (see :ref:`scoring_string_names`);
+        - a callable (see :ref:`scoring_callable`) that returns a single value.
+        - `None`, the `probe`'s
+          :ref:`default evaluation criterion <scoring_api_overview>` is used.
+
+        If `scoring` represents multiple scores, one can use:
+
+        - a list or tuple of unique strings;
+        - a callable returning a dictionary where the keys are the metric
+          names and the values are the metric scores;
+        - a dictionary with metric names as keys and callables a values.
+
     every_n_train_epochs: int or None, default=1
         Number of training epochs after which to run the probing.
         Disabled if None.
+
     every_n_val_epochs: int or None, default=None
         Number of validation epochs after which to run the probing.
         Disabled if None.
+
     on_test_epoch_start: bool, default=False
         Whether to run the linear probing at the start of the test epoch.
+
     on_test_epoch_end: bool, default=False
         Whether to run the linear probing at the end of the test epoch.
+
     prog_bar: bool, default=True
         Whether to display the metrics in the progress bar.
+
+    prefix_score: str, default=""
+        Prefix to add to the score name when logging. This can be useful when
+        using multiple `ModelProbing` callbacks to distinguish the logged
+        metrics, such as "ridge_" or "logreg_".
+
+    Examples
+    --------
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> from nidl.callbacks import ModelProbing
+    >>> callback = ModelProbing(
+    ...     train_dataloader=train_loader,
+    ...     test_dataloader=test_loader,
+    ...     probe=LogisticRegression(),
+    ...     scoring=["accuracy", "balanced_accuracy"],
+    ...     every_n_train_epochs=5,
+    ... )
     """
 
     def __init__(
@@ -67,23 +120,29 @@ class ModelProbing(ABC, pl.Callback):
         train_dataloader: DataLoader,
         test_dataloader: DataLoader,
         probe: sk_BaseEstimator,
+        scoring: Union[str, callable, list, tuple, dict, None] = None,
         every_n_train_epochs: Union[int, None] = 1,
         every_n_val_epochs: Union[int, None] = None,
         on_test_epoch_start: bool = False,
         on_test_epoch_end: bool = False,
         prog_bar: bool = True,
+        prefix_score: str = "",
     ):
         super().__init__()
         self.train_dataloader = train_dataloader
         self.test_dataloader = test_dataloader
         self.probe = probe
+        self.scoring = scoring
         self.every_n_train_epochs = every_n_train_epochs
         self.every_n_val_epochs = every_n_val_epochs
         self._on_test_epoch_start = on_test_epoch_start
         self._on_test_epoch_end = on_test_epoch_end
         self.prog_bar = prog_bar
+        self.prefix_score = prefix_score
         self.counter_train_epochs = 0
         self.counter_val_epochs = 0
+
+        self.scorers = check_scoring(self.probe, scoring=self.scoring)
 
     @rank_zero_only
     def fit(self, X, y):
@@ -91,14 +150,30 @@ class ModelProbing(ABC, pl.Callback):
         return self.probe.fit(X, y)
 
     @rank_zero_only
-    def predict(self, X):
-        """Make predictions on new data."""
-        return self.probe.predict(X)
-
-    @abstractmethod
-    @rank_zero_only
-    def log_metrics(self, pl_module, y_pred, y_true):
+    def log_metrics(self, pl_module, X, y_true):
         """Log the metrics given the predictions and the true labels."""
+
+        scores = self.scorers(self.probe, X, y_true)
+
+        if isinstance(scores, numbers.Number):
+            pl_module.log(
+                f"{self.prefix_score}test_score",
+                float(scores),
+                prog_bar=self.prog_bar,
+            )
+        elif isinstance(scores, dict):
+            for key, values in scores.items():
+                if isinstance(values, numbers.Number):
+                    pl_module.log(
+                        f"{self.prefix_score}test_{key}",
+                        float(values),
+                        prog_bar=self.prog_bar,
+                    )
+        else:
+            raise ValueError(
+                "Scores should be a number or a dictionary, got "
+                f"{type(scores)}"
+            )
 
     @staticmethod
     def adapt_dataloader_for_ddp(dataloader, trainer):
@@ -173,11 +248,8 @@ class ModelProbing(ABC, pl.Callback):
         # Fit the probe
         self.fit(X_train, y_train)
 
-        # Make predictions
-        y_pred = self.predict(X_test)
-
         # Compute/Log metrics
-        self.log_metrics(pl_module, y_pred, y_test)
+        self.log_metrics(pl_module, X_test, y_test)
 
     def extract_features(self, pl_module, dataloader):
         """Extract features from a dataloader with the BaseEstimator.
@@ -262,213 +334,3 @@ class ModelProbing(ABC, pl.Callback):
     def on_test_epoch_end(self, trainer, pl_module):
         if self._on_test_epoch_end:
             self.probing(trainer, pl_module)
-
-
-class ClassificationProbingCallback(ModelProbing):
-    """Perform classification on top of an embedding model.
-
-    Concretely this callback:
-
-    1) Embeds the input data through the torch model.
-    2) Fits the classification probe on the embedded data.
-    3) Logs the main classification metrics:
-
-       - precision (macro)
-       - recall (macro)
-       - f1-score (weighted and macro)
-       - accuracy (global)
-       - balanced accuracy
-
-    Please check this `User Guide <https://scikit-learn.org/stable/modules/model_evaluation.html#classification-report>`_
-    for more details on the classification metrics reported.
-
-    Parameters
-    ----------
-    train_dataloader: torch.utils.data.DataLoader
-        Training dataloader yielding batches in the form `(X, y)`
-        for further embedding and training of the probe.
-    test_dataloader: torch.utils.data.DataLoader
-        Test dataloader yielding batches in the form `(X, y)`
-        for further embedding and test of the probe.
-    probe: sklearn.base.BaseEstimator
-        The scikit-learn classifier to be trained on the embedding.
-    probe_name: str or None, default=None
-        Name of the probe displayed when logging the results.
-        It will appear as <probe_name>/<metric_name> for each metric.
-        If None,  <probe_class_name>/<metric_name> is displayed.
-    every_n_train_epochs: int or None, default=1
-        Number of training epochs after which to run the probing.
-        Disabled if None.
-    every_n_val_epochs: int or None, default=None
-        Number of validation epochs after which to run the probing.
-        Disabled if None.
-    on_test_epoch_start: bool, default=False
-        Whether to run the probing at the start of the test epoch.
-    on_test_epoch_end: bool, default=False
-        Whether to run the probing at the end of the test epoch.
-    prog_bar: bool, default=True
-        Whether to display the metrics in the progress bar.
-
-    """
-    def __init__(
-        self,
-        train_dataloader,
-        test_dataloader,
-        probe,
-        probe_name=None,
-        every_n_train_epochs=1,
-        every_n_val_epochs=None,
-        on_test_epoch_start=False,
-        on_test_epoch_end=False,
-        prog_bar=True,
-    ):
-        if not is_classifier(probe):
-            raise ValueError("The probe must be a classifier.")
-        super().__init__(
-            train_dataloader,
-            test_dataloader,
-            probe,
-            every_n_train_epochs,
-            every_n_val_epochs,
-            on_test_epoch_start,
-            on_test_epoch_end,
-            prog_bar,
-        )
-        self.probe_name = (
-            probe_name
-            if probe_name is not None
-            else f"{probe.__class__.__name__}"
-        )
-
-    @rank_zero_only
-    def log_metrics(self, pl_module, y_pred, y_true):
-        # Compute classification metrics
-        metrics_report = classification_report(
-            y_true, y_pred, output_dict=True
-        )
-        # Compute balanced accuracy separately
-        bacc = balanced_accuracy_score(y_true, y_pred)
-
-        summary = {
-            f"{self.probe_name}/accuracy": metrics_report["accuracy"],
-            f"{self.probe_name}/balanced_accuracy": bacc,
-            f"{self.probe_name}/f1_macro": metrics_report["macro avg"][
-                "f1-score"
-            ],
-            f"{self.probe_name}/precision_macro": metrics_report["macro avg"][
-                "precision"
-            ],
-            f"{self.probe_name}/recall_macro": metrics_report["macro avg"][
-                "recall"
-            ],
-            f"{self.probe_name}/f1_weighted": metrics_report["weighted avg"][
-                "f1-score"
-            ],
-        }
-        pl_module.log_dict(
-            summary,
-            prog_bar=self.prog_bar,
-            on_epoch=True,
-        )
-
-
-class RegressionProbingCallback(ModelProbing):
-    """
-    Perform regression on top of an embedding model.
-
-    Concretely this callback:
-
-    1) Embeds the input data through the estimator.
-    2) Fits the regression probe on the embedded data.
-    3) Logs the main regression metrics including:
-
-       - mean absolute error
-       - median absolute error
-       - root mean squared error
-       - mean squared error
-       - R² score
-       - Pearson's r
-       - explained variance score
-
-    Parameters
-    ----------
-    train_dataloader: torch.utils.data.DataLoader
-        Training dataloader yielding batches in the form `(X, y)`
-        for further embedding and training of the probe.
-    test_dataloader: torch.utils.data.DataLoader
-        Test dataloader yielding batches in the form `(X, y)`
-        for further embedding and test of the probe.
-    probe: sklearn.base.BaseEstimator
-        The scikit-learn regressor to be trained on the embedding.
-    probe_name: str or None, default=None
-        Name of the probe displayed when logging the results.
-        It will appear as <probe_name>/<metric_name> for each metric.
-        If None,  <probe_class_name>/<metric_name> is displayed.
-    every_n_train_epochs: int or None, default=1
-        Number of training epochs after which to run the probing.
-        Disabled if None.
-    every_n_val_epochs: int or None, default=None
-        Number of validation epochs after which to run the probing.
-        Disabled if None.
-    on_test_epoch_start: bool, default=False
-        Whether to run the probing at the start of the test epoch.
-    on_test_epoch_end: bool, default=False
-        Whether to run the probing at the end of the test epoch.
-    prog_bar: bool, default=True
-        Whether to display the metrics in the progress bar.
-
-    """
-    def __init__(
-        self,
-        train_dataloader,
-        test_dataloader,
-        probe,
-        probe_name=None,
-        every_n_train_epochs=1,
-        every_n_val_epochs=None,
-        on_test_epoch_start=False,
-        on_test_epoch_end=False,
-        prog_bar=True,
-    ):
-        if not is_regressor(probe):
-            raise ValueError("The probe must be a regressor.")
-        super().__init__(
-            train_dataloader,
-            test_dataloader,
-            probe,
-            every_n_train_epochs,
-            every_n_val_epochs,
-            on_test_epoch_start,
-            on_test_epoch_end,
-            prog_bar,
-        )
-        self.probe_name = (
-            probe_name + "/"
-            if probe_name is not None
-            else f"{probe.__class__.__name__}/"
-        )
-
-    @rank_zero_only
-    def log_metrics(self, pl_module, y_pred, y_true):
-        # Compute regression metrics
-        metrics_report = regression_report(y_true, y_pred, output_dict=True)
-
-        # Log the results
-        for name, value in metrics_report.items():
-            if isinstance(value, dict):
-                value_ = {
-                    f"{self.probe_name}{name}/{k}": v
-                    for (k, v) in value.items()
-                }
-                pl_module.log_dict(
-                    value_,
-                    prog_bar=self.prog_bar,
-                    on_epoch=True,
-                )
-            else:
-                pl_module.log(
-                    f"{self.probe_name}{name}",
-                    value,
-                    prog_bar=self.prog_bar,
-                    on_epoch=True,
-                )

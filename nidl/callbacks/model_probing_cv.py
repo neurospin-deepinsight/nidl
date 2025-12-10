@@ -30,11 +30,25 @@ class ModelProbingCV(pl.Callback):
     1) Embeds the input data through the estimator using `transform_step`.
     2) For each CV split, train the probe on the training embedding split and
        make predictions on the test embedding split.
-    3) Compute and log the metrics computed between the true and predicted
+    3) Compute and log the scores computed between the true and predicted
        targets for each CV split.
 
     Steps 2 and 3 are handled mostly by scikit-learn with
     :meth:`sklearn.cross_validate`.
+
+    The probing can be performed at the end of training epochs, validation
+    epochs, and/or at the start/end of the test epoch.
+
+    The metrics logged depend on the `scoring` parameter:
+
+    - If a single score is provided, it logs `fold{i}/test_score` for each
+      fold `i`.
+    - If multiple scores are provided, it logs each score with its name, such
+      as `fold{i}/test_accuracy` or `fold{i}/test_auc` for each fold `i`.
+
+    Eventually, a `prefix_score` can be added to the score names when logging,
+    such as "ridge_" or "logreg_" (giving `fold{i}/ridge_test_accuracy" or
+    "fold{i}/logreg_test_accuracy").
 
     Parameters
     ----------
@@ -48,13 +62,16 @@ class ModelProbingCV(pl.Callback):
 
     scoring: str, callable, list, tuple, or dict, default=None
         Strategy to evaluate the performance of the `probe` across
-        cross-validation splits.
+        cross-validation splits. The scores are logged into the
+        :class:`~pytorch_lightning.core.module.LightningModule` during
+        training/validation/test according to the configuration of the
+        callback.
 
         If `scoring` represents a single score, one can use:
 
         - a single string (see :ref:`scoring_string_names`);
         - a callable (see :ref:`scoring_callable`) that returns a single value.
-        - `None`, the `estimator`'s
+        - `None`, the `probe`'s
           :ref:`default evaluation criterion <scoring_api_overview>` is used.
 
         If `scoring` represents multiple scores, one can use:
@@ -100,13 +117,17 @@ class ModelProbingCV(pl.Callback):
 
     prog_bar: bool, default=True
         Whether to display the metrics in the progress bar.
+
+    prefix_score: str, default=""
+        Prefix to add to the score name when logging, such as "ridge_" or
+        "logreg_".
     """
 
     def __init__(
         self,
         dataloader: DataLoader,
         probe: sk_BaseEstimator,
-        scoring=None,
+        scoring: Union[str, callable, list, tuple, dict, None] = None,
         cv=None,
         n_jobs: Union[int, None] = None,
         every_n_train_epochs: Union[int, None] = 1,
@@ -114,6 +135,7 @@ class ModelProbingCV(pl.Callback):
         on_test_epoch_start: bool = False,
         on_test_epoch_end: bool = False,
         prog_bar: bool = True,
+        prefix_score: str = "",
     ):
         super().__init__()
         self.dataloader = dataloader
@@ -126,6 +148,7 @@ class ModelProbingCV(pl.Callback):
         self._on_test_epoch_start = on_test_epoch_start
         self._on_test_epoch_end = on_test_epoch_end
         self.prog_bar = prog_bar
+        self.prefix_score = prefix_score
         self.counter_train_epochs = 0
         self.counter_val_epochs = 0
 
@@ -152,10 +175,10 @@ class ModelProbingCV(pl.Callback):
                 # per-fold
                 for i, v in enumerate(values):
                     pl_module.log(
-                        f"fold{i}/{key}", float(v), prog_bar=self.prog_bar
+                        f"fold{i}/{self.prefix_score}{key}",
+                        float(v),
+                        prog_bar=self.prog_bar,
                     )
-            elif isinstance(values, (float, int)):
-                pl_module.log(f"{key}", float(values), prog_bar=self.prog_bar)
 
     @staticmethod
     def adapt_dataloader_for_ddp(dataloader, trainer):
