@@ -18,7 +18,7 @@ contained for a given layer ?
 Then, it has been adapted to benchmark self-supervised vision models
 (like SimCLR, Barlow Twins, DINO, DINOv2) on classical datasets (ImageNet,
 CIFAR, ...) by implementing linear probing and K-Nearest Neighbors probing
-on the ouput representation of the models.
+on model's output representation.
 
 .. [1] Guillaume Alain and Yoshua Bengio, *Understanding intermediate layers
        using linear classifier probes*, ICLR 2017 Workshop.
@@ -37,7 +37,15 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 import torch.nn.functional as func
+from sklearn.base import BaseEstimator as sk_BaseEstimator
+from sklearn.base import clone
 from sklearn.linear_model import LogisticRegression, Ridge
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    make_scorer,
+    r2_score,
+)
 from tensorboard.backend.event_processing import event_accumulator
 from torch import nn
 from torch.utils.data import DataLoader
@@ -46,10 +54,10 @@ from torchvision.datasets import MNIST
 from torchvision.ops import MLP
 from torchvision.utils import make_grid
 
-from nidl.callbacks.model_probing import ClassificationProbingCallback
-from nidl.callbacks.multitask_probing import MultitaskModelProbing
+from nidl.callbacks.model_probing import ModelProbing
 from nidl.datasets import OpenBHB
 from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
+from nidl.metrics import pearson_r
 from nidl.transforms import MultiViewsTransform
 
 # %%
@@ -205,12 +213,13 @@ plt.show()
 # We can now create the probing callback that will train a logistic regression
 # classifier on the learned representation during SimCLR training. The probing
 # is performed every 2 epochs on the training and test sets. The classification
-# metrics are logged to TensorBoard by default.
+# metrics (accuracy and f1-weighted) are logged to TensorBoard by default.
 
-callback = ClassificationProbingCallback(
+callback = ModelProbing(
     train_xy_loader,
     test_xy_loader,
     probe=LogisticRegression(max_iter=200),
+    scoring=["accuracy", "f1_weighted"],
     every_n_train_epochs=3,
 )
 
@@ -256,7 +265,7 @@ model = SimCLR(
     encoder=encoder,
     random_state=42,
     limit_train_batches=100,
-    max_epochs=30,
+    max_epochs=10,
     temperature=0.1,
     hidden_dims=[64, 32],
     lr=3e-4,
@@ -274,8 +283,7 @@ model.fit(train_ssl_loader, test_ssl_loader)
 # After training, we can visualize the classification metrics logged
 # by the linear probe using TensorBoard. The logged metrics are stored
 # in the `lightning_logs` folder by default. They contain the accuracy,
-# balanced accuracy, F1-score (weighted and macro), precision (macro)
-# and recall (macro).
+# and f1-weighted scores.
 
 
 def get_last_log_version(logs_dir="lightning_logs"):
@@ -291,16 +299,10 @@ log_dir = f"lightning_logs/version_{get_last_log_version()}/"
 ea = event_accumulator.EventAccumulator(log_dir)
 ea.Reload()
 metrics = [
-    "LogisticRegression/accuracy",
-    "LogisticRegression/balanced_accuracy",
-    "LogisticRegression/f1_weighted",
-    "LogisticRegression/f1_macro",
-    "LogisticRegression/precision_macro",
-    "LogisticRegression/recall_macro",
+    "test_accuracy",
+    "test_f1_weighted",
 ]
-scalars = {
-    m.replace("LogisticRegression/", ""): ea.Scalars(m) for m in metrics
-}
+scalars = {m: ea.Scalars(m) for m in metrics}
 
 # %%
 # Once all the metrics are loaded, we plot them as the number of training steps
@@ -333,7 +335,7 @@ plt.show()
 # and regression tasks at the same time during training of an embedding model.
 # This could be useful if several target variables should be monitored from the
 # representation.
-# We will show how to perform this with NIDL using the **MultitaskModelProbing**
+# We will show how to perform this with nidl using the **ModelProbing**
 # callback on the OpenBHB dataset to monitor age and sex decoding from brain
 # imaging data. *We refer to the example on OpenBHB for more details on this
 # neuroimaging dataset.*
@@ -451,15 +453,83 @@ test_ssl_loader = DataLoader(
 # y-Aware CL training with multitask probing callback
 # ---------------------------------------------------
 #
-# We can now create the multitask probing callback that will train a ridge
+# Next, we create the multitask probing callback that will train a ridge
 # regression on age and a logistic regression classifier on sex. The probing
 # is performed every epoch on the training and test sets. The metrics are
 # logged to TensorBoard by default.
+#
+# To do so, we need to create a meta-estimator (compatible with scikit-learn)
+# that wraps the two estimators (ridge and logistic regression) and handles
+# the mixed regression/classification tasks. We provide such a meta-estimator
+# called **MultiTaskEstimator** below.
 
-callback = MultitaskModelProbing(
+
+class MultiTaskEstimator(sk_BaseEstimator):
+    """
+    A meta-estimator that wraps a list of sklearn estimators
+    for multi-task problems (mixed regression/classification).
+    """
+
+    def __init__(self, estimators):
+        self.estimators = estimators
+
+    def fit(self, X, y):
+        """Fit each estimator on its corresponding column in y."""
+        y = np.asarray(y)
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+        self.estimators_ = []
+        for i, est in enumerate(self.estimators):
+            fitted = clone(est).fit(X, y[:, i])
+            self.estimators_.append(fitted)
+        return self
+
+    def predict(self, X):
+        """Predict for each task."""
+        preds = [est.predict(X).reshape(-1, 1) for est in self.estimators_]
+        return np.hstack(preds)
+
+    def score(self, X, y):
+        """Average score across all tasks."""
+        y = np.asarray(y)
+        scores = []
+        for i, est in enumerate(self.estimators_):
+            scores.append(est.score(X, y[:, i]))
+        return np.mean(scores)
+
+    def __len__(self):
+        return len(self.estimators)
+
+
+# %%
+# Then, we define a scorer specific for each task:
+def make_task_scorer(metric_fn, task_index, **kwargs):
+    """Returns a scorer evaluating on y or y[:, task_index]."""
+
+    def scorer(y_true, y_pred):
+        if task_index is None:
+            return metric_fn(y_true, y_pred)
+        else:
+            return metric_fn(y_true[:, task_index], y_pred[:, task_index])
+
+    return make_scorer(scorer, **kwargs)
+
+
+# %%
+# Finally, we create the multitask probing callback with the relevant
+# estimators and scorers for age and sex.
+
+callback = ModelProbing(
     train_xy_loader,
     test_xy_loader,
-    probes=[Ridge(), LogisticRegression(max_iter=200)],
+    probe=MultiTaskEstimator([Ridge(), LogisticRegression(max_iter=200)]),
+    scoring={
+        "age/r2": make_task_scorer(r2_score, task_index=0),
+        "age/pearsonr": make_task_scorer(pearson_r, task_index=0),
+        "sex/accuracy": make_task_scorer(accuracy_score, task_index=1),
+        "sex/f1": make_task_scorer(f1_score, task_index=1),
+    },
+    every_n_train_epochs=3,
 )
 
 # %%
@@ -487,7 +557,7 @@ model = YAwareContrastiveLearning(
     random_state=42,
     max_epochs=10,
     temperature=0.1,
-    learning_rate=1e-5,
+    learning_rate=1e-3,
     enable_checkpointing=False,
     callbacks=callback,  # <-- add callback to monitor the training
 )
@@ -499,23 +569,8 @@ model.fit(train_ssl_loader, test_ssl_loader)
 # --------------------------------------------------------------------------
 #
 # After training, we can visualize the classification and regression metrics
-# logged by the multitask probing using TensorBoard. The logged metrics are
-# stored in the `lightning_logs` folder by default. They contain the R2 score
-# (coefficient of determination), the explained variance (EVar), the Pearson
-# Correlation Coefficient (PCC) for age regression and the accuracy, balanced
-# accuracy, F1-score (weighted and macro), precision (macro) and recall (macro)
-# for sex classification.
-
-
-def get_last_log_version(logs_dir="lightning_logs"):
-    """Return the last Lightning log version as an integer."""
-    versions = []
-    for d in os.listdir(logs_dir):
-        match = re.match(r"version_(\d+)", d)
-        if match:
-            versions.append(int(match.group(1)))
-    return max(versions) if versions else None
-
+# logged by the model probing using TensorBoard. The logged metrics are
+# stored in the `lightning_logs` folder by default.
 
 log_dir = f"lightning_logs/version_{get_last_log_version()}/"
 
@@ -523,28 +578,20 @@ log_dir = f"lightning_logs/version_{get_last_log_version()}/"
 ea = event_accumulator.EventAccumulator(log_dir)
 ea.Reload()
 metrics = [
-    "task0/R2",
-    "task0/PCC",  # Pearson Correlaction Coefficient
-    "task0/EVar",
-    "task1/accuracy",
-    "task1/balanced_accuracy",
-    "task1/f1_macro",
-    "task1/precision_macro",
-    "task1/recall_macro",
-    "task1/f1_weighted",
+    "test_age/r2",
+    "test_age/pearsonr",
+    "test_sex/accuracy",
+    "test_sex/f1",
 ]
 # fetch all events
 scalars = {m: ea.Scalars(m) for m in metrics}
-
-
 # %%
 # Once all the metrics are loaded, we plot them as the number of training steps
 # increases. We create two subplots, one for each task (age regression and sex
 # classification).
 
 
-def plot_task(ax, task_prefix, title):
-    task_metrics = [m for m in metrics if m.startswith(task_prefix)]
+def plot_task(ax, task_metrics, title):
     for m in task_metrics:
         steps = [s.step for s in scalars[m]]
         values = [s.value for s in scalars[m]]
@@ -557,8 +604,8 @@ def plot_task(ax, task_prefix, title):
 
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-plot_task(axes[0], "task0", "Task 0: Age Regression")
-plot_task(axes[1], "task1", "Task 1: Sex Classification")
+plot_task(axes[0], ["test_age/r2", "test_age/pearsonr"], "Age Regression")
+plot_task(axes[1], ["test_sex/accuracy", "test_sex/f1"], "Sex Classification")
 plt.tight_layout()
 plt.show()
 
@@ -567,10 +614,10 @@ plt.show()
 # -----------
 #
 # In this notebook, we have shown how to use the model probing callbacks
-# available in NIDL to monitor the evolution of the data representation
+# available in nidl to monitor the evolution of the data representation
 # during training of embedding models such as SimCLR and y-Aware Contrastive
-# Learning. We have seen how to use the `ClassificationProbingCallback` for
-# single-task probing and the `MultitaskModelProbing` for multi-task probing.
+# Learning. We have seen how to use the `ModelProbing` callback for
+# **single-task probing** and **multi-task probing**.
 # These callbacks allow to train standard machine learning models (e.g.
 # logistic regression, ridge regression, SVM) on the learned representation
 # at regular intervals during training and log the relevant metrics to
