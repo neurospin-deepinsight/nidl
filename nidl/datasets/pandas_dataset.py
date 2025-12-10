@@ -227,10 +227,7 @@ class ImageDataFrameDataset(Dataset):
         self.label_cols = self._verify_labels(df, label_cols, is_valid_label)
         self.checksum_col = checksum_col
         self.transform = transform
-        self.target_transform = target_transform or {}
-        if not isinstance(self.target_transform, dict):
-            assert len(self.label_cols) == 1
-            self.target_transform = {self.label_cols[0]: self.target_transform}
+        self.target_transform = target_transform
         self.return_none_if_no_label = return_none_if_no_label
         self.image_loader = image_loader
 
@@ -327,17 +324,20 @@ class ImageDataFrameDataset(Dataset):
 
     def apply_target_transform(self, label):
         """Apply the specified target transform to the label(s)."""
-        return (
-            [
+        if self.target_transform is None:
+            return label
+        elif isinstance(self.target_transform, Callable):
+            return self.target_transform(label)
+        elif isinstance(self.target_transform, dict):
+            return [
                 self.target_transform.get(col, lambda x: x)(val)
                 for col, val in zip(self.label_cols, label)
             ]
-            if (
-                self.target_transform is not None
-                and self.label_cols is not None
+        else:
+            raise TypeError(
+                "`target_transform` must be None, a callable or a dictionary of "
+                "callables."
             )
-            else label
-        )
 
     def __len__(self):
         return len(self.df)
