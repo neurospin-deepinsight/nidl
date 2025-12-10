@@ -62,7 +62,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
     random_state: int, default=None
         setting a seed for reproducibility.
     kwargs: dict
-        Trainer parameters.
+        Keyword arguments to be passed to the
+        :class:`~nidl.estimators.base.BaseEstimator` constructor.
 
     Attributes
     ----------
@@ -93,9 +94,14 @@ class SimCLR(TransformerMixin, BaseEstimator):
         random_state: Optional[int] = None,
         **kwargs,
     ):
+        ignore = kwargs.pop("ignore", ["encoder", "callbacks"])
+        if "encoder" not in ignore:
+            ignore.append("encoder")
+        if "callbacks" not in ignore:
+            ignore.append("callbacks")
         super().__init__(
             random_state=random_state,
-            ignore=["encoder", "callbacks"],
+            ignore=ignore,
             **kwargs,
         )
         assert temperature > 0.0, "The temperature must be a positive float!"
@@ -225,6 +231,10 @@ class SimCLR(TransformerMixin, BaseEstimator):
         self.log("loss/val", val_loss, prog_bar=True, sync_dist=True)
         # Returns everything needed for further logging/metrics computation
         return outputs
+
+    def test_step(self, batch, batch_idx):
+        """Skip the test step."""
+        return None
 
     def transform_step(
         self,

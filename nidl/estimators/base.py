@@ -104,7 +104,9 @@ class BaseEstimator(pl.LightningModule):
         '16-mixed') or bfloat16 mixed precision ('bf16', 'bf16-mixed').
         Can be used on CPU, GPU, TPUs, or HPUs.
     ignore: list of str, default=None
-        ignore attribute of instance `nn.Module`.
+        Attributes to be ignored when saving the hyperparameters of the
+        estimator. This is particularly useful for ignoring
+        :class:`~torch.nn.Module` attributes and callbacks.
     random_state: int, default=None
         when shuffling is used, `random_state` affects the ordering of the
         indices, which controls the randomness of each batch. Pass an
