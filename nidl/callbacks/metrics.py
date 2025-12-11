@@ -291,16 +291,14 @@ class MetricsCallback(pl.Callback):
         # Append the correct stage for each metric (train, val, test)
         scalars = append_stage(scalars)
 
-        # Log the metrics on rank-zero only
-        if trainer.is_global_zero:
-            pl_module.log_dict(
-                scalars,
-                on_step=on_step,
-                on_epoch=on_epoch,
-                prog_bar=self.prog_bar,
-                sync_dist=False,
-                rank_zero_only=True,
-            )
+        # Log the metrics
+        pl_module.log_dict(
+            scalars,
+            on_step=on_step,
+            on_epoch=on_epoch,
+            prog_bar=self.prog_bar,
+            sync_dist=True,
+        )
 
         if reset:
             collector.reset()  # free the cache

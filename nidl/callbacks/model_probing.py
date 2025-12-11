@@ -144,24 +144,19 @@ class ModelProbing(pl.Callback):
 
         self.scorers = check_scoring(self.probe, scoring=self.scoring)
 
-    @rank_zero_only
     def fit(self, X, y):
         """Fit the probe on the training data embeddings."""
         return self.probe.fit(X, y)
 
-    @rank_zero_only
-    def log_metrics(self, pl_module, X, y_true):
+    def log_metrics(self, pl_module, scores):
         """Log the metrics given the predictions and the true labels."""
-
-        scores = self.scorers(self.probe, X, y_true)
 
         if isinstance(scores, numbers.Number):
             pl_module.log(
                 f"{self.prefix_score}test_score",
                 float(scores),
                 prog_bar=self.prog_bar,
-                sync_dist=False,
-                rank_zero_only=True,
+                sync_dist=True,
             )
         elif isinstance(scores, dict):
             for key, values in scores.items():
@@ -170,8 +165,7 @@ class ModelProbing(pl.Callback):
                         f"{self.prefix_score}test_{key}",
                         float(values),
                         prog_bar=self.prog_bar,
-                        sync_dist=False,
-                        rank_zero_only=True,
+                        sync_dist=True,
                     )
         else:
             raise ValueError(
@@ -259,11 +253,20 @@ class ModelProbing(pl.Callback):
             check_array(y_test, ensure_2d=False),  # can be 1d
         )
 
-        # Fit the probe
-        self.fit(X_train, y_train)
+        # For efficiency, fit/score on rank 0 only
+        scores = None
+        if trainer.is_global_zero:
+            # Fit the probe
+            self.fit(X_train, y_train)
+            # Compute scores
+            scores = self.scorers(self.probe, X_test, y_test)
+
+        if trainer.world_size > 1:
+            # Broadcast scores to all ranks
+            scores = trainer.strategy.broadcast(scores, src=0)
 
         # Compute/Log metrics
-        self.log_metrics(pl_module, X_test, y_test)
+        self.log_metrics(pl_module, scores)
 
     def extract_features(self, trainer, pl_module, dataloader):
         """Extract features from a dataloader with the BaseEstimator.

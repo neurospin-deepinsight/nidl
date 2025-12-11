@@ -150,7 +150,6 @@ class ModelProbingCV(pl.Callback):
         self.prefix_score = prefix_score
         self.counter_val_epochs = 0
 
-    @rank_zero_only
     def cross_validate(self, X, y):
         """Cross-validate the probe on the data embeddings."""
         return cross_validate(
@@ -165,7 +164,6 @@ class ModelProbingCV(pl.Callback):
             return_indices=False,
         )
 
-    @rank_zero_only
     def log_metrics(self, pl_module, scores):
         """Log all scores + times from sklearn.cross_validate into PL."""
         for key, values in scores.items():
@@ -176,8 +174,7 @@ class ModelProbingCV(pl.Callback):
                         f"fold{i}/{self.prefix_score}{key}",
                         float(v),
                         prog_bar=self.prog_bar,
-                        sync_dist=False,
-                        rank_zero_only=True,
+                        sync_dist=True,
                     )
 
     @staticmethod
@@ -247,8 +244,15 @@ class ModelProbingCV(pl.Callback):
         # Check arrays
         X, y = self.check_array(X, y)
 
-        # Cross-validate the probe and get the scores
-        scores = self.cross_validate(X, y)
+        # For efficiency, fit/score on rank 0 only
+        scores = None
+        if trainer.is_global_zero:
+            # Cross-validate the probe and get the scores
+            scores = self.cross_validate(X, y)
+
+        if trainer.world_size > 1:
+            # Broadcast scores to all ranks
+            scores = trainer.strategy.broadcast(scores, src=0)
 
         # Log metrics
         self.log_metrics(pl_module, scores)
