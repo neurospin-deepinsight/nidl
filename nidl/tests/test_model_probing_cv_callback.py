@@ -7,7 +7,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
-
+import socket
+import os
 import pytorch_lightning as pl
 from sklearn.linear_model import LogisticRegression
 
@@ -29,6 +30,10 @@ def make_linearly_separable_dataset(n_per_class: int = 16, dim: int = 2):
     )
     return TensorDataset(X, y)
 
+def find_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))  # OS chooses a free port
+        return s.getsockname()[1]
 
 class DummyEmbeddingModule(TransformerMixin, BaseEstimator):
     """LightningModule exposing transform_step as identity embedding."""
@@ -188,6 +193,10 @@ class TestModelProbingCVIntegration(unittest.TestCase):
         "torch.distributed not available; skipping DDP test.",
     )
     def test_ddp_spawn_cpu_two_devices_logs_fold_metrics(self):
+        # dynamically choose a free port for THIS test
+        port = find_free_port()
+        os.environ["MASTER_PORT"] = str(port)
+        
         callback = self._build_callback(
             scoring="accuracy",
             cv=3,

@@ -2,14 +2,13 @@ import unittest
 import torch
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
-from unittest.mock import patch
-
+import socket
+import os
 import pytorch_lightning as pl
 from sklearn.linear_model import LogisticRegression
 
 from nidl.estimators import BaseEstimator, TransformerMixin
 from nidl.callbacks.model_probing import ModelProbing
-
 
 def make_linearly_separable_dataset(n_per_class: int = 16, dim: int = 2):
     """Simple perfectly linearly separable dataset.
@@ -29,6 +28,10 @@ def make_linearly_separable_dataset(n_per_class: int = 16, dim: int = 2):
     )
     return TensorDataset(X, y)
 
+def find_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))  # OS chooses a free port
+        return s.getsockname()[1]
 
 class DummyEmbeddingModule(TransformerMixin, BaseEstimator):
     """Simple LightningModule that exposes transform_step.
@@ -171,6 +174,11 @@ class TestModelProbingIntegration(unittest.TestCase):
         - extract_features gathering & flattening across ranks
         - log_metrics & aggregation to rank 0
         """
+
+        # dynamically choose a free port for THIS test
+        port = find_free_port()
+        os.environ["MASTER_PORT"] = str(port)
+
         callback = self._build_probing_callback(
             scoring="accuracy",
             every_n_train_epochs=1,
