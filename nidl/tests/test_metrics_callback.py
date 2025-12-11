@@ -312,10 +312,9 @@ class TestDistributedCPU(unittest.TestCase):
             devices=2,              # 2 CPU processes via gloo
             strategy="ddp",         # Lightning will use gloo on CPU
         )
-        # Reduced value should still be 1.0 on rank zero
-        if trainer.is_global_zero:
-            acc_val = float(trainer.callback_metrics["sk_acc/train"])
-            self.assertAlmostEqual(acc_val, 1.0, places=6)
+        # Reduced value should still be 1.0 
+        acc_val = float(trainer.callback_metrics["sk_acc/train"])
+        self.assertAlmostEqual(acc_val, 1.0, places=6)
 
     @unittest.skipUnless(_HAS_TORCHMETRICS, "torchmetrics not installed")
     def test_torchmetrics_epoch_end_ddp_cpu(self):
@@ -342,9 +341,8 @@ class TestDistributedCPU(unittest.TestCase):
             devices=2,
             strategy="ddp",
         )
-        if trainer.is_global_zero:
-            acc_val = float(trainer.callback_metrics["acc/train"])
-            self.assertAlmostEqual(acc_val, 1.0, places=6)
+        acc_val = float(trainer.callback_metrics["acc/train"])
+        self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 # ------------- Distributed tests (CUDA-DDP) -------------
 
@@ -377,9 +375,8 @@ class TestDistributedCUDA(unittest.TestCase):
             devices=2,
             strategy="ddp",
         )
-        if trainer.is_global_zero:
-            acc_val = float(trainer.callback_metrics["sk_acc/train"])
-            self.assertAlmostEqual(acc_val, 1.0, places=6)
+        acc_val = float(trainer.callback_metrics["sk_acc/train"])
+        self.assertAlmostEqual(acc_val, 1.0, places=6)
 
     @unittest.skipUnless(_HAS_TORCHMETRICS, "torchmetrics not installed")
     def test_torchmetrics_epoch_end_ddp_cuda(self):
@@ -406,9 +403,8 @@ class TestDistributedCUDA(unittest.TestCase):
             devices=2,
             strategy="ddp",
         )
-        if trainer.is_global_zero:
-            acc_val = float(trainer.callback_metrics["acc/train"])
-            self.assertAlmostEqual(acc_val, 1.0, places=6)
+        acc_val = float(trainer.callback_metrics["acc/train"])
+        self.assertAlmostEqual(acc_val, 1.0, places=6)
 
 # ------------- Edge cases -------------
 

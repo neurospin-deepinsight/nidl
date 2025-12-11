@@ -6,13 +6,12 @@
 # for details.
 ##########################################################################
 
-import numbers
 from typing import Union
 
 import pytorch_lightning as pl
 import torch
 from sklearn.base import BaseEstimator as sk_BaseEstimator
-from sklearn.metrics import check_scoring
+from sklearn.model_selection import cross_validate
 from sklearn.utils.validation import check_array
 from torch.utils.data import DataLoader, DistributedSampler
 from tqdm import tqdm
@@ -21,47 +20,45 @@ from nidl.estimators.base import BaseEstimator
 from nidl.utils.validation import _estimator_is
 
 
-class ModelProbing(pl.Callback):
+class ModelProbingCV(pl.Callback):
     """Callback to probe the representation of an embedding estimator on a
-    dataset.
+    dataset using cross-validation.
 
     It has the following logic:
 
-    1) Embeds the input data (training+test) through the estimator using
-       `transform_step` method (handles distributed multi-gpu forward pass).
-    2) Train the probe on the training embedding (handles multi-cpu training).
-    3) Evaluate the probe on the test embedding and log the scores.
+    1) Embeds the input data through the estimator using `transform_step`.
+    2) For each CV split, train the probe on the training embedding split and
+       make predictions on the test embedding split.
+    3) Compute and log the scores computed between the true and predicted
+       targets for each CV split.
 
     The probing can be performed at the end of training epochs, validation
     epochs, and/or at the start/end of the test epoch.
 
-    The metrics logged depend on the ``scoring`` parameter:
+    The metrics logged depend on the `scoring` parameter:
 
-    - If a single score is provided, it logs ``test_score``.
-    - If multiple scores are provided, it logs each score with its name
-      (such as  ``test_accuracy``, ``test_auc``).
+    - If a single score is provided, it logs ``fold{i}/test_score`` for each
+      fold ``i``.
+    - If multiple scores are provided, it logs each score with its name, such
+      as ``fold{i}/test_accuracy`` or ``fold{i}/test_auc`` for each fold ``i``.
 
-    Eventually, a `prefix_score` can be added to the score names when logging,
-    such as ``ridge_`` or ``logreg_`` (giving ``ridge_test_r2`` or
-    ``logreg_test_accuracy``).
+    Eventually, a ``prefix_score`` can be added to the score names when
+    logging, such as ``ridge_`` or ``logreg_`` (giving
+    ``fold{i}/ridge_test_accuracy`` or ``fold{i}/logreg_test_accuracy``).
 
     Parameters
     ----------
-    train_dataloader: torch.utils.data.DataLoader
-        Training dataloader yielding batches in the form `(X, y)`
-        for further embedding and training of the probe.
-
-    test_dataloader: torch.utils.data.DataLoader
-        Test dataloader yielding batches in the form `(X, y)`
-        for further embedding and test of the probe.
+    dataloader: torch.utils.data.DataLoader
+        Dataloader yielding batches in the form `(X, y)`
+        for further embedding and cross-validation of the probe.
 
     probe: sklearn.base.BaseEstimator
         The probe model to be trained on the embedding. It must
-        implement `fit` and `predict` methods on numpy array.
+        implement `fit` and `predict` methods.
 
     scoring: str, callable, list, tuple, or dict, default=None
-        Strategy to evaluate the performance of the `probe` on the test
-        set. The scores are logged into the
+        Strategy to evaluate the performance of the `probe` across
+        cross-validation splits. The scores are logged into the
         :class:`~pytorch_lightning.core.module.LightningModule` during
         training/validation/test according to the configuration of the
         callback.
@@ -79,6 +76,28 @@ class ModelProbing(pl.Callback):
         - a callable returning a dictionary where the keys are the metric
           names and the values are the metric scores;
         - a dictionary with metric names as keys and callables a values.
+
+    cv: int, cross-validation generator or an iterable, default=None
+        Determines the cross-validation splitting strategy.
+        Possible inputs for cv are:
+
+        - None, to use the default 5-fold cross validation,
+        - int, to specify the number of folds in a `(Stratified)KFold`,
+        - :term:`CV splitter`,
+        - An iterable yielding (train, test) splits as arrays of indices.
+
+        For int/None inputs, if the probe is a classifier and ``y`` is
+        either binary or multiclass,
+        :class:`~sklearn.model_selection.StratifiedKFold` is used. In all
+        other cases, :class:`~sklearn.model_selection.KFold` is used.
+        These splitters are instantiated with `shuffle=False` so the splits
+        will be the same across calls.
+
+    n_jobs : int, default=None
+        Number of jobs to run in parallel. Training the probe and computing
+        the score are parallelized over the cross-validation splits.
+        ``None`` means 1 unless in a ``joblib.parallel_backend`` context.
+        ``-1`` means using all processors.
 
     every_n_train_epochs: int or None, default=1
         Number of training epochs after which to run the probing.
@@ -98,29 +117,17 @@ class ModelProbing(pl.Callback):
         Whether to display the metrics in the progress bar.
 
     prefix_score: str, default=""
-        Prefix to add to the score name when logging. This can be useful when
-        using multiple `ModelProbing` callbacks to distinguish the logged
-        metrics, such as ``"ridge_"`` or ``"logreg_"``.
-
-    Examples
-    --------
-    >>> from sklearn.linear_model import LogisticRegression
-    >>> from nidl.callbacks import ModelProbing
-    >>> callback = ModelProbing(
-    ...     train_dataloader=train_loader,
-    ...     test_dataloader=test_loader,
-    ...     probe=LogisticRegression(),
-    ...     scoring=["accuracy", "balanced_accuracy"],
-    ...     every_n_train_epochs=5,
-    ... )
+        Prefix to add to the score name when logging, such as ``ridge_`` or
+        ``logreg_``.
     """
 
     def __init__(
         self,
-        train_dataloader: DataLoader,
-        test_dataloader: DataLoader,
+        dataloader: DataLoader,
         probe: sk_BaseEstimator,
         scoring: Union[str, callable, list, tuple, dict, None] = None,
+        cv=None,
+        n_jobs: Union[int, None] = None,
         every_n_train_epochs: Union[int, None] = 1,
         every_n_val_epochs: Union[int, None] = None,
         on_test_epoch_start: bool = False,
@@ -129,10 +136,11 @@ class ModelProbing(pl.Callback):
         prefix_score: str = "",
     ):
         super().__init__()
-        self.train_dataloader = train_dataloader
-        self.test_dataloader = test_dataloader
+        self.dataloader = dataloader
         self.probe = probe
         self.scoring = scoring
+        self.cv = cv
+        self.n_jobs = n_jobs
         self.every_n_train_epochs = every_n_train_epochs
         self.every_n_val_epochs = every_n_val_epochs
         self._on_test_epoch_start = on_test_epoch_start
@@ -141,36 +149,32 @@ class ModelProbing(pl.Callback):
         self.prefix_score = prefix_score
         self.counter_val_epochs = 0
 
-        self.scorers = check_scoring(self.probe, scoring=self.scoring)
-
-    def fit(self, X, y):
-        """Fit the probe on the training data embeddings."""
-        return self.probe.fit(X, y)
+    def cross_validate(self, X, y):
+        """Cross-validate the probe on the data embeddings."""
+        return cross_validate(
+            self.probe,
+            X,
+            y,
+            scoring=self.scoring,
+            cv=self.cv,
+            n_jobs=self.n_jobs,
+            return_train_score=False,
+            return_estimator=False,
+            return_indices=False,
+        )
 
     def log_metrics(self, pl_module, scores):
-        """Log the metrics given the predictions and the true labels."""
-
-        if isinstance(scores, numbers.Number):
-            pl_module.log(
-                f"{self.prefix_score}test_score",
-                float(scores),
-                prog_bar=self.prog_bar,
-                sync_dist=True,
-            )
-        elif isinstance(scores, dict):
-            for key, values in scores.items():
-                if isinstance(values, numbers.Number):
+        """Log all scores + times from sklearn.cross_validate into PL."""
+        for key, values in scores.items():
+            if hasattr(values, "__len__"):
+                # per-fold
+                for i, v in enumerate(values):
                     pl_module.log(
-                        f"{self.prefix_score}test_{key}",
-                        float(values),
+                        f"fold{i}/{self.prefix_score}{key}",
+                        float(v),
                         prog_bar=self.prog_bar,
                         sync_dist=True,
                     )
-        else:
-            raise ValueError(
-                "Scores should be a number or a dictionary, got "
-                f"{type(scores)}"
-            )
 
     @staticmethod
     def adapt_dataloader_for_ddp(dataloader, trainer):
@@ -184,7 +188,6 @@ class ModelProbing(pl.Callback):
                 num_replicas=trainer.world_size,
                 rank=trainer.global_rank,
                 shuffle=False,
-                drop_last=False,
             )
             # Recreate the dataloader with this sampler
             return DataLoader(
@@ -235,36 +238,22 @@ class ModelProbing(pl.Callback):
             )
 
         # Embed the data
-        X_train, y_train = self.extract_features(
-            trainer, pl_module, self.train_dataloader
-        )
-        X_test, y_test = self.extract_features(
-            trainer, pl_module, self.test_dataloader
-        )
+        X, y = self.extract_features(trainer, pl_module, self.dataloader)
 
         # Check arrays
-        X_train, y_train = (
-            check_array(X_train),
-            check_array(y_train, ensure_2d=False),  # can be 1d
-        )
-        X_test, y_test = (
-            check_array(X_test),
-            check_array(y_test, ensure_2d=False),  # can be 1d
-        )
+        X, y = self.check_array(X, y)
 
         # For efficiency, fit/score on rank 0 only
         scores = None
         if trainer.is_global_zero:
-            # Fit the probe
-            self.fit(X_train, y_train)
-            # Compute scores
-            scores = self.scorers(self.probe, X_test, y_test)
+            # Cross-validate the probe and get the scores
+            scores = self.cross_validate(X, y)
 
         if trainer.world_size > 1:
             # Broadcast scores to all ranks
             scores = trainer.strategy.broadcast(scores, src=0)
 
-        # Compute/Log metrics
+        # Log metrics
         self.log_metrics(pl_module, scores)
 
     def extract_features(self, trainer, pl_module, dataloader):
@@ -278,7 +267,7 @@ class ModelProbing(pl.Callback):
         Parameters
         ----------
         trainer: pl.Trainer
-            The pytorch-lightning trainer instance.
+            The pytorch-lightning trainer.
         pl_module: BaseEstimator
             The BaseEstimator module that implements the 'transform_step'.
         dataloader: torch.utils.data.DataLoader
@@ -330,6 +319,27 @@ class ModelProbing(pl.Callback):
 
         if is_training:
             pl_module.train()
+
+        return X, y
+
+    def check_array(self, X, y):
+        """Check the input arrays for cross-validation.
+
+        Parameters
+        ----------
+        X: np.ndarray
+            The input features.
+        y: np.ndarray
+            The input targets.
+
+        Returns
+        -------
+        tuple of (X, y)
+            The checked input features and targets.
+
+        """
+        X = check_array(X, ensure_2d=True)
+        y = check_array(y, ensure_2d=False)
 
         return X, y
 
