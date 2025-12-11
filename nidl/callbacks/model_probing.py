@@ -11,7 +11,6 @@ from typing import Union
 
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.utilities import rank_zero_only
 from sklearn.base import BaseEstimator as sk_BaseEstimator
 from sklearn.metrics import check_scoring
 from sklearn.utils.validation import check_array

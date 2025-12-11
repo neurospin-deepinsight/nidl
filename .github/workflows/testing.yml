@@ -27,7 +27,8 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.9, 3.12]
-
+    env:
+      PL_TORCH_DISTRIBUTED_PORT: 12910
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
