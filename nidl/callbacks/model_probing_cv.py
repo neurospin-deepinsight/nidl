@@ -176,6 +176,8 @@ class ModelProbingCV(pl.Callback):
                         f"fold{i}/{self.prefix_score}{key}",
                         float(v),
                         prog_bar=self.prog_bar,
+                        sync_dist=False,
+                        rank_zero_only=True,
                     )
 
     @staticmethod

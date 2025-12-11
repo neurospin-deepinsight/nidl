@@ -160,6 +160,8 @@ class ModelProbing(pl.Callback):
                 f"{self.prefix_score}test_score",
                 float(scores),
                 prog_bar=self.prog_bar,
+                sync_dist=False,
+                rank_zero_only=True,
             )
         elif isinstance(scores, dict):
             for key, values in scores.items():
@@ -168,6 +170,8 @@ class ModelProbing(pl.Callback):
                         f"{self.prefix_score}test_{key}",
                         float(values),
                         prog_bar=self.prog_bar,
+                        sync_dist=False,
+                        rank_zero_only=True,
                     )
         else:
             raise ValueError(

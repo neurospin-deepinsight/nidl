@@ -299,6 +299,7 @@ class MetricsCallback(pl.Callback):
                 on_epoch=on_epoch,
                 prog_bar=self.prog_bar,
                 sync_dist=False,
+                rank_zero_only=True,
             )
 
         if reset:
