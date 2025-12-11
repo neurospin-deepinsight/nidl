@@ -224,16 +224,14 @@ class ImageDataFrameDataset(Dataset):
 
         self.df = df.copy()
         self.image_col = image_col
-        self.label_cols = self._verify_labels(df, label_cols, is_valid_label)
+        self.label_cols = self._check_labels(df, label_cols)
         self.checksum_col = checksum_col
         self.transform = transform
-        self.target_transform = target_transform or {}
-        if not isinstance(self.target_transform, dict):
-            assert len(self.label_cols) == 1
-            self.target_transform = {self.label_cols[0]: self.target_transform}
+        self.target_transform = target_transform
         self.return_none_if_no_label = return_none_if_no_label
         self.image_loader = image_loader
 
+        self.df = self._filter_labels(df, label_cols, is_valid_label)
         self.df[image_col] = self.df[image_col].apply(
             lambda rpath: os.path.join(rootdir, rpath)
         )
@@ -253,17 +251,16 @@ class ImageDataFrameDataset(Dataset):
         self.targets = (
             self.df[self.label_cols].values.tolist()
             if self.label_cols is not None
-            else [[None]] * len(df)
+            else len(df) * [None]
         )
         assert len(self.imgs) == len(self.targets)
 
-    def _verify_labels(
+    def _check_labels(
         self,
         df: pd.DataFrame,
         label_cols: Union[str, list[str]],
-        is_valid_label: Union[Callable, dict[str, Callable]],
     ):
-        """Verify `label_cols` parameter format, that all columns are
+        """Check `label_cols` parameter format, that all columns are
         available in the input data frame, and optionaly label values.
         """
         if label_cols is None:
@@ -284,19 +281,23 @@ class ImageDataFrameDataset(Dataset):
                 f"label_cols must be a string or a list of strings, got "
                 f"{label_cols}."
             )
+        return label_cols
 
-        if is_valid_label is not None:
-            if isinstance(label_cols, str):
-                mask = self.df[label_cols].apply(is_valid_label)
-            else:
-                mask = self.df[label_cols].apply(is_valid_label, axis=1)
-            if mask.sum() < len(self.df):
-                raise ValueError(
-                    f"`{len(self.df) - mask.sum()}` samples with "
-                    "invalid labels found."
-                )
+    def _filter_labels(
+        self,
+        df: pd.DataFrame,
+        label_cols: Optional[Union[str, list[str]]],
+        is_valid_label: Optional[Union[Callable, dict[str, Callable]]],
+    ):
+        """Filter out samples with invalid labels from the dataset."""
+        if is_valid_label is None or label_cols is None:
+            return df
 
-        return label_cols if isinstance(label_cols, list) else [label_cols]
+        if isinstance(label_cols, str):
+            mask = df[label_cols].apply(is_valid_label)
+        else:
+            mask = df[label_cols].apply(is_valid_label, axis=1)
+        return df[mask].reset_index(drop=True)
 
     @classmethod
     def _verify_checksum(cls, filename, expect_checksum):
@@ -327,17 +328,20 @@ class ImageDataFrameDataset(Dataset):
 
     def apply_target_transform(self, label):
         """Apply the specified target transform to the label(s)."""
-        return (
-            [
+        if self.target_transform is None:
+            return label
+        elif isinstance(self.target_transform, Callable):
+            return self.target_transform(label)
+        elif isinstance(self.target_transform, dict):
+            return [
                 self.target_transform.get(col, lambda x: x)(val)
                 for col, val in zip(self.label_cols, label)
             ]
-            if (
-                self.target_transform is not None
-                and self.label_cols is not None
+        else:
+            raise TypeError(
+                "`target_transform` must be None, a callable or a dictionary "
+                f"of callables, got {type(self.target_transform)}."
             )
-            else label
-        )
 
     def __len__(self):
         return len(self.df)
