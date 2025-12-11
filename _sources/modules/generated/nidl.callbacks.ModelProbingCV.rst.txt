@@ -7,18 +7,18 @@
    :ref:`user guide <user_guide>` for the big picture.
 
 
-nidl.callbacks.RegressionProbingCallback
-========================================
+nidl.callbacks.ModelProbingCV
+=============================
 
 .. currentmodule:: nidl.callbacks
 
-.. autoclass:: RegressionProbingCallback
+.. autoclass:: ModelProbingCV
    :members:
    :show-inheritance:
    :special-members: __init__,__call__
    :member-order: alphabetical
 
-.. include:: nidl.callbacks.RegressionProbingCallback.examples
+.. include:: nidl.callbacks.ModelProbingCV.examples
 
 .. raw:: html
 

@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="This modules details the public API you should use and implement for a nidl compatible callback, as well as the callbacks available in nidl. Introduction: A callback is a lightning.pytorch.callback..." />
-<link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.callbacks.ClassificationProbingCallback" href="generated/nidl.callbacks.ClassificationProbingCallback.html"><link rel="prev" title="nidl.datasets.OpenBHB" href="generated/nidl.datasets.OpenBHB.html">
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.callbacks.ModelProbing" href="generated/nidl.callbacks.ModelProbing.html"><link rel="prev" title="nidl.datasets.OpenBHB" href="generated/nidl.datasets.OpenBHB.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -316,10 +316,8 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ClassificationProbingCallback.html">nidl.callbacks.ClassificationProbingCallback</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.RegressionProbingCallback.html">nidl.callbacks.RegressionProbingCallback</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.MultitaskModelProbing.html">nidl.callbacks.MultitaskModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbing.html">nidl.callbacks.ModelProbing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCV.html">nidl.callbacks.ModelProbingCV</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
 </ul>
@@ -405,14 +403,10 @@ computation. It allows a better decoupling of the model training and evaluation
 logic from the actual implementation of these functionalities.</p>
 <pre align="center" class="mermaid align-center">
         classDiagram
-  ABC &lt;|-- ModelProbing
-  BaseEstimator &lt;|-- MultiTaskEstimator
   Callback &lt;|-- BatchTypingCallback
   Callback &lt;|-- MetricsCallback
   Callback &lt;|-- ModelProbing
-  ModelProbing &lt;|-- ClassificationProbingCallback
-  ModelProbing &lt;|-- MultitaskModelProbing
-  ModelProbing &lt;|-- RegressionProbingCallback
+  Callback &lt;|-- ModelProbingCV
     </pre></section>
 <section id="probing-callbacks">
 <h2>Probing callbacks<a class="headerlink" href="#probing-callbacks" title="Link to this heading">¶</a></h2>
@@ -420,17 +414,11 @@ logic from the actual implementation of these functionalities.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.callbacks.ClassificationProbingCallback.html#nidl.callbacks.ClassificationProbingCallback" title="nidl.callbacks.ClassificationProbingCallback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClassificationProbingCallback</span></code></a>(...[, ...])</p></td>
-<td><p>Perform classification on top of an embedding model.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.callbacks.RegressionProbingCallback.html#nidl.callbacks.RegressionProbingCallback" title="nidl.callbacks.RegressionProbingCallback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegressionProbingCallback</span></code></a>(train_dataloader, ...)</p></td>
-<td><p>Perform regression on top of an embedding model.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.callbacks.MultitaskModelProbing.html#nidl.callbacks.MultitaskModelProbing" title="nidl.callbacks.MultitaskModelProbing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultitaskModelProbing</span></code></a>(train_dataloader, ...)</p></td>
-<td><p>Callback to probe the representation of an embedding estimator on a multi-task dataset.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.callbacks.ModelProbing.html#nidl.callbacks.ModelProbing" title="nidl.callbacks.ModelProbing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbing</span></code></a>(train_dataloader, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.callbacks.ModelProbing.html#nidl.callbacks.ModelProbing" title="nidl.callbacks.ModelProbing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbing</span></code></a>(train_dataloader, ...[, ...])</p></td>
 <td><p>Callback to probe the representation of an embedding estimator on a dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCV.html#nidl.callbacks.ModelProbingCV" title="nidl.callbacks.ModelProbingCV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbingCV</span></code></a>(dataloader, probe[, scoring, ...])</p></td>
+<td><p>Callback to probe the representation of an embedding estimator on a dataset using cross-validation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -470,12 +458,12 @@ against the expected type.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="generated/nidl.callbacks.ClassificationProbingCallback.html">
+          <a class="next-page" href="generated/nidl.callbacks.ModelProbing.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">nidl.callbacks.ClassificationProbingCallback</div>
+                <div class="title">nidl.callbacks.ModelProbing</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
