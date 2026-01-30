@@ -87,7 +87,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
     def __init__(
         self,
         encoder: nn.Module,
-        hidden_dims: Sequence[str],
+        hidden_dims: Sequence[int],
         lr: float,
         temperature: float,
         weight_decay: float,
