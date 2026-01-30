@@ -164,10 +164,15 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
     ):
         if optimizer_kwargs is None:
             optimizer_kwargs = {"betas": (0.9, 0.99), "weight_decay": 5e-05}
-        ignore = ["callbacks"]
-        if isinstance(encoder, nn.Module):
+        ignore = kwargs.pop("ignore", ["callbacks"])
+        if "callbacks" not in ignore:
+            ignore.append("callbacks")
+        if isinstance(encoder, nn.Module) and "encoder" not in ignore:
             ignore.append("encoder")
-        if isinstance(projection_head, nn.Module):
+        if (
+            isinstance(projection_head, nn.Module)
+            and "projection_head" not in ignore
+        ):
             ignore.append("projection_head")
         super().__init__(**kwargs, ignore=ignore)
         self.encoder_kwargs = (
@@ -272,6 +277,10 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         self.log("loss/val", val_loss, prog_bar=True, sync_dist=True)
         # Returns everything needed for further logging/metrics computation
         return outputs
+
+    def test_step(self, batch, batch_idx):
+        """Skip the test step."""
+        return None
 
     def transform_step(
         self,

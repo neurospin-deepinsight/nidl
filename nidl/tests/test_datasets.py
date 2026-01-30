@@ -362,7 +362,7 @@ class TestImageDataFrameDataset(unittest.TestCase):
         self.assertEqual(len(ds), 2)
         img, label = ds[0]
         self.assertEqual(img, "/myrootdir/img1.jpg")
-        self.assertEqual(label, ["cat"])
+        self.assertEqual(label, "cat")
 
     def test_getitem_multi_labels(self):
         ds = ImageDataFrameDataset(
@@ -389,7 +389,6 @@ class TestImageDataFrameDataset(unittest.TestCase):
         self.assertEqual(img, "/myrootdir/processed_img1.jpg")
 
     def test_target_transform_callable(self):
-        target_transform = lambda y: y.upper()
         ds = ImageDataFrameDataset(
             rootdir="/myrootdir/",
             df=self.df,
@@ -398,7 +397,87 @@ class TestImageDataFrameDataset(unittest.TestCase):
             target_transform=lambda y: y.upper()
         )
         _, label = ds[0]
-        self.assertEqual(label, ["CAT"])
+        self.assertEqual(label, "CAT")
+    
+    def test_target_transform_list_labels(self):
+        ds = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=self.df,
+            label_cols=["label"],
+            image_loader=lambda path: path,
+            target_transform=lambda y: y[0].upper()
+        )
+        _, label = ds[0]
+        self.assertEqual(label, "CAT")
+    
+    def test_filter_labels_single_column(self):
+        """Rows with invalid labels in a single label column must be removed."""
+        df = pd.DataFrame(
+            {
+                "image_path": ["img1.png", "img2.png", "img3.png"],
+                "label": [0, 1, np.nan],
+            }
+        )
+
+        # valid = label is not NaN
+        def is_valid_label(label):
+            return not pd.isna(label)
+
+        dataset = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=df,
+            image_col="image_path",
+            label_cols="label",
+            image_loader=lambda path: path,
+            is_valid_label=is_valid_label,
+        )
+
+        # Third row should be filtered out
+        self.assertEqual(len(dataset), 2)
+        # Check that the remaining rows are the first two
+        expected_paths = [
+            "/myrootdir/img1.png",
+            "/myrootdir/img2.png",
+        ]
+        self.assertEqual(dataset.imgs, expected_paths)
+
+        # Targets should match labels of the kept rows
+        # targets is a list of lists (since DataFrame .values.tolist())
+        self.assertEqual(dataset.targets, [0, 1])
+
+    def test_filter_labels_multi_column(self):
+        """Rows with any invalid label across multiple columns must be removed."""
+        df = pd.DataFrame(
+            {
+                "image_path": ["img1.png", "img2.png", "img3.png"],
+                "label_a": [1, np.nan, 3],
+                "label_b": [4, 5, np.nan],
+            }
+        )
+
+        # valid = all labels in the row are not NaN
+        def is_valid_multi(row):
+            # row is a Series when axis=1
+            return not row.isna().any()
+
+        dataset = ImageDataFrameDataset(
+            rootdir="/myrootdir/",
+            df=df,
+            image_col="image_path",
+            label_cols=["label_a", "label_b"],
+            image_loader=lambda path: path,
+            is_valid_label=is_valid_multi,
+        )
+
+        # Only first row has all valid labels
+        self.assertEqual(len(dataset), 1)
+
+        expected_paths = ["/myrootdir/img1.png"]
+        self.assertEqual(dataset.imgs, expected_paths)
+
+        # targets is list of [label_a, label_b]
+        self.assertEqual(dataset.targets, [[1, 4]])
+
 
     def test_target_transform_dict(self):
         ds = ImageDataFrameDataset(
