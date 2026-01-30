@@ -15,12 +15,12 @@ import torch.nn.functional as func
 from torch import Tensor
 
 
-class DCL(nn.Module):
-    """Implementation of the Decoupled Contrastive Loss [1]_
+class DCLLoss(nn.Module):
+    """Implementation of the Decoupled Contrastive Learning loss [1]_
 
-    This loss function implements the decoupled contrastive loss as described
-    in [1]_. It builds upon the classic InfoNCE loss but removes the positive-
-    negative coupling that biases training in small batch sizes.
+    This loss function implements the decoupled contrastive learning loss as
+    described in [1]_. It builds upon the classic InfoNCE loss but removes the
+    positive-negative coupling that biases training in small batch sizes.
 
     Given a mini-batch of size :math:`N`, we obtain two embeddings
     :math:`z_{i}^(1)` and :math:`z_{i}^(2)` representing two different
@@ -141,7 +141,7 @@ class DCL(nn.Module):
         return (f"{type(self).__name__}(temperature={self.temperature}, "
             f"pos_weight_fn={self.pos_weight_fn})")
 
-class DCLW(DCL):
+class DCLWLoss(DCLLoss):
     """Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.
 
     It implements the DCL with vMF weighting as described in [1]_.
