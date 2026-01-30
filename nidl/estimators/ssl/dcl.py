@@ -14,35 +14,18 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 
-from ...losses import InfoNCE
+from ...losses import DCLLoss
 from ..base import BaseEstimator, TransformerMixin
 
 
-class SimCLR(TransformerMixin, BaseEstimator):
-    r"""SimCLR [1]_.
+class DCL(TransformerMixin, BaseEstimator):
+    r"""Decoupled Contrastive Learning [1]_.
 
-    SimCLR is a contrastive learning framework for self-supervised
-    representation learning. The key idea is to learn useful features
-    without labels by making different augmented views of the same image close
-    in a representation space, while pushing apart representations of different
-    images. Once trained, the encoder can be reused for downstream tasks such
-    as classification or regression.
-
-    The model consists of:
-
-    - A base encoder `f` (e.g., a CNN), which extracts representation vectors.
-    - A projection head `g`, which maps representations into a space where the
-      contrastive objective is applied.
-
-    During training, two augmented versions of each input are encoded into
-    two latent vectors. The objective is to maximize their similarity
-    while minimizing the similarity to all other samples in the batch. This is
-    achieved with the InfoNCE loss [2]_, [3]_.
-
-    After training, the projection head `g` is discarded, and the encoder `f`
-    serves as a pretrained feature extractor. This is because `f` provides
-    representations that transfer better to downstream tasks than those from
-    `g`.
+    Decoupled Contrastive Learning (DCL) is a contrastive learning framework
+    for self-supervised representation learning. It builds upon SimCLR [2]_
+    but removes the positive-negative coupling in InfoNCE loss that biases
+    training in small batch sizes.
+    See `SimCLR` for an introduction on contrastive learning.
 
     Parameters
     ----------
@@ -54,7 +37,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
     lr: float
         the learning rate.
     temperature: float
-        the SimCLR loss temperature parameter.
+        the DCL loss temperature parameter.
     weight_decay: float
         the Adam optimizer weight decay parameter.
     max_epochs: int, default=None
@@ -74,20 +57,20 @@ class SimCLR(TransformerMixin, BaseEstimator):
 
     References
     ----------
-    .. [1] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
+    .. [1] Yeh, Chun-Hsiao, et al. "Decoupled contrastive learning."
+           European conference on computer vision.
+           Cham: Springer Nature Switzerland,
+           https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136860653.pdf
+    .. [2] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
            "A Simple Framework for Contrastive Learning of Visual
            Representations", ICML 2020.
-    .. [2] Aaron van den Oord, Yazhe Li, Oriol Vinyals, "Representation
-           Learning with Contrastive Predictive Coding", arXiv 2018.
-    .. [3] Sohn Kihyuk, "Improved Deep Metric Learning with Multi-class N-pair
-           Loss Objective", NIPS 2016.
 
     """
 
     def __init__(
         self,
         encoder: nn.Module,
-        hidden_dims: Sequence[int],
+        hidden_dims: Sequence[str],
         lr: float,
         temperature: float,
         weight_decay: float,
@@ -128,7 +111,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         self.lr = lr
         self.temperature = temperature
         self.weight_decay = weight_decay
-        self.loss = InfoNCE(self.temperature)
+        self.loss = DCLLoss(self.temperature)
 
     def configure_optimizers(self):
         """Declare a :class:`~torch.optim.AdamW` optimizer and, optionally

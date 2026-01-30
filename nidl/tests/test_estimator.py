@@ -24,6 +24,7 @@ from nidl.estimators import (
 )
 from nidl.estimators.ssl import (
     BarlowTwins,
+    DCL,
     SimCLR,
     YAwareContrastiveLearning,
 )
@@ -166,6 +167,19 @@ class TestEstimators(unittest.TestCase):
                     "optimizer_kwargs": {"weight_decay": 1e-4},
                     "max_epochs": 2,
                     "limit_train_batches": 3
+                },
+            ),
+            (
+                DCL,
+                {
+                    "encoder": self._encoder,
+                    "hidden_dims": [self._encoder.latent_size, 3],
+                    "lr": 5e-4,
+                    "temperature": 0.07,
+                    "weight_decay": 1e-4,
+                    "max_epochs": 2,
+                    "random_state": 42,
+                    "limit_train_batches": 3,
                 },
             ),
         )

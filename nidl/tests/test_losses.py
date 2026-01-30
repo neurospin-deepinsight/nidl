@@ -17,7 +17,9 @@ from nidl.losses import (
     InfoNCE,
     YAwareInfoNCE,
     KernelMetric,
-    BetaVAELoss
+    BetaVAELoss,
+    DCLLoss,
+    DCLWLoss,
 )
 
 class TestLosses(unittest.TestCase):
@@ -172,6 +174,65 @@ class TestLosses(unittest.TestCase):
             "YAwareInfoNCE should be equal to InfoNCE when no labels are provided, got "
             f"{loss_ya} vs {loss_inf}"
         )
+
+    def test_dcl_bad_parameters(self):
+        """Test ValueError is raised when bad values of parameters
+        are used to initialise DCLLoss
+        """
+        with self.assertRaises(ValueError):
+            DCLLoss(pos_weight_fn='string_fn')
+            DCLLoss(temperature=-0.1)
+    
+    def test_dclw_init(self):
+        """Test the initialisation of the weighting function in DCLWLoss.
+        """
+        loss = DCLWLoss(sigma=0.5, temperature=0.2)
+        assert hasattr(loss, "pos_weight_fn")
+        assert callable(loss.pos_weight_fn)
+        assert loss.temperature == 0.2
+
+    def test_dcl_dclw_forward(self):
+        """Test the computation of the loss in DCLLoss and DCLWLoss.
+        """
+        for temperature in [0.1, 1.0, 5.0]:
+            for batch_size in [1, 10]:
+                for n_embedding in [1, 10]:
+                    dcl = DCLLoss(temperature=temperature, pos_weight_fn=None)
+                    dclw = DCLWLoss(sigma=temperature, temperature=temperature)
+                    for loss in [dcl, dclw]:
+                        z1 = torch.rand(batch_size, n_embedding)
+                        z2 = torch.rand(batch_size, n_embedding)
+                        # Perfect alignment
+                        loss_low = loss(z1, z1)
+                        # random alignment
+                        loss_high = loss(z1, z2)
+                        assert loss_low <= loss_high, (
+                            f"{str(loss)} loss should be lower for aligned embeddings, "
+                            f"got {loss_low} vs {loss_high}"
+                        )
+                        # Assert loss is correct type
+                        assert isinstance(loss_high, torch.Tensor)
+                        assert loss_high.dim() == 0   # scalar loss
+                        assert not torch.isnan(loss_high)
+                        assert not torch.isinf(loss_high)
+
+    def test_dcl_dclw_backward(self):
+        '''Test DCLLoss and DCLWLoss are differentiable.
+        '''
+                # Check that the loss is differentiable
+        z1 = torch.randn(4, 5, requires_grad=True)
+        z2 = torch.randn(4, 5, requires_grad=True)
+        temperature = 0.1
+
+        for loss_fn in [DCLLoss(temperature=temperature, pos_weight_fn=None),
+                        DCLWLoss(sigma=temperature, temperature=temperature)]:
+            loss = loss_fn(z1, z2)
+            loss.backward()
+
+            self.assertIsNotNone(z1.grad)
+            self.assertIsNotNone(z2.grad)
+            self.assertEqual(z1.grad.shape, z1.shape)
+            self.assertEqual(z2.grad.shape, z2.shape)
 
 
 class TestBetaVAELoss(unittest.TestCase):
