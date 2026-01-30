@@ -64,6 +64,8 @@ class DCL(nn.Module):
         Scale logits by the inverse of the temperature.
     pos_weight_fn: Optional[callable], default=None
         Weighting function of the positive pairs (:math:`w` in [1]_).
+        It is a callable that takes two tensors :math:`z^(1)` and :math:`z^(2)`
+        as inputs and returns the weights :math:`w(z1,z2)` as a tensor.
         If None, a DCL loss without weighting is returned.
 
 
