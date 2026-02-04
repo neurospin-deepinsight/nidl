@@ -8,6 +8,7 @@
 
 from .projection_heads import (
     BarlowTwinsProjectionHead,
+    DINOProjectionHead,
     ProjectionHead,
     SimCLRProjectionHead,
     YAwareProjectionHead,
