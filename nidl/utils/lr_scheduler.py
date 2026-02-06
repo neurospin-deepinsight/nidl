@@ -1,51 +1,78 @@
-# Copied from Pytorch Lightning Bolts
-# https://github.com/Lightning-Universe/lightning-bolts/blob/master/src/pl_bolts/optimizers/lr_scheduler.py
-# To avoid a dependency
-
+##########################################################################
+# NSAp - Copyright (C) CEA, 2025
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
 
 import math
 import warnings
-from typing import List
 
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 
 
 class LinearWarmupCosineAnnealingLR(_LRScheduler):
-    """Sets the learning rate of each parameter group to follow a linear warmup schedule
-        between warmup_start_lr and base_lr followed by a cosine annealing schedule
-        between base_lr and eta_min.
+    """Linear warmup LR scheduler followed by cosine annealing.
+
+    Sets the learning rate of each parameter group to follow a linear warmup
+    schedule between `warmup_start_lr` and `base_lr` followed by a cosine
+    annealing schedule between `base_lr` and `eta_min`.
 
     .. warning::
-        It is recommended to call :func:`.step()` for :class:`LinearWarmupCosineAnnealingLR`
-        after each iteration as calling it after each epoch will keep the starting lr at
-        warmup_start_lr for the first epoch which is 0 in most cases.
+        It is recommended to call :func:`.step()` for
+        :class:`LinearWarmupCosineAnnealingLR` after each iteration as calling
+        it after each epoch will keep the starting lr at `warmup_start_lr` for
+        the first epoch which is 0 in most cases.
 
     .. warning::
         passing epoch to :func:`.step()` is being deprecated and comes with an
         EPOCH_DEPRECATION_WARNING. It calls the :func:`_get_closed_form_lr()`
-        method for this scheduler instead of :func:`get_lr()`. Though this does not
-        change the behavior of the scheduler, when passing epoch param to :func:`.step()`,
-        the user should call the :func:`.step()` function before calling
-        train and validation methods.
+        method for this scheduler instead of :func:`get_lr()`. Though this does
+        not change the behavior of the scheduler, when passing epoch param to
+        :func:`.step()`, the user should call the :func:`.step()` function
+        before calling train and validation methods.
 
-    Example:
-        >>> import torch.nn as nn
-        >>> from torch.optim import Adam
-        >>> #
-        >>> layer = nn.Linear(10, 1)
-        >>> optimizer = Adam(layer.parameters(), lr=0.02)
-        >>> scheduler = LinearWarmupCosineAnnealingLR(optimizer, warmup_epochs=10, max_epochs=40)
-        >>> # the default case
-        >>> for epoch in range(40):
-        ...     # train(...)
-        ...     # validate(...)
-        ...     scheduler.step()
-        >>> # passing epoch param case
-        >>> for epoch in range(40):
-        ...     scheduler.step(epoch)
-        ...     # train(...)
-        ...     # validate(...)
+    Parameters
+    ----------
+    optimizer: Optimizer
+        Wrapped optimizer.
+    warmup_epochs: int
+        Maximum number of iterations for linear warmup.
+    max_epochs: int
+        Maximum number of iterations.
+    warmup_start_lr: float, default=0.0
+        Learning rate to start the linear warmup.
+    eta_min: float, default=0.0
+        Minimum learning rate.
+    last_epoch: int, default=-1
+        The index of last epoch.
+
+    Examples
+    --------
+    >>> import torch.nn as nn
+    >>> from torch.optim import Adam
+    >>> #
+    >>> layer = nn.Linear(10, 1)
+    >>> optimizer = Adam(layer.parameters(), lr=0.02)
+    >>> scheduler = LinearWarmupCosineAnnealingLR(optimizer, warmup_epochs=10,
+    ...     max_epochs=40)
+    >>> # the default case
+    >>> for epoch in range(40):
+    ...     # train(...)
+    ...     # validate(...)
+    ...     scheduler.step()
+    >>> # passing epoch param case
+    >>> for epoch in range(40):
+    ...     scheduler.step(epoch)
+    ...     # train(...)
+    ...     # validate(...)
+
+    Notes
+    -----
+    Copied from Pytorch Lightning Bolts https://github.com/Lightning-Universe/lightning-bolts/blob/master/src/pl_bolts/optimizers/lr_scheduler.py
+    to avoid a dependency
     """
 
     def __init__(
@@ -57,15 +84,6 @@ class LinearWarmupCosineAnnealingLR(_LRScheduler):
         eta_min: float = 0.0,
         last_epoch: int = -1,
     ) -> None:
-        """
-        Args:
-            optimizer (Optimizer): Wrapped optimizer.
-            warmup_epochs (int): Maximum number of iterations for linear warmup
-            max_epochs (int): Maximum number of iterations
-            warmup_start_lr (float): Learning rate to start the linear warmup. Default: 0.
-            eta_min (float): Minimum learning rate. Default: 0.
-            last_epoch (int): The index of last epoch. Default: -1.
-        """
         self.warmup_epochs = warmup_epochs
         self.max_epochs = max_epochs
         self.warmup_start_lr = warmup_start_lr
@@ -73,13 +91,14 @@ class LinearWarmupCosineAnnealingLR(_LRScheduler):
 
         super().__init__(optimizer, last_epoch)
 
-    def get_lr(self) -> List[float]:
+    def get_lr(self) -> list[float]:
         """Compute learning rate using chainable form of the scheduler."""
         if not self._get_lr_called_within_step:
             warnings.warn(
                 "To get the last learning rate computed by the scheduler, "
                 "please use `get_last_lr()`.",
                 UserWarning,
+                stacklevel=2,
             )
 
         if self.last_epoch == 0:
@@ -134,8 +153,9 @@ class LinearWarmupCosineAnnealingLR(_LRScheduler):
             for group in self.optimizer.param_groups
         ]
 
-    def _get_closed_form_lr(self) -> List[float]:
-        """Called when epoch is passed as a param to the `step` function of the scheduler."""
+    def _get_closed_form_lr(self) -> list[float]:
+        """Called when epoch is passed as a param to the `step` function of the
+        scheduler."""
         if self.last_epoch < self.warmup_epochs:
             return [
                 self.warmup_start_lr

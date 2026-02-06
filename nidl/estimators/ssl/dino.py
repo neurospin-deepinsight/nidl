@@ -6,9 +6,9 @@
 # for details.
 ##########################################################################
 
+import copy
 import logging
 from collections.abc import Sequence
-from copy import deepcopy
 from typing import Any, Optional, Union
 
 import torch
@@ -18,7 +18,7 @@ from torch.optim import Optimizer
 
 from ...losses import DINOLoss
 from ..base import BaseEstimator, TransformerMixin
-from .utils.momentum import MomentumUpdater
+from .utils.momentum import MomentumUpdater, initialize_momentum_params
 from .utils.optimizer import configure_ssl_optimizers
 from .utils.projection_heads import DINOProjectionHead
 
@@ -26,6 +26,18 @@ from .utils.projection_heads import DINOProjectionHead
 class DINO(TransformerMixin, BaseEstimator):
     """DINO [1]_.
 
+    DINO (self-Distillation with NO labels) is a self-supervised learning
+    method for vision models. It learns visual representations using knowledge
+    distillation: a student network is trained to align the representation of
+    local and global crops (or "views") with the representation of global crops
+    given by a teacher model. The teacher is updated through exponential moving
+    average of the student, avoiding a representation collapse. The DINO loss
+    is a cross-entropy across features between teacher and student
+    representations. This way, it does not rely on negative samples as in
+    contrastive learning and it is less sensitive to batch size than SimCLR.
+
+    After training, the teacher model is used at inference to obtain image
+    features.
 
     Parameters
     ----------
@@ -52,6 +64,8 @@ class DINO(TransformerMixin, BaseEstimator):
         Whether or not to weight normalize the last layer of the DINO head.
         Not normalizing leads to better performance but can make the
         training unstable.
+    num_local_crops: int, default=8
+        Number of local views.
     student_temperature: float, default=0.1
         Temperature for the student.
     teacher_temperature: float, default=0.07
@@ -60,8 +74,6 @@ class DINO(TransformerMixin, BaseEstimator):
         Initial temperature for the teacher network.
     warmup_teacher_temp_epochs: int, default=30
         Number of epochs for the warmup phase of the teacher temperature.
-    num_large_crops: int, default=2
-        Number of global crops forwarded through the teacher during training.
     base_lambda: float, default=0.996
         Base value for the weighting coefficient in the teacher momentum
         update with exponential moving average. A cosine annealing scheme is
@@ -74,17 +86,17 @@ class DINO(TransformerMixin, BaseEstimator):
     freeze_last_layer: int, default=0
         Number of epochs during which the last layer in student's projection
         head is frozen.
-    optimizer : {'sgd', 'adam', 'adamW'} or Optimizer, default="adam"
+    optimizer : {'sgd', 'adam', 'adamW'} or Optimizer, default="adamW"
         Optimizer for training the model. If a string is given, it can be:
 
             - 'sgd': Stochastic Gradient Descent (with optional momentum).
-            - 'adam': First-order gradient-based optimizer (default).
+            - 'adam': First-order gradient-based optimizer.
             - 'adamW': Adam with decoupled weight decay regularization
               (see "Decoupled Weight Decay Regularization", Loshchilov and
               Hutter, ICLR 2019).
     learning_rate : float, default=3e-4
         Initial learning rate.
-    weight_decay: float, default=5e-5
+    weight_decay: float, default=5e-4
         Weight decay in the optimizer.
     exclude_bias_and_norm_wd: bool, default=True
         Whether the bias terms and normalization layers get weight decay during
@@ -108,17 +120,26 @@ class DINO(TransformerMixin, BaseEstimator):
     encoder: nn.Module
         Pointer to the teacher.
     student : torch.nn.Module
-        Deep neural network mapping input data to low-dimensional vectors.
+        Student backbone.
     teacher : torch.nn.Module
-        Deep neural network mapping input data to low-dimensional vectors.
-    projection_head : torch.nn.Module
-        Maps encoder output to latent space for DINO loss optimization.
+        Teacher backbone.
+    student_head : torch.nn.Module
+        Student head on top of student backbone (only for training).
+    teacher_head: torch.nn.Module
+        Teacher head on top of teacher backbone (only for training).
     loss : DINOLoss
         The DINO loss used for training.
     optimizer : torch.optim.Optimizer
         Optimizer used for training.
     lr_scheduler : LRSchedulerPLType or None
         Learning rate scheduler used for training.
+
+
+    Notes
+    -----
+    We always assume to have 2 global crops (views) in DINO. Adding more views
+    becomes computationally prohibitive.
+
 
     References
     ----------
@@ -136,21 +157,23 @@ class DINO(TransformerMixin, BaseEstimator):
         proj_output_dim: int = 4096,
         proj_batch_norm: bool = True,
         proj_norm_last_layer: bool = True,
+        num_local_crops: int = 8,
         student_temperature: float = 0.1,
         teacher_temperature: float = 0.07,
         warmup_teacher_temp: float = 0.04,
         warmup_teacher_temp_epochs: int = 30,
-        num_large_crops: int = 2,
         base_lambda: float = 0.996,
         final_lambda: float = 1.0,
         clip_grad: float = 0.0,
         freeze_last_layer: int = 0,
-        optimizer: Union[str, Optimizer] = "adam",
-        learning_rate: float = 1e-4,
-        weight_decay: float = 5e-5,
+        optimizer: Union[str, Optimizer] = "adamW",
+        learning_rate: float = 3e-4,
+        weight_decay: float = 5e-4,
         exclude_bias_and_norm_wd: bool = True,
         optimizer_kwargs: Optional[dict[str, Any]] = None,
-        lr_scheduler: Optional[Union[str, LRSchedulerPLType]] = None,
+        lr_scheduler: Optional[
+            Union[str, LRSchedulerPLType]
+        ] = "warmup_cosine",
         lr_scheduler_kwargs: Optional[dict[str, Any]] = None,
         **kwargs: Any,
     ):
@@ -163,7 +186,12 @@ class DINO(TransformerMixin, BaseEstimator):
         super().__init__(**kwargs, ignore=ignore)
 
         self.student = self._build_encoder(encoder, encoder_kwargs)
-        self.teacher = deepcopy(self.student)
+        self.teacher = self._build_encoder(
+            encoder, encoder_kwargs, deepcopy=True
+        )
+        # Copy student params to teacher + no_grad for teacher.
+        initialize_momentum_params(self.student, self.teacher)
+
         self.encoder = self.teacher
 
         self.student_head = DINOProjectionHead(
@@ -175,7 +203,17 @@ class DINO(TransformerMixin, BaseEstimator):
             norm_last_layer=proj_norm_last_layer,
         )
 
-        self.teacher_head = deepcopy(self.student_head)
+        self.teacher_head = DINOProjectionHead(
+            input_dim=proj_input_dim,
+            hidden_dim=proj_hidden_dim,
+            bottleneck_dim=proj_bottleneck_dim,
+            output_dim=proj_output_dim,
+            batch_norm=proj_batch_norm,
+            norm_last_layer=proj_norm_last_layer,
+        )
+
+        # Copy student head params to teacher head + no_grad for teacher.
+        initialize_momentum_params(self.student_head, self.teacher_head)
 
         self.momentum_updater = MomentumUpdater(base_lambda, final_lambda)
 
@@ -187,7 +225,8 @@ class DINO(TransformerMixin, BaseEstimator):
             student_temp=student_temperature,
         )
 
-        self.num_large_crops = num_large_crops
+        self.num_local_crops = num_local_crops
+        self.num_large_crops = 2  # it is never changed in DINO
         self.clip_grad = clip_grad
         self.freeze_last_layer = freeze_last_layer
         self.optimizer = optimizer
@@ -227,21 +266,10 @@ class DINO(TransformerMixin, BaseEstimator):
         """
         X, y = self.parse_batch(batch)
 
-        Z_student = torch.cat(
-            [
-                self.student_head(self.student(x))
-                for x in X[self.num_large_crops :]
-            ]
-        )
-        with torch.no_grad():
-            Z_teacher = torch.cat(
-                [
-                    self.teacher_head(self.teacher(x))
-                    for x in X[: self.num_large_crops]
-                ]
-            )
+        Z_student = self.forward_student(X)
+        Z_teacher = self.forward_teacher(X)
 
-        loss = self.loss(Z_teacher, Z_student)
+        loss = self.loss(Z_teacher, Z_student, epoch=self.current_epoch)
         self.log("loss/train", loss, prog_bar=True, sync_dist=True)
         outputs = {
             "loss": loss,
@@ -251,6 +279,29 @@ class DINO(TransformerMixin, BaseEstimator):
         }
         # Returns everything needed for further logging/metrics computation
         return outputs
+
+    def forward_student(self, X: list[torch.Tensor]):
+        """Forward global + local views through student."""
+        global_views = self.student_head(
+            self.student(torch.cat(X[: self.num_large_crops]))
+        )
+        local_views = self.student_head(
+            self.student(torch.cat(X[self.num_large_crops :]))
+        )
+        # Important: keep the order (global first, local after)
+        student_views = torch.cat([global_views, local_views])
+        n_tot = self.num_large_crops + self.num_local_crops
+        return student_views.view(n_tot, -1, student_views.size(-1))
+
+    @torch.no_grad()
+    def forward_teacher(self, X: list[torch.Tensor]):
+        """Forward global views only through teacher."""
+        global_views = self.teacher_head(
+            self.teacher(torch.cat(X[: self.num_large_crops]))
+        )
+        return global_views.view(
+            self.num_large_crops, -1, global_views.size(-1)
+        )
 
     def on_train_batch_end(
         self, outputs: dict[str, Any], batch: Sequence[Any], batch_idx: int
@@ -278,21 +329,13 @@ class DINO(TransformerMixin, BaseEstimator):
             max_steps=self.trainer.estimated_stepping_batches,
         )
 
-    def dino_clip_gradients(self, clip: float):
-        """Clips gradients after backward pass."""
-
-        for p in self.student.parameters():
-            if p.grad is not None:
-                param_norm = p.grad.data.norm(2)
-                clip_coef = clip / (param_norm + 1e-6)
-                if clip_coef < 1:
-                    p.grad.data.mul_(clip_coef)
-
     def on_after_backward(self):
         """Performs gradient clipping and last layer freeze if required."""
         # clip gradients
-        if self.clip_grad:
-            self.dino_clip_gradients(self.clip_grad)
+        if self.clip_grad and self.clip_grad > 0:
+            torch.nn.utils.clip_grad_norm_(
+                self.student.parameters(), self.clip_grad
+            )
         # zero gradients on last layer
         if self.current_epoch < self.freeze_last_layer:
             for p in self.student_head.last_layer.parameters():
@@ -328,18 +371,8 @@ class DINO(TransformerMixin, BaseEstimator):
 
         X, y = self.parse_batch(batch)
 
-        Z_student = torch.cat(
-            [
-                self.student_head(self.student(x))
-                for x in X[self.num_large_crops :]
-            ]
-        )
-        Z_teacher = torch.cat(
-            [
-                self.teacher_head(self.teacher(x))
-                for x in X[: self.num_large_crops]
-            ]
-        )
+        Z_student = self.forward_student(X)
+        Z_teacher = self.forward_teacher(X)
 
         loss = self.loss(Z_teacher, Z_student, epoch=self.current_epoch)
         self.log("loss/val", loss, prog_bar=True, sync_dist=True)
@@ -393,7 +426,7 @@ class DINO(TransformerMixin, BaseEstimator):
         batch: Sequence[Any]
             A batch of data in the format [X] or ([X], Y) where [X]
             is a list of torch.Tensor containing `num_large_crops`
-            global views (first elements) and `num_small_crops` local
+            global views (first elements) and `num_local_crops` local
             views (last elements). `Y` are labels.
 
         Returns
@@ -405,28 +438,30 @@ class DINO(TransformerMixin, BaseEstimator):
             Eventual targets.
 
         """
+        n_total_views = self.num_large_crops + self.num_local_crops
         if (
             isinstance(batch, Sequence)
             and len(batch) == 2
-            and len(batch[0]) > self.num_large_crops
+            and len(batch[0]) == n_total_views
         ):
             X, y = batch
-        elif isinstance(batch, Sequence) and len(batch) > self.num_large_crops:
+        elif isinstance(batch, Sequence) and len(batch) == n_total_views:
             X, y = batch, None
         else:
             raise ValueError(
                 "batch should be a pair `([X], y)` or a sequence `[X]` "
                 "where `X` is a list of tensors (views) and `y` are labels."
             )
-        X = X.to(self.device)
+        X = [x.to(self.device) for x in X]
         if y is not None:
             y = y.to(self.device)
         return X, y
 
     def configure_optimizers(self):
-        params = list(self.student.parameters()) + list(
-            self.student_head.parameters()
-        )
+        params = [
+            {"name": "backbone", "params": self.student.parameters()},
+            {"name": "head", "params": self.student_head.parameters()},
+        ]
         return configure_ssl_optimizers(
             trainer=self.trainer,
             optim_params=params,
@@ -443,13 +478,24 @@ class DINO(TransformerMixin, BaseEstimator):
         self,
         encoder: Union[str, nn.Module, type[nn.Module]],
         encoder_kwargs: dict[str, Any],
+        deepcopy: bool = False,
     ) -> nn.Module:
+        """Initiatize an encoder.
+
+        Notes
+        -----
+        The encoder is returned "as is" (no copy) if `encoder` is a
+        `torch.nn.Module` instantiated and `deepcopy=False`.
+
+        """
         if isinstance(encoder, nn.Module):
             if encoder_kwargs is not None and len(encoder_kwargs) > 0:
                 logging.getLogger(__name__).warning(
                     "encoder is already instantiated, ignoring "
                     "'encoder_kwargs'"
                 )
+            if deepcopy:  # No better way to do this currently.
+                return copy.deepcopy(encoder)
         elif isinstance(encoder, type) and issubclass(encoder, nn.Module):
             encoder = encoder(**encoder_kwargs)
         else:

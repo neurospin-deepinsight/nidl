@@ -8,7 +8,7 @@
 
 import logging
 import math
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import torch
 from pytorch_lightning import Trainer
@@ -34,7 +34,7 @@ def configure_ssl_optimizers(
     learning_rate: float,
     weight_decay: float,
     exclude_bias_and_norm_wd: bool,
-    lr_scheduler: Optional[LRSchedulerPLType],
+    lr_scheduler: Optional[Union[str, LRSchedulerPLType]],
     lr_scheduler_kwargs: Optional[dict[str, Any]],
 ):
     """Initialize the optimizer and learning rate scheduler in SSL."""
@@ -72,17 +72,21 @@ def configure_ssl_optimizers(
     if isinstance(lr_scheduler, str):
         if lr_scheduler in _LR_SCHEDULERS:
             if lr_scheduler == "warmup_cosine":
-                warmup_epochs = lr_scheduler_kwargs.get("warmup_epochs")
-                interval = lr_scheduler_kwargs.get("interval")
-                warmup_start_lr = lr_scheduler_kwargs.get("warmup_start_lr")
-                min_lr = lr_scheduler_kwargs.get("min_lr")
-                max_epochs = (
-                    trainer.max_epochs
-                    if trainer.max_epochs not in (None, -1)
-                    else math.ceil(
-                        trainer.max_steps / trainer.num_training_batches
+                warmup_epochs = int(lr_scheduler_kwargs["warmup_epochs"])
+                interval = str(lr_scheduler_kwargs["interval"])
+                warmup_start_lr = float(lr_scheduler_kwargs["warmup_start_lr"])
+                min_lr = float(lr_scheduler_kwargs["min_lr"])
+
+                if interval not in {"step", "epoch"}:
+                    raise ValueError(f"Unknown interval: {interval}")
+
+                if trainer.max_epochs in (None, -1, 0):
+                    # Potentially infinite training loop
+                    raise ValueError(
+                        "`max_epoch` must be set in your Trainer to use warmup"
+                        " in the LR scheduler."
                     )
-                )
+                max_epochs = trainer.max_epochs
                 max_warmup_steps = (
                     warmup_epochs
                     * (trainer.estimated_stepping_batches / max_epochs)

@@ -12,15 +12,37 @@ import torch
 from torch import nn
 
 
+@torch.no_grad()
+def initialize_momentum_params(online_net: nn.Module, momentum_net: nn.Module):
+    """Copies the parameters of the online network to the momentum network and
+    deactivate its gradients computation.
+
+    Parameters
+    ----------
+    online_net: nn.Module
+        Online network (e.g. online backbone or online projection).
+
+    momentum_net: nn.Module
+        Momentum network (e.g. momentum backbone, momentum projection, etc...).
+    """
+
+    params_online = online_net.parameters()
+    params_momentum = momentum_net.parameters()
+    for po, pm in zip(params_online, params_momentum):
+        pm.data.copy_(po.data)
+        pm.requires_grad = False
+
+
 class MomentumUpdater:
     def __init__(self, base_lambda: float = 0.996, final_lambda: float = 1.0):
         """Updates momentum parameters using exponential moving average.
 
-        Args:
-            base_lambda (float, optional): base value of the weight decrease coefficient
-                (should be in [0,1]). Defaults to 0.996.
-            final_lambda (float, optional): final value of the weight decrease coefficient
-                (should be in [0,1]). Defaults to 1.0.
+        Parameters
+        ----------
+        base_lambda: float in [0,1], default=0.996
+            Base value of the weight decrease coefficient.
+        final_lambda: float in [0, 1], default=1.0
+            Final value of the weight decrease coefficient.
         """
 
         super().__init__()
@@ -36,11 +58,12 @@ class MomentumUpdater:
     def update(self, online_net: nn.Module, momentum_net: nn.Module):
         """Performs the momentum update for each param group.
 
-        Args:
-            online_net (nn.Module): online network (e.g. online backbone,
-            online projection, etc...).
-            momentum_net (nn.Module): momentum network (e.g. momentum backbone,
-                momentum projection, etc...).
+        Parameters
+        ----------
+        online_net: nn.Module
+            Online network (e.g. online backbone or online projection).
+        momentum_net: nn.Module
+            Momentum network (e.g. momentum backbone, or momentum projection).
         """
 
         for op, mp in zip(online_net.parameters(), momentum_net.parameters()):
@@ -52,9 +75,12 @@ class MomentumUpdater:
         """Computes the next value for the weighting decrease coefficient
         lambda using cosine annealing.
 
-        Args:
-            cur_step (int): number of gradient steps so far.
-            max_steps (int): overall number of gradient steps in the whole training.
+        Parameters
+        ----------
+        cur_step: int
+            Number of gradient steps so far.
+        max_steps: int
+            Overall number of gradient steps in the whole training.
         """
 
         self.cur_lambda = (

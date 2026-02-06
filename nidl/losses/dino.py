@@ -42,7 +42,7 @@ class DINOLoss(Module):
     >>>
     >>> # embed the view with a student and teacher model
     >>> teacher_out = teacher(view[:2])
-    >>> student_out = student(view[2:])
+    >>> student_out = student(view)
     >>>
     >>> # calculate loss
     >>> loss = loss_fn(teacher_out, student_out)
@@ -63,15 +63,6 @@ class DINOLoss(Module):
         student_temp: float = 0.1,
         center_momentum: float = 0.9,
     ) -> None:
-        """Initializes the DINOLoss Module.
-
-        Args:
-            warmup_teacher_temp:
-                Initial temperature for the teacher network.
-            warmup_teacher_temp_epochs:
-                Number of epochs for the warmup phase of the teacher
-                temperature.
-        """
         super().__init__()
 
         self.teacher_temp = teacher_temp
@@ -99,12 +90,13 @@ class DINOLoss(Module):
 
         Parameters
         ----------
-        teacher_out: torch.Tensor of shape (n_views, batch_size, n_features)
+        teacher_out: torch.Tensor of shape (n_globals, batch_size, n_features)
             Features from the teacher model. Each tensor represents one
             (global) view of the batch.
-        student_out: torch.Tensor of shape (n_views, batch_size, n_features)
-            Features from the student model. Each tensor represents one
-            (local) view of the batch.
+        student_out: torch.Tensor of shape (n_tot, batch_size, n_features)
+            Features from the student model. The first tensors represent
+            global views of the batch (same order as teacher) and the last
+            ones represent local views.
         epoch: int or None
             The current epoch used to set the teacher temperature.
             If None, the default `teacher_temp` is used.
@@ -132,10 +124,11 @@ class DINOLoss(Module):
 
         # Calculate feature similarities, ignoring the diagonal
         # b = batch_size
-        # t = n_views_teacher
-        # s = n_views_student
+        # t = n_views_teacher (global views)
+        # s = n_views_student (global views then local views)
         # d = n_features
         loss = -torch.einsum("tbd,sbd->ts", t_out, s_out)
+        # Ignore same-view matching between teacher and student
         loss.fill_diagonal_(0)
 
         # Number of loss terms, ignoring the diagonal
