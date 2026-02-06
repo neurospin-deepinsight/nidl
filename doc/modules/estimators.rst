@@ -128,6 +128,7 @@ Estimators
     SimCLR
     YAwareContrastiveLearning
     BarlowTwins
+    DINO
 
 .. autoclasstree:: nidl.estimators.ssl
    :strict:
@@ -146,10 +147,11 @@ Losses
     InfoNCE
     YAwareInfoNCE
     BarlowTwinsLoss
+    DINOLoss
 
 
-Tools
-.....
+Projection heads
+................
 
 .. currentmodule:: nidl.estimators.ssl.utils
 
@@ -161,6 +163,7 @@ Tools
     SimCLRProjectionHead
     YAwareProjectionHead
     BarlowTwinsProjectionHead
+    DINOProjectionHead
 
 
 Autoencoders

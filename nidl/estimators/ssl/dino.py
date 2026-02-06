@@ -41,11 +41,11 @@ class DINO(TransformerMixin, BaseEstimator):
 
     Parameters
     ----------
-    encoder : nn.Module or class
+    encoder: nn.Module or class
         Architecture of the encoder. A PyTorch :class:`~torch.nn.Module`
         is expected. In general, the uninstantiated class should be passed,
         although instantiated modules will also work.
-    encoder_kwargs : dict or None, default=None
+    encoder_kwargs: dict or None, default=None
         Options for building the encoder (depends on each architecture).
         Ignored if `encoder` is already instantiated.
     proj_input_dim: int, default=2048
@@ -86,14 +86,14 @@ class DINO(TransformerMixin, BaseEstimator):
     freeze_last_layer: int, default=0
         Number of epochs during which the last layer in student's projection
         head is frozen.
-    optimizer : {'sgd', 'adam', 'adamW'} or Optimizer, default="adamW"
+    optimizer: {'sgd', 'adam', 'adamW'} or Optimizer, default="adamW"
         Optimizer for training the model. If a string is given, it can be:
 
             - 'sgd': Stochastic Gradient Descent (with optional momentum).
             - 'adam': First-order gradient-based optimizer.
-            - 'adamW': Adam with decoupled weight decay regularization
-              (see "Decoupled Weight Decay Regularization", Loshchilov and
-              Hutter, ICLR 2019).
+            - 'adamW' (default): Adam with decoupled weight decay
+              regularization (see "Decoupled Weight Decay Regularization",
+              Loshchilov and Hutter, ICLR 2019).
     learning_rate : float, default=3e-4
         Initial learning rate.
     weight_decay: float, default=5e-4
@@ -103,35 +103,37 @@ class DINO(TransformerMixin, BaseEstimator):
         optimization or not.
     optimizer_kwargs : dict or None, default=None
         Extra named arguments for the optimizer.
-    lr_scheduler : {"none", "warmup_cosine"}, LRSchedulerPLType or None,
+    lr_scheduler: {"none", "warmup_cosine"}, LRSchedulerPLType or None,\
         default="warmup_cosine"
         Learning rate scheduler to use.
-    lr_scheduler_kwargs : dict or None, default=None
+    lr_scheduler_kwargs: dict or None, default=None
         Extra named arguments for the scheduler. By default, it is set to
         {"warmup_epochs": 10, "warmup_start_lr": 1e-6, "min_lr": 0.0,
         "interval": "step"}
-    **kwargs : dict, optional
-        Extra named arguments for the BaseEstimator class, such as
-        `max_epochs`, `max_steps`, `num_sanity_val_steps`,
+    **kwargs: dict, optional
+        Extra named arguments for the BaseEstimator class (given to
+        PL Trainer), such as `max_epochs`, `max_steps`, `num_sanity_val_steps`,
         `check_val_every_n_epoch`, `callbacks`, etc.
+        See the PL `Trainer API <https://lightning.ai/docs/pytorch/stable/common/trainer.html#trainer-class-api>`_
+        for more details.
 
     Attributes
     ----------
     encoder: nn.Module
         Pointer to the teacher.
-    student : torch.nn.Module
+    student: torch.nn.Module
         Student backbone.
-    teacher : torch.nn.Module
+    teacher: torch.nn.Module
         Teacher backbone.
-    student_head : torch.nn.Module
+    student_head: torch.nn.Module
         Student head on top of student backbone (only for training).
     teacher_head: torch.nn.Module
         Teacher head on top of teacher backbone (only for training).
-    loss : DINOLoss
+    loss: DINOLoss
         The DINO loss used for training.
-    optimizer : torch.optim.Optimizer
+    optimizer: torch.optim.Optimizer
         Optimizer used for training.
-    lr_scheduler : LRSchedulerPLType or None
+    lr_scheduler: LRSchedulerPLType or None
         Learning rate scheduler used for training.
 
 
@@ -262,7 +264,14 @@ class DINO(TransformerMixin, BaseEstimator):
         Returns
         -------
         outputs: dict
-            Dictionary with "loss", "Z_student", "Z_teacher" and "y" as keys
+            Dictionary containing:
+
+                - "loss": the DINO loss computed on this batch (scalar);
+                - "Z_student": tensor of shape
+                  `(n_views, batch_size, n_features)`
+                - "Z_teacher": tensor of shape
+                  `(n_global_views, batch_size, n_features)`
+                - "y": eventual targets (returned as is)
         """
         X, y = self.parse_batch(batch)
 
@@ -458,6 +467,7 @@ class DINO(TransformerMixin, BaseEstimator):
         return X, y
 
     def configure_optimizers(self):
+        """Initialize the optimizer and learning rate scheduler in DINO."""
         params = [
             {"name": "backbone", "params": self.student.parameters()},
             {"name": "head", "params": self.student_head.parameters()},

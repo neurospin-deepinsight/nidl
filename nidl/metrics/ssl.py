@@ -17,7 +17,7 @@ def alignment_score(
     Compute the alignment score between two embeddings [1]_.
 
     This metric measures how closely aligned two embeddings :math:`z1` and
-    :math`z2`. It corresponds to the expected powered Euclidean distance
+    :math:`z2`. It corresponds to the expected powered Euclidean distance
     between embeddings. Lower values = better alignment.
 
     Formally:
@@ -28,8 +28,8 @@ def alignment_score(
         = \\frac{1}{n}\\sum_{i=1}^n
         \\lVert z_1^{(i)} - z_2^{(i)} \\rVert_2^{\\alpha}
 
-    with :math:`z_1=(z_1^{(1)}, ..., z_1^{(n)}` and
-    :math:`z_2=(z_2^{(1)}, ..., z_2^{(n)}`
+    with :math:`z_1=(z_1^{(1)}, ..., z_1^{(n)})` and
+    :math:`z_2=(z_2^{(1)}, ..., z_2^{(n)})`
 
     Parameters
     ----------
