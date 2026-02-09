@@ -459,7 +459,10 @@ class DINO(TransformerMixin, BaseEstimator):
         else:
             raise ValueError(
                 "batch should be a pair `([X], y)` or a sequence `[X]` "
-                "where `X` is a list of tensors (views) and `y` are labels."
+                f"where `X` is a list of {n_total_views} tensors "
+                f"representing {self.num_large_crops} large crops and "
+                f"{self.num_local_crops} local crops. Got {type(batch)} with "
+                f"length {len(batch)}."
             )
         X = [x.to(self.device) for x in X]
         if y is not None:
