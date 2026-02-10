@@ -390,8 +390,10 @@ callback = MetricsCallback(
 
 model = SimCLR(
     encoder=LeNet(num_classes=latent_size),
-    hidden_dims=[latent_size, 32],
-    lr=3e-4,
+    proj_input_dim=latent_size,
+    proj_hidden_dim=latent_size,
+    proj_output_dim=32,
+    learning_rate=3e-4,
     temperature=0.1,
     weight_decay=5e-5,
     max_epochs=30,

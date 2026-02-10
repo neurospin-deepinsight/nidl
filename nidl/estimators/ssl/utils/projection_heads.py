@@ -53,8 +53,12 @@ class ProjectionHead(nn.Module):
     ):
         super().__init__()
 
+        self._checked_proj_dim = False
+        self._proj_input_dim = None
         layers = []
         for input_dim, output_dim, batch_norm, non_linearity in blocks:
+            if self._proj_input_dim is None:
+                self._proj_input_dim = input_dim
             use_bias = not bool(batch_norm)
             layers.append(nn.Linear(input_dim, output_dim, bias=use_bias))
             if batch_norm:
@@ -65,7 +69,31 @@ class ProjectionHead(nn.Module):
 
     def forward(self, x: torch.Tensor):
         """Computes one forward pass through the projection head."""
+        self._check_input_projection_dim(x)
         return self.layers(x)
+
+    def _check_input_projection_dim(self, z: torch.Tensor) -> None:
+        """Best-effort check that encoder output `z` matches projection head
+        input.
+
+        This fails early with a clear message instead of a deep shape mismatch
+        inside the MLP.
+        """
+        if self._checked_proj_dim:
+            return
+        self._checked_proj_dim = True
+        if z.ndim < 2:
+            raise RuntimeError("Encoder output must be at least a 2D tensor.")
+        out_dim = int(z.shape[-1])
+        if (
+            self._proj_input_dim is not None
+            and out_dim != self._proj_input_dim
+        ):
+            raise ValueError(
+                f"Encoder output dim ({out_dim}) does not match proj_input_dim"
+                f" ({self._proj_input_dim}). Either set proj_input_dim"
+                " correctly or use an encoder whose output dimension matches."
+            )
 
 
 class SimCLRProjectionHead(ProjectionHead):
@@ -259,7 +287,7 @@ class DINOProjectionHead(ProjectionHead):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Computes one forward pass through the head."""
-        x = self.layers(x)
+        x = super().forward(x)
         # l2 normalization
         x = nn.functional.normalize(x, dim=-1, p=2)
         x = self.last_layer(x)
