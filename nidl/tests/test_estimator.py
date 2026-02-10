@@ -27,6 +27,7 @@ from nidl.estimators.ssl import (
     SimCLR,
     YAwareContrastiveLearning,
 )
+from nidl.estimators.ssl.dino import DINO
 from nidl.estimators.ssl.utils.projection_heads import (
     BarlowTwinsProjectionHead,
     SimCLRProjectionHead,
@@ -78,6 +79,9 @@ class TestEstimators(unittest.TestCase):
         ssl_dataset = CustomTensorDataset(
             self.fake_data, transform=MultiViewsTransform(ssl_transforms, n_views=2)
         )
+        multicrop_ssl_dataset = CustomTensorDataset(
+            self.fake_data, transform=MultiViewsTransform(ssl_transforms, n_views=6)
+        )
         x_dataset = CustomTensorDataset(self.fake_data)
         xy_dataset = CustomTensorDataset(self.fake_data, labels=self.fake_labels)
         xxy_dataset = CustomTensorDataset(
@@ -85,6 +89,7 @@ class TestEstimators(unittest.TestCase):
             transform=MultiViewsTransform(ssl_transforms, n_views=2)
         )
         self.ssl_loader = DataLoader(ssl_dataset, batch_size=2, shuffle=False)
+        self.multicrop_ssl_loader = DataLoader(multicrop_ssl_dataset, batch_size=2, shuffle=False)
         self.weakly_sup_loader = DataLoader(xxy_dataset, batch_size=2, shuffle=False)
         self.x_loader = DataLoader(x_dataset, batch_size=2, shuffle=False)
         self.xy_loader = DataLoader(xy_dataset, batch_size=2, shuffle=False)
@@ -109,7 +114,9 @@ class TestEstimators(unittest.TestCase):
                 {
                     "encoder": self._encoder,
                     "projection_head": BarlowTwinsProjectionHead(
-                        input_dim=self._encoder.latent_size, output_dim=3
+                        input_dim=self._encoder.latent_size, 
+                        hidden_dim=3, 
+                        output_dim=3
                     ),
                     "projection_head_kwargs": { # ignored
                         "input_dim": self._encoder.latent_size,
@@ -167,6 +174,40 @@ class TestEstimators(unittest.TestCase):
                     "max_epochs": 2,
                     "limit_train_batches": 3
                 },
+            ),
+        )
+
+    def multicrop_ssl_config(self):
+        return ((
+            DINO,
+                {
+                    "encoder": self._encoder,
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
+                    "warmup_teacher_temp": 0.04,
+                    "teacher_temperature": 0.07,
+                    "warmup_teacher_temp_epochs": 30,
+                    "student_temperature": 0.1,
+                    "num_local_crops": 4,
+                    "max_epochs": 2,
+                }
+            ),
+            (
+            DINO,
+                {
+                    "encoder": self._encoder,
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
+                    "warmup_teacher_temp": 0.07,
+                    "teacher_temperature": 0.07,
+                    "warmup_teacher_temp_epochs": 0,
+                    "student_temperature": 0.1,
+                    "lr_scheduler": "none",
+                    "num_local_crops": 4,
+                    "max_epochs": 2,
+                }
             ),
         )
     
@@ -268,6 +309,19 @@ class TestEstimators(unittest.TestCase):
             print(f"[{print_multicolor(klass.__name__, display=False)}]...")
             model = klass(**params)
             model.fit(self.ssl_loader)
+            z = model.transform(self.x_loader)
+            self.assertTrue(
+                z.shape == (self.n_images, self._encoder.latent_size),
+                msg="Shape mismatch for transformed data: "
+                    f"{z.shape} != {(self.n_images, self._encoder.latent_size)}",
+            )
+
+    def test_multicrop_ssl(self):
+        """ Test self supervised model with multi-crop (simple check)."""
+        for klass, params in self.multicrop_ssl_config():
+            print(f"[{print_multicolor(klass.__name__, display=False)}]...")
+            model = klass(**params)
+            model.fit(self.multicrop_ssl_loader)
             z = model.transform(self.x_loader)
             self.assertTrue(
                 z.shape == (self.n_images, self._encoder.latent_size),

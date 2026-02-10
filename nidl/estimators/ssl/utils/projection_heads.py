@@ -172,3 +172,108 @@ class BarlowTwinsProjectionHead(ProjectionHead):
                 (hidden_dim, output_dim, None, None),
             ]
         )
+
+
+class DINOProjectionHead(ProjectionHead):
+    """Projection head used in DINO [1]_.
+
+    The projection head consists of a 3-layer multi-layer perceptron (MLP)
+    with hidden dimension 2048 followed by l2 normalization and a weight
+    normalized fully connected layer with K dimensions, which is similar to the
+    design from SwAV [2]_.
+
+    Parameters
+    ----------
+    input_dim: int, default=2048
+        The input dimension of the head.
+    hidden_dim: int, default=2048
+        The hidden dimension.
+    bottleneck_dim: int, default=256
+        Dimension of the bottleneck in the last layer of the head.
+    output_dim: int, default=4096
+        The output dimension of the head.
+    batch_norm: bool, default=True
+        Whether to use batch norm or not. Should be set to False when using
+        a vision transformer backbone.
+    freeze_last_layer: int, default=-1
+        Number of epochs during which we keep the output layer fixed.
+        Typically doing so during the first epoch helps training. Try
+        increasing this value if the loss does not decrease.
+    norm_last_layer: bool, default=True
+        Whether or not to weight normalize the last layer of the DINO head.
+        Not normalizing leads to better performance but can make the
+        training unstable.
+
+    References
+    ----------
+    .. [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
+           Transformers" ICCV, 2021. https://arxiv.org/abs/2104.14294
+    .. [2] Caron, M., et al., "Unsupervised Learning of Visual Features by
+           Contrasting Cluster Assignments", NeurIPS, 2020. https://arxiv.org/abs/2006.09882
+    """
+
+    def __init__(
+        self,
+        input_dim: int = 2048,
+        hidden_dim: int = 2048,
+        bottleneck_dim: int = 256,
+        output_dim: int = 4096,
+        batch_norm: bool = True,
+        freeze_last_layer: int = -1,
+        norm_last_layer: bool = True,
+    ):
+        """Initializes the DINOProjectionHead with the specified dimensions."""
+        super().__init__(
+            [
+                (
+                    input_dim,
+                    hidden_dim,
+                    nn.BatchNorm1d(hidden_dim) if batch_norm else None,
+                    nn.GELU(),
+                ),
+                (
+                    hidden_dim,
+                    hidden_dim,
+                    nn.BatchNorm1d(hidden_dim) if batch_norm else None,
+                    nn.GELU(),
+                ),
+                (hidden_dim, bottleneck_dim, None, None),
+            ]
+        )
+        self.apply(self._init_weights)
+        self.freeze_last_layer = freeze_last_layer
+        self.last_layer = nn.Linear(bottleneck_dim, output_dim, bias=False)
+        self.last_layer = nn.utils.weight_norm(self.last_layer)
+        self.last_layer.weight_g.data.fill_(1)
+
+        # Option to normalize last layer.
+        if norm_last_layer:
+            self.last_layer.weight_g.requires_grad = False
+
+    def cancel_last_layer_gradients(self, current_epoch: int) -> None:
+        """Cancel last layer gradients to stabilize the training."""
+        if current_epoch >= self.freeze_last_layer:
+            return
+        for param in self.last_layer.parameters():
+            param.grad = None
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Computes one forward pass through the head."""
+        x = self.layers(x)
+        # l2 normalization
+        x = nn.functional.normalize(x, dim=-1, p=2)
+        x = self.last_layer(x)
+        return x
+
+    def _init_weights(self, module: nn.Module) -> None:
+        """Initializes layers with a truncated normal distribution."""
+        if isinstance(module, nn.Linear):
+            torch.nn.init._no_grad_trunc_normal_(
+                module.weight,
+                mean=0,
+                std=0.02,
+                a=-2,
+                b=2,
+            )
+            if module.bias is not None:
+                nn.init.constant_(module.bias, 0)

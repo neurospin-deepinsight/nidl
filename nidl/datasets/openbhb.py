@@ -448,7 +448,7 @@ class OpenBHB(Dataset):
 
         See Also
         --------
-        :func:`nibabel.nifti1.load`: Function used to load the NIfTI image.
+        :func:`nibabel.loadsave.load`: Function used to load the NIfTI image.
         """
         niipath = self.get_or_download_file(
             os.path.join(self.root, "resource", "neuromorphometrics.nii")
@@ -479,7 +479,7 @@ class OpenBHB(Dataset):
 
         See Also
         --------
-        :func:`nibabel.nifti1.load`: Function used to load the NIfTI image.
+        :func:`nibabel.loadsave.load`: Function used to load the NIfTI image.
         """
         nii = nibabel.load(
             self.get_or_download_file(
@@ -512,7 +512,7 @@ class OpenBHB(Dataset):
 
         See Also
         --------
-        :func:`nibabel.nifti1.load`: Function used to load the NIfTI image.
+        :func:`nibabel.loadsave.load`: Function used to load the NIfTI image.
         """
         nii = nibabel.load(
             self.get_or_download_file(

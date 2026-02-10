@@ -14,13 +14,14 @@ from torch.distributions import Normal, Laplace, Bernoulli
 
 from nidl.losses import (
     BarlowTwinsLoss,
+    DINOLoss,
     InfoNCE,
     YAwareInfoNCE,
     KernelMetric,
     BetaVAELoss
 )
 
-class TestLosses(unittest.TestCase):
+class TestSSLLosses(unittest.TestCase):
     """ Test backbones.
     """
 
@@ -172,6 +173,153 @@ class TestLosses(unittest.TestCase):
             "YAwareInfoNCE should be equal to InfoNCE when no labels are provided, got "
             f"{loss_ya} vs {loss_inf}"
         )
+
+
+class TestDINOLoss(unittest.TestCase):
+    def setUp(self) -> None:
+        torch.manual_seed(0)
+
+    def _make_loss(
+        self,
+        output_dim=4,
+        warmup_teacher_temp=0.04,
+        teacher_temp=0.07,
+        warmup_teacher_temp_epochs=3,
+        student_temp=0.1,
+        center_momentum=0.9,
+    ):
+        return DINOLoss(
+            output_dim=output_dim,
+            warmup_teacher_temp=warmup_teacher_temp,
+            teacher_temp=teacher_temp,
+            warmup_teacher_temp_epochs=warmup_teacher_temp_epochs,
+            student_temp=student_temp,
+            center_momentum=center_momentum,
+        )
+
+    def test_temperature_warmup_schedule_and_post_warmup(self):
+        warmup_epochs = 3
+        warmup_start = 0.04
+        warmup_end = 0.07
+        loss_fn = self._make_loss(
+            warmup_teacher_temp=warmup_start,
+            teacher_temp=warmup_end,
+            warmup_teacher_temp_epochs=warmup_epochs,
+        )
+        loss_fn2 = self._make_loss(
+            teacher_temp=loss_fn.teacher_temp_schedule[0],
+            student_temp=loss_fn.student_temp,
+        )
+        loss_fn2.center = loss_fn.center.clone()
+
+        # Sanity-check schedule endpoints
+        self.assertEqual(len(loss_fn.teacher_temp_schedule), warmup_epochs)
+        self.assertAlmostEqual(float(loss_fn.teacher_temp_schedule[0]), warmup_start, places=7)
+        self.assertAlmostEqual(float(loss_fn.teacher_temp_schedule[-1]), warmup_end, places=7)
+
+        teacher_out = torch.randn(2, 2, 4)
+        student_out = torch.randn(3, 2, 4)
+
+        # Sanity-check warmup scheduler
+        loss0 = loss_fn(teacher_out, student_out, epoch=0)
+        loss1 = loss_fn2(teacher_out, student_out, epoch=0)
+        loss_fn2.center = loss_fn.center.clone()
+        loss2 = loss_fn2(teacher_out, student_out, epoch=3)
+        loss_fn2.center = loss_fn.center.clone()
+        loss3 = loss_fn2(teacher_out, student_out, epoch=4)
+        self.assertTrue(torch.allclose(loss0, loss1, atol=1e-6, rtol=1e-6))
+        self.assertTrue(torch.allclose(loss2, loss3, atol=1e-6, rtol=1e-6))
+        self.assertFalse(torch.allclose(loss0, loss2, atol=1e-6, rtol=1e-6))
+
+
+    def test_diagonal_is_ignored_and_normalization_matches(self):
+        loss_fn = self._make_loss(output_dim=4, warmup_teacher_temp_epochs=3)
+        loss_fn.center.zero_()
+
+        # Random examples with non-symmetric structures
+        teacher_out = torch.tensor(
+            [
+                [[1.0, 0.0, 0.0, 0.0], [0.1, 0.2, 0.3, 0.4]],
+                [[0.0, 1.0, 0.0, 0.0], [0.4, 0.3, 0.2, 0.1]],
+            ]
+        )  # (t=2, b=2, d=4)
+
+        student_out = torch.tensor(
+            [
+                [[0.3, 0.2, 0.1, 0.0], [0.0, 0.1, 0.2, 0.3]],
+                [[0.0, 0.1, 0.0, 0.9], [0.9, 0.0, 0.1, 0.0]],
+                [[0.2, 0.2, 0.2, 0.2], [0.4, 0.3, 0.2, 0.1]],
+            ]
+        )  # (s=3, b=2, d=4)
+
+        student_out_perm = student_out[[1, 0, 2], :, :]
+        teacher_out_perm = teacher_out[[1, 0], :, :]
+        student_out_wrong_perm = student_out[[0, 2, 1], :, :]
+        teacher_out_wrong_perm = teacher_out[[1, 0], :, :]
+        loss = loss_fn(teacher_out, student_out, epoch=10)
+        loss_fn.center.zero_()
+        expected = loss_fn(teacher_out_perm, student_out_perm, epoch=10)
+        loss_fn.center.zero_()
+        unexpected = loss_fn(teacher_out_wrong_perm, student_out_wrong_perm, epoch=10)
+
+        self.assertTrue(torch.allclose(loss, expected, atol=1e-6, rtol=1e-6))
+        self.assertFalse(torch.allclose(loss, unexpected, atol=1e-6, rtol=1e-6))
+
+
+    def test_center_updates_with_momentum_non_distributed(self):
+        momentum = 0.9
+        loss_fn = self._make_loss(output_dim=4, center_momentum=momentum)
+        self.assertTrue(torch.allclose(loss_fn.center, torch.zeros_like(loss_fn.center)))
+
+        teacher_out = torch.randn(2, 3, 4)  # (n_views, batch, dim)
+        batch_center = teacher_out.mean(dim=(0, 1), keepdim=True)
+
+        loss_fn.update_center(teacher_out)
+
+        expected_center = (torch.zeros_like(batch_center) * momentum) + batch_center * (1 - momentum)
+        self.assertTrue(torch.allclose(loss_fn.center, expected_center, atol=1e-7, rtol=0.0))
+
+        # Second update should incorporate momentum
+        teacher_out2 = torch.randn(2, 3, 4)
+        batch_center2 = teacher_out2.mean(dim=(0, 1), keepdim=True)
+        prev = loss_fn.center.clone()
+
+        loss_fn.update_center(teacher_out2)
+        expected2 = prev * momentum + batch_center2 * (1 - momentum)
+        self.assertTrue(torch.allclose(loss_fn.center, expected2, atol=1e-7, rtol=0.0))
+
+    def test_forward_updates_center_and_returns_scalar(self):
+        loss_fn = self._make_loss(output_dim=4, center_momentum=0.5)
+        teacher_out = torch.randn(2, 2, 4)
+        student_out = torch.randn(3, 2, 4)
+
+        center_before = loss_fn.center.clone()
+        loss = loss_fn(teacher_out, student_out, epoch=None)
+
+        self.assertEqual(loss.dim(), 0)  # scalar tensor
+        self.assertTrue(torch.isfinite(loss).item())
+
+        # center must change (very likely); verify it equals the update_center formula exactly
+        batch_center = teacher_out.mean(dim=(0, 1), keepdim=True)
+        expected_center = center_before * 0.5 + batch_center * 0.5
+        self.assertTrue(torch.allclose(loss_fn.center, expected_center, atol=1e-7, rtol=0.0))
+
+    def test_gradients_flow_to_student_and_not_to_center(self):
+        loss_fn = self._make_loss(output_dim=4)
+        loss_fn.center.zero_()
+
+        teacher_out = torch.randn(2, 2, 4, requires_grad=True)
+        student_out = torch.randn(3, 2, 4, requires_grad=True)
+
+        loss = loss_fn(teacher_out, student_out, epoch=None)
+        loss.backward()
+        self.assertIsNotNone(student_out.grad)
+        self.assertTrue(torch.isfinite(student_out.grad).all().item())
+        self.assertGreater(float(student_out.grad.abs().sum()), 0.0)
+
+        # Center is a buffer and should not accumulate grad
+        self.assertFalse(loss_fn.center.requires_grad)
+        self.assertIsNone(loss_fn.center.grad)
 
 
 class TestBetaVAELoss(unittest.TestCase):

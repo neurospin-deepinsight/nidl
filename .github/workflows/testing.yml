@@ -43,6 +43,8 @@ jobs:
         python -m pip install --progress-bar off .[plugins,openbhb]
     - name: Run unit tests
       run: |
+        python -m coverage erase || true
+        rm -f .coverage .coverage.*
         nosetests --with-coverage --cover-package=nidl --verbosity=2
     - name: Coveralls
       uses: coverallsapp/github-action@v2
