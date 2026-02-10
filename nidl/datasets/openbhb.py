@@ -432,7 +432,7 @@ class OpenBHB(Dataset):
         dict
             A dictionary containing:
 
-            - `data` : :class:`nibabel.Nifti1Image`, the atlas image.
+            - `data` : :class:`nibabel.nifti1.Nifti1Image`, the atlas image.
             - `labels` : list of region names (string) corresponding to
               integer labels in the atlas.
 
@@ -448,7 +448,7 @@ class OpenBHB(Dataset):
 
         See Also
         --------
-        :func:`nibabel.load`: Function used to load the NIfTI image.
+        :func:`nibabel.loadsave.load`: Function used to load the NIfTI image.
         """
         niipath = self.get_or_download_file(
             os.path.join(self.root, "resource", "neuromorphometrics.nii")
@@ -479,7 +479,7 @@ class OpenBHB(Dataset):
 
         See Also
         --------
-        :func:`nibabel.load`: Function used to load the NIfTI image.
+        :func:`nibabel.loadsave.load`: Function used to load the NIfTI image.
         """
         nii = nibabel.load(
             self.get_or_download_file(
@@ -512,7 +512,7 @@ class OpenBHB(Dataset):
 
         See Also
         --------
-        :func:`nibabel.load`: Function used to load the NIfTI image.
+        :func:`nibabel.loadsave.load`: Function used to load the NIfTI image.
         """
         nii = nibabel.load(
             self.get_or_download_file(
