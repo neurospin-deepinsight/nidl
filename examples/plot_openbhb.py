@@ -298,7 +298,6 @@ for ax, dat, title in zip(axes, data, titles):
         surf_map=dat,
         hemi="left",
         bg_map=sulc_left,
-        darkness=0.5,
         cmap="plasma",
         colorbar=True,
         axes=ax,
