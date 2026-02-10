@@ -14,10 +14,10 @@
 <link rel="search" title="Search" href="search.html"><link rel="next" title="Team" href="authors.html"><link rel="prev" title="Maintenance" href="maintenance.html">
         <link rel="prefetch" href="_static/nidl-transparent.png" as="image">
 
-    <link rel="shortcut icon" href="_static/favicon.ico"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+    <link rel="shortcut icon" href="_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Changelog - Nidl</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=2da93098" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -267,13 +267,16 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
@@ -392,7 +395,7 @@
 <section id="highlights">
 <h3>HIGHLIGHTS<a class="headerlink" href="#highlights" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">API</span> Propose an API for estimators (<a class="reference internal" href="modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">nidl.estimators.base.BaseEstimator</span></code></a>), callbacks (<a class="reference external" href="https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.Callback.html#lightning.pytorch.callbacks.Callback" title="(in PyTorch Lightning v2.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">lightning.pytorch.callbacks.Callback</span></code></a>), backbones (<a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch vmain (2.10.0a0+gite33fa0e ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>), and transforms (<a class="reference internal" href="modules/generated/nidl.transforms.Transform.html#nidl.transforms.Transform" title="nidl.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">nidl.transforms.Transform</span></code></a>).</p></li>
+<li><p><span class="sd-sphinx-override sd-badge sd-bg-success sd-bg-text-success">API</span> Propose an API for estimators (<a class="reference internal" href="modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">nidl.estimators.base.BaseEstimator</span></code></a>), callbacks (<a class="reference external" href="https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.Callback.html#lightning.pytorch.callbacks.Callback" title="(in PyTorch Lightning v2.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">lightning.pytorch.callbacks.Callback</span></code></a>), backbones (<a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a>), and transforms (<a class="reference internal" href="modules/generated/nidl.transforms.Transform.html#nidl.transforms.Transform" title="nidl.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">nidl.transforms.Transform</span></code></a>).</p></li>
 <li><p><span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">Doc</span> Create doc with <a class="reference external" href="https://github.com/pradyunsg/furo">furo</a>.</p></li>
 </ul>
 </section>
@@ -516,8 +519,8 @@
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=4ea706d9"></script>

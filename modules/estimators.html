@@ -14,10 +14,10 @@
 <link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.estimators.BaseEstimator" href="generated/nidl.estimators.BaseEstimator.html"><link rel="prev" title="API References" href="index.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+    <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>nidl.estimators: Available estimators - Nidl</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=2da93098" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -267,13 +267,16 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
@@ -508,15 +511,20 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#nidl.estimators.ssl.BarlowTwins" title="nidl.estimators.ssl.BarlowTwins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwins</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
 <td><p>Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#rf18316f97edd-1" id="id3"><span>[Rf18316f97edd-1]</span></a>.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html#nidl.estimators.ssl.DINO" title="nidl.estimators.ssl.DINO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DINO</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
+<td><p>DINO <a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html#rf531b9701544-1" id="id4"><span>[Rf531b9701544-1]</span></a>.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 <pre align="center" class="mermaid align-center">
         classDiagram
   BaseEstimator &lt;|-- BarlowTwins
+  BaseEstimator &lt;|-- DINO
   BaseEstimator &lt;|-- SimCLR
   BaseEstimator &lt;|-- YAwareContrastiveLearning
   TransformerMixin &lt;|-- BarlowTwins
+  TransformerMixin &lt;|-- DINO
   TransformerMixin &lt;|-- SimCLR
   TransformerMixin &lt;|-- YAwareContrastiveLearning
     </pre></section>
@@ -526,20 +534,23 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.InfoNCE.html#nidl.losses.InfoNCE" title="nidl.losses.InfoNCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InfoNCE</span></code></a>([temperature])</p></td>
-<td><p>Implementation of the InfoNCE loss <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-1" id="id4"><span>[Re38fc64e0ed4-1]</span></a>, <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-2" id="id5"><span>[Re38fc64e0ed4-2]</span></a>.</p></td>
+<td><p>Implementation of the InfoNCE loss <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-1" id="id5"><span>[Re38fc64e0ed4-1]</span></a>, <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-2" id="id6"><span>[Re38fc64e0ed4-2]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#nidl.losses.YAwareInfoNCE" title="nidl.losses.YAwareInfoNCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YAwareInfoNCE</span></code></a>([kernel, bandwidth, temperature])</p></td>
-<td><p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#ra2feb9ab43ec-1" id="id6"><span>[Ra2feb9ab43ec-1]</span></a>.</p></td>
+<td><p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#ra2feb9ab43ec-1" id="id7"><span>[Ra2feb9ab43ec-1]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#nidl.losses.BarlowTwinsLoss" title="nidl.losses.BarlowTwinsLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwinsLoss</span></code></a>([lambd])</p></td>
-<td><p>Implementation of the Barlow Twins loss <a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#re83c9b545e4a-1" id="id7"><span>[Re83c9b545e4a-1]</span></a>.</p></td>
+<td><p>Implementation of the Barlow Twins loss <a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#re83c9b545e4a-1" id="id8"><span>[Re83c9b545e4a-1]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.losses.DINOLoss.html#nidl.losses.DINOLoss" title="nidl.losses.DINOLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DINOLoss</span></code></a>([output_dim, warmup_teacher_temp, ...])</p></td>
+<td><p>Implementation of the DINO loss <a class="reference internal" href="generated/nidl.losses.DINOLoss.html#re2e7efabd714-1" id="id9"><span>[Re2e7efabd714-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
-<section id="tools">
-<h3>Tools<a class="headerlink" href="#tools" title="Link to this heading">¶</a></h3>
+<section id="projection-heads">
+<h3>Projection heads<a class="headerlink" href="#projection-heads" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -553,7 +564,10 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <td><p>Projection head used for yAware contrastive learning.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#nidl.estimators.ssl.utils.BarlowTwinsProjectionHead" title="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwinsProjectionHead</span></code></a>([input_dim, ...])</p></td>
-<td><p>Projection head used for Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#r86bff2d09119-1" id="id8"><span>[R86bff2d09119-1]</span></a>.</p></td>
+<td><p>Projection head used for Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#r86bff2d09119-1" id="id10"><span>[R86bff2d09119-1]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html#nidl.estimators.ssl.utils.DINOProjectionHead" title="nidl.estimators.ssl.utils.DINOProjectionHead"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DINOProjectionHead</span></code></a>([input_dim, hidden_dim, ...])</p></td>
+<td><p>Projection head used in DINO <a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html#re0843dd52443-1" id="id11"><span>[Re0843dd52443-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -563,13 +577,13 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <section id="autoencoders">
 <h2>Autoencoders<a class="headerlink" href="#autoencoders" title="Link to this heading">¶</a></h2>
 <p>Autoencoder estimators and losses.</p>
-<section id="id9">
-<h3>Estimators<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<section id="id12">
+<h3>Estimators<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#nidl.estimators.autoencoders.VAE" title="nidl.estimators.autoencoders.VAE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VAE</span></code></a>(encoder, decoder, encoder_out_dim, ...)</p></td>
-<td><p>Variational Auto-Encoder (VAE) <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-1" id="id10"><span>[Rfc808ee91d8e-1]</span></a> <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-2" id="id11"><span>[Rfc808ee91d8e-2]</span></a>.</p></td>
+<td><p>Variational Auto-Encoder (VAE) <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-1" id="id13"><span>[Rfc808ee91d8e-1]</span></a> <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-2" id="id14"><span>[Rfc808ee91d8e-2]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -579,13 +593,13 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
   BaseEstimator &lt;|-- VAE
   TransformerMixin &lt;|-- VAE
     </pre></section>
-<section id="id12">
-<h3>Losses<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<section id="id15">
+<h3>Losses<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#nidl.losses.BetaVAELoss" title="nidl.losses.BetaVAELoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetaVAELoss</span></code></a>([beta, default_dist])</p></td>
-<td><p>Compute the Beta-VAE loss <a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#rd208eb1f92d3-1" id="id13"><span>[Rd208eb1f92d3-1]</span></a>.</p></td>
+<td><p>Compute the Beta-VAE loss <a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#rd208eb1f92d3-1" id="id16"><span>[Rd208eb1f92d3-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -664,12 +678,12 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <li><a class="reference internal" href="#self-supervised-learning">Self-Supervised Learning</a><ul>
 <li><a class="reference internal" href="#estimators">Estimators</a></li>
 <li><a class="reference internal" href="#losses">Losses</a></li>
-<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#projection-heads">Projection heads</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#autoencoders">Autoencoders</a><ul>
-<li><a class="reference internal" href="#id9">Estimators</a></li>
-<li><a class="reference internal" href="#id12">Losses</a></li>
+<li><a class="reference internal" href="#id12">Estimators</a></li>
+<li><a class="reference internal" href="#id15">Losses</a></li>
 </ul>
 </li>
 </ul>
@@ -684,20 +698,22 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.esm.min.mjs"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs"></script>
-    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
     <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.esm.min.mjs";
 
-const defaultStyle = document.createElement('style');
-defaultStyle.textContent = `pre.mermaid {
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
     /* Same as .mermaid-container > pre */
     display: block;
     width: 100%;
@@ -708,12 +724,11 @@ pre.mermaid > svg {
     height: 500px;
     width: 100%;
     max-width: 100% !important;
-}
-`;
-document.head.appendChild(defaultStyle);
+}`;
+    document.head.appendChild(defaultStyle);
 
-const fullscreenStyle = document.createElement('style');
-fullscreenStyle.textContent = `.mermaid-container {
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -865,10 +880,32 @@ fullscreenStyle.textContent = `.mermaid-container {
 .mermaid-fullscreen-modal .mermaid-fullscreen-btn {
     display: none !important;
 }`;
-document.head.appendChild(fullscreenStyle);
+    document.head.appendChild(fullscreenStyle);
+}
 
 // Detect if page has dark background
 const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
     const bgColor = window.getComputedStyle(document.body).backgroundColor;
     const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
     if (match) {
@@ -876,15 +913,45 @@ const isDarkTheme = () => {
         const g = parseInt(match[2]);
         const b = parseInt(match[3]);
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
         return brightness < 128;
     }
+    // console.log("No dark or light theme detected, defaulting to light theme");
     return false;
 };
 
-const load = async () => {
-    await mermaid.run();
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
 
-    const all_mermaids = document.querySelectorAll(".mermaid");
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
     const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
 
     if ("False" === "True") {
@@ -892,10 +959,10 @@ const load = async () => {
         if(mermaids_to_add_zoom > 0) {
             var svgs = d3.selectAll("");
             if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(load, 200);
+                setTimeout(() => runMermaid(false), 200);
                 return;
             } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(load, 200);
+                setTimeout(() => runMermaid(false), 200);
                 return;
             } else {
                 svgs.each(function() {
@@ -911,16 +978,21 @@ const load = async () => {
         }
     } else if(all_mermaids.length !== mermaids_processed.length) {
         // Wait for mermaid to process all diagrams
-        setTimeout(load, 200);
+        setTimeout(() => runMermaid(false), 200);
         return;
     }
-
-    const darkTheme = isDarkTheme();
 
     // Stop here if not adding fullscreen capability
     if ("True" !== "True") return;
 
-    const modal = document.createElement('div');
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
     modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-modal', 'true');
@@ -931,10 +1003,8 @@ const load = async () => {
     `;
     document.body.appendChild(modal);
 
-    const modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
     const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    let previousScrollOffset = [window.scrollX, window.scrollY];
 
     const closeModal = () => {
         modal.classList.remove('active');
@@ -953,11 +1023,14 @@ const load = async () => {
         }
     });
 
-    const allButtons = [];
-
     document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
         if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
             mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
             return;
         }
 
@@ -1015,45 +1088,56 @@ const load = async () => {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
-
         container.appendChild(fullscreenBtn);
-        allButtons.push(fullscreenBtn);
-    });
-
-    // Update theme classes when theme changes
-    const updateTheme = () => {
-        const dark = isDarkTheme();
-        allButtons.forEach(btn => {
-            if (dark) {
-                btn.classList.add('dark-theme');
-            } else {
-                btn.classList.remove('dark-theme');
-            }
-        });
-        if (dark) {
-            modal.classList.add('dark-theme');
-            modalContent.classList.add('dark-theme');
-            closeBtn.classList.add('dark-theme');
-        } else {
-            modal.classList.remove('dark-theme');
-            modalContent.classList.remove('dark-theme');
-            closeBtn.classList.remove('dark-theme');
-        }
-    };
-
-    // Watch for theme changes
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style']
     });
 };
 
-window.addEventListener("load", load);
-</script>
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);</script>
     </body>
 </html>

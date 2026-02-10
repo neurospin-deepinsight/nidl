@@ -70,6 +70,16 @@ Import packages
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:32: UserWarning: You are using the 'agg' matplotlib backend that is non-interactive.
+    No figure will be plotted when calling matplotlib.pyplot.show() or nilearn.plotting.show().
+    You can fix this by installing a different backend: for example via
+            pip install PyQt6
+      from nilearn import datasets, plotting
+
 
 
 
@@ -173,7 +183,7 @@ different modalities:
 
     (121, 145, 121)
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f0c7c1b2cf0>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f12c3babe90>
 
 
 
@@ -250,7 +260,7 @@ a brain template using the Neuromorphometrics atlas**:
  .. code-block:: none
 
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f0d57f72cc0>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f12c9579040>
 
 
 
@@ -378,77 +388,6 @@ for visualization.
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:194: UserWarning: 
-    The following regions are present in the atlas look-up table,
-    but missing from the atlas image:
-
-     index    name
-         0 Unknown
-
-      fsaverage = datasets.fetch_atlas_surf_destrieux(verbose=0)
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:244: DeprecationWarning: The `darkness` parameter will be deprecated in release 0.13. We recommend setting `darkness` to None
-      plotting.plot_surf(
-
 
 
 
@@ -466,7 +405,7 @@ the left hemisphere using the higher-resolution fsaverage7 template:
   in millimiter.
 - `lh.thickness`: Cortical thickness values at each vertex (in millimiter).
 
-.. GENERATED FROM PYTHON SOURCE LINES 272-309
+.. GENERATED FROM PYTHON SOURCE LINES 272-308
 
 .. code-block:: Python
 
@@ -499,7 +438,6 @@ the left hemisphere using the higher-resolution fsaverage7 template:
             surf_map=dat,
             hemi="left",
             bg_map=sulc_left,
-            darkness=0.5,
             cmap="plasma",
             colorbar=True,
             axes=ax,
@@ -522,20 +460,17 @@ the left hemisphere using the higher-resolution fsaverage7 template:
 
     [fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
     [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
-    [fetch_surf_fsaverage]     Downloaded 2908160 of 34242788 bytes (8.5%%,   10.8s remaining)
-    [fetch_surf_fsaverage]     Downloaded 31645696 of 34242788 bytes (92.4%%,    0.2s remaining)
+    [fetch_surf_fsaverage]     Downloaded 3792896 of 34242788 bytes (11.1%%,    8.1s remaining)
     [fetch_surf_fsaverage]  ...done. (4 seconds, 0 min)
 
     [fetch_surf_fsaverage] Extracting data from /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
     [fetch_surf_fsaverage] .. done.
 
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:296: DeprecationWarning: The `darkness` parameter will be deprecated in release 0.13. We recommend setting `darkness` to None
-      plotting.plot_surf(
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 310-327
+.. GENERATED FROM PYTHON SOURCE LINES 309-326
 
 Fit machine learning models for age and sex prediction
 ------------------------------------------------------
@@ -555,7 +490,7 @@ We will compare three representations of the brain:
 
 We start by loading all the relevant datasets for these tasks:
 
-.. GENERATED FROM PYTHON SOURCE LINES 327-373
+.. GENERATED FROM PYTHON SOURCE LINES 326-372
 
 .. code-block:: Python
 
@@ -622,7 +557,7 @@ We start by loading all the relevant datasets for these tasks:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 374-380
+.. GENERATED FROM PYTHON SOURCE LINES 373-379
 
 Age prediction with Ridge regression
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -631,7 +566,7 @@ We will use a Ridge regression model with standard scaling as a baseline
 for age prediction. We will evaluate the model using the R² score and visualize
 the predicted vs. true ages for the three modalities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 380-421
+.. GENERATED FROM PYTHON SOURCE LINES 379-420
 
 .. code-block:: Python
 
@@ -688,7 +623,7 @@ the predicted vs. true ages for the three modalities.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 422-427
+.. GENERATED FROM PYTHON SOURCE LINES 421-426
 
 Sex classification with logistic regression
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -696,7 +631,7 @@ Sex classification with logistic regression
 Next, we will use a logistic regression model with standard scaling as a
 baseline for sex classification. We will evaluate the model using accuracy.
 
-.. GENERATED FROM PYTHON SOURCE LINES 427-458
+.. GENERATED FROM PYTHON SOURCE LINES 426-457
 
 .. code-block:: Python
 
@@ -744,7 +679,7 @@ baseline for sex classification. We will evaluate the model using accuracy.
 
  .. code-block:: none
 
-    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:440: FutureWarning: 
+    /home/runner/work/nidl/nidl/examples/plot_openbhb.py:439: FutureWarning: 
 
     Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
 
@@ -753,7 +688,7 @@ baseline for sex classification. We will evaluate the model using accuracy.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 459-464
+.. GENERATED FROM PYTHON SOURCE LINES 458-463
 
 Observations: the VBM representation gives the best results for both tasks,
 indicating that regional gray matter volumes are highly informative for predicting
@@ -761,7 +696,7 @@ age and sex. Nevertheless, it would be interesting to check whether combining th
 modalities would improve the result, which would mean that they provide complementary
 information. This is left as an exercise to the reader.
 
-.. GENERATED FROM PYTHON SOURCE LINES 466-475
+.. GENERATED FROM PYTHON SOURCE LINES 465-474
 
 Modeling brain aging trajectories
 ---------------------------------
@@ -773,11 +708,11 @@ Neuromorphometrics atlas for each subject to regress a Gaussian Process
 Regression (GPR) against age. This way, we will estimate the mean and
 standard variation of the GM volume trajectories.
 
-.. GENERATED FROM PYTHON SOURCE LINES 478-479
+.. GENERATED FROM PYTHON SOURCE LINES 477-478
 
 We start by formatting correctly the previous data before fitting the GPR.
 
-.. GENERATED FROM PYTHON SOURCE LINES 479-523
+.. GENERATED FROM PYTHON SOURCE LINES 478-522
 
 .. code-block:: Python
 
@@ -832,12 +767,12 @@ We start by formatting correctly the previous data before fitting the GPR.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 524-526
+.. GENERATED FROM PYTHON SOURCE LINES 523-525
 
 We can now fit the GPR model to obtain brain aging trajectories
 of gray matter volumes:
 
-.. GENERATED FROM PYTHON SOURCE LINES 526-555
+.. GENERATED FROM PYTHON SOURCE LINES 525-554
 
 .. code-block:: Python
 
@@ -877,11 +812,11 @@ of gray matter volumes:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 556-557
+.. GENERATED FROM PYTHON SOURCE LINES 555-556
 
 Finally, we plot the brain trajectories per brain region:
 
-.. GENERATED FROM PYTHON SOURCE LINES 557-602
+.. GENERATED FROM PYTHON SOURCE LINES 556-601
 
 .. code-block:: Python
 
@@ -942,14 +877,14 @@ Finally, we plot the brain trajectories per brain region:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 603-607
+.. GENERATED FROM PYTHON SOURCE LINES 602-606
 
 Observations: We retrieve some results from the literature [2]_, [3]_
 in particular regarding the earlier atrophy of the thalamus compared to
 hippocampus and amygdala (relatively preserved until 50-60 years old) and
 global atrophy early-on of pre-central and post-central gryus.
 
-.. GENERATED FROM PYTHON SOURCE LINES 609-628
+.. GENERATED FROM PYTHON SOURCE LINES 608-627
 
 References
 ----------
@@ -974,9 +909,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 36.913 seconds)
+   **Total running time of the script:** (5 minutes 10.144 seconds)
 
-**Estimated memory usage:**  2607 MB
+**Estimated memory usage:**  2613 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_openbhb.py:
