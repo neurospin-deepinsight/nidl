@@ -17,7 +17,11 @@ from torch.optim import Optimizer
 
 from ...losses import KernelMetric, YAwareInfoNCE
 from ..base import BaseEstimator, TransformerMixin
-from .utils.data_parsing import all_gather_and_flatten, parse_two_views_batch
+from .utils.data_parsing import (
+    gather_tensor,
+    gather_two_views,
+    parse_two_views_batch,
+)
 from .utils.encoder import build_encoder
 from .utils.optimizer import configure_ssl_optimizers
 from .utils.projection_heads import YAwareProjectionHead
@@ -189,6 +193,30 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             self.kernel, self.bandwidth, self.temperature
         )
 
+    def _shared_step(self, batch: Sequence[Any], is_train: bool = True):
+        """Shared code for training and validation steps."""
+        X, y = self.parse_batch(batch, device=self.device)
+        z1 = self.projection_head(self.encoder(X[0]))
+        z2 = self.projection_head(self.encoder(X[1]))
+
+        # Gather before computing the contrastive loss.
+        z1, z2 = gather_two_views(
+            z1, z2, trainer=self.trainer, sync_grads=is_train
+        )
+        y = (
+            gather_tensor(y, trainer=self.trainer, sync_grads=is_train)
+            if y is not None
+            else None
+        )
+        loss = self.loss(z1, z2, y)
+        outputs = {
+            "loss": loss,
+            "z1": z1.detach(),
+            "z2": z2.detach(),
+            "y": y.detach() if y is not None else None,
+        }
+        return outputs
+
     def training_step(
         self,
         batch: Sequence[Any],
@@ -213,31 +241,13 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         -------
         outputs : dict
             Dictionary containing:
-                - "loss": the InfoNCE loss computed on this batch (scalar);
+                - "loss": the y-Aware loss computed on this batch;
                 - "z1": tensor of shape `(batch_size, n_features)`;
                 - "z2": tensor of shape `(batch_size, n_features)`;
                 - "y": auxiliary variables.
         """
-        X, y = self.parse_batch(batch, device=self.device)
-        z1 = self.projection_head(self.encoder(X[0]))
-        z2 = self.projection_head(self.encoder(X[1]))
-
-        # Gather before computing the contrastive loss.
-        z1 = all_gather_and_flatten(z1, trainer=self.trainer, sync_grads=True)
-        z2 = all_gather_and_flatten(z2, trainer=self.trainer, sync_grads=True)
-        if y is not None:
-            y = all_gather_and_flatten(
-                y, trainer=self.trainer, sync_grads=True
-            )
-
-        loss = self.loss(z1, z2, y)
-        self.log("loss/train", loss, prog_bar=True, sync_dist=True)
-        outputs = {
-            "loss": loss,
-            "z1": z1.detach(),
-            "z2": z2.detach(),
-            "y": y.detach() if y is not None else None,
-        }
+        outputs = self._shared_step(batch, is_train=True)
+        self.log("loss/train", outputs["loss"], prog_bar=True, sync_dist=True)
         # Returns everything needed for further logging/metrics computation
         return outputs
 
@@ -263,31 +273,13 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         -------
         outputs : dict
             Dictionary containing:
-                - "loss": the InfoNCE loss computed on this batch (scalar);
+                - "loss": the y-Aware loss computed on this batch;
                 - "z1": tensor of shape `(batch_size, n_features)`;
                 - "z2": tensor of shape `(batch_size, n_features)`;
                 - "y": auxiliary variables.
         """
-        X, y = self.parse_batch(batch, device=self.device)
-        z1 = self.projection_head(self.encoder(X[0]))
-        z2 = self.projection_head(self.encoder(X[1]))
-
-        # Gather before computing the contrastive loss.
-        z1 = all_gather_and_flatten(z1, trainer=self.trainer, sync_grads=False)
-        z2 = all_gather_and_flatten(z2, trainer=self.trainer, sync_grads=False)
-        if y is not None:
-            y = all_gather_and_flatten(
-                y, trainer=self.trainer, sync_grads=True
-            )
-
-        val_loss = self.loss(z1, z2, y)
-        outputs = {
-            "loss": val_loss,
-            "z1": z1.detach(),
-            "z2": z2.detach(),
-            "y": y.detach() if y is not None else None,
-        }
-        self.log("loss/val", val_loss, prog_bar=True, sync_dist=True)
+        outputs = self._shared_step(batch, is_train=False)
+        self.log("loss/val", outputs["loss"], prog_bar=True, sync_dist=True)
         # Returns everything needed for further logging/metrics computation
         return outputs
 
