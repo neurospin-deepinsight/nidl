@@ -337,7 +337,7 @@ plt.show()
 
 # %%
 # We define the relevant global parameters for this example:
-data_dir = "/tmp/openbhb"
+data_dir = "/tmp/openBHB"
 batch_size = 128
 num_workers = 10
 latent_size = 32

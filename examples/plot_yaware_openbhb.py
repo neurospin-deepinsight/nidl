@@ -65,7 +65,7 @@ from nidl.transforms import MultiViewsTransform
 
 # %%
 # We define some global parameters that will be used throughout the notebook:
-data_dir = "/tmp/openbhb"
+data_dir = "/tmp/openBHB"
 batch_size = 128
 num_workers = 10
 latent_size = 32
