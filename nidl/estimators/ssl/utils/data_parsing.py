@@ -196,7 +196,7 @@ def parse_multi_crops_batch(
 
 
 def gather_two_views(
-    z1: torch.Tensor, z2: torch.Tensor, trainer=None, **kwargs
+    z1: torch.Tensor, z2: torch.Tensor, module=None, **kwargs
 ):
     """Gather two tensors across devices and flatten the batch dimension.
 
@@ -210,8 +210,8 @@ def gather_two_views(
         Local tensor with shape ``(B, ...)``.
     z2: torch.Tensor
         Local tensor with shape ``(B, ...)`` (same order/shape as z1).
-    trainer: pytorch_lightning.Trainer, default=None
-        The trainer instance, used to determine the world size and whether
+    module: pytorch_lightning.LightningModule, default=None
+        The module instance, used to determine the world size and whether
         distributed training is being used.
     **kwargs: dict
         Forwarded to
@@ -228,11 +228,12 @@ def gather_two_views(
             f"z1 and z2 must have the same shape. Got {tuple(z1.shape)} and "
             f"{tuple(z2.shape)}."
         )
+    trainer = module.trainer if module is not None else None
     if trainer is None or getattr(trainer, "world_size", 1) == 1:
         return z1, z2
     b_size = z1.shape[0]
     ws = trainer.world_size
-    gathered = trainer.all_gather(torch.cat([z1, z2], dim=0), **kwargs)
+    gathered = module.all_gather(torch.cat([z1, z2], dim=0), **kwargs)
     # Most Lightning strategies return (world_size, 2*batch, ...).
     if gathered.ndim < z1.ndim + 1:
         raise RuntimeError(
@@ -245,9 +246,7 @@ def gather_two_views(
     return z1_gathered, z2_gathered
 
 
-def gather_tensor(
-    tensor: torch.Tensor, trainer=None, sync_grads: bool = False
-):
+def gather_tensor(tensor: torch.Tensor, module=None, sync_grads: bool = False):
     """
     Gather a tensor across devices and flatten the batch dimension.
 
@@ -255,8 +254,8 @@ def gather_tensor(
     ----------
     tensor : torch.Tensor
         Local tensor of shape (B, ...).
-    trainer : pytorch_lightning.Trainer, optional
-        Trainer used to determine distributed context.
+    module : pytorch_lightning.LightningModule, optional
+        Module used to determine distributed context.
     sync_grads : bool, default=False
         Whether to synchronize gradients (set True during training).
 
@@ -269,13 +268,15 @@ def gather_tensor(
     if not isinstance(tensor, torch.Tensor):
         raise ValueError(f"Expected torch.Tensor, got {type(tensor)}")
 
+    trainer = module.trainer if module is not None else None
+
     if trainer is None or getattr(trainer, "world_size", 1) == 1:
         return tensor
 
     ws = trainer.world_size
     B = tensor.shape[0]
 
-    gathered = trainer.all_gather(tensor, sync_grads=sync_grads)
+    gathered = module.all_gather(tensor, sync_grads=sync_grads)
 
     # Expect (world_size, B, ...)
     if gathered.ndim != tensor.ndim + 1:

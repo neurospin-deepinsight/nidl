@@ -186,9 +186,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         z2 = self.projection_head(self.encoder(X[1]))
 
         # Gather before computing the contrastive loss.
-        z1, z2 = gather_two_views(
-            z1, z2, trainer=self.trainer, sync_grads=is_train
-        )
+        z1, z2 = gather_two_views(z1, z2, module=self, sync_grads=is_train)
         loss = self.loss(z1, z2)
         outputs = {
             "loss": loss,

@@ -73,7 +73,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         Kernel used as a similarity function between auxiliary variables.
     bandwidth : Union[float, List[float], array, KernelMetric], \
         default=1.0
-        The method used to calculate the bandwidth ("sigma" in [1]) between
+        The method used to calculate the bandwidth ("sigma^2" in [1]) between
         auxiliary variables:
 
         - If `bandwidth` is a scalar, it sets the bandwidth to a diagnonal
@@ -200,11 +200,9 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         z2 = self.projection_head(self.encoder(X[1]))
 
         # Gather before computing the contrastive loss.
-        z1, z2 = gather_two_views(
-            z1, z2, trainer=self.trainer, sync_grads=is_train
-        )
+        z1, z2 = gather_two_views(z1, z2, module=self, sync_grads=is_train)
         y = (
-            gather_tensor(y, trainer=self.trainer, sync_grads=is_train)
+            gather_tensor(y, module=self, sync_grads=is_train)
             if y is not None
             else None
         )
