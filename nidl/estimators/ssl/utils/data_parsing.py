@@ -234,7 +234,6 @@ def parse_multi_crops_batch(
                 ref_local = crop
         elif crop.shape != ref.shape:
             group = "global" if i < num_large_crops else "local"
-            j = i if group == "global" else i - num_large_crops
             raise ValueError(
                 f"All {group} crops must have the same shape. "
                 "Got\n" + inspect_batch(batch)
