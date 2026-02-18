@@ -6,10 +6,66 @@
 # for details.
 ##########################################################################
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any, Optional
 
+import numpy as np
 import torch
+
+
+def inspect_batch(x, name="batch", max_items=4) -> str:
+    """
+    Return a human-readable string describing the nested structure
+    of a batch (types, lengths, tensor shapes, dtypes).
+
+    Parameters
+    ----------
+    x : Any
+        Object to inspect.
+    name : str
+        Root name.
+    max_items : int
+        Max number of sequence elements to display per level.
+    """
+    lines = []
+
+    def _inspect(obj, prefix, indent=0):
+        pad = " " * indent
+        t = type(obj)
+
+        if isinstance(obj, torch.Tensor):
+            lines.append(
+                f"{pad}{prefix}: torch.Tensor "
+                f"shape={tuple(obj.shape)} dtype={obj.dtype}"
+            )
+
+        elif isinstance(obj, np.ndarray):
+            lines.append(
+                f"{pad}{prefix}: np.ndarray "
+                f"shape={obj.shape} dtype={obj.dtype}"
+            )
+
+        elif isinstance(obj, Mapping):
+            keys = list(obj.keys())
+            lines.append(f"{pad}{prefix}: dict keys={keys}")
+            for k in keys:
+                _inspect(obj[k], f"{prefix}['{k}']", indent + 2)
+
+        elif isinstance(obj, Sequence) and not isinstance(obj, (str, bytes)):
+            length = len(obj)
+            lines.append(f"{pad}{prefix}: {t.__name__} len={length}")
+            for i, v in enumerate(obj[:max_items]):
+                _inspect(v, f"{prefix}[{i}]", indent + 2)
+            if length > max_items:
+                lines.append(
+                    f"{pad}  ... ({length - max_items} more elements)"
+                )
+
+        else:
+            lines.append(f"{pad}{prefix}: {t}")
+
+    _inspect(x, name)
+    return "\n".join(lines)
 
 
 def parse_two_views_batch(
@@ -30,7 +86,7 @@ def parse_two_views_batch(
         - ``[X1, X2]``
         - ``([X1, X2], y)``
 
-        where ``X1`` and ``X2`` are :class:`torch.Tensor` objects.
+        where ``X1`` and ``X2`` are :class:`torch.Tensor` with same shape.
     device : torch.device
         The device to move the tensors to.
 
@@ -44,7 +100,8 @@ def parse_two_views_batch(
     Raises
     ------
     ValueError
-        If the batch format is not recognized or views are not tensors.
+        If the batch format is not recognized or views are not tensors or with
+        different shapes.
     """
     n_views = 2
 
@@ -58,27 +115,30 @@ def parse_two_views_batch(
     elif isinstance(batch, Sequence) and len(batch) == n_views:
         X, y = batch, None
     else:
-        try:
-            blen = len(batch)
-        except Exception:
-            blen = "unknown"
         raise ValueError(
             "batch should be `[X1, X2]` or `([X1, X2], y)` where `X1` and "
             "`X2` are tensors representing two views of the same samples. "
-            f"Got type={type(batch)} len={blen}."
+            "Got\n" + inspect_batch(batch)
         )
 
     if not (isinstance(X[0], torch.Tensor) and isinstance(X[1], torch.Tensor)):
         raise ValueError(
             "`X1` and `X2` should be torch.Tensors. "
-            f"Got types: {type(X[0])}, {type(X[1])}."
+            "Got\n" + inspect_batch(batch)
+        )
+
+    if X[0].shape != X[1].shape:
+        raise ValueError(
+            "`X1` and `X2` should have same shape. "
+            "Got\n" + inspect_batch(batch)
         )
 
     X = [x.to(device, non_blocking=True) for x in X]
     if y is not None:
         if not isinstance(y, torch.Tensor):
             raise ValueError(
-                f"`y` must be a torch.Tensor or None, got {type(y)}."
+                "`y` must be a torch.Tensor or None. "
+                "Got\n" + inspect_batch(batch)
             )
         y = y.to(device, non_blocking=True)
     return X, y
@@ -125,7 +185,8 @@ def parse_multi_crops_batch(
     ------
     ValueError
         If the batch format is not recognized, the number of crops does not
-        match, or views are not tensors.
+        match, views are not tensors or global (resp. local) crops shape does
+        not match.
 
     Notes
     -----
@@ -148,36 +209,35 @@ def parse_multi_crops_batch(
     ):
         X, y = batch, None
     else:
-        try:
-            blen = len(batch)  # type: ignore[arg-type]
-        except Exception:
-            blen = "unknown"
         raise ValueError(
             "batch should be `[X]` or `([X], y)` where `X` is a sequence of "
             f"{expected_n_crops} torch.Tensors (global crops first, then "
-            f"local crops). Got type={type(batch)} len={blen}."
+            f"local crops). "
+            "Got\n" + inspect_batch(batch)
         )
 
-    # Validate crop types and consistent batch dimension.
+    # Validate crop types and consistent shape across crops (global or local).
     crops: list[torch.Tensor] = []
-    batch_size: Optional[int] = None
+    ref_global: Optional[torch.Tensor] = None
+    ref_local: Optional[torch.Tensor] = None
     for i, crop in enumerate(X):
-        if not isinstance(crop, torch.Tensor):
+        if not isinstance(crop, torch.Tensor) or crop.ndim == 0:
             raise ValueError(
-                "All crops must be torch.Tensors. "
-                f"Crop {i} has type {type(crop)}."
+                "All crops must be torch.Tensors with a batch dimension. "
+                "Got\n" + inspect_batch(batch)
             )
-        if crop.ndim == 0:
+        ref = ref_global if i < num_large_crops else ref_local
+        if ref is None:
+            if i < num_large_crops:
+                ref_global = crop
+            else:
+                ref_local = crop
+        elif crop.shape != ref.shape:
+            group = "global" if i < num_large_crops else "local"
+            j = i if group == "global" else i - num_large_crops
             raise ValueError(
-                f"Crop {i} must have a batch dimension, got ndim=0."
-            )
-        if batch_size is None:
-            batch_size = int(crop.shape[0])
-        elif int(crop.shape[0]) != batch_size:
-            raise ValueError(
-                "All crops must share the same first dimension (batch size). "
-                f"Got crop0 batch={batch_size}, crop{i} "
-                f"batch={int(crop.shape[0])}."
+                f"All {group} crops must have the same shape. "
+                "Got\n" + inspect_batch(batch)
             )
         crops.append(crop.to(device, non_blocking=True))
 
@@ -188,7 +248,8 @@ def parse_multi_crops_batch(
     else:
         if not isinstance(y, torch.Tensor):
             raise ValueError(
-                f"`y` must be a torch.Tensor or None, got {type(y)}."
+                "`y` must be a torch.Tensor or None."
+                "Got\n" + inspect_batch(batch)
             )
         y_tensor = y.to(device, non_blocking=True)
 
