@@ -60,7 +60,7 @@ from nidl.transforms import MultiViewsTransform
 
 # %%
 # We define some global parameters that will be used throughout the notebook:
-data_dir = "/tmp/openbhb"
+data_dir = "/tmp/openBHB"
 batch_size = 128
 num_workers = 10
 latent_size = 32
@@ -255,13 +255,10 @@ sbm_encoder = MLP(in_channels=272, hidden_channels=[64, latent_size])
 sigma = 4
 vbm_model = BarlowTwins(
     encoder=vbm_encoder,
-    projection_head_kwargs={
-        "input_dim": latent_size,
-        "hidden_dim": 2 * latent_size,
-        "output_dim": latent_size,
-    },
+    proj_input_dim=latent_size,
+    proj_hidden_dim=2 * latent_size,
+    proj_output_dim=latent_size,
     lambd=0.005,
-    random_state=42,
     max_epochs=10,
     learning_rate=1e-5,
     enable_checkpointing=False,
@@ -269,13 +266,10 @@ vbm_model = BarlowTwins(
 
 sbm_model = BarlowTwins(
     encoder=sbm_encoder,
-    projection_head_kwargs={
-        "input_dim": latent_size,
-        "hidden_dim": 2 * latent_size,
-        "output_dim": latent_size,
-    },
+    proj_input_dim=latent_size,
+    proj_hidden_dim=2 * latent_size,
+    proj_output_dim=latent_size,
     lambd=0.005,
-    random_state=42,
     max_epochs=10,
     learning_rate=1e-5,
     enable_checkpointing=False,

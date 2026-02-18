@@ -65,6 +65,7 @@ class TinyModule(pl.LightningModule):
         outputs = {
             "preds": preds,      # int64
             "targets": y,        # int64
+            "targets2": NUM_CLASSES - y - 1,
             "logits": logits,    # float32
             "loss": loss
         }
@@ -426,7 +427,7 @@ class TestEdgeCases(unittest.TestCase):
         metrics = {"m1": acc_labels_first, "m2": acc_logits_kw}
         needs = {
             "m1": ["targets", "preds"],              # positional
-            "m2": {"preds": "logits", "targets": "targets"},  # keyword
+            "m2": {"preds": "logits", "targets": "targets2"},  # keyword
         }
 
         cb = MetricsCallback(
@@ -439,7 +440,34 @@ class TestEdgeCases(unittest.TestCase):
 
         trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
         self.assertAlmostEqual(float(trainer.callback_metrics["m1/train"]), 1.0, places=6)
-        self.assertAlmostEqual(float(trainer.callback_metrics["m2/train"]), 1.0, places=6)
+        self.assertAlmostEqual(float(trainer.callback_metrics["m2/train"]), 0.0, places=6)
+
+    def test_per_metric_needs_with_list(self):
+        seed_everything()
+        model = TinyModule()
+        train_loader = make_loader("cpu")
+
+        # Define two metrics with different needs signatures
+        def acc_labels(y_true, y_pred):
+            return float((np.array(y_true) == np.array(y_pred)).mean())
+
+        metrics = {"m1": acc_labels, "m2": acc_labels}
+        needs = {
+            "m1": ["targets", "preds"],
+            "m2": ["targets2", "preds"],
+        }
+
+        cb = MetricsCallback(
+            metrics=metrics,
+            needs=needs,
+            compute_per_training_step=False,
+            every_n_train_steps=None,
+            every_n_train_epochs=1,
+        )
+
+        trainer = run_trainer(model, train_loader=train_loader, callbacks=[cb])
+        self.assertAlmostEqual(float(trainer.callback_metrics["m1/train"]), 1.0, places=6)
+        self.assertAlmostEqual(float(trainer.callback_metrics["m2/train"]), 0.0, places=6)
 
     def test_numpy_scalar_and_python_scalar_outputs(self):
         seed_everything()

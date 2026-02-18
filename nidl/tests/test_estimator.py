@@ -26,11 +26,7 @@ from nidl.estimators.ssl import (
     BarlowTwins,
     SimCLR,
     YAwareContrastiveLearning,
-)
-from nidl.estimators.ssl.dino import DINO
-from nidl.estimators.ssl.utils.projection_heads import (
-    BarlowTwinsProjectionHead,
-    SimCLRProjectionHead,
+    DINO
 )
 from nidl.estimators.autoencoders import VAE
 from nidl.estimators.linear import LogisticRegression
@@ -100,8 +96,10 @@ class TestEstimators(unittest.TestCase):
                 SimCLR,
                 {
                     "encoder": self._encoder,
-                    "hidden_dims": [self._encoder.latent_size, 3],
-                    "lr": 5e-4,
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
+                    "learning_rate": 5e-4,
                     "temperature": 0.07,
                     "weight_decay": 1e-4,
                     "max_epochs": 2,
@@ -113,18 +111,12 @@ class TestEstimators(unittest.TestCase):
                 BarlowTwins,
                 {
                     "encoder": self._encoder,
-                    "projection_head": BarlowTwinsProjectionHead(
-                        input_dim=self._encoder.latent_size, 
-                        hidden_dim=3, 
-                        output_dim=3
-                    ),
-                    "projection_head_kwargs": { # ignored
-                        "input_dim": self._encoder.latent_size,
-                        "output_dim": 3,
-                    },
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
                     "learning_rate": 5e-4,
                     "lambd": 0.005,
-                    "optimizer_kwargs": {"weight_decay": 1e-4},
+                    "weight_decay": 1e-4,
                     "max_epochs": 2,
                     "random_state": 42,
                     "limit_train_batches": 3,
@@ -134,27 +126,9 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "projection_head_kwargs": {
-                        "input_dim": self._encoder.latent_size,
-                        "output_dim": 3,
-                    },
-                    "temperature": 0.07,
-                    "learning_rate": 1e-4,
-                    "max_epochs": 2,
-                    "limit_train_batches": 3,
-                },
-            ),
-                        (
-                YAwareContrastiveLearning,
-                {
-                    "encoder": self._encoder,
-                    "projection_head": SimCLRProjectionHead(
-                        input_dim=self._encoder.latent_size, output_dim=3
-                    ),
-                    "projection_head_kwargs": { # ignored
-                        "input_dim": self._encoder.latent_size,
-                        "output_dim": 3,
-                    },
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
                     "temperature": 0.07,
                     "learning_rate": 1e-4,
                     "max_epochs": 2,
@@ -165,12 +139,13 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "projection_head": SimCLRProjectionHead(
-                        input_dim=self._encoder.latent_size, output_dim=3
-                    ),
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
+                    "lr_scheduler": "none",
                     "temperature": 0.1,
                     "learning_rate": 5e-4,
-                    "optimizer_kwargs": {"weight_decay": 1e-4},
+                    "weight_decay": 1e-4,
                     "max_epochs": 2,
                     "limit_train_batches": 3
                 },
@@ -219,10 +194,9 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "projection_head_kwargs": {
-                        "input_dim": self._encoder.latent_size,
-                        "output_dim": 10,
-                    },
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 10,
+                    "proj_output_dim": 10,
                     "bandwidth": 2,
                     "temperature": 0.07,
                     "learning_rate": 1e-4,
@@ -234,10 +208,9 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "projection_head_kwargs": {
-                        "input_dim": self._encoder.latent_size,
-                        "output_dim": 10,
-                    },
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 10,
+                    "proj_output_dim": 10,
                     "bandwidth": kernel_metric,
                     "temperature": 0.07,
                     "learning_rate": 1e-4,

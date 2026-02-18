@@ -69,6 +69,8 @@ def configure_ssl_optimizers(
         return optimizer
 
     if isinstance(lr_scheduler, str):
+        if lr_scheduler_kwargs is None:
+            lr_scheduler_kwargs = {}
         if lr_scheduler in _LR_SCHEDULERS:
             if lr_scheduler == "warmup_cosine":
                 warmup_epochs = int(lr_scheduler_kwargs["warmup_epochs"])

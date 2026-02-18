@@ -59,6 +59,10 @@ class BaseEstimator(pl.LightningModule):
         ``check_val_every_n_epoch=None``, which validates after every ``N``
         training batches across epochs or during iteration-based training.
         Default: ``1.0``.
+    num_sanity_val_steps: int, default=None
+        Sanity check runs n validation batches before starting the training
+        routine. Set it to `-1` to run all batches in all validation
+        dataloaders. Default: ``2``.
     max_epochs: int, default=None
         stop training once this number of epochs is reached. If both
         max_epochs and max_steps are not specified, defaults to
@@ -103,6 +107,8 @@ class BaseEstimator(pl.LightningModule):
         precision (32, '32' or '32-true'), 16bit mixed precision (16, '16',
         '16-mixed') or bfloat16 mixed precision ('bf16', 'bf16-mixed').
         Can be used on CPU, GPU, TPUs, or HPUs.
+    save_hparams: bool, default=True
+        Whether to save the hyper-parameters of this estimator or not.
     ignore: list of str, default=None
         Attributes to be ignored when saving the hyperparameters of the
         estimator. This is particularly useful for ignoring
@@ -138,6 +144,7 @@ class BaseEstimator(pl.LightningModule):
         callbacks: Optional[Union[list[Callback], Callback]] = None,
         check_val_every_n_epoch: Optional[int] = 1,
         val_check_interval: Optional[Union[int, float]] = None,
+        num_sanity_val_steps: Optional[int] = None,
         max_epochs: Optional[int] = None,
         min_epochs: Optional[int] = None,
         max_steps: int = -1,
@@ -150,16 +157,19 @@ class BaseEstimator(pl.LightningModule):
         devices: Union[list[int], str, int] = "auto",
         num_nodes: int = 1,
         precision: Optional[_PRECISION_INPUT] = None,
+        save_hparams: bool = True,
         ignore: Optional[Sequence[str]] = None,
         random_state: Optional[int] = None,
         **kwargs,
     ):
         super().__init__()
-        self.save_hyperparameters(ignore=ignore)
+        if save_hparams:
+            self.save_hyperparameters(ignore=ignore)
         self.fitted_ = False
         self.trainer_params_ = {
             "callbacks": callbacks,
             "check_val_every_n_epoch": check_val_every_n_epoch,
+            "num_sanity_val_steps": num_sanity_val_steps,
             "val_check_interval": val_check_interval,
             "max_epochs": max_epochs,
             "min_epochs": min_epochs,

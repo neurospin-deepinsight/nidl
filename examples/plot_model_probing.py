@@ -114,21 +114,15 @@ contrast_transforms = transforms.Compose(
 
 
 # %%
-# We create a custom dataset that returns only the images (without labels).
+# We create the datasets returning the augmented views for training the SSL
+# models.
 
-
-class SSLMNIST(MNIST):
-    def __getitem__(self, index):
-        img, _ = super().__getitem__(index)
-        return img
-
-
-ssl_dataset = SSLMNIST(
+ssl_dataset = MNIST(
     data_dir,
     download=True,
     transform=MultiViewsTransform(contrast_transforms, n_views=2),
 )
-test_ssl_dataset = SSLMNIST(
+test_ssl_dataset = MNIST(
     data_dir,
     download=True,
     train=False,
@@ -186,7 +180,7 @@ def show_images(images, title=None, nrow=8):
 
 # Original and augmented images
 images, labels = next(iter(test_xy_loader))
-augmented_views = next(iter(test_ssl_loader))
+augmented_views, _ = next(iter(test_ssl_loader))
 view1, view2 = augmented_views[0], augmented_views[1]
 fig, axes = plt.subplots(2, 3, figsize=(6, 4))
 for i in range(2):
@@ -263,12 +257,13 @@ encoder = LeNetEncoder(latent_size)
 
 model = SimCLR(
     encoder=encoder,
-    random_state=42,
     limit_train_batches=100,
+    proj_input_dim=latent_size,
+    proj_hidden_dim=64,
+    proj_output_dim=32,
     max_epochs=10,
     temperature=0.1,
-    hidden_dims=[64, 32],
-    lr=3e-4,
+    learning_rate=3e-4,
     weight_decay=5e-5,
     enable_checkpointing=False,
     callbacks=callback,  # <-- key part for probing
@@ -342,7 +337,7 @@ plt.show()
 
 # %%
 # We define the relevant global parameters for this example:
-data_dir = "/tmp/openbhb"
+data_dir = "/tmp/openBHB"
 batch_size = 128
 num_workers = 10
 latent_size = 32
@@ -548,13 +543,10 @@ encoder = MLP(in_channels=284, hidden_channels=[64, latent_size])
 sigma = 4
 model = YAwareContrastiveLearning(
     encoder=encoder,
-    projection_head_kwargs={
-        "input_dim": latent_size,
-        "hidden_dim": 2 * latent_size,
-        "output_dim": latent_size,
-    },
+    proj_input_dim=latent_size,
+    proj_hidden_dim=2 * latent_size,
+    proj_output_dim=latent_size,
     bandwidth=sigma**2,
-    random_state=42,
     max_epochs=10,
     temperature=0.1,
     learning_rate=1e-3,
