@@ -44,4 +44,5 @@ Functions for all self-supervised metrics.
     alignment_score
     uniformity_score
     contrastive_accuracy_score
-
+    procrustes_similarity
+    kruskal_similarity

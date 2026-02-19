@@ -8,6 +8,7 @@
 
 import numpy as np
 import torch
+import sklearn
 
 
 def alignment_score(
@@ -340,3 +341,126 @@ def contrastive_accuracy_score(
         hits_21 = (idx_21 == true_idx).any(dim=1).float()
         acc_21 = hits_21.mean()
         return 0.5 * (acc_12 + acc_21)
+
+def procrustes_similarity(X, Y, euclidean = False) -> float:
+    """
+    Procrustes similarity between two point clouds / embeddings.
+
+    Parameters
+    ----------
+    X : array or torch.Tensor, shape (n, d1)
+    Y : array or torch.Tensor, shape (n, d2)
+    Same number of rows (points), possibly different feature dims.
+    euclidean : bool
+    If True, compute the R2 of the best orthogonal transformation mapping X to Y (best if X and Y are in Euclidean space)
+    If False, compute the maximum Frobenius cosine of the best orthogonal transformation mapping X to Y (best if X and Y are on a hypersphere).
+
+    Returns
+    -------
+    sim : float
+    In [0, 1]. 1 means X and Y are identical up to translation + (possibly reflection) orthogonal transform (+ scale if Euclidean == False).
+    """
+    if isinstance(X, torch.Tensor):
+        X = X.detach().cpu().numpy()
+    if isinstance(Y, torch.Tensor):
+        Y = Y.detach().cpu().numpy()
+
+    X = np.asarray(X, dtype=np.float64)
+    Y = np.asarray(Y, dtype=np.float64)
+
+    if X.ndim != 2 or Y.ndim != 2:
+        raise ValueError("X and Y must be 2D arrays.")
+    if X.shape[0] != Y.shape[0]:
+        raise ValueError(f"X and Y must have same n (rows). Got {X.shape[0]} and {Y.shape[0]}.")
+
+    # Center (translation invariance)
+    Xc = X - X.mean(axis=0, keepdims=True)
+    Yc = Y - Y.mean(axis=0, keepdims=True)
+
+    # Frobenius norms (scale)
+    nx = np.linalg.norm(Xc, ord="fro")
+    ny = np.linalg.norm(Yc, ord="fro")
+
+    # Degenerate cases: if one cloud is constant after centering, similarity undefined -> 0.0
+    if np.isclose(nx, 0) or np.isclose(ny, 0):
+        return 0.0
+
+    if euclidean:
+        # Cross-covariance
+        M = Xc.T @ Yc
+
+        # SVD
+        U, _, Vt = np.linalg.svd(M, full_matrices=False)
+        R = U @ Vt  # optimal orthogonal transform
+
+        # Compute optimal alignment error
+        sim = sklearn.metrics.r2_score(y_true = Yc, y_pred =  Xc @ R, multioutput="variance_weighted")
+
+    else:
+        # Cross-covariance-like matrix
+        M = Xc.T @ Yc # shape (d1, d2)
+
+        # Nuclear norm = sum of singular values
+        # (handles rectangular M naturally; no padding needed)
+        svals = np.linalg.svd(M, compute_uv=False)
+        nuc = float(svals.sum())
+
+        sim = nuc / (nx * ny)
+    
+    # Clamp to [0,1] for numerical safety
+    sim = np.clip(sim, 0, 1)
+    
+    return float(sim)
+
+def kruskal_similarity(X, Y, euclidean = False) -> float:
+    """
+    Kruskal similarity between two point clouds / embeddings.
+    This essentially a scaled version of Kruskal's stress, generalized to account for either Euclidean distance or cosine similarity
+
+    Parameters
+    ----------
+    X : array or torch.Tensor, shape (n, d1)
+    Y : array or torch.Tensor, shape (n, d2)
+    Same number of rows (points), possibly different feature dims.
+    euclidean : bool
+    If True, compare Euclidean distances
+    If False, compare cosine similarities
+
+    Returns
+    -------
+    sim : float
+    In [0, 1]. 1 means X and Y are identical (after normalization if Euclidean == True) up to a Euclidean isometry.
+    """
+    if isinstance(X, np.ndarray):
+        X = torch.Tensor(X)
+    if isinstance(Y, np.ndarray):
+        Y = torch.Tensor(Y)
+
+    if X.ndim != 2 or Y.ndim != 2:
+        raise ValueError("X and Y must be 2D arrays.")
+    if X.shape[0] != Y.shape[0]:
+        raise ValueError(f"X and Y must have same n (rows). Got {X.shape[0]} and {Y.shape[0]}.")
+    
+    N = X.shape[0]
+    
+    if euclidean:
+        D_X = torch.cdist(X, X)
+        D_Y = torch.cdist(Y, Y)
+    else:
+        X_norm = torch.nn.functional.normalize(X)
+        Y_norm = torch.nn.functional.normalize(Y)
+
+        D_X = X_norm @ X_norm.T
+        D_Y = Y_norm @ Y_norm.T
+
+    idxs_1, idxs_2 = torch.triu_indices(N, N, offset=1)
+
+    D_X = D_X[idxs_1, idxs_2]
+    D_Y = D_Y[idxs_1, idxs_2]
+
+    sim = sklearn.metrics.r2_score(y_pred = D_X, y_true = D_Y)
+    
+    # Clamp to [0,1] for numerical safety
+    sim = np.clip(sim, 0, 1)
+    
+    return float(sim)
