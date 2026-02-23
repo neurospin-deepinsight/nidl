@@ -397,7 +397,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.ssl.BarlowTwins<a class="headerlink" href="#nidl-estimators-ssl-barlowtwins" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">BarlowTwins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'nidl.estimators.ssl.utils.projection_heads.BarlowTwinsProjectionHead'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_head_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L23"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">BarlowTwins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/barlowtwins.py#L25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.TransformerMixin.html#nidl.estimators.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
 <p>Barlow Twins <a class="reference internal" href="#rf18316f97edd-1" id="id1">[1]</a>.</p>
 <p>Barlow Twins is a self-supervised learning model for learning visual
@@ -421,7 +421,7 @@ loss.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>encoder</strong><span class="classifier">nn.Module or class</span></dt><dd><p>Which deep architecture to use for encoding the input.
-A PyTorch <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> is expected.
+A PyTorch <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+gita60570a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> is expected.
 In general, the uninstantiated class should be passed, although
 instantiated modules will also work.</p>
 </dd>
@@ -437,51 +437,43 @@ encoder_kwargs={“n_embedding”: 10} builds a ResNet-18 model with
 </ul>
 <p>Ignored if <cite>encoder</cite> is instantiated.</p>
 </dd>
-<dt><strong>projection_head</strong><span class="classifier">nn.Module or class or None,</span></dt><dd><p>default=BarlowTwinsProjectionHead
-Which projection head to use for the model. If None, no projection head
-is used and the encoder output is directly used for loss computation.
-Otherwise, a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> is expected. In general,
-the uninstantiated class should be passed, although instantiated
-modules will also work. By default, a 3-layer MLP with ReLU activation,
-Batch Normalization, 2048-d input dimension, 8192-d hidden units, and
-8192-d output dimensions is used.</p>
+<dt><strong>proj_input_dim</strong><span class="classifier">int, default=2048</span></dt><dd><p>Projector input dimension. It must be consistent with encoder’s
+output dimension.</p>
 </dd>
-<dt><strong>projection_head_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Arguments for building the projection head. By default, input dimension
-is 2048-d and output dimension is 8192-d. These can be changed by
-passing a dictionary with keys ‘input_dim’ and ‘output_dim’.
-‘input_dim’ must be equal to the encoder’s output dimension.
-Ignored if <cite>projection_head</cite> is instantiated.</p>
+<dt><strong>proj_hidden_dim</strong><span class="classifier">int, default=2048</span></dt><dd><p>Projector hidden dimension. Original value in <a class="reference internal" href="#rf18316f97edd-1" id="id2">[1]</a> is 8192, but it
+can be reduced for computational reasons.</p>
+</dd>
+<dt><strong>proj_output_dim</strong><span class="classifier">int, default=2048</span></dt><dd><p>Projector output dimension. Original value in <a class="reference internal" href="#rf18316f97edd-1" id="id3">[1]</a> is 8192, but it can
+be reduced for computational reasons.</p>
 </dd>
 <dt><strong>lambd</strong><span class="classifier">float, default=5e-3</span></dt><dd><p>lambda value in the BarlowTwins loss. Trading off the importance of
 the redundancy reduction term over the invariance term.</p>
 </dd>
-<dt><strong>optimizer</strong><span class="classifier">{‘sgd’, ‘adam’, ‘adamW’} or torch.optim.Optimizer or type,         default=”adam”</span></dt><dd><p>Optimizer for training the model. Can be:</p>
-<ul>
-<li><p>A string:</p>
+<dt><strong>optimizer</strong><span class="classifier">{‘sgd’, ‘adam’, ‘adamW’} or torch.optim.Optimizer or type,         default=”adamW”</span></dt><dd><p>Optimizer for training the model. If a string is given, it can be:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>‘sgd’: Stochastic Gradient Descent (with optional momentum).</p></li>
-<li><p>‘adam’: First-order gradient-based optimizer (default).</p></li>
-<li><p>‘adamW’: Adam with decoupled weight decay regularization
-(see “Decoupled Weight Decay Regularization”, Loshchilov and
-Hutter, ICLR 2019).</p></li>
+<li><p>‘adam’: First-order gradient-based optimizer.</p></li>
+<li><p>‘adamW’ (default): Adam with decoupled weight decay
+regularization (see “Decoupled Weight Decay Regularization”,
+Loshchilov and Hutter, ICLR 2019).</p></li>
 </ul>
 </div></blockquote>
-</li>
-<li><p>An instance or subclass of <a class="reference external" href="https://docs.pytorch.org/docs/main/optim.html#torch.optim.Optimizer" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a>.</p></li>
-</ul>
 </dd>
-<dt><strong>optimizer_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Arguments for the optimizer (‘adam’ by default). By default:
-{‘betas’: (0.9, 0.99), ‘weight_decay’: 5e-05} where ‘betas’ are the
-exponential decay rates for first and second moment estimates.</p>
-<p>Ignored if <cite>optimizer</cite> is instantiated.</p>
+<dt><strong>learning_rate</strong><span class="classifier">float, default=3e-4</span></dt><dd><p>Initial learning rate.</p>
 </dd>
-<dt><strong>learning_rate</strong><span class="classifier">float, default=1e-4</span></dt><dd><p>Initial learning rate.</p>
+<dt><strong>weight_decay</strong><span class="classifier">float, default=5e-4</span></dt><dd><p>Weight decay in the optimizer.</p>
 </dd>
-<dt><strong>lr_scheduler</strong><span class="classifier">LRSchedulerPLType or class or None, default=None</span></dt><dd><p>Learning rate scheduler to use.</p>
+<dt><strong>exclude_bias_and_norm_wd</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the bias terms and normalization layers get weight decay during
+optimization or not.</p>
 </dd>
-<dt><strong>lr_scheduler_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Additional keyword arguments for the scheduler.</p>
-<p>Ignored if <cite>lr_scheduler</cite> is instantiated.</p>
+<dt><strong>optimizer_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Extra named arguments for the optimizer.</p>
+</dd>
+<dt><strong>lr_scheduler</strong><span class="classifier">{“none”, “warmup_cosine”}, LRSchedulerPLType or None,        default=”warmup_cosine”</span></dt><dd><p>Learning rate scheduler to use.</p>
+</dd>
+<dt><strong>lr_scheduler_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Extra named arguments for the scheduler. By default, it is set to
+{“warmup_epochs”: 10, “warmup_start_lr”: 1e-6, “min_lr”: 0.0,
+“interval”: “step”}</p>
 </dd>
 <dt><strong>**kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments for the BaseEstimator class, such as
 <cite>max_epochs</cite>, <cite>max_steps</cite>, <cite>num_sanity_val_steps</cite>,
@@ -493,7 +485,8 @@ exponential decay rates for first and second moment estimates.</p>
 <dd class="field-even"><dl class="simple">
 <dt><strong>encoder</strong><span class="classifier">torch.nn.Module</span></dt><dd><p>Deep neural network mapping input data to low-dimensional vectors.</p>
 </dd>
-<dt><strong>projection_head</strong><span class="classifier">torch.nn.Module</span></dt><dd><p>Maps encoder output to latent space for contrastive loss optimization.</p>
+<dt><strong>projection_head</strong><span class="classifier">torch.nn.Module</span></dt><dd><p>Projector that maps encoder output to latent space for loss
+optimization.</p>
 </dd>
 <dt><strong>loss</strong><span class="classifier">BarlowTwinsLoss</span></dt><dd><p>The BarlowTwins loss function used for training.</p>
 </dd>
@@ -507,7 +500,8 @@ exponential decay rates for first and second moment estimates.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rf18316f97edd-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>)</span>
 <p>Zbontar, J., et al., “Barlow Twins: Self-Supervised Learning
 via Redundancy Reduction.” PMLR, 2021.
 hhttps://proceedings.mlr.press/v139/zbontar21a</p>
@@ -515,81 +509,32 @@ hhttps://proceedings.mlr.press/v139/zbontar21a</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'nidl.estimators.ssl.utils.projection_heads.BarlowTwinsProjectionHead'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_head_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L147"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/barlowtwins.py#L145"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.all_gather_and_flatten">
-<span class="sig-name descname"><span class="pre">all_gather_and_flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L405"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.all_gather_and_flatten" title="Link to this definition">¶</a></dt>
-<dd><p>Gathers the tensor from all devices and flattens batch dimension.</p>
-<p>This is useful when gathering tensors without adding extra dimensions.
-It handles some edge cases, such as when using a single GPU.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>tensor: torch.Tensor or None</strong></dt><dd><p>The tensor to gather. If None, it is returned as is.</p>
-</dd>
-<dt><strong>**kwargs: dict</strong></dt><dd><p>Additional keyword arguments for <cite>self.all_gather</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>tensor: torch.Tensor</dt><dd><p>The gathered and flattened tensor.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.configure_optimizers">
-<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L347"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.configure_optimizers" title="Link to this definition">¶</a></dt>
-<dd><p>Instantiate the required optimizer and setup the scheduler.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.parse_batch">
-<span class="sig-name descname"><span class="pre">parse_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L314"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.parse_batch" title="Link to this definition">¶</a></dt>
-<dd><p>Parses the batch to extract the two views and the auxiliary
-variable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>batch: Any</strong></dt><dd><p>Parse a batch input and return V1, V2.
-The batch is:</p>
-<ul class="simple">
-<li><p>(V1, V2): two views of the same sample.</p></li>
-</ul>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>V1</strong><span class="classifier">torch.Tensor</span></dt><dd><p>First view of the input.</p>
-</dd>
-<dt><strong>V2</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Second view of the input.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/barlowtwins.py#L308"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.configure_optimizers" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the optimizer and learning rate scheduler in Barlow
+Twins.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.test_step">
-<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.test_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/barlowtwins.py#L275"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.test_step" title="Link to this definition">¶</a></dt>
 <dd><p>Skip the test step.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.training_step">
-<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.training_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/barlowtwins.py#L210"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.training_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one training step and computes training loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>batch: Any</strong></dt><dd><p>A batch of data that has been generated from train_dataloader.
-It is a pair of <cite>torch.Tensor</cite> (V1, V2).</p>
+<dt><strong>batch: Sequence[Any]</strong></dt><dd><p>A batch of data from the train dataloader. Supported formats are
+<code class="docutils literal notranslate"><span class="pre">[X1,</span> <span class="pre">X2]</span></code> or <code class="docutils literal notranslate"><span class="pre">([X1,</span> <span class="pre">X2],</span> <span class="pre">y)</span></code>, where <code class="docutils literal notranslate"><span class="pre">X1</span></code> and <code class="docutils literal notranslate"><span class="pre">X2</span></code> are
+tensors representing two augmented views of the same samples.</p>
 </dd>
 <dt><strong>batch_idx: int</strong></dt><dd><p>The index of the current batch (ignored).</p>
 </dd>
@@ -599,7 +544,15 @@ It is a pair of <cite>torch.Tensor</cite> (V1, V2).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>loss: Tensor</dt><dd><p>Training loss computed on this batch of data.</p>
+<dt><strong>outputs</strong><span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Dictionary containing:</dt><dd><ul class="simple">
+<li><p>“loss”: the Barlow Twins loss computed on this batch;</p></li>
+<li><p>“z1”: tensor of shape <cite>(batch_size, n_features)</cite>;</p></li>
+<li><p>“z2”: tensor of shape <cite>(batch_size, n_features)</cite>;</p></li>
+<li><p>“y”: eventual targets (returned as is).</p></li>
+</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
@@ -608,7 +561,7 @@ It is a pair of <cite>torch.Tensor</cite> (V1, V2).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.transform_step">
-<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L285"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.transform_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/barlowtwins.py#L279"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.transform_step" title="Link to this definition">¶</a></dt>
 <dd><p>Encode the input data into the latent space.</p>
 <p>Importantly, we do not apply the projection head here since it is
 not part of the final model at inference time (only used for training).</p>
@@ -635,19 +588,31 @@ This is given as is to the encoder.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.BarlowTwins.validation_step">
-<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/barlowtwins.py#L242"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.validation_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/barlowtwins.py#L243"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.BarlowTwins.validation_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one validation step and computes validation loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>batch: Any</strong></dt><dd><p>A batch of data that has been generated from val_dataloader.
-It is a pair of <cite>torch.Tensor</cite> (V1, V2)
-where V1 and V2 are the two views of the same
-sample.</p>
+<dt><strong>batch: Sequence[Any]</strong></dt><dd><p>A batch of data from the validation dataloader. Supported formats
+are <code class="docutils literal notranslate"><span class="pre">[X1,</span> <span class="pre">X2]</span></code> or <code class="docutils literal notranslate"><span class="pre">([X1,</span> <span class="pre">X2],</span> <span class="pre">y)</span></code>.</p>
 </dd>
 <dt><strong>batch_idx: int</strong></dt><dd><p>The index of the current batch (ignored).</p>
 </dd>
 <dt><strong>dataloader_idx: int, default=0</strong></dt><dd><p>The index of the dataloader (ignored).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>outputs</strong><span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Dictionary containing:</dt><dd><ul class="simple">
+<li><p>“loss”: the Barlow Twins loss computed on this batch;</p></li>
+<li><p>“z1”: tensor of shape <cite>(batch_size, n_features)</cite></p></li>
+<li><p>“z2”: tensor of shape <cite>(batch_size, n_features)</cite></p></li>
+<li><p>“y”: eventual targets (returned as is)</p></li>
+</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
@@ -726,9 +691,7 @@ sample.</p>
 <li><a class="reference internal" href="#">nidl.estimators.ssl.BarlowTwins</a><ul>
 <li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins"><code class="docutils literal notranslate"><span class="pre">BarlowTwins</span></code></a><ul>
 <li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins.__init__"><code class="docutils literal notranslate"><span class="pre">BarlowTwins.__init__</span></code></a></li>
-<li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins.all_gather_and_flatten"><code class="docutils literal notranslate"><span class="pre">BarlowTwins.all_gather_and_flatten</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">BarlowTwins.configure_optimizers</span></code></a></li>
-<li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins.parse_batch"><code class="docutils literal notranslate"><span class="pre">BarlowTwins.parse_batch</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins.test_step"><code class="docutils literal notranslate"><span class="pre">BarlowTwins.test_step</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins.training_step"><code class="docutils literal notranslate"><span class="pre">BarlowTwins.training_step</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.BarlowTwins.transform_step"><code class="docutils literal notranslate"><span class="pre">BarlowTwins.transform_step</span></code></a></li>

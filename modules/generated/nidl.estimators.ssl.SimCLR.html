@@ -397,7 +397,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.ssl.SimCLR<a class="headerlink" href="#nidl-estimators-ssl-simclr" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">SimCLR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L21"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">SimCLR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/simclr.py#L28"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.TransformerMixin.html#nidl.estimators.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
 <p>SimCLR <a class="reference internal" href="#rfa9275c25f8b-1" id="id1">[1]</a>.</p>
 <p>SimCLR is a contrastive learning framework for self-supervised
@@ -408,46 +408,82 @@ images. Once trained, the encoder can be reused for downstream tasks such
 as classification or regression.</p>
 <p>The model consists of:</p>
 <ul class="simple">
-<li><p>A base encoder <cite>f</cite> (e.g., a CNN), which extracts representation vectors.</p></li>
-<li><p>A projection head <cite>g</cite>, which maps representations into a space where the
+<li><p>A base encoder (e.g., a CNN), which extracts representation vectors.</p></li>
+<li><p>A projection head, which maps representations into a space where the
 contrastive objective is applied.</p></li>
 </ul>
 <p>During training, two augmented versions of each input are encoded into
 two latent vectors. The objective is to maximize their similarity
 while minimizing the similarity to all other samples in the batch. This is
 achieved with the InfoNCE loss <a class="reference internal" href="#rfa9275c25f8b-2" id="id2">[2]</a>, <a class="reference internal" href="#rfa9275c25f8b-3" id="id3">[3]</a>.</p>
-<p>After training, the projection head <cite>g</cite> is discarded, and the encoder <cite>f</cite>
-serves as a pretrained feature extractor. This is because <cite>f</cite> provides
-representations that transfer better to downstream tasks than those from
-<cite>g</cite>.</p>
-<dl class="field-list simple">
+<p>After training, the projection head is discarded, and the encoder serves
+as a pretrained feature extractor.</p>
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>encoder: nn.Module</strong></dt><dd><p>the encoder <cite>f</cite>. It must store the size of the encoded one-dimensional
-feature vector in a <cite>latent_size</cite> parameter.</p>
+<dd class="field-odd"><dl>
+<dt><strong>encoder</strong><span class="classifier">nn.Module or class of nn.Module</span></dt><dd><p>The encoder architecture. It can be given as an already instantiated
+module or as a class of module (in which case it will be instantiated
+with <cite>encoder_kwargs</cite>). It must be compatible with its projection head,
+i.e. its output dimension.</p>
 </dd>
-<dt><strong>hidden_dims: list of str</strong></dt><dd><p>the projector <cite>g</cite> with an MLP architecture.</p>
+<dt><strong>encoder_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Options for building the encoder (depends on each architecture).
+Ignored if <cite>encoder</cite> is instantiated.</p>
 </dd>
-<dt><strong>lr: float</strong></dt><dd><p>the learning rate.</p>
+<dt><strong>proj_input_dim</strong><span class="classifier">int, default=2048</span></dt><dd><p>Projector input dimension. It must be consistent with encoder’s
+output dimension.</p>
 </dd>
-<dt><strong>temperature: float</strong></dt><dd><p>the SimCLR loss temperature parameter.</p>
+<dt><strong>proj_hidden_dim</strong><span class="classifier">int, default=2048</span></dt><dd><p>Projector hidden dimension.</p>
 </dd>
-<dt><strong>weight_decay: float</strong></dt><dd><p>the Adam optimizer weight decay parameter.</p>
+<dt><strong>proj_output_dim</strong><span class="classifier">int, default=128</span></dt><dd><p>Projector output dimension.</p>
 </dd>
-<dt><strong>max_epochs: int, default=None</strong></dt><dd><p>optionaly, use a CosineAnnealingLR scheduler.</p>
+<dt><strong>temperature</strong><span class="classifier">float, default=0.1</span></dt><dd><p>The InfoNCE loss temperature parameter.</p>
 </dd>
-<dt><strong>random_state: int, default=None</strong></dt><dd><p>setting a seed for reproducibility.</p>
+<dt><strong>optimizer</strong><span class="classifier">{‘sgd’, ‘adam’, ‘adamW’} or torch.optim.Optimizer or type, </span></dt><dd><p>default=”adamW”
+Optimizer for training the model. If a string is given, it can be:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘sgd’: Stochastic Gradient Descent (with optional momentum).</p></li>
+<li><p>‘adam’: First-order gradient-based optimizer.</p></li>
+<li><p>‘adamW’ (default): Adam with decoupled weight decay
+regularization (see “Decoupled Weight Decay Regularization”,
+Loshchilov and Hutter, ICLR 2019).</p></li>
+</ul>
+</div></blockquote>
 </dd>
-<dt><strong>kwargs: dict</strong></dt><dd><p>Keyword arguments to be passed to the
-<a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a> constructor.</p>
+<dt><strong>learning_rate</strong><span class="classifier">float, default=3e-4</span></dt><dd><p>Initial learning rate.</p>
+</dd>
+<dt><strong>weight_decay</strong><span class="classifier">float, default=5e-4</span></dt><dd><p>Weight decay in the optimizer.</p>
+</dd>
+<dt><strong>exclude_bias_and_norm_wd</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the bias terms and normalization layers get weight decay during
+optimization or not.</p>
+</dd>
+<dt><strong>optimizer_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Extra named arguments for the optimizer.</p>
+</dd>
+<dt><strong>lr_scheduler</strong><span class="classifier">{“none”, “warmup_cosine”}, LRSchedulerPLType or None,</span></dt><dd><p>default=”warmup_cosine”
+Learning rate scheduler to use.</p>
+</dd>
+<dt><strong>lr_scheduler_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Extra named arguments for the scheduler. By default, it is set to
+{“warmup_epochs”: 10, “warmup_start_lr”: 1e-6, “min_lr”: 0.0,
+“interval”: “step”}</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments for the BaseEstimator class, such as
+<cite>max_epochs</cite>, <cite>max_steps</cite>, <cite>num_sanity_val_steps</cite>,
+<cite>check_val_every_n_epoch</cite>, <cite>callbacks</cite>, etc.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>f</strong></dt><dd><p>a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> containing the encoder.</p>
+<dt><strong>encoder</strong><span class="classifier">torch.nn.Module</span></dt><dd><p>Deep neural network mapping input data to low-dimensional vectors.</p>
 </dd>
-<dt><strong>g</strong></dt><dd><p>a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> containing the projection head.</p>
+<dt><strong>projection_head</strong><span class="classifier">torch.nn.Module</span></dt><dd><p>Projector that maps encoder output to latent space for loss
+optimization.</p>
+</dd>
+<dt><strong>loss</strong><span class="classifier">InfoNCE</span></dt><dd><p>The InfoNCE loss function used for training.</p>
+</dd>
+<dt><strong>optimizer</strong><span class="classifier">torch.optim.Optimizer</span></dt><dd><p>Optimizer used for training.</p>
+</dd>
+<dt><strong>lr_scheduler</strong><span class="classifier">LRSchedulerPLType or None</span></dt><dd><p>Learning rate scheduler used for training.</p>
 </dd>
 </dl>
 </dd>
@@ -473,58 +509,31 @@ Loss Objective”, NIPS 2016.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L87"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/simclr.py#L131"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.all_gather_and_flatten">
-<span class="sig-name descname"><span class="pre">all_gather_and_flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L268"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.all_gather_and_flatten" title="Link to this definition">¶</a></dt>
-<dd><p>Gathers the tensor from all devices and flattens batch dimension.</p>
-<p>This is useful when gathering tensors without adding extra dimensions.
-It handles some edge cases, such as when using a single GPU.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>tensor: torch.Tensor</strong></dt><dd><p>The tensor to gather.</p>
-</dd>
-<dt><strong>**kwargs: dict</strong></dt><dd><p>Additional keyword arguments for <cite>self.all_gather</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>tensor: torch.Tensor</dt><dd><p>The gathered and flattened tensor.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.configure_optimizers">
-<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L133"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.configure_optimizers" title="Link to this definition">¶</a></dt>
-<dd><p>Declare a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.optim.AdamW.html#torch.optim.AdamW" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdamW</span></code></a> optimizer and, optionally
-a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.optim.lr_scheduler.CosineAnnealingLR.html#torch.optim.lr_scheduler.CosineAnnealingLR" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">CosineAnnealingLR</span></code></a> learning rate
-scheduler if <code class="docutils literal notranslate"><span class="pre">max_epochs</span></code> is set.</p>
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/simclr.py#L297"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.configure_optimizers" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the optimizer and learning rate scheduler in SimCLR.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.test_step">
-<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L235"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.test_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/simclr.py#L264"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.test_step" title="Link to this definition">¶</a></dt>
 <dd><p>Skip the test step.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.training_step">
-<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L156"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.training_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/simclr.py#L199"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.training_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one training step and computes training loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>batch: Any</strong></dt><dd><p>A batch of data that has been generated from train_dataloader.
-It should be a pair of <cite>torch.Tensor</cite> (V1, V2) where V1 and V2
-are the two views of the same sample. They must have equal first
-dimensions.</p>
+<dt><strong>batch: Sequence[Any]</strong></dt><dd><p>A batch of data from the train dataloader. Supported formats are
+<code class="docutils literal notranslate"><span class="pre">[X1,</span> <span class="pre">X2]</span></code> or <code class="docutils literal notranslate"><span class="pre">([X1,</span> <span class="pre">X2],</span> <span class="pre">y)</span></code>, where <code class="docutils literal notranslate"><span class="pre">X1</span></code> and <code class="docutils literal notranslate"><span class="pre">X2</span></code> are
+tensors representing two augmented views of the same samples.</p>
 </dd>
 <dt><strong>batch_idx: int</strong></dt><dd><p>The index of the current batch (ignored).</p>
 </dd>
@@ -534,7 +543,15 @@ dimensions.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>loss: Tensor</dt><dd><p>Training loss computed on this batch of data.</p>
+<dt><strong>outputs</strong><span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Dictionary containing:</dt><dd><ul class="simple">
+<li><p>“loss”: the InfoNCE loss computed on this batch (scalar);</p></li>
+<li><p>“z1”: tensor of shape <cite>(batch_size, n_features)</cite>;</p></li>
+<li><p>“z2”: tensor of shape <cite>(batch_size, n_features)</cite>;</p></li>
+<li><p>“y”: eventual targets (returned as is).</p></li>
+</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
@@ -543,7 +560,7 @@ dimensions.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.transform_step">
-<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L239"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.transform_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/simclr.py#L268"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.transform_step" title="Link to this definition">¶</a></dt>
 <dd><p>Encode the input data into the latent space.</p>
 <p>Importantly, we do not apply the projection head here since it is
 not part of the final model at inference time (only used for training).</p>
@@ -570,17 +587,31 @@ This is given as is to the encoder.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.SimCLR.validation_step">
-<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/simclr.py#L199"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.validation_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/simclr.py#L232"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.SimCLR.validation_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one validation step and computes validation loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>batch: Any</strong></dt><dd><p>A batch of data that has been generated from val_dataloader.
-It should be a pair of <cite>torch.Tensor</cite> (V1, V2).</p>
+<dt><strong>batch: Sequence[Any]</strong></dt><dd><p>A batch of data from the validation dataloader. Supported formats
+are <code class="docutils literal notranslate"><span class="pre">[X1,</span> <span class="pre">X2]</span></code> or <code class="docutils literal notranslate"><span class="pre">([X1,</span> <span class="pre">X2],</span> <span class="pre">y)</span></code>.</p>
 </dd>
 <dt><strong>batch_idx: int</strong></dt><dd><p>The index of the current batch (ignored).</p>
 </dd>
 <dt><strong>dataloader_idx: int, default=0</strong></dt><dd><p>The index of the dataloader (ignored).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>outputs</strong><span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Dictionary containing:</dt><dd><ul class="simple">
+<li><p>“loss”: the InfoNCE loss computed on this batch (scalar);</p></li>
+<li><p>“z1”: tensor of shape <cite>(batch_size, n_features)</cite>;</p></li>
+<li><p>“z2”: tensor of shape <cite>(batch_size, n_features)</cite>;</p></li>
+<li><p>“y”: eventual targets (returned as is).</p></li>
+</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
@@ -665,7 +696,6 @@ It should be a pair of <cite>torch.Tensor</cite> (V1, V2).</p>
 <li><a class="reference internal" href="#">nidl.estimators.ssl.SimCLR</a><ul>
 <li><a class="reference internal" href="#nidl.estimators.ssl.SimCLR"><code class="docutils literal notranslate"><span class="pre">SimCLR</span></code></a><ul>
 <li><a class="reference internal" href="#nidl.estimators.ssl.SimCLR.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLR.__init__</span></code></a></li>
-<li><a class="reference internal" href="#nidl.estimators.ssl.SimCLR.all_gather_and_flatten"><code class="docutils literal notranslate"><span class="pre">SimCLR.all_gather_and_flatten</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.SimCLR.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">SimCLR.configure_optimizers</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.SimCLR.test_step"><code class="docutils literal notranslate"><span class="pre">SimCLR.test_step</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.SimCLR.training_step"><code class="docutils literal notranslate"><span class="pre">SimCLR.training_step</span></code></a></li>

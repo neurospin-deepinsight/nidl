@@ -395,7 +395,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.ssl.DINO<a class="headerlink" href="#nidl-estimators-ssl-dino" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">DINO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_bottleneck_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_norm_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.996</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L26"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.</span></span><span class="sig-name descname"><span class="pre">DINO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_bottleneck_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_norm_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.996</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L26"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.TransformerMixin.html#nidl.estimators.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
 <p>DINO <a class="reference internal" href="#rf531b9701544-1" id="id1">[1]</a>.</p>
 <p>DINO (self-Distillation with NO labels) is a self-supervised learning
@@ -412,52 +412,52 @@ features.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>encoder: nn.Module or class</strong></dt><dd><p>Architecture of the encoder. A PyTorch <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.11.0a0+gitf365425 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>
+<dt><strong>encoder</strong><span class="classifier">nn.Module or class</span></dt><dd><p>Architecture of the encoder. A PyTorch <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+gita60570a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>
 is expected. In general, the uninstantiated class should be passed,
 although instantiated modules will also work.</p>
 </dd>
-<dt><strong>encoder_kwargs: dict or None, default=None</strong></dt><dd><p>Options for building the encoder (depends on each architecture).
+<dt><strong>encoder_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Options for building the encoder (depends on each architecture).
 Ignored if <cite>encoder</cite> is already instantiated.</p>
 </dd>
-<dt><strong>proj_input_dim: int, default=2048</strong></dt><dd><p>Projector input dimension. It must be consistent with encoder’s
+<dt><strong>proj_input_dim</strong><span class="classifier">int, default=2048</span></dt><dd><p>Projector input dimension. It must be consistent with encoder’s
 output dimension.</p>
 </dd>
-<dt><strong>proj_hidden_dim: int, default=2048</strong></dt><dd><p>Projector hidden dimension.</p>
+<dt><strong>proj_hidden_dim</strong><span class="classifier">int, default=2048</span></dt><dd><p>Projector hidden dimension.</p>
 </dd>
-<dt><strong>proj_bottleneck_dim: int, default=256</strong></dt><dd><p>Projector bottleneck dimension.</p>
+<dt><strong>proj_bottleneck_dim</strong><span class="classifier">int, default=256</span></dt><dd><p>Projector bottleneck dimension.</p>
 </dd>
-<dt><strong>proj_output_dim: int, default=4096</strong></dt><dd><p>Projector output dimension.</p>
+<dt><strong>proj_output_dim</strong><span class="classifier">int, default=4096</span></dt><dd><p>Projector output dimension.</p>
 </dd>
-<dt><strong>proj_batch_norm: bool, default=True</strong></dt><dd><p>Whether to use batch norm or not in projector.
+<dt><strong>proj_batch_norm</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether to use batch norm or not in projector.
 Should be set to False when using a vision transformer backbone.</p>
 </dd>
-<dt><strong>proj_norm_last_layer: bool, default=True</strong></dt><dd><p>Whether or not to weight normalize the last layer of the DINO head.
+<dt><strong>proj_norm_last_layer</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether or not to weight normalize the last layer of the DINO head.
 Not normalizing leads to better performance but can make the
 training unstable.</p>
 </dd>
-<dt><strong>num_local_crops: int, default=8</strong></dt><dd><p>Number of local views.</p>
+<dt><strong>num_local_crops</strong><span class="classifier">int, default=8</span></dt><dd><p>Number of local views.</p>
 </dd>
-<dt><strong>student_temperature: float, default=0.1</strong></dt><dd><p>Temperature for the student.</p>
+<dt><strong>student_temperature</strong><span class="classifier">float, default=0.1</span></dt><dd><p>Temperature for the student.</p>
 </dd>
-<dt><strong>teacher_temperature: float, default=0.07</strong></dt><dd><p>Final temperature for the teacher.</p>
+<dt><strong>teacher_temperature</strong><span class="classifier">float, default=0.07</span></dt><dd><p>Final temperature for the teacher.</p>
 </dd>
-<dt><strong>warmup_teacher_temp: float, default=0.04</strong></dt><dd><p>Initial temperature for the teacher network.</p>
+<dt><strong>warmup_teacher_temp</strong><span class="classifier">float, default=0.04</span></dt><dd><p>Initial temperature for the teacher network.</p>
 </dd>
-<dt><strong>warmup_teacher_temp_epochs: int, default=30</strong></dt><dd><p>Number of epochs for the warmup phase of the teacher temperature.</p>
+<dt><strong>warmup_teacher_temp_epochs</strong><span class="classifier">int, default=30</span></dt><dd><p>Number of epochs for the warmup phase of the teacher temperature.</p>
 </dd>
-<dt><strong>base_lambda: float, default=0.996</strong></dt><dd><p>Base value for the weighting coefficient in the teacher momentum
+<dt><strong>base_lambda</strong><span class="classifier">float, default=0.996</span></dt><dd><p>Base value for the weighting coefficient in the teacher momentum
 update with exponential moving average. A cosine annealing scheme is
 used.</p>
 </dd>
-<dt><strong>final_lambda: float, default=1.0</strong></dt><dd><p>Final value for the weighting coefficient in the teacher momentum
+<dt><strong>final_lambda</strong><span class="classifier">float, default=1.0</span></dt><dd><p>Final value for the weighting coefficient in the teacher momentum
 update.</p>
 </dd>
-<dt><strong>clip_grad: float, default=0.0</strong></dt><dd><p>Threshold for gradient clipping. Null value means no clipping.</p>
+<dt><strong>clip_grad</strong><span class="classifier">float, default=0.0</span></dt><dd><p>Threshold for gradient clipping. Null value means no clipping.</p>
 </dd>
-<dt><strong>freeze_last_layer: int, default=0</strong></dt><dd><p>Number of epochs during which the last layer in student’s projection
+<dt><strong>freeze_last_layer</strong><span class="classifier">int, default=0</span></dt><dd><p>Number of epochs during which the last layer in student’s projection
 head is frozen.</p>
 </dd>
-<dt><strong>optimizer: {‘sgd’, ‘adam’, ‘adamW’} or Optimizer, default=”adamW”</strong></dt><dd><p>Optimizer for training the model. If a string is given, it can be:</p>
+<dt><strong>optimizer</strong><span class="classifier">{‘sgd’, ‘adam’, ‘adamW’} or Optimizer, default=”adamW”</span></dt><dd><p>Optimizer for training the model. If a string is given, it can be:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>‘sgd’: Stochastic Gradient Descent (with optional momentum).</p></li>
@@ -470,20 +470,20 @@ Loshchilov and Hutter, ICLR 2019).</p></li>
 </dd>
 <dt><strong>learning_rate</strong><span class="classifier">float, default=3e-4</span></dt><dd><p>Initial learning rate.</p>
 </dd>
-<dt><strong>weight_decay: float, default=5e-4</strong></dt><dd><p>Weight decay in the optimizer.</p>
+<dt><strong>weight_decay</strong><span class="classifier">float, default=5e-4</span></dt><dd><p>Weight decay in the optimizer.</p>
 </dd>
-<dt><strong>exclude_bias_and_norm_wd: bool, default=True</strong></dt><dd><p>Whether the bias terms and normalization layers get weight decay during
+<dt><strong>exclude_bias_and_norm_wd</strong><span class="classifier">bool, default=True</span></dt><dd><p>Whether the bias terms and normalization layers get weight decay during
 optimization or not.</p>
 </dd>
 <dt><strong>optimizer_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Extra named arguments for the optimizer.</p>
 </dd>
-<dt><strong>lr_scheduler: {“none”, “warmup_cosine”}, LRSchedulerPLType or None,        default=”warmup_cosine”</strong></dt><dd><p>Learning rate scheduler to use.</p>
+<dt><strong>lr_scheduler</strong><span class="classifier">{“none”, “warmup_cosine”}, LRSchedulerPLType or None,        default=”warmup_cosine”</span></dt><dd><p>Learning rate scheduler to use.</p>
 </dd>
-<dt><strong>lr_scheduler_kwargs: dict or None, default=None</strong></dt><dd><p>Extra named arguments for the scheduler. By default, it is set to
+<dt><strong>lr_scheduler_kwargs</strong><span class="classifier">dict or None, default=None</span></dt><dd><p>Extra named arguments for the scheduler. By default, it is set to
 {“warmup_epochs”: 10, “warmup_start_lr”: 1e-6, “min_lr”: 0.0,
 “interval”: “step”}</p>
 </dd>
-<dt><strong>**kwargs: dict, optional</strong></dt><dd><p>Extra named arguments for the BaseEstimator class (given to
+<dt><strong>**kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Extra named arguments for the BaseEstimator class (given to
 PL Trainer), such as <cite>max_epochs</cite>, <cite>max_steps</cite>, <cite>num_sanity_val_steps</cite>,
 <cite>check_val_every_n_epoch</cite>, <cite>callbacks</cite>, etc.
 See the PL <a class="reference external" href="https://lightning.ai/docs/pytorch/stable/common/trainer.html#trainer-class-api">Trainer API</a>
@@ -525,36 +525,36 @@ Transformers” ICCV, 2021. <a class="reference external" href="https://arxiv.or
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_bottleneck_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_norm_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.996</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L152"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_bottleneck_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_norm_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_teacher_temp_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.996</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_last_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adamW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_bias_and_norm_wd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warmup_cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.configure_optimizers">
-<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L472"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.configure_optimizers" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L440"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.configure_optimizers" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize the optimizer and learning rate scheduler in DINO.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.forward_student">
-<span class="sig-name descname"><span class="pre">forward_student</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L292"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.forward_student" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward_student</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L293"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.forward_student" title="Link to this definition">¶</a></dt>
 <dd><p>Forward global + local views through student.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.forward_teacher">
-<span class="sig-name descname"><span class="pre">forward_teacher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L305"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.forward_teacher" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward_teacher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L306"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.forward_teacher" title="Link to this definition">¶</a></dt>
 <dd><p>Forward global views only through teacher.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.on_after_backward">
-<span class="sig-name descname"><span class="pre">on_after_backward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L341"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.on_after_backward" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_after_backward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L342"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.on_after_backward" title="Link to this definition">¶</a></dt>
 <dd><p>Performs gradient clipping and last layer freeze if required.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.on_train_batch_end">
-<span class="sig-name descname"><span class="pre">on_train_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L315"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.on_train_batch_end" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_train_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L316"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.on_train_batch_end" title="Link to this definition">¶</a></dt>
 <dd><p>Performs the teacher momentum update.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -571,42 +571,16 @@ Transformers” ICCV, 2021. <a class="reference external" href="https://arxiv.or
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.parse_batch">
-<span class="sig-name descname"><span class="pre">parse_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L430"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.parse_batch" title="Link to this definition">¶</a></dt>
-<dd><p>Parses the batch to extract</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>batch: Sequence[Any]</strong></dt><dd><p>A batch of data in the format [X] or ([X], Y) where [X]
-is a list of torch.Tensor containing <cite>num_large_crops</cite>
-global views (first elements) and <cite>num_local_crops</cite> local
-views (last elements). <cite>Y</cite> are labels.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>X</strong><span class="classifier">list of torch.Tensor</span></dt><dd><p>List of tensors containing large crops as first elements
-and small crops as last elements.</p>
-</dd>
-<dt><strong>y</strong><span class="classifier">torch.Tensor or None</span></dt><dd><p>Eventual targets.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.test_step">
-<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L397"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.test_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L407"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.test_step" title="Link to this definition">¶</a></dt>
 <dd><p>Skip the test step.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.training_step">
-<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L244"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.training_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L242"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.training_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one training step and computes training loss.</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>batch: Sequence[Any]</strong></dt><dd><p>A batch of data in the format [X] or ([X], Y) where [X]
@@ -621,18 +595,18 @@ views (last elements). <cite>Y</cite> are labels (ignored).</p>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl>
-<dt>outputs: dict</dt><dd><p>Dictionary containing:</p>
-<blockquote>
-<div><ul class="simple">
+<dd class="field-even"><dl class="simple">
+<dt>outputs: dict</dt><dd><dl class="simple">
+<dt>Dictionary containing:</dt><dd><ul class="simple">
 <li><p>“loss”: the DINO loss computed on this batch (scalar);</p></li>
-<li><p>“Z_student”: tensor of shape
-<cite>(n_views, batch_size, n_features)</cite></p></li>
-<li><p>“Z_teacher”: tensor of shape
-<cite>(n_global_views, batch_size, n_features)</cite></p></li>
-<li><p>“y”: eventual targets (returned as is)</p></li>
+<li><p>“z_student”: tensor of shape
+<cite>(n_views, batch_size, n_features)</cite>;</p></li>
+<li><p>“z_teacher”: tensor of shape
+<cite>(n_global_views, batch_size, n_features)</cite>;</p></li>
+<li><p>“y”: eventual targets (returned as is).</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
@@ -641,7 +615,7 @@ views (last elements). <cite>Y</cite> are labels (ignored).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.transform_step">
-<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L401"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.transform_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L411"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.transform_step" title="Link to this definition">¶</a></dt>
 <dd><p>Encode the input data into the latent space.</p>
 <p>Importantly, we do not apply the projection head here since it is
 not part of the final model at inference time (only used for training).</p>
@@ -668,7 +642,7 @@ This is given as is to the encoder.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.DINO.validation_step">
-<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/11ff8d1/nidl/estimators/ssl/dino.py#L353"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.validation_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/dino.py#L354"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.DINO.validation_step" title="Link to this definition">¶</a></dt>
 <dd><p>Perform one validation step and computes validation loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -686,8 +660,17 @@ views (last elements). <cite>Y</cite> are labels (ignored).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>outputs: dict</dt><dd><p>Dictionary with “val_loss”, “Z_student”, “Z_teacher” and “y” as
-keys</p>
+<dt>outputs: dict</dt><dd><dl class="simple">
+<dt>Dictionary containing:</dt><dd><ul class="simple">
+<li><p>“loss”: the DINO loss computed on this batch (scalar);</p></li>
+<li><p>“z_student”: tensor of shape
+<cite>(n_views, batch_size, n_features)</cite>;</p></li>
+<li><p>“z_teacher”: tensor of shape
+<cite>(n_global_views, batch_size, n_features)</cite>;</p></li>
+<li><p>“y”: eventual targets.</p></li>
+</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
@@ -765,7 +748,6 @@ keys</p>
 <li><a class="reference internal" href="#nidl.estimators.ssl.DINO.forward_teacher"><code class="docutils literal notranslate"><span class="pre">DINO.forward_teacher</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.DINO.on_after_backward"><code class="docutils literal notranslate"><span class="pre">DINO.on_after_backward</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.DINO.on_train_batch_end"><code class="docutils literal notranslate"><span class="pre">DINO.on_train_batch_end</span></code></a></li>
-<li><a class="reference internal" href="#nidl.estimators.ssl.DINO.parse_batch"><code class="docutils literal notranslate"><span class="pre">DINO.parse_batch</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.DINO.test_step"><code class="docutils literal notranslate"><span class="pre">DINO.test_step</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.DINO.training_step"><code class="docutils literal notranslate"><span class="pre">DINO.training_step</span></code></a></li>
 <li><a class="reference internal" href="#nidl.estimators.ssl.DINO.transform_step"><code class="docutils literal notranslate"><span class="pre">DINO.transform_step</span></code></a></li>
