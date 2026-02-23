@@ -48,7 +48,7 @@ from nidl.transforms import MultiViewsTransform
 # %%
 # We define some global parameters that will be used throughout the notebook:
 data_dir = "/tmp/mnist"
-batch_size = 128
+batch_size = 256
 num_workers = 10
 latent_size = 32
 
@@ -246,7 +246,7 @@ model = SupervisedCrossEntropy(
     lr=1e-2,
     momentum=0.9,
     max_epochs=10,
-    check_val_every_n_epoch=1,
+    check_val_every_n_epoch=2,
     enable_checkpointing=False,
     callbacks=callback,  # <-- key part for metrics computation
 )
@@ -286,18 +286,22 @@ scalars = {m: ea.Scalars(m) for m in metrics}
 # %%
 # Once all the metrics are loaded, we plot them as the number of training steps
 # increases:
+num_metrics = len(scalars)
+fig, axes = plt.subplots(1, num_metrics, figsize=(3 * num_metrics, 3))
 
-plt.figure(figsize=(5, 3))
-for m, events in scalars.items():
+for ax, (metric_name, events) in zip(axes, scalars.items()):
     steps = [e.step for e in events]
     values = [e.value for e in events]
-    plt.plot(steps, values, label=m)
-plt.xlabel(f"Nb steps (batch size={batch_size})")
-plt.ylabel("Metric score")
-plt.title("Classification scores on MNIST (test)")
-plt.legend()
-plt.show()
 
+    ax.plot(steps, values, marker="o", linestyle="-")
+    ax.set_title(metric_name.split("/")[0].capitalize())
+    ax.set_xlabel(f"Steps (batch size={batch_size})")
+    ax.set_ylabel(metric_name)
+    ax.grid(True, alpha=0.3)
+
+plt.suptitle("Supervised metrics during training", fontsize="x-large")
+plt.tight_layout()
+plt.show()
 
 # %%
 # Unsupervised contrastive learning with metrics callback
@@ -327,21 +331,14 @@ contrast_transforms = transforms.Compose(
 )
 
 # %%
-# We create a custom dataset that returns only the images (without labels).
+# We create a MNIST dataset that returns multiple views of the same image.
 
-
-class SSL_MNIST(MNIST):
-    def __getitem__(self, index):
-        img, _ = super().__getitem__(index)
-        return img
-
-
-ssl_dataset = SSL_MNIST(
+ssl_dataset = MNIST(
     data_dir,
     download=True,
     transform=MultiViewsTransform(contrast_transforms, n_views=2),
 )
-test_ssl_dataset = SSL_MNIST(
+test_ssl_dataset = MNIST(
     data_dir,
     download=True,
     train=False,
@@ -380,21 +377,23 @@ callback = MetricsCallback(
         "contrastive_acc": contrastive_accuracy_score,
     },
     needs={
-        "alignment": ["Z1", "Z2"],
-        "uniformity": {"z": lambda out: concat((out["Z1"], out["Z2"]))},
-        "contrastive_acc": ["Z1", "Z2"],
+        "alignment": ["z1", "z2"],
+        "uniformity": {"z": lambda out: concat((out["z1"], out["z2"]))},
+        "contrastive_acc": ["z1", "z2"],
     },
-    every_n_train_steps=1,
+    every_n_train_steps=None,
     every_n_val_epochs=2,
 )
 
 model = SimCLR(
     encoder=LeNet(num_classes=latent_size),
-    hidden_dims=[latent_size, 32],
-    lr=3e-4,
+    proj_input_dim=latent_size,
+    proj_hidden_dim=latent_size,
+    proj_output_dim=32,
+    learning_rate=3e-4,
     temperature=0.1,
     weight_decay=5e-5,
-    max_epochs=30,
+    max_epochs=10,
     enable_checkpointing=False,
     callbacks=callback,  # <-- key part for metrics computation
 )

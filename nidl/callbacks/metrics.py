@@ -614,7 +614,7 @@ class MetricsCollection:
             return False
         return not (
             isinstance(needs, dict)
-            and any(isinstance(v, dict) for v in needs.values())
+            and any(isinstance(v, (dict, list)) for v in needs.values())
         )
 
     def _parse_and_filter_outputs(self, outputs, metric_name=None):
@@ -648,6 +648,11 @@ class MetricsCollection:
             kwargs = {}
             for arg_name, key_or_fn in mapping.items():
                 if isinstance(key_or_fn, str):
+                    if key_or_fn not in outputs:
+                        raise KeyError(
+                            f"Output key `{key_or_fn}` not found in model's "
+                            f"outputs for metric `{metric_name}`"
+                        )
                     value = outputs[key_or_fn]
                 elif callable(key_or_fn):
                     value = key_or_fn(outputs)
@@ -701,7 +706,7 @@ class MetricsCollection:
                 "Provide `needs`."
             )
         if any(p.kind is inspect.Parameter.VAR_KEYWORD for p in params):
-            raise Warning(
+            raise RuntimeError(
                 f"{target.__name__} has **kwargs; these arguments cannot be "
                 "inferred.\n"
             )
