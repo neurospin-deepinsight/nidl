@@ -53,7 +53,7 @@ class Weights:
             ns_id, _ = self.hub_split(name)
             self.weight_file = self.ns_download(data_dir, ns_id, filepath)
         else:
-            self.weight_file = Path(self.name)
+            self.weight_file = Path(self.name) / self.filepath
         assert self.weight_file.is_file(), (
             f"Invalid weights '{self.weight_file}'"
         )
