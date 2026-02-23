@@ -45,4 +45,5 @@ Functions for all self-supervised metrics.
     uniformity_score
     contrastive_accuracy_score
     procrustes_similarity
+    procrustes_r2
     kruskal_similarity

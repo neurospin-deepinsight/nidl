@@ -8,8 +8,6 @@
 
 import numpy as np
 import torch
-import sklearn
-
 
 def alignment_score(
     z1, z2, normalize: bool = True, alpha: int = 2, eps: float = 1e-12
@@ -342,125 +340,205 @@ def contrastive_accuracy_score(
         acc_21 = hits_21.mean()
         return 0.5 * (acc_12 + acc_21)
 
-def procrustes_similarity(X, Y, euclidean = False) -> float:
+def procrustes_similarity(X, Y) -> float:
     """
-    Procrustes similarity between two point clouds / embeddings.
+    Procrustes similarity between two point clouds / embeddings in the Euclidean case, when scale matters,
+    i.e. when points are considered in Euclidean space.
+    Computes the best fit for the regression problem Y = ΩX where Ω is orthogonal,
+    and returns the Frobenius cosine between the ΩX and Y.
+
+    https://en.wikipedia.org/wiki/Orthogonal_Procrustes_problem
 
     Parameters
     ----------
-    X : array or torch.Tensor, shape (n, d1)
-    Y : array or torch.Tensor, shape (n, d2)
-    Same number of rows (points), possibly different feature dims.
-    euclidean : bool
-    If True, compute the R2 of the best orthogonal transformation mapping X to Y (best if X and Y are in Euclidean space)
-    If False, compute the maximum Frobenius cosine of the best orthogonal transformation mapping X to Y (best if X and Y are on a hypersphere).
+    X : np.ndarray or torch.Tensor, shape (n, d1)
+    Y : np.ndarray or torch.Tensor, shape (n, d2)
 
     Returns
     -------
     sim : float
-    In [0, 1]. 1 means X and Y are identical up to translation + (possibly reflection) orthogonal transform (+ scale if Euclidean == False).
+        In [0, 1]. 1 means that X and Y are identical up to translation + orthogonal transform + global scaling.
     """
-    if isinstance(X, torch.Tensor):
-        X = X.detach().cpu().numpy()
-    if isinstance(Y, torch.Tensor):
-        Y = Y.detach().cpu().numpy()
 
-    X = np.asarray(X, dtype=np.float64)
-    Y = np.asarray(Y, dtype=np.float64)
+    # --- Type handling -------------------------------------------------------
+    if not isinstance(X, torch.Tensor):
+        try:
+            X = torch.as_tensor(X)
+        except:
+            raise TypeError(f"X must be numeric and array-like")
+    if not isinstance(Y, torch.Tensor):
+        try:
+            Y = torch.as_tensor(Y)
+        except:
+            raise TypeError(f"Y must be numeric and array-like")
+                
+    X = X.to(X.device, dtype=torch.float64)
+    Y = Y.to(X.device, dtype=torch.float64)
 
+    # --- Shape checks ---------------------------------------------------------
     if X.ndim != 2 or Y.ndim != 2:
-        raise ValueError("X and Y must be 2D arrays.")
+        raise ValueError("X and Y must be 2D.")
     if X.shape[0] != Y.shape[0]:
-        raise ValueError(f"X and Y must have same n (rows). Got {X.shape[0]} and {Y.shape[0]}.")
+        raise ValueError(
+            f"X and Y must have same number of rows. Got {X.shape[0]} and {Y.shape[0]}."
+        )
 
-    # Center (translation invariance)
-    Xc = X - X.mean(axis=0, keepdims=True)
-    Yc = Y - Y.mean(axis=0, keepdims=True)
+    # Normalize
+    Xn = torch.nn.functional.normalize(X)
+    Yn = torch.nn.functional.normalize(Y)
 
     # Frobenius norms (scale)
-    nx = np.linalg.norm(Xc, ord="fro")
-    ny = np.linalg.norm(Yc, ord="fro")
+    nx = np.linalg.norm(Xn, ord="fro")
+    ny = np.linalg.norm(Yn, ord="fro")
 
-    # Degenerate cases: if one cloud is constant after centering, similarity undefined -> 0.0
-    if np.isclose(nx, 0) or np.isclose(ny, 0):
+    # DegeneratFrobeniuse cases: if one cloud is constant after centering, similarity undefined -> 0.0
+    if np.isclose(float(nx * ny), 0):
         return 0.0
 
-    if euclidean:
-        # Cross-covariance
-        M = Xc.T @ Yc
+    # Cross-covariance-like matrix
+    M = Xn.T @ Yn # shape (d1, d2)
 
-        # SVD
-        U, _, Vt = np.linalg.svd(M, full_matrices=False)
-        R = U @ Vt  # optimal orthogonal transform
+    # Nuclear norm = sum of singular values
+    # (handles rectangular M naturally; no padding needed)
+    _, svals, _ = torch.linalg.svd(M)
+    nuc = float(svals.sum())
 
-        # Compute optimal alignment error
-        sim = sklearn.metrics.r2_score(y_true = Yc, y_pred =  Xc @ R, multioutput="variance_weighted")
-
-    else:
-        # Cross-covariance-like matrix
-        M = Xc.T @ Yc # shape (d1, d2)
-
-        # Nuclear norm = sum of singular values
-        # (handles rectangular M naturally; no padding needed)
-        svals = np.linalg.svd(M, compute_uv=False)
-        nuc = float(svals.sum())
-
-        sim = nuc / (nx * ny)
+    sim = nuc / (nx * ny)
     
     # Clamp to [0,1] for numerical safety
-    sim = np.clip(sim, 0, 1)
-    
-    return float(sim)
+    sim = float(np.clip(sim, 0.0, 1.0))
 
-def kruskal_similarity(X, Y, euclidean = False) -> float:
+    return sim
+
+def procrustes_r2(X, Y) -> float:
+    """
+    Procrustes similarity between two point clouds / embeddings in the Euclidean case, when scale does not matter,
+    i.e. points are considered on the unit hypersphere.
+    Computes the best fit for the regression problem Y = ΩX + b where Ω is orthogonal,
+    and returns the variance-weighted R^2 of that fit.
+
+    https://en.wikipedia.org/wiki/Orthogonal_Procrustes_problem
+
+    Parameters
+    ----------
+    X : np.ndarray or torch.Tensor, shape (n, d1)
+    Y : np.ndarray or torch.Tensor, shape (n, d2)
+
+    Returns
+    -------
+    sim : float
+        In (-∞, 1]. 1 means that X and Y are nearly identical up to translation + orthogonal transform + scaling.
+    """
+
+    # --- Type handling -------------------------------------------------------
+    if not isinstance(X, torch.Tensor):
+        try:
+            X = torch.as_tensor(X)
+        except:
+            raise TypeError(f"X must be numeric and array-like")
+    if not isinstance(Y, torch.Tensor):
+        try:
+            Y = torch.as_tensor(Y)
+        except:
+            raise TypeError(f"Y must be numeric and array-like")
+                
+    X = X.to(X.device, dtype=torch.float64)
+    Y = Y.to(X.device, dtype=torch.float64)
+
+    # --- Shape checks ---------------------------------------------------------
+    if X.ndim != 2 or Y.ndim != 2:
+        raise ValueError("X and Y must be 2D.")
+    if X.shape[0] != Y.shape[0]:
+        raise ValueError(
+            f"X and Y must have same number of rows. Got {X.shape[0]} and {Y.shape[0]}."
+        )
+
+    # Center
+    Xc = X - X.mean(dim=0, keepdim=True)
+    Yc = Y - Y.mean(dim=0, keepdim=True)
+
+    # Degenerate case
+    if torch.isclose(torch.norm(Yc, p="fro"), torch.tensor(0.0, dtype=torch.float64)):
+        return 0.0
+
+    # SVD-based orthogonal Procrustes
+    M = Xc.T @ Yc
+    U, _, Vh = torch.linalg.svd(M, full_matrices=False)
+    R = U @ Vh
+
+    Yhat = Xc @ R
+
+    # Variance-weighted R^2
+    ss_res = torch.sum(torch.linalg.norm(Yc - Yhat, dim=1))
+    ss_tot = torch.sum(torch.linalg.norm(Yc, dim=1))
+
+    return 1 - float(ss_res / ss_tot)
+
+def kruskal_similarity(X, Y, spherical = False) -> float:
     """
     Kruskal similarity between two point clouds / embeddings.
     This essentially a scaled version of Kruskal's stress, generalized to account for either Euclidean distance or cosine similarity
+    https://en.wikipedia.org/wiki/Multidimensional_scaling#Non-metric_multidimensional_scaling_(NMDS)
 
     Parameters
     ----------
     X : array or torch.Tensor, shape (n, d1)
     Y : array or torch.Tensor, shape (n, d2)
-    Same number of rows (points), possibly different feature dims.
-    euclidean : bool
-    If True, compare Euclidean distances
-    If False, compare cosine similarities
+        Same number of rows (points), possibly different feature dims.
+    spherical : bool
+        If False, compare Euclidean distances
+        If True, compare cosine similarities
 
     Returns
     -------
     sim : float
-    In [0, 1]. 1 means X and Y are identical (after normalization if Euclidean == True) up to a Euclidean isometry.
+        In (-∞, 1]. 1 means X and Y are identical (after normalization if spherical == True) up to Euclidean isometry.
     """
-    if isinstance(X, np.ndarray):
-        X = torch.Tensor(X)
-    if isinstance(Y, np.ndarray):
-        Y = torch.Tensor(Y)
 
+    # --- Type handling -------------------------------------------------------
+    if not isinstance(X, torch.Tensor):
+        try:
+            X = torch.as_tensor(X)
+        except:
+            raise TypeError(f"X must be numeric and array-like")
+    if not isinstance(Y, torch.Tensor):
+        try:
+            Y = torch.as_tensor(Y)
+        except:
+            raise TypeError(f"Y must be numeric and array-like")
+                
+    X = X.to(X.device, dtype=torch.float64)
+    Y = Y.to(X.device, dtype=torch.float64)
+
+    # --- Shape checks ---------------------------------------------------------
     if X.ndim != 2 or Y.ndim != 2:
-        raise ValueError("X and Y must be 2D arrays.")
+        raise ValueError("X and Y must be 2D.")
     if X.shape[0] != Y.shape[0]:
-        raise ValueError(f"X and Y must have same n (rows). Got {X.shape[0]} and {Y.shape[0]}.")
+        raise ValueError(
+            f"X and Y must have same number of rows. Got {X.shape[0]} and {Y.shape[0]}."
+        )
     
     N = X.shape[0]
     
-    if euclidean:
-        D_X = torch.cdist(X, X)
-        D_Y = torch.cdist(Y, Y)
-    else:
-        X_norm = torch.nn.functional.normalize(X)
-        Y_norm = torch.nn.functional.normalize(Y)
+    if not spherical:
+        Xc = X - X.mean(dim=0, keepdim=True)
+        Yc = Y - Y.mean(dim=0, keepdim=True)
 
-        D_X = X_norm @ X_norm.T
-        D_Y = Y_norm @ Y_norm.T
+        D_X = torch.cdist(Xc, Xc)
+        D_Y = torch.cdist(Yc, Yc)
+    else:
+        Xn = torch.nn.functional.normalize(X)
+        Yn = torch.nn.functional.normalize(Y)
+
+        D_X = Xn @ Xn.T
+        D_Y = Yn @ Yn.T
 
     idxs_1, idxs_2 = torch.triu_indices(N, N, offset=1)
 
     D_X = D_X[idxs_1, idxs_2]
     D_Y = D_Y[idxs_1, idxs_2]
 
-    sim = sklearn.metrics.r2_score(y_pred = D_X, y_true = D_Y)
-    
-    # Clamp to [0,1] for numerical safety
-    sim = np.clip(sim, 0, 1)
-    
-    return float(sim)
+    ss_res = torch.sum(torch.linalg.norm(D_X - D_Y))
+    ss_tot = torch.sum(torch.linalg.norm(D_Y - torch.mean(D_Y)))
+
+    return 1 - float(ss_res / ss_tot)

@@ -15,6 +15,7 @@ from nidl.metrics import (  # <-- change this to your actual module path
     uniformity_score,
     contrastive_accuracy_score,
     procrustes_similarity,
+    procrustes_r2,
     kruskal_similarity
 )
 
@@ -209,41 +210,38 @@ def random_orthogonal_matrix(n):
     
     return Q
 
-class TestProcrustesSimilarity(unittest.TestCase):
+class TestProcrustes(unittest.TestCase):
     def dim_type_mismatch_raises(self):
         z1 = np.random.uniform((4, 3, 2))
         z2 = np.random.uniform((4, 3))
         with self.assertRaises(ValueError):
             procrustes_similarity(z1, z2)
+        with self.assertRaises(ValueError):
+            procrustes_r2(z1, z2)
 
     def length_mismatch_raises(self):
         z1 = np.random.uniform((10, 3))
         z2 = np.random.uniform((9,3))
         with self.assertRaises(ValueError):
             procrustes_similarity(z1, z2)
+        with self.assertRaises(ValueError):
+            procrustes_r2(z1, z2)
 
-    def test_unscaled_isometry(self):
+    def test(self):
        Q = random_orthogonal_matrix(4)
        X = np.random.uniform(size=(100, 4))
 
-       Y = X @ Q + 1
-       Y = np.hstack([Y, np.zeros((100, 2))]) + 10
+       Y = X @ Q
+       Y = np.hstack([Y, np.zeros((100, 2))])
        
-       self.assertAlmostEqual(procrustes_similarity(X, Y, euclidean=True), 1.0, places=7)
-       self.assertAlmostEqual(procrustes_similarity(X, Y, euclidean=False), 1.0, places=7)
+       for c in (2, 3, 10):
+           self.assertAlmostEqual(procrustes_similarity(X, c*Y), 1.0, places=7)
+           self.assertAlmostEqual(procrustes_r2(X, Y+c), 1.0, places=7)
 
+           self.assertNotAlmostEqual(procrustes_r2(X, c * Y), 1.0, places=7)
+           self.assertNotAlmostEqual(procrustes_similarity(X, Y+c), 1.0, places=7)
 
-    def test_scaled_isometry(self):
-       Q = random_orthogonal_matrix(4)
-       X = np.random.uniform(size=(100, 4))
-
-       Y = X @ Q + 1
-       Y = 1.5 * np.hstack([Y, np.zeros((100, 2))]) + 10
-       
-       self.assertNotEqual(procrustes_similarity(X, Y, euclidean=True), 1.0)
-       self.assertAlmostEqual(procrustes_similarity(X, Y, euclidean=False), 1.0, places=7)
-
-class TestKruskalSimilarity(unittest.TestCase):
+class TestKruskal(unittest.TestCase):
     def dim_type_mismatch_raises(self):
         z1 = np.random.uniform((4, 3, 2))
         z2 = np.random.uniform((4, 3))
@@ -263,9 +261,9 @@ class TestKruskalSimilarity(unittest.TestCase):
        Y = X @ Q
        Y = np.hstack([Y, np.zeros((100, 2))])
        
-       self.assertAlmostEqual(procrustes_similarity(X, Y, euclidean=True), 1.0, places=7)
-       self.assertAlmostEqual(procrustes_similarity(X, Y + 10, euclidean=True), 1.0, places=7)
-       self.assertNotAlmostEqual(procrustes_similarity(X, 3*Y + 10, euclidean=True), 1.0, places=7)
+       self.assertAlmostEqual(kruskal_similarity(X, Y, spherical=False), 1.0, places=7)
+       self.assertAlmostEqual(kruskal_similarity(X, Y + 10, spherical=False), 1.0, places=7)
+       self.assertNotAlmostEqual(kruskal_similarity(X, 3*Y + 10, spherical=False), 1.0, places=7)
 
 
     def test_spherical_isometry(self):
@@ -274,9 +272,9 @@ class TestKruskalSimilarity(unittest.TestCase):
 
        Y = X @ Q
        
-       self.assertAlmostEqual(procrustes_similarity(X, Y, euclidean=False), 1.0, places=7)
-       self.assertAlmostEqual(procrustes_similarity(X, 3 * Y, euclidean=False), 1.0, places=7)
-       self.assertAlmostEqual(procrustes_similarity(X, Y+1, euclidean=False), 1.0, places=7)
+       self.assertAlmostEqual(kruskal_similarity(X, Y, spherical=True), 1.0, places=7)
+       self.assertAlmostEqual(kruskal_similarity(X, 3 * Y, spherical=True), 1.0, places=7)
+       self.assertNotAlmostEqual(kruskal_similarity(X, Y+1, spherical=True), 1.0, places=7)
 
 
 if __name__ == "__main__":
