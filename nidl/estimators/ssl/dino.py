@@ -5,19 +5,20 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
-import copy
-import logging
 from collections.abc import Sequence
 from typing import Any, Optional, Union
 
 import torch
-import torch.nn as nn
 from pytorch_lightning.utilities.types import LRSchedulerPLType
+from torch import nn
 from torch.optim import Optimizer
 
 from ...losses import DINOLoss
 from ..base import BaseEstimator, TransformerMixin
+from .utils.data_parsing import parse_multi_crops_batch
+from .utils.encoder import build_encoder
 from .utils.momentum import MomentumUpdater, initialize_momentum_params
 from .utils.optimizer import configure_ssl_optimizers
 from .utils.projection_heads import DINOProjectionHead
@@ -41,52 +42,52 @@ class DINO(TransformerMixin, BaseEstimator):
 
     Parameters
     ----------
-    encoder: nn.Module or class
+    encoder : nn.Module or class
         Architecture of the encoder. A PyTorch :class:`~torch.nn.Module`
         is expected. In general, the uninstantiated class should be passed,
         although instantiated modules will also work.
-    encoder_kwargs: dict or None, default=None
+    encoder_kwargs : dict or None, default=None
         Options for building the encoder (depends on each architecture).
         Ignored if `encoder` is already instantiated.
-    proj_input_dim: int, default=2048
+    proj_input_dim : int, default=2048
         Projector input dimension. It must be consistent with encoder's
         output dimension.
-    proj_hidden_dim: int, default=2048
+    proj_hidden_dim : int, default=2048
         Projector hidden dimension.
-    proj_bottleneck_dim: int, default=256
+    proj_bottleneck_dim : int, default=256
         Projector bottleneck dimension.
-    proj_output_dim: int, default=4096
+    proj_output_dim : int, default=4096
         Projector output dimension.
-    proj_batch_norm: bool, default=True
+    proj_batch_norm : bool, default=True
         Whether to use batch norm or not in projector.
         Should be set to False when using a vision transformer backbone.
-    proj_norm_last_layer: bool, default=True
+    proj_norm_last_layer : bool, default=True
         Whether or not to weight normalize the last layer of the DINO head.
         Not normalizing leads to better performance but can make the
         training unstable.
-    num_local_crops: int, default=8
+    num_local_crops : int, default=8
         Number of local views.
-    student_temperature: float, default=0.1
+    student_temperature : float, default=0.1
         Temperature for the student.
-    teacher_temperature: float, default=0.07
+    teacher_temperature : float, default=0.07
         Final temperature for the teacher.
-    warmup_teacher_temp: float, default=0.04
+    warmup_teacher_temp : float, default=0.04
         Initial temperature for the teacher network.
-    warmup_teacher_temp_epochs: int, default=30
+    warmup_teacher_temp_epochs : int, default=30
         Number of epochs for the warmup phase of the teacher temperature.
-    base_lambda: float, default=0.996
+    base_lambda : float, default=0.996
         Base value for the weighting coefficient in the teacher momentum
         update with exponential moving average. A cosine annealing scheme is
         used.
-    final_lambda: float, default=1.0
+    final_lambda : float, default=1.0
         Final value for the weighting coefficient in the teacher momentum
         update.
-    clip_grad: float, default=0.0
+    clip_grad : float, default=0.0
         Threshold for gradient clipping. Null value means no clipping.
-    freeze_last_layer: int, default=0
+    freeze_last_layer : int, default=0
         Number of epochs during which the last layer in student's projection
         head is frozen.
-    optimizer: {'sgd', 'adam', 'adamW'} or Optimizer, default="adamW"
+    optimizer : {'sgd', 'adam', 'adamW'} or Optimizer, default="adamW"
         Optimizer for training the model. If a string is given, it can be:
 
             - 'sgd': Stochastic Gradient Descent (with optional momentum).
@@ -96,21 +97,21 @@ class DINO(TransformerMixin, BaseEstimator):
               Loshchilov and Hutter, ICLR 2019).
     learning_rate : float, default=3e-4
         Initial learning rate.
-    weight_decay: float, default=5e-4
+    weight_decay : float, default=5e-4
         Weight decay in the optimizer.
-    exclude_bias_and_norm_wd: bool, default=True
+    exclude_bias_and_norm_wd : bool, default=True
         Whether the bias terms and normalization layers get weight decay during
         optimization or not.
     optimizer_kwargs : dict or None, default=None
         Extra named arguments for the optimizer.
-    lr_scheduler: {"none", "warmup_cosine"}, LRSchedulerPLType or None,\
+    lr_scheduler : {"none", "warmup_cosine"}, LRSchedulerPLType or None,\
         default="warmup_cosine"
         Learning rate scheduler to use.
-    lr_scheduler_kwargs: dict or None, default=None
+    lr_scheduler_kwargs : dict or None, default=None
         Extra named arguments for the scheduler. By default, it is set to
         {"warmup_epochs": 10, "warmup_start_lr": 1e-6, "min_lr": 0.0,
         "interval": "step"}
-    **kwargs: dict, optional
+    **kwargs : dict, optional
         Extra named arguments for the BaseEstimator class (given to
         PL Trainer), such as `max_epochs`, `max_steps`, `num_sanity_val_steps`,
         `check_val_every_n_epoch`, `callbacks`, etc.
@@ -135,7 +136,6 @@ class DINO(TransformerMixin, BaseEstimator):
         Optimizer used for training.
     lr_scheduler: LRSchedulerPLType or None
         Learning rate scheduler used for training.
-
 
     Notes
     -----
@@ -187,10 +187,9 @@ class DINO(TransformerMixin, BaseEstimator):
 
         super().__init__(**kwargs, ignore=ignore)
 
-        self.student = self._build_encoder(encoder, encoder_kwargs)
-        self.teacher = self._build_encoder(
-            encoder, encoder_kwargs, deepcopy=True
-        )
+        self.parse_batch = parse_multi_crops_batch
+        self.student = build_encoder(encoder, encoder_kwargs)
+        self.teacher = build_encoder(encoder, encoder_kwargs, deepcopy=True)
         # Copy student params to teacher + no_grad for teacher.
         initialize_momentum_params(self.student, self.teacher)
 
@@ -265,25 +264,28 @@ class DINO(TransformerMixin, BaseEstimator):
         -------
         outputs: dict
             Dictionary containing:
-
                 - "loss": the DINO loss computed on this batch (scalar);
-                - "Z_student": tensor of shape
-                  `(n_views, batch_size, n_features)`
-                - "Z_teacher": tensor of shape
-                  `(n_global_views, batch_size, n_features)`
-                - "y": eventual targets (returned as is)
+                - "z_student": tensor of shape
+                  `(n_views, batch_size, n_features)`;
+                - "z_teacher": tensor of shape
+                  `(n_global_views, batch_size, n_features)`;
+                - "y": eventual targets (returned as is).
         """
-        X, y = self.parse_batch(batch)
+        X, y = self.parse_batch(
+            batch,
+            device=self.device,
+            num_large_crops=self.num_large_crops,
+            num_local_crops=self.num_local_crops,
+        )
+        z_student = self.forward_student(X)
+        z_teacher = self.forward_teacher(X)
 
-        Z_student = self.forward_student(X)
-        Z_teacher = self.forward_teacher(X)
-
-        loss = self.loss(Z_teacher, Z_student, epoch=self.current_epoch)
+        loss = self.loss(z_teacher, z_student, epoch=self.current_epoch)
         self.log("loss/train", loss, prog_bar=True, sync_dist=True)
         outputs = {
             "loss": loss,
-            "Z_student": Z_student.detach(),
-            "Z_teacher": Z_teacher.detach(),
+            "z_student": z_student.detach(),
+            "z_teacher": z_teacher.detach(),
             "y": y.detach() if y is not None else None,
         }
         # Returns everything needed for further logging/metrics computation
@@ -370,25 +372,34 @@ class DINO(TransformerMixin, BaseEstimator):
         dataloader_idx: int, default=0
             The index of the dataloader (ignored).
 
-
         Returns
         -------
         outputs: dict
-            Dictionary with "val_loss", "Z_student", "Z_teacher" and "y" as
-            keys
+            Dictionary containing:
+                - "loss": the DINO loss computed on this batch (scalar);
+                - "z_student": tensor of shape
+                  `(n_views, batch_size, n_features)`;
+                - "z_teacher": tensor of shape
+                  `(n_global_views, batch_size, n_features)`;
+                - "y": eventual targets.
         """
 
-        X, y = self.parse_batch(batch)
+        X, y = self.parse_batch(
+            batch,
+            device=self.device,
+            num_large_crops=self.num_large_crops,
+            num_local_crops=self.num_local_crops,
+        )
 
-        Z_student = self.forward_student(X)
-        Z_teacher = self.forward_teacher(X)
+        z_student = self.forward_student(X)
+        z_teacher = self.forward_teacher(X)
 
-        loss = self.loss(Z_teacher, Z_student, epoch=self.current_epoch)
-        self.log("loss/val", loss, prog_bar=True, sync_dist=True)
+        val_loss = self.loss(z_teacher, z_student, epoch=self.current_epoch)
+        self.log("loss/val", val_loss, prog_bar=True, sync_dist=True)
         outputs = {
-            "val_loss": loss,
-            "Z_student": Z_student.detach(),
-            "Z_teacher": Z_teacher.detach(),
+            "loss": val_loss,
+            "z_student": z_student.detach(),
+            "z_teacher": z_teacher.detach(),
             "y": y.detach() if y is not None else None,
         }
         # Returns everything needed for further logging/metrics computation
@@ -396,7 +407,7 @@ class DINO(TransformerMixin, BaseEstimator):
 
     def test_step(self, batch, batch_idx):
         """Skip the test step."""
-        return None
+        return
 
     def transform_step(
         self,
@@ -427,48 +438,6 @@ class DINO(TransformerMixin, BaseEstimator):
         """
         return self.encoder(batch)
 
-    def parse_batch(self, batch: Sequence[Any]):
-        """Parses the batch to extract
-
-        Parameters
-        ----------
-        batch: Sequence[Any]
-            A batch of data in the format [X] or ([X], Y) where [X]
-            is a list of torch.Tensor containing `num_large_crops`
-            global views (first elements) and `num_local_crops` local
-            views (last elements). `Y` are labels.
-
-        Returns
-        -------
-        X : list of torch.Tensor
-            List of tensors containing large crops as first elements
-            and small crops as last elements.
-        y : torch.Tensor or None
-            Eventual targets.
-
-        """
-        n_total_views = self.num_large_crops + self.num_local_crops
-        if (
-            isinstance(batch, Sequence)
-            and len(batch) == 2
-            and len(batch[0]) == n_total_views
-        ):
-            X, y = batch
-        elif isinstance(batch, Sequence) and len(batch) == n_total_views:
-            X, y = batch, None
-        else:
-            raise ValueError(
-                "batch should be a pair `([X], y)` or a sequence `[X]` "
-                f"where `X` is a list of {n_total_views} tensors "
-                f"representing {self.num_large_crops} large crops and "
-                f"{self.num_local_crops} local crops. Got {type(batch)} with "
-                f"length {len(batch)}."
-            )
-        X = [x.to(self.device) for x in X]
-        if y is not None:
-            y = y.to(self.device)
-        return X, y
-
     def configure_optimizers(self):
         """Initialize the optimizer and learning rate scheduler in DINO."""
         params = [
@@ -486,37 +455,6 @@ class DINO(TransformerMixin, BaseEstimator):
             lr_scheduler=self.lr_scheduler,
             lr_scheduler_kwargs=self.lr_scheduler_kwargs,
         )
-
-    def _build_encoder(
-        self,
-        encoder: Union[str, nn.Module, type[nn.Module]],
-        encoder_kwargs: dict[str, Any],
-        deepcopy: bool = False,
-    ) -> nn.Module:
-        """Initiatize an encoder.
-
-        Notes
-        -----
-        The encoder is returned "as is" (no copy) if `encoder` is a
-        `torch.nn.Module` instantiated and `deepcopy=False`.
-
-        """
-        if isinstance(encoder, nn.Module):
-            if encoder_kwargs is not None and len(encoder_kwargs) > 0:
-                logging.getLogger(__name__).warning(
-                    "encoder is already instantiated, ignoring "
-                    "'encoder_kwargs'"
-                )
-            if deepcopy:  # No better way to do this currently.
-                return copy.deepcopy(encoder)
-        elif isinstance(encoder, type) and issubclass(encoder, nn.Module):
-            encoder = encoder(**encoder_kwargs)
-        else:
-            raise ValueError(
-                f"Encoder must be a string, a PyTorch nn.Module, or a class "
-                f"inheriting from nn.Module, got {type(encoder)}"
-            )
-        return encoder
 
     def _fill_default_lr_scheduler_kwargs(self):
         if self.lr_scheduler_kwargs is None:

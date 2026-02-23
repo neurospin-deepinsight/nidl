@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import abc
 from collections.abc import Mapping, Sequence
@@ -12,7 +13,6 @@ from typing import Any, Callable, Optional, Union
 
 import pytorch_lightning as pl
 import torch
-import torch.utils.data as data
 from pytorch_lightning.accelerators import Accelerator
 from pytorch_lightning.callbacks import Callback
 from pytorch_lightning.strategies import Strategy
@@ -23,6 +23,7 @@ from pytorch_lightning.utilities.types import (
     _METRIC,
     STEP_OUTPUT,
 )
+from torch.utils import data
 from torchmetrics import MetricCollection
 
 from ..utils.validation import _estimator_is, available_if, check_is_fitted
@@ -59,6 +60,10 @@ class BaseEstimator(pl.LightningModule):
         ``check_val_every_n_epoch=None``, which validates after every ``N``
         training batches across epochs or during iteration-based training.
         Default: ``1.0``.
+    num_sanity_val_steps: int, default=None
+        Sanity check runs n validation batches before starting the training
+        routine. Set it to `-1` to run all batches in all validation
+        dataloaders. Default: ``2``.
     max_epochs: int, default=None
         stop training once this number of epochs is reached. If both
         max_epochs and max_steps are not specified, defaults to
@@ -103,6 +108,8 @@ class BaseEstimator(pl.LightningModule):
         precision (32, '32' or '32-true'), 16bit mixed precision (16, '16',
         '16-mixed') or bfloat16 mixed precision ('bf16', 'bf16-mixed').
         Can be used on CPU, GPU, TPUs, or HPUs.
+    save_hparams: bool, default=True
+        Whether to save the hyper-parameters of this estimator or not.
     ignore: list of str, default=None
         Attributes to be ignored when saving the hyperparameters of the
         estimator. This is particularly useful for ignoring
@@ -138,6 +145,7 @@ class BaseEstimator(pl.LightningModule):
         callbacks: Optional[Union[list[Callback], Callback]] = None,
         check_val_every_n_epoch: Optional[int] = 1,
         val_check_interval: Optional[Union[int, float]] = None,
+        num_sanity_val_steps: Optional[int] = None,
         max_epochs: Optional[int] = None,
         min_epochs: Optional[int] = None,
         max_steps: int = -1,
@@ -150,16 +158,19 @@ class BaseEstimator(pl.LightningModule):
         devices: Union[list[int], str, int] = "auto",
         num_nodes: int = 1,
         precision: Optional[_PRECISION_INPUT] = None,
+        save_hparams: bool = True,
         ignore: Optional[Sequence[str]] = None,
         random_state: Optional[int] = None,
         **kwargs,
     ):
         super().__init__()
-        self.save_hyperparameters(ignore=ignore)
+        if save_hparams:
+            self.save_hyperparameters(ignore=ignore)
         self.fitted_ = False
         self.trainer_params_ = {
             "callbacks": callbacks,
             "check_val_every_n_epoch": check_val_every_n_epoch,
+            "num_sanity_val_steps": num_sanity_val_steps,
             "val_check_interval": val_check_interval,
             "max_epochs": max_epochs,
             "min_epochs": min_epochs,
@@ -598,6 +609,60 @@ class BaseEstimator(pl.LightningModule):
             batch_size=batch_size,
             rank_zero_only=rank_zero_only,
         )
+    
+    def load_state_dict(
+        self,
+        state_dict: Mapping[str, Any],
+        strict: bool = True,
+        assign: bool = False
+    ):
+        """Copy parameters and buffers from :attr:`state_dict` into this
+        module and its descendants.
+
+        If :attr:`strict` is ``True``, then
+        the keys of :attr:`state_dict` must exactly match the keys returned
+        by this module's :meth:`~torch.nn.Module.state_dict` function.
+
+        .. warning::
+            If :attr:`assign` is ``True`` the optimizer must be created after
+            the call to :attr:`load_state_dict` unless
+            :func:`~torch.__future__.get_swap_module_params_on_conversion` is
+            ``True``.
+
+        Parameters
+        ----------
+            state_dict (dict): a dict containing parameters and
+                persistent buffers.
+            strict (bool, optional): whether to strictly enforce that the keys
+                in :attr:`state_dict` match the keys returned by this module's
+                :meth:`~torch.nn.Module.state_dict` function. Default: ``True``
+            assign (bool, optional): When set to ``False``, the properties of
+                the tensors in the current module are preserved whereas setting
+                it to ``True`` preserves properties of the Tensors in the state
+                dict. The only exception is the ``requires_grad`` field of
+                :class:`~torch.nn.Parameter`s for which the value from the
+                module is preserved. Default: ``False``
+
+        Returns
+        -------
+            ``NamedTuple`` with ``missing_keys`` and ``unexpected_keys``
+            fields:
+                * **missing_keys** is a list of str containing any keys that
+                are expected by this module but missing from the provided
+                ``state_dict``.
+                * **unexpected_keys** is a list of str containing the keys that
+                are not expected by this module but present in the provided
+                ``state_dict``.
+
+        Notes
+        -----
+            If a parameter or buffer is registered as ``None`` and its
+            corresponding key exists in :attr:`state_dict`,
+            :meth:`load_state_dict` will raise a ``RuntimeError``.
+        """
+        
+        super().load_state_dict(state_dict, strict, bool)
+        self.fitted_ = True
 
 
 class RegressorMixin:

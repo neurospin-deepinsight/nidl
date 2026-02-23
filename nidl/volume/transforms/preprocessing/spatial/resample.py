@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Iterable
 from numbers import Number
@@ -255,7 +256,7 @@ class Resample(VolumeTransform):
             return Stk.sitkNearestNeighbor
         elif interpolation == "linear":
             return Stk.sitkLinear
-        elif interpolation == "bspline" or interpolation == "cubic":
+        elif interpolation in {"bspline", "cubic"}:
             return Stk.sitkBSpline
         elif interpolation == "gaussian":
             return Stk.sitkGaussian

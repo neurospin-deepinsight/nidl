@@ -9,9 +9,9 @@
 from collections import OrderedDict
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as func
 import torch.utils.checkpoint as cp
+from torch import nn
 
 
 class DenseNet(nn.Module):

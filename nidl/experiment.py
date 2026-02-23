@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import collections
 import copy
@@ -21,21 +22,35 @@ from toml.decoder import InlineTableDict
 
 from .utils import Bunch, print_multicolor
 
-SECTIONS = ("project", "global", "import",
-            "scaler", "transform", "compose", "augmentation", "dataset",
-            "dataloader", "model", "weights", "loss", "optimizer", "probe",
-            "scheduler",
-            "training",
-            "environments")
+SECTIONS = (
+    "project",
+    "global",
+    "import",
+    "scaler",
+    "transform",
+    "compose",
+    "augmentation",
+    "dataset",
+    "dataloader",
+    "model",
+    "weights",
+    "loss",
+    "optimizer",
+    "probe",
+    "scheduler",
+    "training",
+    "environments",
+)
 
 
 def fetch_experiment(
-        expfile: str,
-        selector: Optional[tuple[str]] = None,
-        cv: Optional[tuple[str]] = None,
-        logdir: Optional[str] = None,
-        verbose: int = 0):
-    """ Fetch an experiement from an input configuration file.
+    expfile: str,
+    selector: Optional[tuple[str]] = None,
+    cv: Optional[tuple[str]] = None,
+    logdir: Optional[str] = None,
+    verbose: int = 0,
+):
+    """Fetch an experiement from an input configuration file.
 
     Allowed keys are:
 
@@ -126,12 +141,15 @@ def fetch_experiment(
     config = toml.load(expfile, _dict=collections.OrderedDict)
     for key in config:
         assert key in SECTIONS, f"Unexpected section '{key}'!"
-    settings = {key: config.pop(key) if key in config else None
-                for key in ["project", "import", "global", "environments"]}
+    settings = {
+        key: config.pop(key) if key in config else None
+        for key in ["project", "import", "global", "environments"]
+    }
     selector = selector or []
     for key in selector:
         assert key in settings["environments"], (
-            f"Unexpected environment '{key}'!")
+            f"Unexpected environment '{key}'!"
+        )
     config_env = get_env(settings["global"], settings["import"])
     config = filter_config(config, settings["environments"], selector)
     if verbose > 0:
@@ -143,24 +161,33 @@ def fetch_experiment(
         name = params.pop("interface") if "interface" in params else None
         if name is None:
             raise ValueError(f"No interface defined for '{key}'!")
-        version = (params.pop("interface_version")
-                   if "interface_version" in params else None)
+        version = (
+            params.pop("interface_version")
+            if "interface_version" in params
+            else None
+        )
         if "interface_occurrences" in params:
             params.pop("interface_occurrences")
         params, param_sets = update_params(interfaces, params, config_env)
-        is_cv = (len(params) > 1)
+        is_cv = len(params) > 1
         for _idx, _params in enumerate(params):
             if verbose > 0:
-                print(f"\n[{print_multicolor('Loading', display=False)}] "
-                      f"{name}..."
-                      f"\nParameters\n{'-'*10}")
+                print(
+                    f"\n[{print_multicolor('Loading', display=False)}] "
+                    f"{name}..."
+                    f"\nParameters\n{'-' * 10}"
+                )
                 pprint(dict(_params))
             _key = f"{key}_{_idx}" if is_cv else key
-            if (not is_cv or cv is None or key not in cv_interfaces or
-                    _key in cv):
+            if (
+                not is_cv
+                or cv is None
+                or key not in cv_interfaces
+                or _key in cv
+            ):
                 interfaces[_key], code = load_interface(name, _params, version)
                 if verbose > 0:
-                    print(f"Interface\n{'-'*9}\n{interfaces[_key]}")
+                    print(f"Interface\n{'-' * 9}\n{interfaces[_key]}")
                 if code is not None and logdir is not None:
                     logfile = os.path.join(logdir, name)
                     with open(logfile, "w") as of:
@@ -169,14 +196,13 @@ def fetch_experiment(
             names = [f"{key}_{_idx}" for _idx in range(len(params))]
             _params = dict(zip(names, param_sets))
             interfaces.setdefault("grid", Bunch())[key] = load_interface(
-                    "nidl.utils.Bunch", _params, None)[0]
+                "nidl.utils.Bunch", _params, None
+            )[0]
     return Bunch(**interfaces)
 
 
-def get_env(
-        env: dict,
-        modules: dict) -> dict:
-    """ Dynamically update an environement.
+def get_env(env: dict, modules: dict) -> dict:
+    """Dynamically update an environement.
 
     Parameters
     ----------
@@ -208,20 +234,20 @@ def get_env(
             try:
                 updated_env[key] = eval(attr, globals(), updated_env)
             except Exception as exc:
-                print(f"\n[{print_multicolor('Help', display=False)}]..."
-                      f"\nEnvironment\n{'-'*11}")
+                print(
+                    f"\n[{print_multicolor('Help', display=False)}]..."
+                    f"\nEnvironment\n{'-' * 11}"
+                )
                 pprint(updated_env)
                 raise ValueError(
                     f"Can't find the '{attr}' dynamic global argument. Please "
-                    "check for a typo in your configuration file.") from exc
+                    "check for a typo in your configuration file."
+                ) from exc
     return updated_env
 
 
-def filter_config(
-        config: dict,
-        env: dict,
-        selector: tuple[str]) -> dict:
-    """ Filter configuration based on declared environements and user selector.
+def filter_config(config: dict, env: dict, selector: tuple[str]) -> dict:
+    """Filter configuration based on declared environements and user selector.
 
     Parameters
     ----------
@@ -251,23 +277,28 @@ def filter_config(
             continue
         shared_params, multi_params = {}, []
         for name in params:
-            if (not isinstance(params[name], InlineTableDict) and
-                    isinstance(params[name], collections.OrderedDict)):
+            if not isinstance(params[name], InlineTableDict) and isinstance(
+                params[name], collections.OrderedDict
+            ):
                 assert section in selected_env, (
                     f"Multi-interface '{section}' environments not defined "
-                    "properly!")
+                    "properly!"
+                )
                 if name in selected_env[section]:
                     multi_params.append((name, params[name]))
             else:
                 shared_params[name] = params[name]
-        n_envs = (1 if len(multi_params) == 0 else len(multi_params))
-        multi_envs = (len(multi_params) > 0)
-        if ("interface_occurrences" in params
-                and params["interface_occurrences"] != n_envs):
+        n_envs = 1 if len(multi_params) == 0 else len(multi_params)
+        multi_envs = len(multi_params) > 0
+        if (
+            "interface_occurrences" in params
+            and params["interface_occurrences"] != n_envs
+        ):
             raise ValueError(
                 f"The maximum occurence of the '{section}' interface is not "
                 f"respected: {params['interface_occurrences']} vs. {n_envs}. "
-                "Please update the loaded environments accordingly.")
+                "Please update the loaded environments accordingly."
+            )
         if multi_envs:
             for name, _params in multi_params:
                 _params.update(shared_params)
@@ -276,15 +307,12 @@ def filter_config(
                 else:
                     filter_config[f"{section}_{name}"] = _params
         else:
-           filter_config[section] = shared_params
+            filter_config[section] = shared_params
     return filter_config
 
 
-def update_params(
-        interfaces: dict,
-        params: dict,
-        env: dict) -> dict:
-    """ Replace auto and cv parameters.
+def update_params(interfaces: dict, params: dict, env: dict) -> dict:
+    """Replace auto and cv parameters.
 
     Parameters
     ----------
@@ -312,14 +340,17 @@ def update_params(
                 params[key] = eval(attr, interfaces, env)
             except Exception as exc:
                 interfaces.pop("__builtins__")
-                print(f"\n[{print_multicolor('Help', display=False)}]..."
-                      f"\nEnvironment\n{'-'*11}")
+                print(
+                    f"\n[{print_multicolor('Help', display=False)}]..."
+                    f"\nEnvironment\n{'-' * 11}"
+                )
                 pprint(env)
-                print(f"\nInterfaces\n{'-'*10}")
+                print(f"\nInterfaces\n{'-' * 10}")
                 pprint(interfaces)
                 raise ValueError(
                     f"Can't find the '{attr}' dynamic argument. Please check "
-                    "for a typo in your configuration file.") from exc
+                    "for a typo in your configuration file."
+                ) from exc
             interfaces.pop("__builtins__")
         if isinstance(val, str) and val.startswith("cv|"):
             grid_search_params[key] = params[key]
@@ -327,7 +358,8 @@ def update_params(
         keys = grid_search_params.keys()
         param_sets = [
             dict(zip(keys, values))
-            for values in itertools.product(*grid_search_params.values())]
+            for values in itertools.product(*grid_search_params.values())
+        ]
         _params = []
         for cv_params in param_sets:
             _params.append(copy.deepcopy(params))
@@ -339,11 +371,8 @@ def update_params(
     return params, param_sets
 
 
-def load_interface(
-        name: str,
-        params: dict,
-        version: Optional[str]):
-    """ Load an interface.
+def load_interface(name: str, params: dict, version: Optional[str]):
+    """Load an interface.
 
     Parameters
     ----------
@@ -370,19 +399,25 @@ def load_interface(
         if mod_version is None:
             warnings.warn(
                 f"The '{module_name}' module has no '__version__' parameter!",
-                ImportWarning, stacklevel=2)
+                ImportWarning,
+                stacklevel=2,
+            )
         elif mod_version != version:
             warnings.warn(
                 f"The '{name}' interface has a different version!",
-                ImportWarning, stacklevel=2)
+                ImportWarning,
+                stacklevel=2,
+            )
     mod = importlib.import_module(module_name)
     cls = getattr(mod, class_name)
     assert inspect.isclass(cls), "An interface MUST be defined as a class!"
     try:
         code = inspect.getsource(cls)
-    except Exception:
+    except (OSError, TypeError):
         warnings.warn(
-                f"Impossible to retrieve the '{name}' source code!",
-                ImportWarning, stacklevel=2)
+            f"Impossible to retrieve the '{name}' source code!",
+            ImportWarning,
+            stacklevel=2,
+        )
         code = None
     return cls(**params), code

@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Union
 
@@ -61,7 +62,6 @@ class RandomResizedCrop(VolumeTransform):
         interpolation: str = "linear",
         **kwargs,
     ):
-        """ """
         super().__init__(**kwargs)
 
         self.target_shape = self._parse_shape(target_shape, length=3)

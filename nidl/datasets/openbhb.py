@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from typing import Any, Callable, Optional, Union
 
@@ -739,7 +741,7 @@ class OpenBHB(Dataset):
         elif isinstance(modality, (tuple, list)):
             modality = tuple(modality)
         else:
-            raise ValueError(
+            raise TypeError(
                 f"`modality` must be str or tuple of str, got {modality}"
             )
         if len(modality) == 0:
@@ -768,7 +770,7 @@ class OpenBHB(Dataset):
                 )
             return target
         if not isinstance(target, (tuple, list)):
-            raise ValueError(
+            raise TypeError(
                 "`target` must be str, tuple of str or None, "
                 f"got {type(target)}"
             )

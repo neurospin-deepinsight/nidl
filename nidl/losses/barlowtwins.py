@@ -7,7 +7,7 @@
 ##########################################################################
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class BarlowTwinsLoss(nn.Module):
@@ -21,11 +21,11 @@ class BarlowTwinsLoss(nn.Module):
     two outputs of dimension :math:`D` of the same sample:
 
     .. math::
-        \mathcal{L}_{BT} =
-        \\underbrace{\sum_{i} \\left( 1 - C_{ii} \\right)^{2}
+        \\mathcal{L}_{BT} =
+        \\underbrace{\\sum_{i} \\left( 1 - C_{ii} \\right)^{2}
         }_{\\text{invariance term}}
-        + \lambda
-        \\underbrace{\sum_{i} \sum_{j \\neq i} C_{ij}^{2}
+        + \\lambda
+        \\underbrace{\\sum_{i} \\sum_{j \\neq i} C_{ij}^{2}
         }_{\\text{redundancy reduction term}}
 
     where :math:`\\lambda` is a positive constant trading off
@@ -36,9 +36,9 @@ class BarlowTwinsLoss(nn.Module):
 
     .. math::
         C_{ij} \\triangleq
-        \\frac{\sum_{b} z^{(1)}_{b,i} \, z^{(2)}_{b,j}}
-        {\\sqrt{\sum_{b} \\left(z^{(1)}_{b,i}\\right)^{2}}
-        \; \\sqrt{\sum_{b} \\left(z^{(2)}_{b,j}\\right)^{2}} }
+        \\frac{\\sum_{b} z^{(1)}_{b,i} \\, z^{(2)}_{b,j}}
+        {\\sqrt{\\sum_{b} \\left(z^{(1)}_{b,i}\\right)^{2}}
+        \\; \\sqrt{\\sum_{b} \\left(z^{(2)}_{b,j}\\right)^{2}} }
 
     where :math:`b` indexes batch samples
     and :math:`i, j` index the vector dimension of the networks outputs.
