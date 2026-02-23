@@ -5,16 +5,18 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Optional, Union
 
 import numpy as np
 import torch
-import torch.nn as nn
 from numpy import asanyarray, cov, power
 from sklearn.base import BaseEstimator
+from sklearn.exceptions import NotFittedError
 from sklearn.metrics import pairwise_distances
 from sklearn.utils.validation import check_array, check_is_fitted
+from torch import nn
 
 
 class KernelMetric(BaseEstimator):
@@ -116,7 +118,7 @@ class KernelMetric(BaseEstimator):
         elif isinstance(self.bandwidth, (float, int, list, np.ndarray)):
             pass  # scalar bandwidth, no covariance factor needed
         else:
-            raise ValueError(
+            raise TypeError(
                 "`bandwidth` should be a string ('scott' or 'silverman'), "
                 "a scalar (float or int), a list of floats or array got "
                 f"{type(self.bandwidth)}"
@@ -329,13 +331,13 @@ class YAwareInfoNCE(nn.Module):
     information into contrastive learning by weighting sample pairs.
 
     Given a mini-batch of size :math:`n`, two embeddings
-    :math:`z_1=(z_1^i)_{i\in [1..n]}` and :math:`z_2=(z_2^i)_{i\in [1..n]}`
+    :math:`z_1=(z_1^i)_{i\\in [1..n]}` and :math:`z_2=(z_2^i)_{i\\in [1..n]}`
     representing two views of the same samples and a weighting
-    matrix :math:`W=(w_{i,j})_{i,j\in [1..n]}` computed using auxiliary
+    matrix :math:`W=(w_{i,j})_{i,j\\in [1..n]}` computed using auxiliary
     variables :math:`y`, the loss is:
 
     .. math::
-        \mathcal{L}_{NCE}^y = -\\frac{1}{n} \\sum_{i,j} \\frac{w_{i,j}} \
+        \\mathcal{L}_{NCE}^y = -\\frac{1}{n} \\sum_{i,j} \\frac{w_{i,j}} \
         {\\sum_{k=1}^{n} w_{i, k}} \\log \\frac{\\exp(\\text{sim}(z_1^{i}, \
         z_2^{j}) / \\tau)}{\\sum_{k=1}^{n} \\exp(\\text{sim}(z_1^{i}, z_2^{k})\
         / \\tau)}
@@ -395,7 +397,7 @@ class YAwareInfoNCE(nn.Module):
         elif isinstance(bandwidth, (int, float, list, np.ndarray)):
             self.kernel_metric = KernelMetric(kernel, bandwidth)
         else:
-            raise ValueError(
+            raise TypeError(
                 "`bandwidth` must be a float, list of float, "
                 f"array or KernelMetric, got {type(bandwidth)}"
             )
@@ -468,9 +470,9 @@ class YAwareInfoNCE(nn.Module):
 
             try:
                 check_is_fitted(self.kernel_metric)
-            except Exception:
+            except (NotFittedError, TypeError):
                 if isinstance(self.bandwidth, KernelMetric):
-                    raise ValueError(
+                    raise TypeError(
                         "If `bandwidth` is a KernelMetric, it should be "
                         "already fitted on your training data "
                     ) from None

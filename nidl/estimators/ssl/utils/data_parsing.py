@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from typing import Any, Optional
@@ -122,7 +123,7 @@ def parse_two_views_batch(
         )
 
     if not (isinstance(X[0], torch.Tensor) and isinstance(X[1], torch.Tensor)):
-        raise ValueError(
+        raise TypeError(
             "`X1` and `X2` should be torch.Tensors. "
             "Got\n" + inspect_batch(batch)
         )
@@ -326,7 +327,7 @@ def gather_tensor(tensor: torch.Tensor, module=None, sync_grads: bool = False):
         otherwise the input tensor.
     """
     if not isinstance(tensor, torch.Tensor):
-        raise ValueError(f"Expected torch.Tensor, got {type(tensor)}")
+        raise TypeError(f"Expected torch.Tensor, got {type(tensor)}")
 
     trainer = module.trainer if module is not None else None
 

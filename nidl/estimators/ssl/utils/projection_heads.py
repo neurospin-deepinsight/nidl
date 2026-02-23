@@ -5,11 +5,12 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Optional
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class ProjectionHead(nn.Module):
@@ -104,7 +105,7 @@ class SimCLRProjectionHead(ProjectionHead):
     and a ReLU non-linearity, defined as:
 
     .. math::
-        \\mathbf{z} = g(\\mathbf{h}) = W_2 \\cdot \sigma(W_1\\cdot\\mathbf{h})
+        \\mathbf{z} = g(\\mathbf{h}) = W_2 \\cdot \\sigma(W_1\\cdot\\mathbf{h})
 
     where :math:`\\sigma` is the ReLU activation function.
 

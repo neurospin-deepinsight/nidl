@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import abc
 from collections.abc import Mapping, Sequence
@@ -12,7 +13,6 @@ from typing import Any, Callable, Optional, Union
 
 import pytorch_lightning as pl
 import torch
-import torch.utils.data as data
 from pytorch_lightning.accelerators import Accelerator
 from pytorch_lightning.callbacks import Callback
 from pytorch_lightning.strategies import Strategy
@@ -23,6 +23,7 @@ from pytorch_lightning.utilities.types import (
     _METRIC,
     STEP_OUTPUT,
 )
+from torch.utils import data
 from torchmetrics import MetricCollection
 
 from ..utils.validation import _estimator_is, available_if, check_is_fitted

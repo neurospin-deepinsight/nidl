@@ -5,14 +5,14 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Optional
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as func
-import torch.optim as optim
+from torch import nn, optim
 
 from ..base import BaseEstimator, ClassifierMixin
 
@@ -147,7 +147,7 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
-        preds, loss, labels = self.cross_entropy_loss(batch, mode="val")
+        preds, _, labels = self.cross_entropy_loss(batch, mode="val")
         self.validation_step_outputs.setdefault("pred", []).append(preds)
         self.validation_step_outputs.setdefault("label", []).append(labels)
 

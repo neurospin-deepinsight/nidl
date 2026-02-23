@@ -9,6 +9,7 @@
 """
 Various utilities to download model weights.
 """
+from __future__ import annotations
 
 import urllib.parse as urlparse
 import urllib.request as urlrequest

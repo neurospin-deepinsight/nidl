@@ -130,7 +130,7 @@ class BetaVAELoss:
             loss = func.l1_loss(p.loc, data, reduction="sum")
             loss = loss * (loss != 0)  # masking to avoid nan
         else:
-            raise ValueError(f"Unkown distribution: {p}")
+            raise TypeError(f"Unknown distribution: {p}")
 
         batch_size = len(data)
         loss = loss / batch_size
@@ -177,7 +177,7 @@ class BetaVAELoss:
                 p = Bernoulli(probs=p)
             return p
         else:
-            raise ValueError(
+            raise TypeError(
                 "Decoder distribution must be `torch.distributions` or "
                 f"`torch.Tensor`, got {type(p)}"
             )

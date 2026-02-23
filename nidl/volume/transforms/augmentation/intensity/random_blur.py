@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import random
 from typing import Union
@@ -46,7 +47,6 @@ class RandomGaussianBlur(VolumeTransform):
         ] = (0, 2),
         **kwargs,
     ):
-        """ """
         super().__init__(**kwargs)
         self.sigma = self._parse_range(
             sigma, check_min=0, check_length=6, name="sigma"

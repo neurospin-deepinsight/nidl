@@ -5,12 +5,13 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import copy
 import logging
 from typing import Any, Optional, Union
 
-import torch.nn as nn
+from torch import nn
 
 
 def build_encoder(
@@ -52,7 +53,7 @@ def build_encoder(
     elif isinstance(encoder, type) and issubclass(encoder, nn.Module):
         encoder = encoder(**encoder_kwargs)
     else:
-        raise ValueError(
+        raise TypeError(
             f"Encoder must be a string, a PyTorch nn.Module, or a class "
             f"inheriting from nn.Module, got {type(encoder)}"
         )

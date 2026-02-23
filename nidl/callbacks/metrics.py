@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import inspect
 import numbers
@@ -676,7 +677,7 @@ class MetricsCollection:
         elif isinstance(output, np.ndarray):
             return output
         else:
-            raise ValueError(
+            raise TypeError(
                 "Output value must be a torch.Tensor or np.ndarray,"
                 f"got {type(output)}"
             )

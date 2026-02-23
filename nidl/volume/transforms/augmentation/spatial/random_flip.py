@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import random
 from typing import Optional, Union
@@ -51,7 +52,6 @@ class RandomFlip(VolumeTransform):
         flip_probability: float = 1.0,
         **kwargs,
     ):
-        """ """
         super().__init__(**kwargs)
 
         self.axes = self._parse_axes(axes)
@@ -160,5 +160,5 @@ class RandomFlip(VolumeTransform):
                         f"Axes must be in 'LR', 'AP' or 'IS', got {axis}"
                     )
             else:
-                raise ValueError(f"Axes must be int or str, got {axis}")
+                raise TypeError(f"Axes must be int or str, got {axis}")
         return axes_tuple
