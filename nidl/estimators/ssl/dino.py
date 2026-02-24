@@ -5,13 +5,14 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Any, Optional, Union
 
 import torch
-import torch.nn as nn
 from pytorch_lightning.utilities.types import LRSchedulerPLType
+from torch import nn
 from torch.optim import Optimizer
 
 from ...losses import DINOLoss
@@ -406,7 +407,7 @@ class DINO(TransformerMixin, BaseEstimator):
 
     def test_step(self, batch, batch_idx):
         """Skip the test step."""
-        return None
+        return
 
     def transform_step(
         self,

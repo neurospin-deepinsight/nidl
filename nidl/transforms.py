@@ -7,9 +7,11 @@
 ##########################################################################
 
 
-""" This modules details the public API you should use and implement for a
+"""This modules details the public API you should use and implement for a
 nidl compatible transform, as well as the transforms available in nidl.
 """
+
+from __future__ import annotations
 
 import numbers
 import random
@@ -127,7 +129,7 @@ class Transform(ABC):
             :class:`torch.Tensor`
         """
         if not isinstance(data, (torch.Tensor, np.ndarray)):
-            raise ValueError(
+            raise TypeError(
                 f"Unexpected input type: {type(data)}, should be torch.Tensor "
                 "or np.ndarray"
             )
@@ -193,8 +195,8 @@ class Transform(ABC):
 
         In details, it checks whether it contains two values :math:`(l, u)`
         such that :math:`l` and :math:`u` are scalar (int or float) and
-        :math:`l \le u`. Optionally, it also checks that
-        :math:`l \ge \\text{check_min}` and :math:`u \le \\text{check_max}`.
+        :math:`l \\le u`. Optionally, it also checks that
+        :math:`l \\ge \\text{check_min}` and :math:`u \\le \\text{check_max}`.
 
         Parameters
         ----------
@@ -227,7 +229,7 @@ class Transform(ABC):
         if not isinstance(interval[0], numbers.Number) or not isinstance(
             interval[1], numbers.Number
         ):
-            raise ValueError(
+            raise TypeError(
                 f"Input interval must contain scalars, got {interval}"
             )
         if interval[0] > interval[1]:
@@ -346,8 +348,8 @@ class MultiViewsTransform(Transform):
 
     Returns
     -------
-    data: list of array or torch.Tensor
-        List of transformed data.
+    data: tuple of array or torch.Tensor
+        Tuple of transformed data.
 
     Notes
     -----
@@ -377,10 +379,10 @@ class MultiViewsTransform(Transform):
                         "One or more transform(s) are not callable: "
                         f"got {type(transform)}"
                     )
-                    raise ValueError(message)
+                    raise TypeError(message)
                 self.transforms.append(transform)
         else:
-            raise ValueError(
+            raise TypeError(
                 f"Unexpected transforms, got {type(transforms)} but expected "
                 "a callable or sequence of callable"
             )
@@ -395,7 +397,7 @@ class MultiViewsTransform(Transform):
             n_views = 1
 
         if not isinstance(n_views, int):
-            raise ValueError(
+            raise TypeError(
                 f"n_views should be None or int, got {type(n_views)}"
             )
         if isinstance(transforms, Sequence) and n_views != 1:

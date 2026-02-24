@@ -5,12 +5,12 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Optional
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
+from torch import nn, optim
 
 from ...losses import BetaVAELoss
 from ..base import BaseEstimator, TransformerMixin

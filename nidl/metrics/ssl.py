@@ -329,14 +329,14 @@ def contrastive_accuracy_score(
 
         # -------- z1 -> z2 direction --------
         # topk over last dimension (over all candidates in z2)
-        vals_12, idx_12 = torch.topk(sim, k=k, dim=1)  # idx_12: (n_samples, k)
+        _, idx_12 = torch.topk(sim, k=k, dim=1)  # idx_12: (n_samples, k)
         true_idx = torch.arange(n_samples, device=idx_12.device).unsqueeze(1)
         hits_12 = (idx_12 == true_idx).any(dim=1).float()  # (n_samples,)
         acc_12 = hits_12.mean()
 
         # -------- z2 -> z1 direction --------
         sim_T = sim.T
-        vals_21, idx_21 = torch.topk(sim_T, k=k, dim=1)
+        _, idx_21 = torch.topk(sim_T, k=k, dim=1)
         hits_21 = (idx_21 == true_idx).any(dim=1).float()
         acc_21 = hits_21.mean()
         return 0.5 * (acc_12 + acc_21)

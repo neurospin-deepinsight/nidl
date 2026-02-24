@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import logging
 from typing import Any, Optional, Union
@@ -59,9 +60,8 @@ def configure_ssl_optimizers(
                 "optimizer is already instantiated, ignoring "
                 "'optimizer_kwargs'"
             )
-        optimizer = optimizer
     else:
-        raise ValueError(
+        raise TypeError(
             "Optimizer must be a string or a PyTorch Optimizer, got "
             f"{type(optimizer)}"
         )
@@ -124,7 +124,7 @@ def configure_ssl_optimizers(
             )
         scheduler = lr_scheduler
     else:
-        raise ValueError(
+        raise TypeError(
             f"Unknown type for `lr_scheduler`: {type(lr_scheduler)}"
         )
 

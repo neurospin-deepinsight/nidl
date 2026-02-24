@@ -301,17 +301,24 @@ class TestOpenBHB(unittest.TestCase):
                         target=None, split=split, streaming=True)
 
     def test_invalid_modality_raises(self):
-        for modality in ["badmod", 123, None, []]:
+        for modality in ["badmod", []]:
             with self.assertRaises(ValueError):
                 OpenBHB(root=self.local_path, modality=modality, 
                         target="sex", split="train", streaming=True)
+        for modality in [123, None]:
+            with self.assertRaises(TypeError):
+                OpenBHB(root=self.local_path, modality=modality,
+                        target="sex", split="train", streaming=True)
 
     def test_invalid_target_raises(self):
-        for target in ["invalid", 123, []]:
+        for target in ["invalid", []]:
             with self.assertRaises(ValueError):
                 OpenBHB(root=self.local_path, modality="vbm", 
                         target=target, split="train", streaming=True)
-
+        for target in [123]:
+            with self.assertRaises(TypeError):
+                OpenBHB(root=self.local_path, modality="vbm", 
+                        target=target, split="train", streaming=True)
 
 class TestDefaultLoader(unittest.TestCase):
     @patch("nibabel.load")

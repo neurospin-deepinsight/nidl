@@ -7,8 +7,8 @@
 ##########################################################################
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as func
+from torch import nn
 
 
 class InfoNCE(nn.Module):
@@ -24,17 +24,17 @@ class InfoNCE(nn.Module):
     is defined as:
 
     .. math::
-        \mathcal{L}_i
-        = -\log
+        \\mathcal{L}_i
+        = -\\log
         \\frac{
-            \exp\!\\big(\operatorname{sim}(z_i, z_j)/\\tau\\big)
+            \\exp\\!\\big(\\operatorname{sim}(z_i, z_j)/\\tau\\big)
         }{
-            \sum\limits_{k=1}^{2N}
-            \mathbf{1}_{[k \\ne i]}\,
-            \exp\!\\big(\operatorname{sim}(z_i, z_k)/\\tau\\big)
+            \\sum\\limits_{k=1}^{2N}
+            \\mathbf{1}_{[k \\ne i]}\\,
+            \\exp\\!\\big(\\operatorname{sim}(z_i, z_k)/\\tau\\big)
         }
 
-    where :math:`\operatorname{sim}(z_i, z_j)` denotes the cosine similarity
+    where :math:`\\operatorname{sim}(z_i, z_j)` denotes the cosine similarity
     between the normalized embeddings :math:`z_i` and :math:`z_j`, and
     :math:`\\tau > 0` is a temperature parameter controlling the concentration
     of the distribution.

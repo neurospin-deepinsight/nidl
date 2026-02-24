@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import numbers
 from typing import Union
@@ -167,7 +168,7 @@ class ModelProbing(pl.Callback):
                         sync_dist=True,
                     )
         else:
-            raise ValueError(
+            raise TypeError(
                 "Scores should be a number or a dictionary, got "
                 f"{type(scores)}"
             )

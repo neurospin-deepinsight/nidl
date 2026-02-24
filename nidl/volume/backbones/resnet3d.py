@@ -5,11 +5,12 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Union
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class BasicBlock(nn.Module):
@@ -138,7 +139,7 @@ class ResNet(nn.Module):
     """
     def __init__(
             self,
-            block: Union[type[BasicBlock], type[Bottleneck]],
+            block: type[Union[BasicBlock, Bottleneck]],
             layers: tuple[int, int, int, int],
             in_channels: int = 1,
             zero_init_residual: bool = False,

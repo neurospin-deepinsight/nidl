@@ -139,7 +139,7 @@ class TestSSLLosses(unittest.TestCase):
         for bandwidth in ["scott", "silverman", covar]:
             kernel = KernelMetric(bandwidth=bandwidth)
             loss = YAwareInfoNCE(bandwidth=kernel)
-            with self.assertRaises(ValueError): # kernel not fitted
+            with self.assertRaises(TypeError): # kernel not fitted
                 loss(z1, z2, labels)
             kernel.fit(labels)
             kernel_loss = loss(z1, z2, labels)
@@ -362,7 +362,7 @@ class TestBetaVAELoss(unittest.TestCase):
 
     def test_reconstruction_unknown_distribution(self):
         loss_fn = BetaVAELoss()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             loss_fn.reconstruction_loss("foo", self.x)
 
     def test_kl_divergence_zero_for_standard_normal(self):
@@ -407,7 +407,7 @@ class TestBetaVAELoss(unittest.TestCase):
 
     def test_parse_invalid_type(self):
         loss_fn = BetaVAELoss()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             loss_fn._parse_distribution(123)  # not a tensor or distribution
 
 
