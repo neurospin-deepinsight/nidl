@@ -395,8 +395,8 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.ssl.utils.ProjectionHead<a class="headerlink" href="#nidl-estimators-ssl-utils-projectionhead" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.utils.ProjectionHead">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.utils.</span></span><span class="sig-name descname"><span class="pre">ProjectionHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/utils/projection_heads.py#L15"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.utils.ProjectionHead" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+gita60570a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.ssl.utils.</span></span><span class="sig-name descname"><span class="pre">ProjectionHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/estimators/ssl/utils/projection_heads.py#L16"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.utils.ProjectionHead" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+git48c8d4e ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
 <p>Base class for all projection and prediction heads in self-supervised
 estimators.</p>
 <dl class="field-list simple">
@@ -420,7 +420,7 @@ non_linearity_layer)</cite>. Each block applies:</p>
 </dd>
 <dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>layers</strong><span class="classifier">nn.Sequential</span></dt><dd><p>List of <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+gita60570a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> to apply.</p>
+<dt><strong>layers</strong><span class="classifier">nn.Sequential</span></dt><dd><p>List of <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+git48c8d4e ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a> to apply.</p>
 </dd>
 </dl>
 </dd>
@@ -437,13 +437,13 @@ non_linearity_layer)</cite>. Each block applies:</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.utils.ProjectionHead.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/utils/projection_heads.py#L48"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.utils.ProjectionHead.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/estimators/ssl/utils/projection_heads.py#L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.utils.ProjectionHead.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.ssl.utils.ProjectionHead.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/9c93d9d/nidl/estimators/ssl/utils/projection_heads.py#L70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.utils.ProjectionHead.forward" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/estimators/ssl/utils/projection_heads.py#L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ssl.utils.ProjectionHead.forward" title="Link to this definition">¶</a></dt>
 <dd><p>Computes one forward pass through the projection head.</p>
 </dd></dl>
 
