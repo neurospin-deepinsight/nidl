@@ -24,7 +24,6 @@ dependencies = [
     "pytorch-lightning",
     "torchvision",
     "toml",
-    "python-typex",
     "pandas",
     "scikit-learn <= 1.7.0",
     "simpleitk",
@@ -112,6 +111,7 @@ ignore = [
     "UP045",   # Use `X | None` for type annotations (only for python > 3.10)
     "RET504",  # Unnecessary assignment before `return` statement
     "EXE002",  # File is executable but does not contain a shebang
+    "FURB140", # Use itertools.starmap instead of a generator inside all
 ]
 
 [tool.ruff]
