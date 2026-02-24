@@ -117,9 +117,7 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
         else:
             return [optimizer]
 
-    def cross_entropy_loss(
-        self, batch: tuple[torch.Tensor, Sequence[torch.Tensor]], mode: str
-    ):
+    def cross_entropy_loss(self, batch: Sequence[torch.Tensor], mode: str):
         """Compute and log the InfoNCE loss using
         :func:`~torch.nn.functional.cross_entropy`.
         """
@@ -134,7 +132,7 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
 
     def training_step(
         self,
-        batch: tuple[torch.Tensor, torch.Tensor],
+        batch: Sequence[torch.Tensor],
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):
@@ -143,7 +141,7 @@ class LogisticRegression(ClassifierMixin, BaseEstimator):
 
     def validation_step(
         self,
-        batch: tuple[torch.Tensor, torch.Tensor],
+        batch: Sequence[torch.Tensor],
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ):

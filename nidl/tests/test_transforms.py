@@ -45,7 +45,7 @@ class TestTransform(unittest.TestCase):
     def test_invalid_input_type(self):
         for tf_cls in self.transforms_cls:
             tf = tf_cls()
-            with self.assertRaises(ValueError):
+            with self.assertRaises(TypeError):
                 tf([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]) 
 
 
@@ -78,19 +78,19 @@ class TestMultiViewsTransform(unittest.TestCase):
             np.testing.assert_array_equal(outputs[0], self.input_data + 1)
 
     def test_invalid_transform_type(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform("not_a_callable")
 
     def test_sequence_with_non_callable(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform([self.mock_transform, "bad_transform"])
 
     def test_non_callable(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform("bad transform")
 
     def test_invalid_nviews_type(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform(self.mock_transform, n_views="two")
 
     def test_negative_nviews(self):
@@ -116,7 +116,7 @@ class TestIdentity(unittest.TestCase):
         self.assertTrue(torch.all(self.torch_tensor == tf(self.torch_tensor)))
     
     def test_invalid_input(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             Identity()("abcd")
 
 
@@ -465,7 +465,7 @@ class TestRandomResizedCrop(unittest.TestCase):
     def test_invalid_scale(self):
         with self.assertRaises(ValueError):
             RandomResizedCrop(target_shape=(16, 16, 16), scale=(1.2, 0.5))
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             RandomResizedCrop(target_shape=(16, 16, 16), scale=(1.2, "3.2"))
         with self.assertRaises(ValueError):
             RandomResizedCrop(target_shape=(16, 16, 16), scale=(0.5, 2.0))

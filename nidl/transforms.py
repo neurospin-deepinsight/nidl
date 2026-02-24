@@ -408,8 +408,8 @@ class MultiViewsTransform(Transform):
             raise ValueError("n_views must be positive")
         return n_views
 
-    def apply_transform(self, x: Any, **kwargs) -> tuple[TypeTransformInput]:
-        return tuple(transform(x, **kwargs) for transform in self.transforms)
+    def apply_transform(self, x: Any, **kwargs) -> list[TypeTransformInput]:
+        return [transform(x, **kwargs) for transform in self.transforms]
 
 
 class VolumeTransform(Transform):
