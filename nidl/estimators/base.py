@@ -611,6 +611,7 @@ class BaseEstimator(pl.LightningModule):
         )
     
     def on_load_checkpoint(self, checkpoint):
+        """Hook that is called when using the `load_from_checkpoint` method."""
         self.fitted_ = True
         return super().on_load_checkpoint(checkpoint)
 
