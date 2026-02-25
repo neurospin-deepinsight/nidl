@@ -210,72 +210,289 @@ def random_orthogonal_matrix(n):
     
     return Q
 
-class TestProcrustes(unittest.TestCase):
+class TestProcrustesSimilarity(unittest.TestCase):
     def dim_type_mismatch_raises(self):
         z1 = np.random.uniform((4, 3, 2))
         z2 = np.random.uniform((4, 3))
+
         with self.assertRaises(ValueError):
             procrustes_similarity(z1, z2)
         with self.assertRaises(ValueError):
-            procrustes_r2(z1, z2)
+            procrustes_similarity(torch.Tensor(z1), z2)
+        with self.assertRaises(ValueError):
+            procrustes_similarity(torch.Tensor(z1), torch.Tensor(z2))
 
     def length_mismatch_raises(self):
         z1 = np.random.uniform((10, 3))
         z2 = np.random.uniform((9,3))
+
         with self.assertRaises(ValueError):
             procrustes_similarity(z1, z2)
         with self.assertRaises(ValueError):
-            procrustes_r2(z1, z2)
+            procrustes_similarity(torch.Tensor(z1), z2)
+        with self.assertRaises(ValueError):
+            procrustes_similarity(torch.Tensor(z1), torch.Tensor(z2))
 
-    def test(self):
-       Q = random_orthogonal_matrix(4)
-       X = np.random.uniform(size=(100, 4))
+    def test_type_consistency(self):
+        # for np.ndarrays, check that dtype and return type are preserved
+        for dtype in (np.float32, np.float64):
+            X = np.random.uniform(size=(100, 4)).astype(dtype)
+            Y = np.random.uniform(size=(100, 4)).astype(dtype)
+            self.assertTrue(isinstance(procrustes_similarity(X, Y), np.ndarray))
+            self.assertTrue(procrustes_similarity(X, Y).dtype == dtype)
 
-       Y = X @ Q
-       Y = np.hstack([Y, np.zeros((100, 2))])
-       
-       for c in (2, 3, 10):
-           self.assertAlmostEqual(procrustes_similarity(X, c*Y), 1.0, places=7)
-           self.assertAlmostEqual(procrustes_r2(X, Y+c), 1.0, places=7)
+        # for torch.Tensors, check that dtype, return type and device are preserved
+        for dtype in (torch.float32, torch.float64):
+            devices = ("cuda", "cpu") if torch.cuda.is_available() else ("cpu",)
+            for device in devices:
+                X = torch.rand((100, 4), device=device, dtype=dtype)
+                Y = torch.rand((100, 4), device=device, dtype=dtype)
+                self.assertTrue(isinstance(procrustes_similarity(X, Y), torch.Tensor))
+                self.assertTrue(procrustes_similarity(X, Y).dtype == dtype)
+                self.assertTrue(procrustes_similarity(X, Y).device.type == device)
 
-           self.assertNotAlmostEqual(procrustes_r2(X, c * Y), 1.0, places=7)
-           self.assertNotAlmostEqual(procrustes_similarity(X, Y+c), 1.0, places=7)
+        # check that calculation is equal regardless of dtype, return type and device
+        X = np.random.uniform(size=(100, 4)).astype("float64")
+        Y = np.random.uniform(size=(100, 4)).astype("float64")
 
-class TestKruskal(unittest.TestCase):
+        sim = procrustes_similarity(X,Y)
+        others = [
+            procrustes_similarity(X.astype("float32"), Y),
+            procrustes_similarity(X, Y.astype("float32")),
+            procrustes_similarity(torch.Tensor(X), Y),
+            procrustes_similarity(X, torch.Tensor(Y).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu")),
+            procrustes_similarity(torch.Tensor(X).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu"), torch.Tensor(Y).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu")),
+            procrustes_similarity(torch.Tensor(X), torch.Tensor(Y)),
+        ]
+
+        for other in others:
+            if isinstance(other, torch.Tensor):
+                other = other.to("cpu")
+            self.assertAlmostEqual(float(sim), float(other), places=4)
+
+    def test_mathematical_properties(self):
+        # check that sim == 1 if Y = sQX + b with Q orthogonal
+
+        Q = random_orthogonal_matrix(4)
+        X = np.random.uniform(size=(100, 4))
+        
+        for s in (2, 3, 4):
+            for b in [np.random.uniform(size=(4,)) for _ in range(3)]:
+                Y = s * X@Q + b
+                self.assertAlmostEqual(float(procrustes_similarity(X, Y)), 1.0, places=7)
+
+        # check that sim != 1 if Y = sQX + b with Q *not* orthogonal
+        for _ in range(3):
+            while True:
+                Q = np.random.randn(4, 4)
+                if np.allclose(Q @ Q.T, np.eye(4)):
+                    continue
+                for s in (2, 3, 4):
+                    for b in [np.random.uniform(size=(4,)) for _ in range(3)]:
+                        Y = s * X@Q + b
+                        self.assertNotAlmostEqual(float(procrustes_similarity(X, Y)), 1.0, places=7)
+                break
+
+        # check invariance to padding
+        Y = np.random.uniform(size=(100, 4))
+        sims = [procrustes_similarity(np.hstack([X, np.zeros((100, i))]), np.hstack([Y, np.zeros((100, j))])) for i in range(3) for j in range(3)]
+        for sim in sims[1:]:
+            self.assertAlmostEqual(float(sims[0]), float(sim), places=7)
+
+class TestProcrustesR2(unittest.TestCase):
     def dim_type_mismatch_raises(self):
         z1 = np.random.uniform((4, 3, 2))
         z2 = np.random.uniform((4, 3))
+        
         with self.assertRaises(ValueError):
-            procrustes_similarity(z1, z2)
+            procrustes_r2(z1, z2)
+        with self.assertRaises(ValueError):
+            procrustes_r2(torch.Tensor(z1), z2)
+        with self.assertRaises(ValueError):
+            procrustes_r2(torch.Tensor(z1), torch.Tensor(z2))
 
     def length_mismatch_raises(self):
         z1 = np.random.uniform((10, 3))
         z2 = np.random.uniform((9,3))
+
         with self.assertRaises(ValueError):
-            procrustes_similarity(z1, z2)
+            procrustes_r2(z1, z2)
+        with self.assertRaises(ValueError):
+            procrustes_r2(torch.Tensor(z1), z2)
+        with self.assertRaises(ValueError):
+            procrustes_r2(torch.Tensor(z1), torch.Tensor(z2))
 
-    def test_euclidean_isometry(self):
-       Q = random_orthogonal_matrix(4)
-       X = np.random.uniform(size=(100, 4))
+    def test_type_consistency(self):
+        # for np.ndarrays, check that dtype and return type are preserved
+        for dtype in (np.float32, np.float64):
+            X = np.random.uniform(size=(100, 4)).astype(dtype)
+            Y = np.random.uniform(size=(100, 4)).astype(dtype)
+            self.assertTrue(isinstance(procrustes_r2(X, Y), np.ndarray))
+            self.assertTrue(procrustes_r2(X, Y).dtype == dtype)
 
-       Y = X @ Q
-       Y = np.hstack([Y, np.zeros((100, 2))])
-       
-       self.assertAlmostEqual(kruskal_similarity(X, Y, spherical=False), 1.0, places=7)
-       self.assertAlmostEqual(kruskal_similarity(X, Y + 10, spherical=False), 1.0, places=7)
-       self.assertNotAlmostEqual(kruskal_similarity(X, 3*Y + 10, spherical=False), 1.0, places=7)
+        # for torch.Tensors, check that dtype, return type and device are preserved
+        for dtype in (torch.float32, torch.float64):
+            devices = ("cuda", "cpu") if torch.cuda.is_available() else ("cpu",)
+            for device in devices:
+                X = torch.rand((100, 4), device=device, dtype=dtype)
+                Y = torch.rand((100, 4), device=device, dtype=dtype)
+                self.assertTrue(isinstance(procrustes_r2(X, Y), torch.Tensor))
+                self.assertTrue(procrustes_r2(X, Y).dtype == dtype)
+                self.assertTrue(procrustes_r2(X, Y).device.type == device)
 
+        # check that calculation is equal in regardless of dtype, return type and device
+        X = np.random.uniform(size=(100, 4)).astype("float64")
+        Y = np.random.uniform(size=(100, 4)).astype("float64")
 
-    def test_spherical_isometry(self):
-       Q = random_orthogonal_matrix(4)
-       X = np.random.uniform(size=(100, 4))
+        sim = procrustes_r2(X,Y)
+        others = [
+            procrustes_r2(X.astype("float32"), Y),
+            procrustes_r2(X, Y.astype("float32")),
+            procrustes_r2(torch.Tensor(X), Y),
+            procrustes_r2(X, torch.Tensor(Y).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu")),
+            procrustes_r2(torch.Tensor(X).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu"), torch.Tensor(Y).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu")),
+            procrustes_r2(torch.Tensor(X), torch.Tensor(Y)),
+        ]
 
-       Y = X @ Q
-       
-       self.assertAlmostEqual(kruskal_similarity(X, Y, spherical=True), 1.0, places=7)
-       self.assertAlmostEqual(kruskal_similarity(X, 3 * Y, spherical=True), 1.0, places=7)
-       self.assertNotAlmostEqual(kruskal_similarity(X, Y+1, spherical=True), 1.0, places=7)
+        for other in others:
+            if isinstance(other, torch.Tensor):
+                other = other.to("cpu")
+            self.assertAlmostEqual(float(sim), float(other), places=4)
 
+    def test_mathematical_properties(self):
+        # check that sim == 1 if Y = QX + b with Q orthogonal
+
+        Q = random_orthogonal_matrix(4)
+        X = np.random.uniform(size=(100, 4))
+        
+        for b in [np.random.uniform(size=(4,)) for _ in range(3)]:
+            Y = X@Q + b
+            self.assertAlmostEqual(float(procrustes_similarity(X, Y)), 1.0, places=7)
+
+        # check that sim != 1 if Y = QX + b with Q *not* orthogonal
+        for _ in range(3):
+            while True:
+                Q = np.random.randn(4, 4)
+                if np.allclose(Q @ Q.T, np.eye(4)):
+                    continue
+
+                for b in [np.random.uniform(size=(4,)) for _ in range(3)]:
+                    Y = X@Q + b
+                    self.assertNotAlmostEqual(float(procrustes_similarity(X, Y)), 1.0, places=7)
+                break
+
+        # check invariance to padding
+        Y = np.random.uniform(size=(100, 4))
+        sims = [procrustes_similarity(np.hstack([X, np.zeros((100, i))]), np.hstack([Y, np.zeros((100, j))])) for i in range(3) for j in range(3)]
+        for sim in sims[1:]:
+            self.assertAlmostEqual(float(sims[0]), float(sim), places=7)
+
+class TestKruskalSimilarity(unittest.TestCase):
+    def dim_type_mismatch_raises(self):
+        z1 = np.random.uniform((4, 3, 2))
+        z2 = np.random.uniform((4, 3))
+
+        for spherical in (True, False):
+            with self.assertRaises(ValueError):
+                kruskal_similarity(z1, z2, spherical=spherical)
+            with self.assertRaises(ValueError):
+                kruskal_similarity(torch.Tensor(z1), z2, spherical=spherical)
+            with self.assertRaises(ValueError):
+                kruskal_similarity(torch.Tensor(z1), torch.Tensor(z2), spherical=spherical)
+
+    def length_mismatch_raises(self):
+        z1 = np.random.uniform((10, 3))
+        z2 = np.random.uniform((9,3))
+
+        for spherical in (True, False):
+            with self.assertRaises(ValueError):
+                kruskal_similarity(z1, z2, spherical=spherical)
+            with self.assertRaises(ValueError):
+                kruskal_similarity(torch.Tensor(z1), z2, spherical=spherical)
+            with self.assertRaises(ValueError):
+                kruskal_similarity(torch.Tensor(z1), torch.Tensor(z2), spherical=spherical)
+
+    def test_type_consistency(self):
+        for spherical in (True, False):
+            # for np.ndarrays, check that dtype and return type are preserved
+            for dtype in (np.float32, np.float64):
+                X = np.random.uniform(size=(100, 4)).astype(dtype)
+                Y = np.random.uniform(size=(100, 4)).astype(dtype)
+                self.assertTrue(isinstance(kruskal_similarity(X, Y, spherical=spherical), np.ndarray))
+                self.assertTrue(kruskal_similarity(X, Y, spherical=spherical).dtype == dtype)
+
+            # for torch.Tensors, check that dtype, return type and device are preserved
+            for dtype in (torch.float32, torch.float64):
+                devices = ("cuda", "cpu") if torch.cuda.is_available() else ("cpu",)
+                for device in devices:
+                    X = torch.rand((100, 4), device=device, dtype=dtype)
+                    Y = torch.rand((100, 4), device=device, dtype=dtype)
+                    self.assertTrue(isinstance(kruskal_similarity(X, Y, spherical=spherical), torch.Tensor))
+                    self.assertTrue(kruskal_similarity(X, Y, spherical=spherical).dtype == dtype)
+                    self.assertTrue(kruskal_similarity(X, Y, spherical=spherical).device.type == device)
+
+            # check that calculation is equal regardless of dtype, return type and device
+            X = np.random.uniform(size=(100, 4)).astype("float64")
+            Y = np.random.uniform(size=(100, 4)).astype("float64")
+
+            sim = kruskal_similarity(X,Y, spherical=spherical)
+            others = [
+                kruskal_similarity(X.astype("float32"), Y, spherical=spherical),
+                kruskal_similarity(X, Y.astype("float32"), spherical=spherical),
+                kruskal_similarity(torch.Tensor(X), Y, spherical=spherical),
+                kruskal_similarity(X, torch.Tensor(Y).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu"), spherical=spherical),
+                kruskal_similarity(
+                    torch.Tensor(X).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu"),
+                    torch.Tensor(Y).to(dtype=torch.float32, device="cuda" if torch.cuda.is_available() else "cpu"),
+                    spherical=spherical
+                    ),
+                kruskal_similarity(torch.Tensor(X), torch.Tensor(Y), spherical=spherical),
+            ]
+
+            for other in others:
+                if isinstance(other, torch.Tensor):
+                    other = other.to("cpu")
+                self.assertAlmostEqual(float(sim), float(other), places=4)
+
+    def test_mathematical_properties(self):
+        # check that kruskal_similarity(X, X@Q+b, spherical=False) == 1
+
+        Q = random_orthogonal_matrix(4)
+        X = np.random.uniform(size=(100, 4))
+        
+        for b in [np.random.uniform(size=(4,)) for _ in range(3)]:
+            Y = X@Q + b
+            self.assertAlmostEqual(float(kruskal_similarity(X, Y, spherical=False)), 1.0, places=7)
+        
+        # check that kruskal_similarity(X, X@Q, spherical=True) == 1
+        self.assertAlmostEqual(float(kruskal_similarity(X, X@Q, spherical=True)), 1.0, places=7)
+
+        # check that sim != 1 if Y = QX + b with Q *not* orthogonal
+        for _ in range(3):
+            while True:
+                Q = np.random.randn(4, 4)
+                if np.allclose(Q @ Q.T, np.eye(4)):
+                    continue
+
+                for b in [np.random.uniform(size=(4,)) for _ in range(3)]:
+                    Y = X@Q + b
+                    self.assertNotAlmostEqual(float(kruskal_similarity(X, Y, spherical=True)), 1.0, places=7)
+                    self.assertNotAlmostEqual(float(kruskal_similarity(X, Y, spherical=False)), 1.0, places=7)
+                break
+
+        Y = np.random.uniform(size=(100, 4))
+
+        # check invariance to padding
+        for spherical in (True, False):
+            sims = [kruskal_similarity(np.hstack([X, np.zeros((100, i))]), np.hstack([Y, np.zeros((100, j))]), spherical=spherical) for i in range(3) for j in range(3)]
+            for sim in sims[1:]:
+                self.assertAlmostEqual(float(sims[0]), float(sim), places=7)
+
+        # check invariance to rescaling in the spherical case
+        sims = [kruskal_similarity(X, np.diag(np.random.uniform(size=(100,), low=.1, high=5)) @ Y, spherical=True) for i in range(5)]
+
+        for sim in sims[1:]:
+            self.assertAlmostEqual(float(sims[0]), float(sim), places=7)
 
 if __name__ == "__main__":
     unittest.main()
