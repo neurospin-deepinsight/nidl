@@ -19,7 +19,7 @@ Pre-trained weights
 ...................
 
 nidl offers pre-trained weights for every provided architecture. The weights
-can be restored using the :meth:`nidl.utils.Weights.load_pretrained` method.
+can be restored using the :meth:`nidl.utils.weights.Weights.load_pretrained` method.
 Available weights are listed `here <https://huggingface.co/neurospin>`_.
 
 
@@ -28,7 +28,7 @@ Weights
 
 Classes that allow to restore pre-trained weights.
 
-.. currentmodule:: nidl.utils
+.. currentmodule:: nidl.utils.weights
 
 .. autosummary::
    :toctree: generated/

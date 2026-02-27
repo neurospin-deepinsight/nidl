@@ -609,6 +609,11 @@ class BaseEstimator(pl.LightningModule):
             batch_size=batch_size,
             rank_zero_only=rank_zero_only,
         )
+    
+    def on_load_checkpoint(self, checkpoint):
+        """Hook that is called when using the `load_from_checkpoint` method."""
+        self.fitted_ = True
+        return super().on_load_checkpoint(checkpoint)
 
 
 class RegressorMixin:
