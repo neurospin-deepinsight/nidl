@@ -413,7 +413,7 @@ Finally, we fit the model:
     Total FLOPs: 0                                                                  
     /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:665: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
       warnings.warn(warn_msg)
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:08 •        28.57it/s v_num: 8.000     
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        26.89it/s v_num: 8.000     
                                         0:00:00                    acc1/train: 0.979
                                                                    f1/train: 0.979  
                                                                    precision/train: 
@@ -673,7 +673,7 @@ computation as the model's weights are changing over iterations.
     Modules in train mode: 14                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:41 • 0:00:00 6.16it/s v_num: 9.000     
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:46 • 0:00:00 5.50it/s v_num: 9.000     
                                                                    loss/train: 0.229
                                                                    loss/val: 0.889  
                                                                    alignment/val:   
@@ -781,7 +781,7 @@ increases:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (9 minutes 36.829 seconds)
+   **Total running time of the script:** (10 minutes 54.933 seconds)
 
 **Estimated memory usage:**  2401 MB
 

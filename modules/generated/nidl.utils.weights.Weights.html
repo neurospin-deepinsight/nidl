@@ -3,19 +3,17 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="nidl.utils.Weights" />
+<meta property="og:title" content="nidl.utils.weights.Weights" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://neurospin-deepinsight.github.io/modules/generated/nidl.utils.Weights.html" />
+<meta property="og:url" content="https://neurospin-deepinsight.github.io/modules/generated/nidl.utils.weights.Weights.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:description" content="Examples using nidl.utils.Weights: Self-Supervised Contrastive Learning with SimCLR" />
-<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_simclr_stl10_thumb.png" />
-<meta property="og:image:alt" content="" />
-<meta name="description" content="Examples using nidl.utils.Weights: Self-Supervised Contrastive Learning with SimCLR" />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
+<meta property="og:image:alt" content="Nidl" />
 <link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.volume.backbones.AlexNet" href="nidl.volume.backbones.AlexNet.html"><link rel="prev" title="nidl.volume.backbones: Available backbones" href="../architectures.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>nidl.utils.Weights - Nidl</title>
+        <title>nidl.utils.weights.Weights - Nidl</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=2da93098" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -282,7 +280,7 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.utils.Weights</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.utils.weights.Weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.AlexNet.html">nidl.volume.backbones.AlexNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
@@ -365,12 +363,12 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/blob/main/doc/modules/generated/nidl.utils.Weights.rst?plain=true" title="View this page">
+  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/blob/main/doc/modules/generated/nidl.utils.weights.Weights.rst?plain=true" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
 </div><div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/edit/main/doc/modules/generated/nidl.utils.Weights.rst" rel="edit" title="Edit this page">
+  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/edit/main/doc/modules/generated/nidl.utils.weights.Weights.rst" rel="edit" title="Edit this page">
     <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
@@ -393,13 +391,14 @@
 signature, and not how to use it. Please refer to the
 <a class="reference internal" href="../../user_guide.html#user-guide"><span class="std std-ref">user guide</span></a> for the big picture.</p>
 </div>
-<section id="nidl-utils-weights">
-<h1>nidl.utils.Weights<a class="headerlink" href="#nidl-utils-weights" title="Link to this heading">¶</a></h1>
+<section id="nidl-utils-weights-weights">
+<h1>nidl.utils.weights.Weights<a class="headerlink" href="#nidl-utils-weights-weights" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="nidl.utils.Weights">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.utils.</span></span><span class="sig-name descname"><span class="pre">Weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/utils/weights.py#L23"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.Weights" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.utils.weights.</span></span><span class="sig-name descname"><span class="pre">Weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/c5b2c89/nidl/utils/weights.py#L25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.weights.Weights" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A class to handle (retrieve and apply) model weights.</p>
+<p>A class to handle (retrieve and apply) model weights or lightning
+checkpoints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -410,29 +409,30 @@ hub or a path if avaiable in your local machine.</p>
 </dd>
 <dt><strong>data_dir: pathlib.Path or str</strong></dt><dd><p>path where data should be downloaded.</p>
 </dd>
-<dt><strong>filepath: str</strong></dt><dd><p>the path of the file in the repo.</p>
+<dt><strong>filepath: str</strong></dt><dd><p>the path of the file in the repo. If path has ‘.ckpt’ extension, it
+assumes it is a pytorch_lightning checkpoint.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nidl.utils.Weights.HF_URL">
-<span class="sig-name descname"><span class="pre">HF_URL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://huggingface.co'</span></span><a class="headerlink" href="#nidl.utils.Weights.HF_URL" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.HF_URL">
+<span class="sig-name descname"><span class="pre">HF_URL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://huggingface.co'</span></span><a class="headerlink" href="#nidl.utils.weights.Weights.HF_URL" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nidl.utils.Weights.NS_URL">
-<span class="sig-name descname"><span class="pre">NS_URL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'http://nsap.intra.cea.fr/neurospin-hub/'</span></span><a class="headerlink" href="#nidl.utils.Weights.NS_URL" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.NS_URL">
+<span class="sig-name descname"><span class="pre">NS_URL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'http://nsap.intra.cea.fr/neurospin-hub/'</span></span><a class="headerlink" href="#nidl.utils.weights.Weights.NS_URL" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.utils.Weights.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/utils/weights.py#L42"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.Weights.__init__" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/c5b2c89/nidl/utils/weights.py#L46"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.weights.Weights.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.utils.Weights.hf_download">
-<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">hf_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_revision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/utils/weights.py#L101"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.Weights.hf_download" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.hf_download">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">hf_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_revision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/c5b2c89/nidl/utils/weights.py#L153"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.weights.Weights.hf_download" title="Link to this definition">¶</a></dt>
 <dd><p>Download a given file if not already present.</p>
 <p>Downloads always resume when possible. If you want to force a new
 download, use <cite>force_download=True</cite>.</p>
@@ -462,8 +462,8 @@ the local cache.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.utils.Weights.hub_split">
-<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">hub_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hub_name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/utils/weights.py#L74"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.Weights.hub_split" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.hub_split">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">hub_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hub_name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/c5b2c89/nidl/utils/weights.py#L126"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.weights.Weights.hub_split" title="Link to this definition">¶</a></dt>
 <dd><p>Interpret the input hub name specified in the form
 <cite>hf-hub:path/architecture_name&#64;revision</cite> or
 <cite>ns-hub:path/architecture_name</cite>.</p>
@@ -486,8 +486,28 @@ the local cache.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.utils.Weights.load_pretrained">
-<span class="sig-name descname"><span class="pre">load_pretrained</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/utils/weights.py#L61"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.Weights.load_pretrained" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.load_checkpoint">
+<span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/c5b2c89/nidl/utils/weights.py#L67"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.weights.Weights.load_checkpoint" title="Link to this definition">¶</a></dt>
+<dd><p>Load the checkpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>model: LightningModule</strong></dt><dd><p>an pytorch_lightning’s module class.</p>
+</dd>
+<dt><strong>device: torch.device or str</strong></dt><dd><p>the device on which to load the model and to use for inference.
+Default to cpu. Only single device is supported for now.</p>
+</dd>
+<dt><strong>**kwargs: Any extra keyword args needed to init the model. Can also be</strong></dt><dd><p>used to override saved hyperparameter values, in particular to
+override trainer parameters such as <cite>accelerator</cite> or <cite>devices</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.load_pretrained">
+<span class="sig-name descname"><span class="pre">load_pretrained</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/c5b2c89/nidl/utils/weights.py#L107"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.weights.Weights.load_pretrained" title="Link to this definition">¶</a></dt>
 <dd><p>Load the model weights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -500,8 +520,8 @@ the local cache.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nidl.utils.Weights.ns_download">
-<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ns_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/d389c57/nidl/utils/weights.py#L153"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.Weights.ns_download" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="nidl.utils.weights.Weights.ns_download">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ns_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/c5b2c89/nidl/utils/weights.py#L205"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.utils.weights.Weights.ns_download" title="Link to this definition">¶</a></dt>
 <dd><p>Download a given file if not already present.</p>
 <p>Downloads always resume when possible. If you want to force a new
 download, use <cite>force_download=True</cite>.</p>
@@ -530,13 +550,7 @@ the local cache.</p>
 
 </dd></dl>
 
-<section id="examples-using-nidl-utils-weights">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">nidl.utils.Weights</span></code><a class="headerlink" href="#examples-using-nidl-utils-weights" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="From: https://uvadlc-notebooks.readthedocs.io"><img alt="" src="../../_images/sphx_glr_simclr_stl10_thumb.png" />
-<p><a class="reference internal" href="../../auto_examples/simclr_stl10.html"><span class="doc">Self-Supervised Contrastive Learning with SimCLR</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Self-Supervised Contrastive Learning with SimCLR</div>
-</div></div><div style='clear:both'></div></section>
-</section>
+<div style='clear:both'></div></section>
 
         </article>
       </div>
@@ -597,18 +611,18 @@ the local cache.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">nidl.utils.Weights</a><ul>
-<li><a class="reference internal" href="#nidl.utils.Weights"><code class="docutils literal notranslate"><span class="pre">Weights</span></code></a><ul>
-<li><a class="reference internal" href="#nidl.utils.Weights.HF_URL"><code class="docutils literal notranslate"><span class="pre">Weights.HF_URL</span></code></a></li>
-<li><a class="reference internal" href="#nidl.utils.Weights.NS_URL"><code class="docutils literal notranslate"><span class="pre">Weights.NS_URL</span></code></a></li>
-<li><a class="reference internal" href="#nidl.utils.Weights.__init__"><code class="docutils literal notranslate"><span class="pre">Weights.__init__</span></code></a></li>
-<li><a class="reference internal" href="#nidl.utils.Weights.hf_download"><code class="docutils literal notranslate"><span class="pre">Weights.hf_download</span></code></a></li>
-<li><a class="reference internal" href="#nidl.utils.Weights.hub_split"><code class="docutils literal notranslate"><span class="pre">Weights.hub_split</span></code></a></li>
-<li><a class="reference internal" href="#nidl.utils.Weights.load_pretrained"><code class="docutils literal notranslate"><span class="pre">Weights.load_pretrained</span></code></a></li>
-<li><a class="reference internal" href="#nidl.utils.Weights.ns_download"><code class="docutils literal notranslate"><span class="pre">Weights.ns_download</span></code></a></li>
+<li><a class="reference internal" href="#">nidl.utils.weights.Weights</a><ul>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights"><code class="docutils literal notranslate"><span class="pre">Weights</span></code></a><ul>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.HF_URL"><code class="docutils literal notranslate"><span class="pre">Weights.HF_URL</span></code></a></li>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.NS_URL"><code class="docutils literal notranslate"><span class="pre">Weights.NS_URL</span></code></a></li>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.__init__"><code class="docutils literal notranslate"><span class="pre">Weights.__init__</span></code></a></li>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.hf_download"><code class="docutils literal notranslate"><span class="pre">Weights.hf_download</span></code></a></li>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.hub_split"><code class="docutils literal notranslate"><span class="pre">Weights.hub_split</span></code></a></li>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.load_checkpoint"><code class="docutils literal notranslate"><span class="pre">Weights.load_checkpoint</span></code></a></li>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.load_pretrained"><code class="docutils literal notranslate"><span class="pre">Weights.load_pretrained</span></code></a></li>
+<li><a class="reference internal" href="#nidl.utils.weights.Weights.ns_download"><code class="docutils literal notranslate"><span class="pre">Weights.ns_download</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#examples-using-nidl-utils-weights">Examples using <code class="docutils literal notranslate"><span class="pre">nidl.utils.Weights</span></code></a></li>
 </ul>
 </li>
 </ul>

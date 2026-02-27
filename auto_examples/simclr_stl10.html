@@ -282,7 +282,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.utils.Weights.html">nidl.utils.Weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.utils.weights.Weights.html">nidl.utils.weights.Weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.AlexNet.html">nidl.volume.backbones.AlexNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
@@ -423,7 +423,7 @@ importing our standard libraries below:</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.linear</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.ssl</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SimCLR</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.utils</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights" class="sphx-glr-backref-module-nidl-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Weights</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Weights</span>
 </pre></div>
 </div>
 <p>Let’s define some global parameters:</p>
@@ -441,7 +441,7 @@ running this notebook locally, make sure to have sufficient disk space
 available.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">load_pretrained</span> <span class="o">=</span> <span class="kc">True</span>
 <a href="https://docs.python.org/3/library/os.html#os.makedirs" title="os.makedirs" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><span class="n">checkpointdir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">weights</span> <span class="o">=</span> <a href="../modules/generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights" class="sphx-glr-backref-module-nidl-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Weights</span></a><span class="p">(</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="n">Weights</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hf-hub:neurospin/simclr-resnet18-stl10&quot;</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">checkpointdir</span><span class="p">,</span>
     <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-simclr-resnet18-stl10.pt&quot;</span><span class="p">,</span>
@@ -680,7 +680,7 @@ Specifically, they train a Logistic Regression model for datasets with only
 intuition on how well the representations learned by contrastive learning
 can be transfered to a image recognition task like this classification.
 Here, we will only train the model with all the data available:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <a href="../modules/generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights" class="sphx-glr-backref-module-nidl-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Weights</span></a><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <span class="n">Weights</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hf-hub:neurospin/linear-resnet18-stl10&quot;</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">checkpointdir</span><span class="p">,</span>
     <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-linear-resnet18-stl10.pt&quot;</span><span class="p">,</span>
@@ -776,7 +776,7 @@ learning case.</p>
 Regression setup. Note that we allow the ResNet to perform validation
 every 2 epochs to also check whether the model overfits strongly in the
 first iterations or not.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <a href="../modules/generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights" class="sphx-glr-backref-module-nidl-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Weights</span></a><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <span class="n">Weights</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hf-hub:neurospin/resnet18-stl10&quot;</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="o">=</span><span class="n">checkpointdir</span><span class="p">,</span>
     <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;weights-resnet18-stl10.pt&quot;</span><span class="p">,</span>

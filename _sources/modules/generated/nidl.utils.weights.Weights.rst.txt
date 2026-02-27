@@ -7,10 +7,10 @@
    :ref:`user guide <user_guide>` for the big picture.
 
 
-nidl.utils.Weights
-==================
+nidl.utils.weights.Weights
+==========================
 
-.. currentmodule:: nidl.utils
+.. currentmodule:: nidl.utils.weights
 
 .. autoclass:: Weights
    :members:
@@ -18,7 +18,7 @@ nidl.utils.Weights
    :special-members: __init__,__call__
    :member-order: alphabetical
 
-.. include:: nidl.utils.Weights.examples
+.. include:: nidl.utils.weights.Weights.examples
 
 .. raw:: html
 

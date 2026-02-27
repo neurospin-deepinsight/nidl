@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="This modules details the public API you should use and implement for a nidl compatible backbone, as well as the backbones available in nidl. Introduction: An backbone is a torch.nn.Module class and..." />
-<link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.utils.Weights" href="generated/nidl.utils.Weights.html"><link rel="prev" title="nidl.losses.BetaVAELoss" href="generated/nidl.losses.BetaVAELoss.html">
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.utils.weights.Weights" href="generated/nidl.utils.weights.Weights.html"><link rel="prev" title="nidl.losses.BetaVAELoss" href="generated/nidl.losses.BetaVAELoss.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
@@ -282,7 +282,7 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.utils.Weights.html">nidl.utils.Weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.utils.weights.Weights.html">nidl.utils.weights.Weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.AlexNet.html">nidl.volume.backbones.AlexNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
@@ -393,13 +393,13 @@
 nidl compatible backbone, as well as the backbones available in nidl.</p>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
-<p>An backbone is a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+git48c8d4e ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> class and contains definitions
+<p>An backbone is a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+git4802e2a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> class and contains definitions
 of models for addressing different tasks, including image classification,
 image segmentation, represnetation learning…</p>
 <section id="pre-trained-weights">
 <h3>Pre-trained weights<a class="headerlink" href="#pre-trained-weights" title="Link to this heading">¶</a></h3>
 <p>nidl offers pre-trained weights for every provided architecture. The weights
-can be restored using the <a class="reference internal" href="generated/nidl.utils.Weights.html#nidl.utils.Weights.load_pretrained" title="nidl.utils.Weights.load_pretrained"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nidl.utils.Weights.load_pretrained</span></code></a> method.
+can be restored using the <a class="reference internal" href="generated/nidl.utils.weights.Weights.html#nidl.utils.weights.Weights.load_pretrained" title="nidl.utils.weights.Weights.load_pretrained"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nidl.utils.weights.Weights.load_pretrained</span></code></a> method.
 Available weights are listed <a class="reference external" href="https://huggingface.co/neurospin">here</a>.</p>
 </section>
 </section>
@@ -409,8 +409,8 @@ Available weights are listed <a class="reference external" href="https://hugging
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.utils.Weights.html#nidl.utils.Weights" title="nidl.utils.Weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Weights</span></code></a>(name, data_dir, filepath)</p></td>
-<td><p>A class to handle (retrieve and apply) model weights.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.utils.weights.Weights.html#nidl.utils.weights.Weights" title="nidl.utils.weights.Weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Weights</span></code></a>(name, data_dir, filepath)</p></td>
+<td><p>A class to handle (retrieve and apply) model weights or lightning checkpoints.</p></td>
 </tr>
 </tbody>
 </table>
@@ -476,12 +476,12 @@ various utility functions.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="generated/nidl.utils.Weights.html">
+          <a class="next-page" href="generated/nidl.utils.weights.Weights.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">nidl.utils.Weights</div>
+                <div class="title">nidl.utils.weights.Weights</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
