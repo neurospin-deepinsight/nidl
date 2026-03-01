@@ -330,6 +330,9 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.metrics.alignment_score.html">nidl.metrics.alignment_score</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.metrics.uniformity_score.html">nidl.metrics.uniformity_score</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.metrics.contrastive_accuracy_score.html">nidl.metrics.contrastive_accuracy_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.metrics.procrustes_similarity.html">nidl.metrics.procrustes_similarity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.metrics.procrustes_r2.html">nidl.metrics.procrustes_r2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.metrics.kruskal_similarity.html">nidl.metrics.kruskal_similarity</a></li>
 </ul>
 </li>
 </ul>
@@ -394,7 +397,7 @@
 <p>A metric is an object (most likely a function) that allows you to compute
 standard scores, usually not natively present in <a class="reference external" href="https://scikit-learn.org/stable/api/sklearn.metrics.html#module-sklearn.metrics" title="(in scikit-learn v1.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.metrics</span></code></a>
 or in <cite>torchmetrics</cite>. Most metrics in nidl handle both <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
-and <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch main (2.12.0a0+git4802e2a ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a> and returns an output consistent with the input.</p>
+and <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch main (2.12.0a0+git6ca50f5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a> and returns an output consistent with the input.</p>
 </section>
 <section id="regression-metrics">
 <h2>Regression metrics<a class="headerlink" href="#regression-metrics" title="Link to this heading">¶</a></h2>
@@ -423,6 +426,15 @@ and <a class="reference external" href="https://docs.pytorch.org/docs/main/tenso
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.metrics.contrastive_accuracy_score.html#nidl.metrics.contrastive_accuracy_score" title="nidl.metrics.contrastive_accuracy_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contrastive_accuracy_score</span></code></a>(z1, z2[, ...])</p></td>
 <td><p>Compute the top-k contrastive accuracy between two embeddings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.metrics.procrustes_similarity.html#nidl.metrics.procrustes_similarity" title="nidl.metrics.procrustes_similarity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">procrustes_similarity</span></code></a>(X, Y)</p></td>
+<td><p>Procrustes similarity between two point clouds / embeddings in the Euclidean case, with global scale invariance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.metrics.procrustes_r2.html#nidl.metrics.procrustes_r2" title="nidl.metrics.procrustes_r2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">procrustes_r2</span></code></a>(X, Y)</p></td>
+<td><p>Procrustes similarity between two point clouds / embeddings in the Euclidean case, when scale matters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.metrics.kruskal_similarity.html#nidl.metrics.kruskal_similarity" title="nidl.metrics.kruskal_similarity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kruskal_similarity</span></code></a>(X, Y[, spherical])</p></td>
+<td><p>Kruskal similarity between two point clouds / embeddings.</p></td>
 </tr>
 </tbody>
 </table>
