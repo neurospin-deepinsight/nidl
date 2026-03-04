@@ -6,10 +6,8 @@
 # for details.
 ##########################################################################
 
-"""Self-supervised estimators."""
-
-from .barlowtwins import BarlowTwins
-from .dino import DINO
-from .ijepa import IJEPA
-from .simclr import SimCLR
-from .yaware import YAwareContrastiveLearning
+from .patchify import (
+    build_1d_sincos_posemb,
+    build_2d_sincos_posemb,
+    build_3d_sincos_posemb,
+)
