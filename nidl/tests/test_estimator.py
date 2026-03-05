@@ -26,7 +26,8 @@ from nidl.estimators.ssl import (
     BarlowTwins,
     SimCLR,
     YAwareContrastiveLearning,
-    DINO
+    DINO,
+    DCL
 )
 from nidl.estimators.autoencoders import VAE
 from nidl.estimators.linear import LogisticRegression
@@ -148,6 +149,21 @@ class TestEstimators(unittest.TestCase):
                     "weight_decay": 1e-4,
                     "max_epochs": 2,
                     "limit_train_batches": 3
+                },
+            ),
+            (
+                DCL,
+                {
+                    "encoder": self._encoder,
+                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
+                    "learning_rate": 5e-4,
+                    "temperature": 0.07,
+                    "weight_decay": 1e-4,
+                    "max_epochs": 2,
+                    "random_state": 42,
+                    "limit_train_batches": 3,
                 },
             ),
         )
