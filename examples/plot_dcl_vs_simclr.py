@@ -3,7 +3,7 @@ Decoupled Contrastive Learning
 ==============================
 
 This tutorial illustrates the use of Decoupled Contrastive Learning (DCL) [1]_
-which introduces a reformulation of the InfoNCE loss used in SimCLR that
+which introduces a reformulation of the InfoNCE loss used in SimCLR [2]_ that
 removes the negative-positive coupling in the loss. This modification
 stabilizes optimization and improves performance, especially when training with
 small batch sizes.
@@ -19,7 +19,7 @@ We will follow these steps:
 3. Define the DCL and SimCLR models.
 4. Train the models for different batch sizes.
 5. Compare the obtained representations on CIFAR10 test set with linear
-probing.
+   probing.
 
   .. [1] Yeh, Chun-Hsiao, et al. "Decoupled contrastive learning."
           European conference on computer vision.
