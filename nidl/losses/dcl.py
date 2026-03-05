@@ -5,14 +5,14 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Callable
 from typing import Optional
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as func
-from torch import Tensor
+from torch import Tensor, nn
 
 
 class DCLLoss(nn.Module):
