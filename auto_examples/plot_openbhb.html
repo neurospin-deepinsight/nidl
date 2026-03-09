@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="This notebook introduces the OpenBHB dataset 1, a large-scale, multi-site brain MRI dataset. It is designed to perform benchmarking of machine learning and deep learning models on neuroimaging data..." />
-<link rel="search" title="Search" href="../search.html"><link rel="next" title="Self-Supervised Contrastive Learning with SimCLR" href="simclr_stl10.html"><link rel="prev" title="Model probing callback of embedding estimators" href="plot_model_probing.html">
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="Self-Supervised Contrastive Learning with SimCLR on MNIST" href="plot_simclr_mnist.html"><link rel="prev" title="Model probing callback of embedding estimators" href="plot_model_probing.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
@@ -232,7 +232,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Presentation of the OpenBHB dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
@@ -489,7 +489,7 @@ being in the same physical space across subjects.</p></li>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(121, 145, 121)
 
-&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f4ffe341850&gt;
+&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fd4757ed070&gt;
 </pre></div>
 </div>
 </section>
@@ -543,7 +543,7 @@ a brain template using the Neuromorphometrics atlas**:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f50d97f1640&gt;
+<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fd4758d0bf0&gt;
 </pre></div>
 </div>
 </section>
@@ -698,11 +698,13 @@ in millimiter.</p></li>
 </div>
 <img src="../_images/sphx_glr_plot_openbhb_005.png" srcset="../_images/sphx_glr_plot_openbhb_005.png" alt="Cortical thickness (in $mm$), Sulcal depth (in $mm$), Curvature" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
 [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
-[fetch_surf_fsaverage] Downloaded 1900544 of 34242788 bytes (5.6%%,   17.1s
+[fetch_surf_fsaverage] Downloaded 589824 of 34242788 bytes (1.7%%,   58.0s
 remaining)
-[fetch_surf_fsaverage] Downloaded 29147136 of 34242788 bytes (85.1%%,    0.4s
+[fetch_surf_fsaverage] Downloaded 7913472 of 34242788 bytes (23.1%%,    6.7s
 remaining)
-[fetch_surf_fsaverage]  ...done. (4 seconds, 0 min)
+[fetch_surf_fsaverage] Downloaded 33193984 of 34242788 bytes (96.9%%,    0.1s
+remaining)
+[fetch_surf_fsaverage]  ...done. (5 seconds, 0 min)
 
 [fetch_surf_fsaverage] Extracting data from
 /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
@@ -1053,8 +1055,8 @@ organization, Proceedings of the National Academy of Sciences, 2024
 <a class="reference external" href="https://www.jneurosci.org/content/31/19/7174">https://www.jneurosci.org/content/31/19/7174</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (4 minutes 55.700 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2576 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (5 minutes 4.285 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2578 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9891edd964521be9e6f154fc1a8056c6/plot_openbhb.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_openbhb.ipynb</span></code></a></p>
@@ -1075,12 +1077,12 @@ organization, Proceedings of the National Academy of Sciences, 2024
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="simclr_stl10.html">
+          <a class="next-page" href="plot_simclr_mnist.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Self-Supervised Contrastive Learning with SimCLR</div>
+                <div class="title">Self-Supervised Contrastive Learning with SimCLR on MNIST</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

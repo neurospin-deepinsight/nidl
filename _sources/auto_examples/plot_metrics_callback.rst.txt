@@ -413,18 +413,18 @@ Finally, we fit the model:
     Total FLOPs: 0                                                                  
     /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:665: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
       warnings.warn(warn_msg)
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        28.13it/s v_num: 8.000     
-                                        0:00:00                    acc1/train: 0.979
-                                                                   f1/train: 0.979  
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        27.63it/s v_num: 8.000     
+                                        0:00:00                    acc1/train: 0.990
+                                                                   f1/train: 0.990  
                                                                    precision/train: 
-                                                                   0.979            
+                                                                   0.990            
                                                                    recall/train:    
-                                                                   0.979 acc1/val:  
-                                                                   0.982 f1/val:    
-                                                                   0.982            
+                                                                   0.990 acc1/val:  
+                                                                   0.977 f1/val:    
+                                                                   0.977            
                                                                    precision/val:   
-                                                                   0.982 recall/val:
-                                                                   0.982            
+                                                                   0.977 recall/val:
+                                                                   0.977            
 
     SupervisedCrossEntropy(
       (backbone): LeNet(
@@ -673,15 +673,15 @@ computation as the model's weights are changing over iterations.
     Modules in train mode: 14                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:45 • 0:00:00 5.65it/s v_num: 9.000     
-                                                                   loss/train: 0.229
-                                                                   loss/val: 0.889  
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:44 • 0:00:00 5.71it/s v_num: 9.000     
+                                                                   loss/train: 0.315
+                                                                   loss/val: 1.139  
                                                                    alignment/val:   
-                                                                   0.102            
+                                                                   0.115            
                                                                    uniformity/val:  
-                                                                   -3.503           
+                                                                   -3.390           
                                                                    contrastive_acc/…
-                                                                   0.840            
+                                                                   0.766            
 
     SimCLR(
       (encoder): LeNet(
@@ -781,9 +781,9 @@ increases:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (10 minutes 27.357 seconds)
+   **Total running time of the script:** (10 minutes 21.713 seconds)
 
-**Estimated memory usage:**  2395 MB
+**Estimated memory usage:**  2402 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_metrics_callback.py:

@@ -49,18 +49,18 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="From: https://uvadlc-notebooks.readthedocs.io">
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to implement and evaluate a SimCLR model [1]_ for self-supervised contrastive learning on the MNIST dataset using the nidl library.">
 
 .. only:: html
 
-  .. image:: /auto_examples/images/thumb/sphx_glr_simclr_stl10_thumb.png
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_simclr_mnist_thumb.png
     :alt:
 
-  :doc:`/auto_examples/simclr_stl10`
+  :doc:`/auto_examples/plot_simclr_mnist`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Self-Supervised Contrastive Learning with SimCLR</div>
+      <div class="sphx-glr-thumbnail-title">Self-Supervised Contrastive Learning with SimCLR on MNIST</div>
     </div>
 
 
@@ -127,7 +127,7 @@ Examples
 
    /auto_examples/plot_model_probing
    /auto_examples/plot_openbhb
-   /auto_examples/simclr_stl10
+   /auto_examples/plot_simclr_mnist
    /auto_examples/plot_barlowtwins_openbhb
    /auto_examples/plot_metrics_callback
    /auto_examples/plot_yaware_openbhb

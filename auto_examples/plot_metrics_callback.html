@@ -232,7 +232,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
@@ -644,18 +644,18 @@ Modules in eval mode: 0
 Total FLOPs: 0
 /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:665: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
   warnings.warn(warn_msg)
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        28.13it/s v_num: 8.000
-                                    0:00:00                    acc1/train: 0.979
-                                                               f1/train: 0.979
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        27.63it/s v_num: 8.000
+                                    0:00:00                    acc1/train: 0.990
+                                                               f1/train: 0.990
                                                                precision/train:
-                                                               0.979
+                                                               0.990
                                                                recall/train:
-                                                               0.979 acc1/val:
-                                                               0.982 f1/val:
-                                                               0.982
+                                                               0.990 acc1/val:
+                                                               0.977 f1/val:
+                                                               0.977
                                                                precision/val:
-                                                               0.982 recall/val:
-                                                               0.982
+                                                               0.977 recall/val:
+                                                               0.977
 
 SupervisedCrossEntropy(
   (backbone): LeNet(
@@ -823,15 +823,15 @@ Total estimated model params size (MB): 0
 Modules in train mode: 14
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:45 • 0:00:00 5.65it/s v_num: 9.000
-                                                               loss/train: 0.229
-                                                               loss/val: 0.889
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:44 • 0:00:00 5.71it/s v_num: 9.000
+                                                               loss/train: 0.315
+                                                               loss/val: 1.139
                                                                alignment/val:
-                                                               0.102
+                                                               0.115
                                                                uniformity/val:
-                                                               -3.503
+                                                               -3.390
                                                                contrastive_acc/…
-                                                               0.840
+                                                               0.766
 
 SimCLR(
   (encoder): LeNet(
@@ -894,8 +894,8 @@ increases:</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (10 minutes 27.357 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2395 MB</p>
+<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (10 minutes 21.713 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2402 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-metrics-callback-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/dfa4ecd93e1a6b50d625160b65e18c28/plot_metrics_callback.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_metrics_callback.ipynb</span></code></a></p>

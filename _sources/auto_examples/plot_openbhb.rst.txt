@@ -173,7 +173,7 @@ different modalities:
 
     (121, 145, 121)
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f4ffe341850>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fd4757ed070>
 
 
 
@@ -250,7 +250,7 @@ a brain template using the Neuromorphometrics atlas**:
  .. code-block:: none
 
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7f50d97f1640>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fd4758d0bf0>
 
 
 
@@ -450,11 +450,13 @@ the left hemisphere using the higher-resolution fsaverage7 template:
 
     [fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
     [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
-    [fetch_surf_fsaverage] Downloaded 1900544 of 34242788 bytes (5.6%%,   17.1s 
+    [fetch_surf_fsaverage] Downloaded 589824 of 34242788 bytes (1.7%%,   58.0s 
     remaining)
-    [fetch_surf_fsaverage] Downloaded 29147136 of 34242788 bytes (85.1%%,    0.4s 
+    [fetch_surf_fsaverage] Downloaded 7913472 of 34242788 bytes (23.1%%,    6.7s 
     remaining)
-    [fetch_surf_fsaverage]  ...done. (4 seconds, 0 min)
+    [fetch_surf_fsaverage] Downloaded 33193984 of 34242788 bytes (96.9%%,    0.1s 
+    remaining)
+    [fetch_surf_fsaverage]  ...done. (5 seconds, 0 min)
 
     [fetch_surf_fsaverage] Extracting data from 
     /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
@@ -903,9 +905,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (4 minutes 55.700 seconds)
+   **Total running time of the script:** (5 minutes 4.285 seconds)
 
-**Estimated memory usage:**  2576 MB
+**Estimated memory usage:**  2578 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_openbhb.py:

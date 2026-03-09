@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**37:08.689** total execution time for 6 files **from auto_examples**:
+**38:22.081** total execution time for 6 files **from auto_examples**:
 
 .. container::
 
@@ -33,20 +33,20 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_examples_plot_metrics_callback.py` (``plot_metrics_callback.py``)
-     - 10:27.357
-     - 2394.6
-   * - :ref:`sphx_glr_auto_examples_plot_barlowtwins_openbhb.py` (``plot_barlowtwins_openbhb.py``)
-     - 07:26.035
-     - 116.4
-   * - :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py` (``plot_yaware_openbhb.py``)
-     - 07:10.127
-     - 113.0
+     - 10:21.713
+     - 2402.0
    * - :ref:`sphx_glr_auto_examples_plot_model_probing.py` (``plot_model_probing.py``)
-     - 07:09.469
-     - 401.7
+     - 07:27.784
+     - 396.8
+   * - :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py` (``plot_yaware_openbhb.py``)
+     - 07:19.913
+     - 113.2
+   * - :ref:`sphx_glr_auto_examples_plot_barlowtwins_openbhb.py` (``plot_barlowtwins_openbhb.py``)
+     - 07:10.181
+     - 114.3
    * - :ref:`sphx_glr_auto_examples_plot_openbhb.py` (``plot_openbhb.py``)
-     - 04:55.700
-     - 2576.2
-   * - :ref:`sphx_glr_auto_examples_simclr_stl10.py` (``simclr_stl10.py``)
-     - 00:00.000
-     - 0.0
+     - 05:04.285
+     - 2578.0
+   * - :ref:`sphx_glr_auto_examples_plot_simclr_mnist.py` (``plot_simclr_mnist.py``)
+     - 00:58.205
+     - 203.5

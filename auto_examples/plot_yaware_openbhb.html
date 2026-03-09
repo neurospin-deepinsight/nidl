@@ -232,7 +232,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing callback of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simclr_stl10.html">Self-Supervised Contrastive Learning with SimCLR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Weakly Supervised Contrastive Learning with y-Aware</a></li>
@@ -757,9 +757,9 @@ Total FLOPs: 0
   warnings.warn(
 /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:626: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   warnings.warn(
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:12 • 0:00:00 4.88it/s v_num: 10.000
-                                                              loss/train: 8.299
-                                                              loss/val: 11.459
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 4.93it/s v_num: 10.000
+                                                              loss/train: 8.325
+                                                              loss/val: 11.548
 /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:626: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   warnings.warn(
 /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py:317: The number of training batches (26) is smaller than the logging interval Trainer(log_every_n_steps=50). Set a lower value for log_every_n_steps if you want to see logs for the training epoch.
@@ -815,9 +815,9 @@ Total FLOPs: 0
   warnings.warn(
 /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:626: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   warnings.warn(
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:18 • 0:00:00 2.59it/s v_num: 11.000
-                                                              loss/train: 8.570
-                                                              loss/val: 11.725
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:19 • 0:00:00 2.35it/s v_num: 11.000
+                                                              loss/train: 8.976
+                                                              loss/val: 11.904
 
 YAwareContrastiveLearning(
   (encoder): MLP(
@@ -859,10 +859,10 @@ and SBM data.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:626: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   warnings.warn(
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:04 • 0:00:00 5.26it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 1558.36it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:09 • 0:00:00 2.52it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 107.64it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:04 • 0:00:00 5.05it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 1336.93it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:10 • 0:00:00 2.36it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 1429.60it/s
 </pre></div>
 </div>
 <p>We also extract the ages of the subjects for coloring the points in the
@@ -991,7 +991,7 @@ each model.</p>
 <span class="n">plot_comparison</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">models</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">embeddings</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_yaware_openbhb_002.png" srcset="../_images/sphx_glr_plot_yaware_openbhb_002.png" alt="Model Comparison: VBM vs SBM, VBM - Linear Regression MAE=5.76, R²=0.62, SBM - Linear Regression MAE=7.53, R²=0.37, VBM - KNN (k=5) MAE=4.94, R²=0.66, SBM - KNN (k=5) MAE=7.45, R²=0.23" class = "sphx-glr-single-img"/><p><strong>Observations</strong>: From the MDS visualizations, we can observe that both VBM
+<img src="../_images/sphx_glr_plot_yaware_openbhb_002.png" srcset="../_images/sphx_glr_plot_yaware_openbhb_002.png" alt="Model Comparison: VBM vs SBM, VBM - Linear Regression MAE=5.74, R²=0.61, SBM - Linear Regression MAE=7.12, R²=0.43, VBM - KNN (k=5) MAE=5.41, R²=0.57, SBM - KNN (k=5) MAE=6.92, R²=0.32" class = "sphx-glr-single-img"/><p><strong>Observations</strong>: From the MDS visualizations, we can observe that both VBM
 and SBM embeddings show a gradient of ages, indicating that the models have
 learned to organize the data in a way that reflects age similarity. However,
 the VBM embeddings appear to have a more continuous distribution of ages
@@ -1000,7 +1000,7 @@ more effectively than SBM in this context. This is confirmed when looking at
 the age prediction results, where VBM outperforms SBM for both linear
 regression and KNN regression. However, the results can be improved by
 working with the original 3d brain scans instead of the ROI-averaged data.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 10.127 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 19.913 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  113 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-yaware-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
