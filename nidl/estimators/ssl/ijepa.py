@@ -15,12 +15,12 @@ import torch
 from einops import rearrange
 from pytorch_lightning.utilities.types import LRSchedulerPLType
 from timm.layers import trunc_normal_
-from timm.models.vision_transformer import Block, VisionTransformer
+from timm.models.vision_transformer import Block
 from torch import nn
 from torch.optim import Optimizer
 
 from nidl.estimators.base import BaseEstimator, TransformerMixin
-from nidl.volume.backbones.tokenizers.patchify import (
+from nidl.volume.backbones.utils.pos_embed import (
     build_2d_sincos_posemb,
     build_3d_sincos_posemb,
 )
@@ -45,7 +45,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
     Parameters
     ----------
-    encoder : timm.models.vision_transformer.VisionTransformer
+    encoder : nn.Module
         The encoder architecture.
     
     dim: {2, 3}, default=3
@@ -144,7 +144,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
     def __init__(
         self,
-        encoder: VisionTransformer,
+        encoder: nn.Module,
         dim: int = 3,
         context_block_scale: tuple[float, float] = (0.85, 1.0),
         target_block_scale: tuple[float, float] = (0.15, 0.2),
@@ -191,10 +191,10 @@ class IJEPA(TransformerMixin, BaseEstimator):
         # Instantiate momentum updates.
         self.momentum_updater = MomentumUpdater(ema_start, ema_end)
 
-        # Derive input parameters from given encoder
-        grid_size = self.encoder.patch_embed.grid_size
-        embed_dim = self.encoder.embed_dim
-        num_heads = self.encoder.blocks[0].attn.num_heads
+        # Derive input parameters from the encoder
+        grid_size = self.target_encoder.grid_size
+        embed_dim = self.target_encoder.embed_dim
+        num_heads = self.target_encoder.num_heads
 
         self.predictor = VisionTransformerPredictor(
             grid_size=grid_size,
@@ -249,7 +249,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
         return {
             "loss": loss,
-            "z_context": z.detach(),
+            "z_pred": z.detach(),
             "z_target": h.detach(),
         }
 
@@ -259,7 +259,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
         Parameters
         ----------
-        batch : torch.Tensor or pair of torch.Tensor
+        batch : torch.Tensor or (torch.Tensor, torch.Tensor)
             A batch of data in the format ``X`` or ``(X, Y)`` where ``X``
             is a torch.Tensor with shape ``(B, C, H, W)`` (2d images) or
             ``(B, C, H, W, D)`` (3d volumes) representing the input data.
@@ -273,13 +273,13 @@ class IJEPA(TransformerMixin, BaseEstimator):
         outputs : dict
             Dictionary containing three torch.Tensors:
                 - "loss": training loss computed on this batch of data.
-                - "z_context": embeddings predictions for target tokens with
+                - "z_pred": embeddings predictions for target tokens with
                    shape ``(B * M, L, D)`` where ``M`` is the number of
                    target blocks (e.g. 4), ``L`` is the number of target
                    tokens predicted per block, and ``D`` is the embedding
                    dimension.
                 - "z_target": embeddings to predict with the same shape as
-                  "z_context".
+                  "z_pred".
         """
 
         outputs = self._shared_step(batch)
@@ -295,7 +295,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
     ):
         h = self.target_encoder.forward_features(x)
         # create targets (only preserve tokens in the target blocks).
-        h = IJEPAVisionTransformer.apply_masks(h, target_blocks)
+        h = self.target_encoder.apply_masks(h, target_blocks)
         return h
 
     def on_train_batch_end(
@@ -329,7 +329,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
         Parameters
         ----------
-        batch : torch.Tensor or pair of torch.Tensor
+        batch : torch.Tensor or (torch.Tensor, torch.Tensor)
             A batch of data in the format ``X`` or ``(X, Y)`` where ``X``
             is a torch.Tensor with shape ``(B, C, H, W)`` (2d images) or
             ``(B, C, H, W, D)`` (3d volumes) representing the input data.
@@ -343,13 +343,13 @@ class IJEPA(TransformerMixin, BaseEstimator):
         outputs : dict
             Dictionary containing three torch.Tensors:
                 - "loss": validation loss computed on this batch of data.
-                - "z_context": embeddings predictions for target tokens with
+                - "z_pred": embeddings predictions for target tokens with
                    shape ``(B * M, L, D)`` where ``M`` is the number of
                    target blocks (e.g. 4), ``L`` is the number of target
                    tokens predicted per block, and ``D`` is the embedding
                    dimension.
                 - "z_target": embeddings to predict with the same shape as
-                  "z_context".
+                  "z_pred".
         """
 
         outputs = self._shared_step(batch)
@@ -368,40 +368,96 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
 
 class IJEPAVisionTransformer(nn.Module):
-    def __init__(self, vit: VisionTransformer):
+    def __init__(self, vit: nn.Module):
         super().__init__()
-        if not isinstance(vit, VisionTransformer):
+        missings = self._is_vit_like(vit)
+        if len(missings) > 0:
             raise TypeError(
-                "Encoder must be a VisionTransformer from timm in I-JEPA, "
-                f"got {vit}."
+                "Encoder must follow the timm interface of VisionTransformer, "
+                f"missing {missings} "
             )
-
         self.vit = vit
         # Raise error if class/reg tokens are present (not used in I-JEPA)
-        if self.vit.has_class_token or self.vit.num_reg_tokens > 0:
+        if self.has_class_token or self.num_reg_tokens > 0:
             raise ValueError(
-                "VisionTransformer in I-JEPA should not have CLS or REG tokens"
+                "Input encoder should not have [CLS] or [REG] tokens"
             )
+
+    def _is_vit_like(self, vit: nn.Module):
+        missings = {}
+        for k in (
+            "has_class_token",
+            "num_reg_tokens",
+            "patch_embed",
+            "patch_drop",
+            "norm_pre",
+            "blocks",
+            "norm",
+            "_pos_embed",
+            "forward_features",
+            "embed_dim",
+        ):
+            if not hasattr(vit, k):
+                missings.append(k)
+        return missings
+
+    @property
+    def grid_size(self):
+        return self.vit.patch_embed.grid_size
+
+    @property
+    def embed_dim(self):
+        return self.vit.embed_dim
+
+    @property
+    def num_heads(self):
+        return self.vit.blocks[0].attn.num_heads
+
+    @property
+    def has_class_token(self):
+        return self.vit.has_class_token
+
+    @property
+    def num_reg_tokens(self):
+        return self.vit.num_reg_tokens
+
+    def patch_embed(self, x: torch.Tensor):
+        return self.vit.patch_embed(x)
+
+    def forward_features(self, x: torch.Tensor):
+        return self.vit.forward_features(x)
+
+    def _pos_embed(self, x: torch.Tensor):
+        return self.vit._pos_embed(x)
+
+    def patch_drop(self, x: torch.Tensor):
+        return self.vit.patch_drop(x)
+
+    def norm_pre(self, x: torch.Tensor):
+        return self.vit.norm_pre(x)
+
+    def blocks(self, x: torch.Tensor):
+        return self.vit.blocks(x)
+
+    def norm(self, x: torch.Tensor):
+        return self.vit.norm(x)
 
     def forward(
         self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
     ):
         """Forward pass through feature layers (embeddings, transformer blocks,
         post-transformer norm) + masking of input patches."""
-        x = self.vit.patch_embed(x)
-        x = self.vit._pos_embed(x)
+        x = self.patch_embed(x)
+        x = self._pos_embed(x)
 
         if masks is not None:
             x = self.apply_masks(x, masks)
 
-        x = self.vit.patch_drop(x)
-        x = self.vit.norm_pre(x)
-        x = self.vit.blocks(x)
-        x = self.vit.norm(x)
+        x = self.patch_drop(x)
+        x = self.norm_pre(x)
+        x = self.blocks(x)
+        x = self.norm(x)
         return x
-
-    def forward_features(self, x: torch.Tensor):
-        return self.vit.forward_features(x)
 
     @staticmethod
     def apply_masks(x: torch.Tensor, masks: list[torch.Tensor]):
@@ -631,6 +687,7 @@ class Masker(nn.Module):
     This implementation is adapted from the original I-JEPA implementation in :
     https://github.com/facebookresearch/ijepa/blob/main/src/masks/multiblock.py
 
+
     Parameters
     ----------
     grid_size: int, (int, int) or (int, int, int)
@@ -686,6 +743,20 @@ class Masker(nn.Module):
     patches (following the ViT paradigm). As such, returned indices are defined
     over this grid and NOT over input pixels/voxels.
 
+    The number of kept tokens per block can vary across samples because
+    blocks are randomly placed and constrained by `min_keep` and
+    `allow_overlap`. To return tensors with a consistent shape, the masker
+    truncates each sampled mask to the minimum number of kept indices
+    observed in the batch:
+
+    - `Kc` is the minimum number of context indices across the batch.
+    - `Kt` is the minimum number of target indices across the batch (and
+          across all target blocks).
+
+    As a result, `context` has shape `(B, Kc)` and `targets` has shape
+    `(M, B, Kt)`, where `B` is the batch size and `M` is
+    `num_target_blocks`.
+
     """
 
     def __init__(
@@ -728,29 +799,13 @@ class Masker(nn.Module):
             Number of samples in the current batch.
 
         Returns
-        ----------
+        -------
         (context_block, target_blocks): torch.Tensor, List[torch.Tensor]
             ``context_block`` has shape ``(B, Kc)`` where ``B`` is the batch
               size and ``Kc`` is the number of context patch indices kept.
             ``target_blocks`` has shape ``(M, B, Kt)`` where ``M`` is the
               number of target blocks and ``Kt`` is the number of target patch
               indices kept per block.
-
-        Notes
-        -----
-        The number of kept tokens per block can vary across samples because
-        blocks are randomly placed and constrained by `min_keep` and
-        `allow_overlap`. To return tensors with a consistent shape, the masker
-        truncates each sampled mask to the minimum number of kept indices
-        observed in the batch:
-
-        - `Kc` is the minimum number of context indices across the batch.
-        - `Kt` is the minimum number of target indices across the batch (and
-          across all target blocks).
-
-        As a result, `context` has shape `(B, Kc)` and `targets` has shape
-        `(M, B, Kt)`, where `B` is the batch size and `M` is
-        `num_target_blocks`.
 
         """
         seed = self.step()

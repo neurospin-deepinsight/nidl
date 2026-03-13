@@ -6,7 +6,7 @@
 # for details.
 ##########################################################################
 
-from .patchify import (
+from .pos_embed import (
     build_1d_sincos_posemb,
     build_2d_sincos_posemb,
     build_3d_sincos_posemb,

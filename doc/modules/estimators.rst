@@ -129,6 +129,7 @@ Estimators
     YAwareContrastiveLearning
     BarlowTwins
     DINO
+    IJEPA
 
 .. autoclasstree:: nidl.estimators.ssl
    :strict:
