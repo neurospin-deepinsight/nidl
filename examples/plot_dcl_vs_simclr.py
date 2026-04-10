@@ -8,7 +8,7 @@ removes the negative-positive coupling in the loss. This modification
 stabilizes optimization and improves performance, especially when training with
 small batch sizes.
 
-In this tutorial, we will use the CIFAR-10 dataset to train models based on
+In this tutorial, we will use the CIFAR10 dataset to train models based on
 DCL and SimCLR and compare their performances for different batch sizes using
 the nidl library.
 
@@ -126,7 +126,7 @@ if latent_size != 128 and load_pretrained == True:
 # Data Preparation
 # -----------------
 #
-# We'll use the CIFAR-10 dataset, which contains 50,000 training images and
+# We'll use the CIFAR10 dataset, which contains 50,000 training images and
 # 10,000 test images of 10 different classes. We'll apply standard scaling
 # transforms, the test dataset will be used to evaluate the model performance
 # on the classification task.
