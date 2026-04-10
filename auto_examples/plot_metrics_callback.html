@@ -480,8 +480,8 @@ transforms.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:626: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:424: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
 </pre></div>
 </div>
 <p>Before starting training classifiers, let’s visualize some
@@ -507,7 +507,11 @@ examples of the dataset.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_metrics_callback_001.png" srcset="../_images/sphx_glr_plot_metrics_callback_001.png" alt="Label=7, Label=2, Label=1" class = "sphx-glr-single-img"/><section id="supervised-training-with-metrics-callback">
+<img src="../_images/sphx_glr_plot_metrics_callback_001.png" srcset="../_images/sphx_glr_plot_metrics_callback_001.png" alt="Label=7, Label=2, Label=1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+</pre></div>
+</div>
+<section id="supervised-training-with-metrics-callback">
 <h3>Supervised training with metrics callback<a class="headerlink" href="#supervised-training-with-metrics-callback" title="Link to this heading">¶</a></h3>
 <p>Since MNIST images are small, we can use a simple LeNet-like architecture
 as encoder, with few parameters. The output dimension of the
@@ -642,9 +646,10 @@ Total estimated model params size (MB): 0
 Modules in train mode: 8
 Modules in eval mode: 0
 Total FLOPs: 0
-/opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:665: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  warnings.warn(warn_msg)
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        27.63it/s v_num: 8.000
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        28.12it/s v_num: 8.000
                                     0:00:00                    acc1/train: 0.990
                                                                f1/train: 0.990
                                                                precision/train:
@@ -823,15 +828,15 @@ Total estimated model params size (MB): 0
 Modules in train mode: 14
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:44 • 0:00:00 5.71it/s v_num: 9.000
-                                                               loss/train: 0.315
-                                                               loss/val: 1.139
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:43 • 0:00:00 5.88it/s v_num: 9.000
+                                                               loss/train: 0.328
+                                                               loss/val: 1.127
                                                                alignment/val:
-                                                               0.115
+                                                               0.119
                                                                uniformity/val:
-                                                               -3.390
+                                                               -3.441
                                                                contrastive_acc/…
-                                                               0.766
+                                                               0.750
 
 SimCLR(
   (encoder): LeNet(
@@ -894,8 +899,8 @@ increases:</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (10 minutes 21.713 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2402 MB</p>
+<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (10 minutes 3.413 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2347 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-metrics-callback-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/dfa4ecd93e1a6b50d625160b65e18c28/plot_metrics_callback.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_metrics_callback.ipynb</span></code></a></p>

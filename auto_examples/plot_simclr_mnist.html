@@ -557,8 +557,8 @@ self-supervised training.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:626: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:424: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
 </pre></div>
 </div>
 </section>
@@ -709,70 +709,69 @@ reducing the number of training samples and measuring accuracy.</p>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span></a> <span class="o">=</span> <span class="n">extract_features</span><span class="p">(</span><a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  5.67it/s]
-Extracting features: 8it [00:00, 34.13it/s]
-Extracting features: 17it [00:00, 54.82it/s]
-Extracting features: 25it [00:00, 61.81it/s]
-Extracting features: 35it [00:00, 71.27it/s]
-Extracting features: 44it [00:00, 75.87it/s]
-Extracting features: 53it [00:00, 79.73it/s]
-Extracting features: 62it [00:00, 79.74it/s]
-Extracting features: 71it [00:01, 81.53it/s]
-Extracting features: 81it [00:01, 84.79it/s]
-Extracting features: 90it [00:01, 85.44it/s]
-Extracting features: 99it [00:01, 82.12it/s]
-Extracting features: 110it [00:01, 83.30it/s]
-Extracting features: 119it [00:01, 84.28it/s]
-Extracting features: 128it [00:01, 83.25it/s]
-Extracting features: 137it [00:01, 83.46it/s]
-Extracting features: 146it [00:01, 84.01it/s]
-Extracting features: 155it [00:02, 84.91it/s]
-Extracting features: 164it [00:02, 83.67it/s]
-Extracting features: 173it [00:02, 84.17it/s]
-Extracting features: 182it [00:02, 83.50it/s]
-Extracting features: 191it [00:02, 84.36it/s]
-Extracting features: 200it [00:02, 84.82it/s]
-Extracting features: 209it [00:02, 82.57it/s]
-Extracting features: 218it [00:02, 84.46it/s]
-Extracting features: 228it [00:02, 86.71it/s]
-Extracting features: 237it [00:02, 84.57it/s]
-Extracting features: 247it [00:03, 86.06it/s]
-Extracting features: 257it [00:03, 87.83it/s]
-Extracting features: 266it [00:03, 85.01it/s]
-Extracting features: 275it [00:03, 84.83it/s]
-Extracting features: 285it [00:03, 85.58it/s]
-Extracting features: 295it [00:03, 86.90it/s]
-Extracting features: 304it [00:03, 85.52it/s]
-Extracting features: 313it [00:03, 85.64it/s]
-Extracting features: 322it [00:03, 86.60it/s]
-Extracting features: 331it [00:04, 86.55it/s]
-Extracting features: 340it [00:04, 86.67it/s]
-Extracting features: 349it [00:04, 86.39it/s]
-Extracting features: 358it [00:04, 85.32it/s]
-Extracting features: 367it [00:04, 84.70it/s]
-Extracting features: 376it [00:04, 85.70it/s]
-Extracting features: 385it [00:04, 85.01it/s]
-Extracting features: 394it [00:04, 86.20it/s]
-Extracting features: 403it [00:04, 86.43it/s]
-Extracting features: 412it [00:05, 86.37it/s]
-Extracting features: 421it [00:05, 85.74it/s]
-Extracting features: 430it [00:05, 84.83it/s]
-Extracting features: 439it [00:05, 85.48it/s]
-Extracting features: 449it [00:05, 85.79it/s]
-Extracting features: 469it [00:05, 82.76it/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  6.95it/s]
-Extracting features: 5it [00:00, 22.73it/s]
-Extracting features: 14it [00:00, 48.57it/s]
-Extracting features: 23it [00:00, 62.92it/s]
-Extracting features: 32it [00:00, 70.89it/s]
-Extracting features: 41it [00:00, 76.52it/s]
-Extracting features: 49it [00:00, 76.28it/s]
-Extracting features: 58it [00:00, 80.28it/s]
-Extracting features: 76it [00:00, 110.29it/s]
-Extracting features: 79it [00:01, 71.81it/s]
+Extracting features: 1it [00:00,  5.21it/s]
+Extracting features: 10it [00:00, 39.97it/s]
+Extracting features: 19it [00:00, 56.84it/s]
+Extracting features: 28it [00:00, 67.45it/s]
+Extracting features: 37it [00:00, 74.03it/s]
+Extracting features: 46it [00:00, 78.43it/s]
+Extracting features: 56it [00:00, 84.83it/s]
+Extracting features: 65it [00:00, 84.80it/s]
+Extracting features: 75it [00:01, 86.87it/s]
+Extracting features: 84it [00:01, 85.81it/s]
+Extracting features: 93it [00:01, 85.07it/s]
+Extracting features: 102it [00:01, 86.22it/s]
+Extracting features: 111it [00:01, 86.23it/s]
+Extracting features: 120it [00:01, 86.26it/s]
+Extracting features: 129it [00:01, 86.65it/s]
+Extracting features: 138it [00:01, 85.42it/s]
+Extracting features: 148it [00:01, 86.75it/s]
+Extracting features: 157it [00:01, 85.79it/s]
+Extracting features: 167it [00:02, 85.22it/s]
+Extracting features: 177it [00:02, 88.35it/s]
+Extracting features: 186it [00:02, 86.28it/s]
+Extracting features: 196it [00:02, 87.05it/s]
+Extracting features: 205it [00:02, 86.24it/s]
+Extracting features: 216it [00:02, 91.45it/s]
+Extracting features: 226it [00:02, 85.20it/s]
+Extracting features: 236it [00:02, 87.96it/s]
+Extracting features: 246it [00:03, 86.04it/s]
+Extracting features: 256it [00:03, 85.73it/s]
+Extracting features: 266it [00:03, 85.93it/s]
+Extracting features: 276it [00:03, 88.87it/s]
+Extracting features: 285it [00:03, 89.11it/s]
+Extracting features: 294it [00:03, 88.99it/s]
+Extracting features: 303it [00:03, 87.25it/s]
+Extracting features: 312it [00:03, 87.06it/s]
+Extracting features: 322it [00:03, 88.70it/s]
+Extracting features: 331it [00:03, 88.76it/s]
+Extracting features: 341it [00:04, 89.52it/s]
+Extracting features: 351it [00:04, 90.76it/s]
+Extracting features: 361it [00:04, 91.33it/s]
+Extracting features: 371it [00:04, 90.08it/s]
+Extracting features: 381it [00:04, 90.55it/s]
+Extracting features: 391it [00:04, 91.70it/s]
+Extracting features: 401it [00:04, 86.48it/s]
+Extracting features: 410it [00:04, 86.74it/s]
+Extracting features: 420it [00:04, 89.84it/s]
+Extracting features: 430it [00:05, 90.28it/s]
+Extracting features: 440it [00:05, 88.18it/s]
+Extracting features: 449it [00:05, 88.07it/s]
+Extracting features: 469it [00:05, 85.58it/s]
+
+Extracting features: 0it [00:00, ?it/s]
+Extracting features: 1it [00:00,  5.36it/s]
+Extracting features: 9it [00:00, 36.31it/s]
+Extracting features: 19it [00:00, 58.08it/s]
+Extracting features: 28it [00:00, 68.00it/s]
+Extracting features: 39it [00:00, 77.05it/s]
+Extracting features: 48it [00:00, 79.02it/s]
+Extracting features: 57it [00:00, 82.16it/s]
+Extracting features: 79it [00:01, 76.18it/s]
 </pre></div>
 </div>
 <p>We define the linear probe</p>
@@ -807,8 +806,8 @@ pretraining using SimCLR. We observe that prediction is already 70% accurate
 using 1% of the annotated training samples (600 samples over 60,000).
 This is one of the strenghts of self-supervised learning to reduce the need
 for annotated data in downstream tasks.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 58.205 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  204 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 4.800 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  207 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-simclr-mnist-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/35bb6e49ecd293702d39620bd6583aeb/plot_simclr_mnist.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_simclr_mnist.ipynb</span></code></a></p>
