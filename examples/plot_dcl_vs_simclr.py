@@ -45,7 +45,7 @@ from lightning_fabric import seed_everything
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from torch import nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from torchvision import transforms
 from torchvision.datasets import CIFAR10
 from torchvision.models import resnet18
@@ -70,14 +70,14 @@ load_pretrained = True
 # If loading model, directory where to save the weights
 model_dir = "/tmp/nidl_example_dcl_vs_simclr"
 # What accelerator to use: GPU if available, else CPU
-accelerator = "gpu" if torch.cuda.is_available() else "cpu"
+accelerator = "cpu"  # "gpu" if torch.cuda.is_available() else "cpu"
 
 # Latent size of the representation
 # /!\ If changing latent_size then you cannot load pretrained weights
 latent_size = 128
 
 # Number of workers (cpu cores) to use in dataloaders
-num_workers = 10
+num_workers = 4
 
 # We fix the seed and generator for reproducibility
 seed = 42
@@ -129,9 +129,11 @@ if latent_size != 128 and load_pretrained == True:
 # We'll use the CIFAR10 dataset, which contains 50,000 training images and
 # 10,000 test images of 10 different classes. We'll apply standard scaling
 # transforms, the test dataset will be used to evaluate the model performance
-# on the classification task.
+# on the classification task. We subsample the dataset for faster inference.
 #
 # Load CIFAR10 dataset with standard scaling
+#
+# We subsample the test dataset to run the notebook faster.
 
 # %%
 scale_transforms = transforms.Compose([
@@ -143,11 +145,17 @@ train_xy_dataset = CIFAR10(data_dir,
                          train=True,
                          transform=scale_transforms,
                          download=True)
+train_indices = rd_generator.choice(np.arange(len(train_xy_dataset)),
+    size=10000,replace=False)
+train_xy_dataset = Subset(train_xy_dataset, train_indices)
 
 test_xy_dataset = CIFAR10(data_dir,
                         train=False,
                         transform=scale_transforms,
                         download=True)
+test_indices = rd_generator.choice(np.arange(len(test_xy_dataset)),
+    size=5000,replace=False)
+test_xy_dataset = Subset(test_xy_dataset, test_indices)
 
 # %%
 # Dataset and data augmentations for contrastive learning
@@ -451,13 +459,14 @@ plt.ylabel('Accuracy on CIFAR10')
 plt.title('DCL vs SimCLR comparison on predicting CIFAR10 labels.')
 plt.ylim(0.5,0.8)
 plt.legend()
+plt.savefig('/neurospin/signatures/pa284280/nidl/img.png')
 plt.show()
 
 # %%
-# In this experiment, DCL improves downstream classification
-# accuracy when the batch size is small (32), while both methods achieve
-# similar performance at batch sizes 128 and 256. Note that in this example
-# both models are trained for only 100 epochs compared to 200 in the original
-# DCL paper which reports higher absolute performance and higher gains of DCL
-# over SimCLR.
+# In this experiment, DCL shows improved downstream classification
+# accuracy when trained with small batch sizes (32), with this advantage
+# diminishing at larger batch sizes (128 and 256). Note that this example
+# uses reduced data for linear probing and trains for only 100 epochs,
+# compared to the original DCL paper which used 200 epochs and reports
+# higher absolute performance and greater gains of DCL over SimCLR.
 #
