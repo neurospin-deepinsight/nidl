@@ -459,7 +459,6 @@ plt.ylabel('Accuracy on CIFAR10')
 plt.title('DCL vs SimCLR comparison on predicting CIFAR10 labels.')
 plt.ylim(0.5,0.8)
 plt.legend()
-plt.savefig('/neurospin/signatures/pa284280/nidl/img.png')
 plt.show()
 
 # %%
