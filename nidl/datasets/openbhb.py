@@ -717,7 +717,9 @@ class OpenBHB(Dataset):
             row = row.drop(columns=["participant_id", "session"]).to_numpy()
             return row.reshape(shape).astype(np.float32)
         else:
-            return np.load(path)[0].astype(np.float32)
+            return np.load(
+                path, mmap_mode='r'
+            )[0].astype(np.float32, copy=False)
 
     def _parse_root(self, path):
         # eventually parse "~" or $HOME

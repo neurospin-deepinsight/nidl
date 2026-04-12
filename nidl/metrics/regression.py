@@ -53,7 +53,7 @@ def pearson_r(
         - 'uniform_average': Scores of all outputs are averaged with uniform
           weight.
         - array-like: Defines weights used to average scores.
-    
+
     force_finite : bool, default=False
         Flag indicating if ``NaN`` and ``-Inf`` scores resulting from constant
         data should be replaced with real numbers (``1.0`` if prediction is

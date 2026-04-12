@@ -6,10 +6,10 @@
 # for details.
 ##########################################################################
 
-""" Linear estimators.
+""" Probes to evaluate data embedding estimators.
 """
 
-from .logistic_regression import LogisticRegression
+from .model_probe import ModelProbe
 
 
-__all__ = ["LogisticRegression"]
+__all__ = ["ModelProbe"]

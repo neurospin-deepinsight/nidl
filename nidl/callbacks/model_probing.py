@@ -304,7 +304,7 @@ class ModelProbing(pl.Callback):
             for batch_idx, batch in tqdm(
                 enumerate(dataloader),
                 desc="Extracting features",
-                disable=(not trainer.is_global_zero),
+                disable=(not self.prog_bar or not trainer.is_global_zero),
                 leave=False,
             ):
                 x_batch, y_batch = batch
