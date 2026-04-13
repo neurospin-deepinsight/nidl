@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import abc
 from collections.abc import Mapping, Sequence
@@ -12,7 +13,6 @@ from typing import Any, Callable, Optional, Union
 
 import pytorch_lightning as pl
 import torch
-import torch.utils.data as data
 from pytorch_lightning.accelerators import Accelerator
 from pytorch_lightning.callbacks import Callback
 from pytorch_lightning.strategies import Strategy
@@ -23,13 +23,14 @@ from pytorch_lightning.utilities.types import (
     _METRIC,
     STEP_OUTPUT,
 )
+from torch.utils import data
 from torchmetrics import MetricCollection
 
 from ..utils.validation import _estimator_is, available_if, check_is_fitted
 
-    
+
 class BaseEstimator(pl.LightningModule):
-    """ Base class for all estimators in the NIDL framework designed for
+    """Base class for all estimators in the NIDL framework designed for
     scalability.
 
     Inherits from PyTorch Lightning's LightningModule.
@@ -59,6 +60,10 @@ class BaseEstimator(pl.LightningModule):
         ``check_val_every_n_epoch=None``, which validates after every ``N``
         training batches across epochs or during iteration-based training.
         Default: ``1.0``.
+    num_sanity_val_steps: int, default=None
+        Sanity check runs n validation batches before starting the training
+        routine. Set it to `-1` to run all batches in all validation
+        dataloaders. Default: ``2``.
     max_epochs: int, default=None
         stop training once this number of epochs is reached. If both
         max_epochs and max_steps are not specified, defaults to
@@ -103,8 +108,12 @@ class BaseEstimator(pl.LightningModule):
         precision (32, '32' or '32-true'), 16bit mixed precision (16, '16',
         '16-mixed') or bfloat16 mixed precision ('bf16', 'bf16-mixed').
         Can be used on CPU, GPU, TPUs, or HPUs.
+    save_hparams: bool, default=True
+        Whether to save the hyper-parameters of this estimator or not.
     ignore: list of str, default=None
-        ignore attribute of instance `nn.Module`.
+        Attributes to be ignored when saving the hyperparameters of the
+        estimator. This is particularly useful for ignoring
+        :class:`~torch.nn.Module` attributes and callbacks.
     random_state: int, default=None
         when shuffling is used, `random_state` affects the ordering of the
         indices, which controls the randomness of each batch. Pass an
@@ -124,65 +133,44 @@ class BaseEstimator(pl.LightningModule):
     trainer_params
         a dictionaray with the trainer parameters.
 
-    Methods
-    -------
-    :meth:`BaseEstimator.fit`
-        the `fit` method.
-    :meth:`BaseEstimator.transform`
-        the `transform` method for transformer.
-    :meth:`BaseEstimator.predict`
-        the `predict` method for regression, classification and clustering.
-    :meth:`BaseEstimator.training_step`
-        compute and return the training loss and some additional
-        metrics.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.validation_step`
-        compute anything of interest like accuracy on a single batch of data
-        from the validation set.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.transform_step`
-        transform new data.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.predict_step`
-        make some predictions on new data.
-        TO BE IMPLEMENTED.
-    :meth:`BaseEstimator.log`
-        log a key, value pair.
-    :meth:`BaseEstimator.log_dict`
-        log a dictionary of values at once.
-        
     Notes
     -----
     Callbacks can help you to tune, monitor or debug an estimator. For
     instance you can check the type of the input batches using
     `BatchTypingCallback` callback.
     """
+
     def __init__(
-            self,
-            callbacks: Optional[Union[list[Callback], Callback]] = None,
-            check_val_every_n_epoch: Optional[int] = 1,
-            val_check_interval: Optional[Union[int, float]] = None,
-            max_epochs: Optional[int] = None,
-            min_epochs: Optional[int] = None,
-            max_steps: int = -1,
-            min_steps: Optional[int] = None,
-            enable_checkpointing: Optional[bool] = None,
-            enable_progress_bar: Optional[bool] = None,
-            enable_model_summary: Optional[bool] = None,
-            accelerator: Union[str, Accelerator] = "auto",
-            strategy: Union[str, Strategy] = "auto",
-            devices: Union[list[int], str, int] = "auto",
-            num_nodes: int = 1,
-            precision: Optional[_PRECISION_INPUT] = None,
-            ignore: Optional[Sequence[str]] = None,
-            random_state: Optional[int] = None,
-            **kwargs):
+        self,
+        callbacks: Optional[Union[list[Callback], Callback]] = None,
+        check_val_every_n_epoch: Optional[int] = 1,
+        val_check_interval: Optional[Union[int, float]] = None,
+        num_sanity_val_steps: Optional[int] = None,
+        max_epochs: Optional[int] = None,
+        min_epochs: Optional[int] = None,
+        max_steps: int = -1,
+        min_steps: Optional[int] = None,
+        enable_checkpointing: Optional[bool] = None,
+        enable_progress_bar: Optional[bool] = None,
+        enable_model_summary: Optional[bool] = None,
+        accelerator: Union[str, Accelerator] = "auto",
+        strategy: Union[str, Strategy] = "auto",
+        devices: Union[list[int], str, int] = "auto",
+        num_nodes: int = 1,
+        precision: Optional[_PRECISION_INPUT] = None,
+        save_hparams: bool = True,
+        ignore: Optional[Sequence[str]] = None,
+        random_state: Optional[int] = None,
+        **kwargs,
+    ):
         super().__init__()
-        self.save_hyperparameters(ignore=ignore)
+        if save_hparams:
+            self.save_hyperparameters(ignore=ignore)
         self.fitted_ = False
         self.trainer_params_ = {
             "callbacks": callbacks,
             "check_val_every_n_epoch": check_val_every_n_epoch,
+            "num_sanity_val_steps": num_sanity_val_steps,
             "val_check_interval": val_check_interval,
             "max_epochs": max_epochs,
             "min_epochs": min_epochs,
@@ -202,16 +190,17 @@ class BaseEstimator(pl.LightningModule):
     @property
     def fitted(self):
         return self.fitted_
-    
+
     @property
     def trainer_params(self):
         return self.trainer_params_
 
     def fit(
-            self,
-            train_dataloader: data.DataLoader,
-            val_dataloader:  Optional[data.DataLoader] = None):
-        """ The `fit` method.
+        self,
+        train_dataloader: data.DataLoader,
+        val_dataloader: Optional[data.DataLoader] = None,
+    ):
+        """The `fit` method.
 
         In the child class you will need to define:
 
@@ -240,10 +229,8 @@ class BaseEstimator(pl.LightningModule):
         return self
 
     @available_if(_estimator_is("transformer"))
-    def transform(
-            self,
-            test_dataloader: data.DataLoader) -> Any:
-        """ The `transform` method for transformer.
+    def transform(self, test_dataloader: data.DataLoader) -> Any:
+        """The `transform` method for transformer.
 
         In the child class you will need to define:
 
@@ -259,17 +246,31 @@ class BaseEstimator(pl.LightningModule):
         -------
         out: torch Tensor
             returns transformed samples.
+
+        Notes
+        -----
+        Since we expect a tensor as output of the model, it is gathered across
+        GPUs in the multi-gpu distributed case and the output is stored on the
+        relevant device defined by the trainer's strategy (cpu or gpu).
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
-        return torch.cat(trainer.predict(
-            self, test_dataloader, return_predictions=True))
-    
+        f = torch.cat(
+            trainer.predict(self, test_dataloader, return_predictions=True)
+        )
+        # Predictions are moved to cpu by default in PL
+        # => mv it again on GPU if necessary
+        f = f.to(trainer.strategy.root_device)
+        # Gather transformations across GPUs
+        f = trainer.strategy.all_gather(f)
+        # Reduce (world_size, batch, ...) to (world_size * batch, ...)
+        if f.ndim > 2 and trainer.world_size > 1:
+            f = f.reshape(f.shape[0] * f.shape[1], *f.shape[2:])
+        return f
+
     @available_if(_estimator_is(("regressor", "classifier", "clusterer")))
-    def predict(
-            self,
-            test_dataloader: data.DataLoader) -> Any:
-        """ The `predict` method for regression, classification and clustering.
+    def predict(self, test_dataloader: data.DataLoader) -> Any:
+        """The `predict` method for regression, classification and clustering.
 
         In the child class you will need to define:
 
@@ -288,15 +289,14 @@ class BaseEstimator(pl.LightningModule):
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)
-        return torch.cat(trainer.predict(
-            self, test_dataloader, return_predictions=True))
+        return torch.cat(
+            trainer.predict(self, test_dataloader, return_predictions=True)
+        )
 
     def training_step(
-            self,
-            batch: Any,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0) -> STEP_OUTPUT:
-        """ Here you compute and return the training loss and some additional
+        self, batch: Any, batch_idx: int, dataloader_idx: Optional[int] = 0
+    ) -> STEP_OUTPUT:
+        """Here you compute and return the training loss and some additional
         metrics for e.g. the progress bar or logger.
 
         Parameters
@@ -351,11 +351,9 @@ class BaseEstimator(pl.LightningModule):
         return super().training_step(batch, batch_idx, dataloader_idx)
 
     def validation_step(
-            self,
-            batch: Any,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0) -> STEP_OUTPUT:
-        """ Operates on a single batch of data from the validation set. In
+        self, batch: Any, batch_idx: int, dataloader_idx: Optional[int] = 0
+    ) -> STEP_OUTPUT:
+        """Operates on a single batch of data from the validation set. In
         this step you'd might generate examples or calculate anything of
         interest like accuracy.
 
@@ -383,8 +381,7 @@ class BaseEstimator(pl.LightningModule):
         -----
         If you don't need to validate you don't need to implement this method.
 
-        Notes
-        -----
+
         When the :meth:`validation_step` is called, the model has been put in
         eval mode and PyTorch gradients have been disabled. At the end of
         validation,  the model goes back to training mode and gradients are
@@ -395,23 +392,20 @@ class BaseEstimator(pl.LightningModule):
     @available_if(_estimator_is("transformer"))
     @abc.abstractmethod
     def transform_step(
-            self,
-            batch: Any,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0) -> Any:
-        """ Define a transform step.
+        self, batch: Any, batch_idx: int, dataloader_idx: Optional[int] = 0
+    ) -> Any:
+        """Define a transform step.
 
         Share the same API as :meth:`BaseEstimator.predict_step`.
         """
 
-    @available_if(_estimator_is(("transformer", "regressor", "classifier",
-                                 "clusterer")))
+    @available_if(
+        _estimator_is(("transformer", "regressor", "classifier", "clusterer"))
+    )
     def predict_step(
-            self,
-            batch: Any,
-            batch_idx: int,
-            dataloader_idx: Optional[int] = 0) -> Any:
-        """ Step function called during
+        self, batch: Any, batch_idx: int, dataloader_idx: Optional[int] = 0
+    ) -> Any:
+        """Step function called during
         :meth:`~lightning.pytorch.trainer.trainer.Trainer.predict`. By default,
         it calls :meth:`~lightning.pytorch.core.LightningModule.forward`.
         Override to add any processing logic.
@@ -450,23 +444,23 @@ class BaseEstimator(pl.LightningModule):
             return super().predict_step(batch, batch_idx, dataloader_idx)
 
     def log(
-            self,
-            name: str,
-            value: _METRIC,
-            prog_bar: bool = False,
-            logger: Optional[bool] = None,
-            on_step: Optional[bool] = None,
-            on_epoch: Optional[bool] = None,
-            reduce_fx: Union[str, Callable] = "mean",
-            enable_graph: bool = False,
-            sync_dist: bool = False,
-            sync_dist_group: Optional[Any] = None,
-            add_dataloader_idx: bool = True,
-            batch_size: Optional[int] = None,
-            metric_attribute: Optional[str] = None,
-            rank_zero_only: bool = False,
-        ) -> None:
-        """ Log a key, value pair.
+        self,
+        name: str,
+        value: _METRIC,
+        prog_bar: bool = False,
+        logger: Optional[bool] = None,
+        on_step: Optional[bool] = None,
+        on_epoch: Optional[bool] = None,
+        reduce_fx: Union[str, Callable] = "mean",
+        enable_graph: bool = False,
+        sync_dist: bool = False,
+        sync_dist_group: Optional[Any] = None,
+        add_dataloader_idx: bool = True,
+        batch_size: Optional[int] = None,
+        metric_attribute: Optional[str] = None,
+        rank_zero_only: bool = False,
+    ) -> None:
+        """Log a key, value pair.
 
         Parameters
         ----------
@@ -487,7 +481,7 @@ class BaseEstimator(pl.LightningModule):
             determined by the hook.
         reduce_fx: str of callable, default='mean'
             reduction function over step values for end of epoch.
-            :meth:`torch.mean` by default.
+            :func:`torch.mean` by default.
         enable_graph: bool, default=False
             if ``True``, will not auto detach the graph.
         sync_dist: bool, default=False
@@ -533,25 +527,25 @@ class BaseEstimator(pl.LightningModule):
             add_dataloader_idx=add_dataloader_idx,
             batch_size=batch_size,
             metric_attribute=metric_attribute,
-            rank_zero_only=rank_zero_only
+            rank_zero_only=rank_zero_only,
         )
 
     def log_dict(
-            self,
-            dictionary: Union[Mapping[str, _METRIC], MetricCollection],
-            prog_bar: bool = False,
-            logger: Optional[bool] = None,
-            on_step: Optional[bool] = None,
-            on_epoch: Optional[bool] = None,
-            reduce_fx: Union[str, Callable] = "mean",
-            enable_graph: bool = False,
-            sync_dist: bool = False,
-            sync_dist_group: Optional[Any] = None,
-            add_dataloader_idx: bool = True,
-            batch_size: Optional[int] = None,
-            rank_zero_only: bool = False,
-        ) -> None:
-        """ Log a dictionary of values at once.
+        self,
+        dictionary: Union[Mapping[str, _METRIC], MetricCollection],
+        prog_bar: bool = False,
+        logger: Optional[bool] = None,
+        on_step: Optional[bool] = None,
+        on_epoch: Optional[bool] = None,
+        reduce_fx: Union[str, Callable] = "mean",
+        enable_graph: bool = False,
+        sync_dist: bool = False,
+        sync_dist_group: Optional[Any] = None,
+        add_dataloader_idx: bool = True,
+        batch_size: Optional[int] = None,
+        rank_zero_only: bool = False,
+    ) -> None:
+        """Log a dictionary of values at once.
 
         Parameters
         ----------
@@ -572,7 +566,7 @@ class BaseEstimator(pl.LightningModule):
             The default value is determined by the hook.
         reduce_fx: str of callable, default='mean'
             reduction function over step values for end of epoch.
-            :meth:`torch.mean` by default.
+            :func:`torch.mean` by default.
         enable_graph: bool, default=False
             if ``True``, will not auto detach the graph.
         sync_dist: bool, default=False
@@ -613,41 +607,50 @@ class BaseEstimator(pl.LightningModule):
             sync_dist_group=sync_dist_group,
             add_dataloader_idx=add_dataloader_idx,
             batch_size=batch_size,
-            rank_zero_only=rank_zero_only
+            rank_zero_only=rank_zero_only,
         )
+    
+    def on_load_checkpoint(self, checkpoint):
+        """Hook that is called when using the `load_from_checkpoint` method."""
+        self.fitted_ = True
+        return super().on_load_checkpoint(checkpoint)
 
 
 class RegressorMixin:
-    """ Mixin class for all regression estimators in nidl.
+    """Mixin class for all regression estimators in nidl.
 
     This mixin sets the estimator type to `"regressor"` through the
     `estimator_type` tag.
     """
+
     _estimator_type = "regressor"
 
 
 class ClassifierMixin:
-    """ Mixin class for all classifiers in nidl.
+    """Mixin class for all classifiers in nidl.
 
     This mixin sets the estimator type to `classifier` through the
     `estimator_type` tag.
     """
+
     _estimator_type = "classifier"
-    
-    
+
+
 class ClusterMixin:
-    """ Mixin class for all cluster estimators in nidl.
+    """Mixin class for all cluster estimators in nidl.
 
     This mixin sets the estimator type to `clusterer` through the
     `estimator_type` tag.
     """
+
     _estimator_type = "clusterer"
 
 
 class TransformerMixin:
-    """ Mixin class for all transformers in nidl.
+    """Mixin class for all transformers in nidl.
 
     This mixin sets the estimator type to `transformer` through the
     `estimator_type` tag.
     """
+
     _estimator_type = "transformer"

@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Sequence
 from functools import update_wrapper, wraps
@@ -13,10 +14,8 @@ from types import MethodType
 from typing import Optional
 
 
-def check_is_fitted(
-        estimator,
-        msg: Optional[str] = None):
-    """ Checks if the estimator is fitted by verifying the presence of
+def check_is_fitted(estimator, msg: Optional[str] = None):
+    """Checks if the estimator is fitted by verifying the presence of
     fitted attributes (ending with a trailing underscore) and otherwise
     raises an Exception with the given message.
 
@@ -49,18 +48,16 @@ def check_is_fitted(
     if not hasattr(estimator, "fit"):
         raise TypeError(f"{estimator} is not an estimator instance.")
     if not hasattr(estimator, "fitted_") or not estimator.fitted_:
-        raise Exception(msg % {"name": type(estimator).__name__})
+        raise RuntimeError(msg % {"name": type(estimator).__name__})
 
 
-def _estimator_is(
-        attrs: str or tuple[str]) -> bool:
-    """ Check if we can delegate a method to the underlying estimator.
-    """
+def _estimator_is(attrs: str or tuple[str]) -> bool:
+    """Check if we can delegate a method to the underlying estimator."""
     if not isinstance(attrs, Sequence):
-        attrs = (attrs, )
+        attrs = (attrs,)
     return lambda estimator: (
-        hasattr(estimator, "_estimator_type") and
-        estimator._estimator_type in attrs
+        hasattr(estimator, "_estimator_type")
+        and estimator._estimator_type in attrs
     )
 
 
@@ -84,8 +81,9 @@ class _AvailableIfDescriptor:
         update_wrapper(self, fn)
 
     def _check(self, obj, owner):
-        attr_err_msg = (f"This {owner.__name__!r} has no attribute "
-                        f"{self.attribute_name!r}")
+        attr_err_msg = (
+            f"This {owner.__name__!r} has no attribute {self.attribute_name!r}"
+        )
         try:
             check_result = self.check(obj)
         except Exception as e:
@@ -113,7 +111,7 @@ class _AvailableIfDescriptor:
 
 
 def available_if(check):
-    """ An attribute that is available only if check returns a truthy value.
+    """An attribute that is available only if check returns a truthy value.
 
     Parameters
     ----------
@@ -152,4 +150,5 @@ def available_if(check):
     Hello
     """
     return lambda fn: _AvailableIfDescriptor(
-        fn, check, attribute_name=fn.__name__)
+        fn, check, attribute_name=fn.__name__
+    )

@@ -12,4 +12,4 @@ Various utilities to help with development.
 
 from .bunch import Bunch
 from .color import print_multicolor
-from .weights import Weights
+from .lr_scheduler import LinearWarmupCosineAnnealingLR

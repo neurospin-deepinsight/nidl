@@ -6,7 +6,8 @@
 # for details.
 ##########################################################################
 
-""" Definition of common volumic architectures.
+""" This modules details the public API you should use and implement for a
+nidl compatible backbone, as well as the backbones available in nidl.
 """
 
 from .alexnet3d import AlexNet

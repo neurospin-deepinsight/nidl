@@ -16,6 +16,14 @@ __pycache__/
 # OS specific files
 .DS_Store
 
+# Automatic doc generation
+doc/_build
+doc/sg_execution_times.rst
+doc/ci.rst
+doc/auto_examples/
+doc/modules/generated/
+
+
 # Distribution / packaging / data storage
 data/
 outputs/

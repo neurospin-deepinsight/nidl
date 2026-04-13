@@ -5,13 +5,14 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Callable, Optional
 
 import numpy as np
 import torch
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RobustRescaling(VolumeTransform):
@@ -36,7 +37,7 @@ class RobustRescaling(VolumeTransform):
     :math:`(o_{\text{min}}, o_{\text{max}})` defines the target output
     intensity range.
 
-    It handles a :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles a :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type and shape). Input shape must be
     :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
 
@@ -61,7 +62,7 @@ class RobustRescaling(VolumeTransform):
         Keyword arguments given to :class:`nidl.transforms.Transform`.
 
     Notes
-    ----------
+    -----
     If the input volume has constant values, the normalized output is set to
     its minimum value by convention.
 
@@ -114,7 +115,7 @@ class RobustRescaling(VolumeTransform):
             The input data with shape :math:`(C, H, W, D)` or :math:`(H, W, D)`
 
         Returns
-        ----------
+        -------
         array or torch.Tensor
             The rescaled data with same type as input.
         """

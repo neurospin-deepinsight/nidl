@@ -11,7 +11,7 @@ authors = [
     {name = "Benoit Dufumier", email="benoit.dufumier@cea.fr"},
     {name = "Joël Chavas", email="joel.chavas@cea.fr"}
 ]
-license = {text = "CeCILL-B"}
+license = {text = "CECILL-B"}
 classifiers = [
     "Development Status :: 1 - Planning",
     "Environment :: Console",
@@ -20,11 +20,10 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "torch >=2.1.0, <2.8.0",
+    "torch >=2.1.0",
     "pytorch-lightning",
     "torchvision",
     "toml",
-    "python-typex",
     "pandas",
     "scikit-learn <= 1.7.0",
     "simpleitk",
@@ -37,10 +36,25 @@ plugins = [
     "surfify",
 ]
 openbhb = ["huggingface_hub"]
+doc = [
+    "docutils>=0.17",
+    "furo>=2024.8.6",
+    "memory_profiler>=0.61.0",
+    "myst-parser>=3.0.1",
+    "numpydoc>=1.8.0",
+    "ruamel.yaml>=0.18.6",
+    "sphinx>=7.4.7",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-design>=0.6.1",
+    "sphinx-gallery>=0.18.0",
+    "sphinxcontrib-bibtex>=2.6.3",
+    "sphinxext-opengraph>=0.9.1",
+    "sphinxcontrib-mermaid>=1.0.0"
+]
 
 [project.urls]
-Source = "https://github.com/neurospin-deppinsight/nidl"
-Tracker = "https://github.com/neurospin-deppinsight/nidl/issues"
+Source = "https://github.com/neurospin-deepinsight/nidl"
+Tracker = "https://github.com/neurospin-deepinsight/nidl/issues"
 
 [tool.setuptools]
 platforms = ["Linux", "OSX"]
@@ -85,7 +99,6 @@ ignore = [
     "RUF052",   # Local dummy variable `_*` is accessed
     "FURB101",  # `open` and `read` should be replaced by `Path(path).read_text()`
     "FURB103",  # `open` and `write` should be replaced by `Path(logfile).write_text(code)`
-    "RUF059",   # Unpacked variable `loss` is never used
     "FURB189",  # Subclassing `dict` can be error prone, use `collections.UserDict` instead
     "N803",     # Argument name should be lowercase
     "N806",     # Variable in function should be lowercase
@@ -94,10 +107,16 @@ ignore = [
     "D104",    # Missing docstring in public package
     "D107",    # Missing docstring in `__init__`
     "D205",    # 1 blank line required between summary line and description
+    "UP007",   # Use `X | Y` for type annotations (only for python > 3.10)
+    "UP045",   # Use `X | None` for type annotations (only for python > 3.10)
+    "RET504",  # Unnecessary assignment before `return` statement
+    "EXE002",  # File is executable but does not contain a shebang
+    "FURB140", # Use itertools.starmap instead of a generator inside all
 ]
 
 [tool.ruff]
 line-length = 79
+target-version = "py39"
 extend-exclude = [
     "tests",
 ]

@@ -1,0 +1,38 @@
+.. _continuous integration:
+
+
+Continuous integration
+======================
+
+Continuous Integration (CI) tests are implemented via GithHub workflows.
+
+
+Documentation build and deploy
+------------------------------
+
+.. using a mermaid flowchart: https://mermaid.js.org/syntax/flowchart.html
+
+.. mermaid:: mermaid/doc_deploy.mmd
+
+The development docs are built using GitHub Actions.
+
+The workflow ``.github/workflows/documentation.yml`` builds the doc and
+deploy it to https://neurospin-deepinsight.github.io/nidl on the ``dev``
+(respectively ``stable``).
+
+On pull-request a successful build of the doc by
+``.github/workflows/documentation.yml`` has no trigger.
+
+
+GitHub Actions Specification
+----------------------------
+
+{% for workflow in context %}
+
+{{ workflow.file }}
+{% for i in range(workflow.file|length) %}^{% endfor %}
+
+Workflow file: `{{workflow.file}} <https://github.com/nilearn/nilearn/blob/main/.github/workflows/{{ workflow.file }}>`_
+
+{{ workflow.comment }}
+{% endfor %}

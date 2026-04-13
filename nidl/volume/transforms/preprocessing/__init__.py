@@ -6,3 +6,5 @@
 # for details.
 ##########################################################################
 
+from .intensity import RobustRescaling, ZNormalization
+from .spatial import CropOrPad, Resample, Resize

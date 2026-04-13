@@ -1,0 +1,16 @@
+flowchart TD
+
+subgraph GitHub - neurospin-deepinsight.github.io/nidl
+nidl_doc_main["<code>/"]
+nidl_doc_stable["<code>/x.x.x"]
+end
+
+subgraph GitHub - nidl
+DocumentationBuilder["documentation.yml"]
+artifacts@{ shape: docs, label: "doc build artifacts" }
+end
+
+DocumentationBuilder -- on main --> nidl_doc_main
+DocumentationBuilder -- on GitHub release ---> nidl_doc_stable
+DocumentationBuilder -- on PR --> artifacts
+

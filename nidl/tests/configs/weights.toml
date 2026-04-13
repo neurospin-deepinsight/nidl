@@ -4,7 +4,7 @@ desc = "You can load weights stored on a hub."
 
 
 [weights]
-interface = "nidl.utils.Weights"
+interface = "nidl.utils.weights.Weights"
 data_dir = "/tmp/weights"
 filepath = "pytorch_model.bin"
 

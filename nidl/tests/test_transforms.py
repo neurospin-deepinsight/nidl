@@ -12,17 +12,12 @@ import numpy as np
 import torch
 
 from nidl.transforms import MultiViewsTransform, Identity
-from nidl.volume.transforms.augmentation.spatial import (
+from nidl.volume.transforms.augmentation import (
     RandomRotation, RandomFlip, RandomResizedCrop, RandomErasing,
-)
-from nidl.volume.transforms.augmentation.intensity import (
     RandomGaussianBlur, RandomGaussianNoise
 )
-from nidl.volume.transforms.preprocessing.intensity import (
-    ZNormalization, RobustRescaling
-)
-from nidl.volume.transforms.preprocessing.spatial import (
-    CropOrPad, Resize, Resample
+from nidl.volume.transforms.preprocessing import (
+    ZNormalization, RobustRescaling, CropOrPad, Resize, Resample   
 )
 
 
@@ -50,7 +45,7 @@ class TestTransform(unittest.TestCase):
     def test_invalid_input_type(self):
         for tf_cls in self.transforms_cls:
             tf = tf_cls()
-            with self.assertRaises(ValueError):
+            with self.assertRaises(TypeError):
                 tf([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]) 
 
 
@@ -83,19 +78,19 @@ class TestMultiViewsTransform(unittest.TestCase):
             np.testing.assert_array_equal(outputs[0], self.input_data + 1)
 
     def test_invalid_transform_type(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform("not_a_callable")
 
     def test_sequence_with_non_callable(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform([self.mock_transform, "bad_transform"])
 
     def test_non_callable(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform("bad transform")
 
     def test_invalid_nviews_type(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MultiViewsTransform(self.mock_transform, n_views="two")
 
     def test_negative_nviews(self):
@@ -121,7 +116,7 @@ class TestIdentity(unittest.TestCase):
         self.assertTrue(torch.all(self.torch_tensor == tf(self.torch_tensor)))
     
     def test_invalid_input(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             Identity()("abcd")
 
 
@@ -470,7 +465,7 @@ class TestRandomResizedCrop(unittest.TestCase):
     def test_invalid_scale(self):
         with self.assertRaises(ValueError):
             RandomResizedCrop(target_shape=(16, 16, 16), scale=(1.2, 0.5))
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             RandomResizedCrop(target_shape=(16, 16, 16), scale=(1.2, "3.2"))
         with self.assertRaises(ValueError):
             RandomResizedCrop(target_shape=(16, 16, 16), scale=(0.5, 2.0))
@@ -493,6 +488,14 @@ class TestRandomResizedCrop(unittest.TestCase):
         out = transform(arr)
         self.assertGreaterEqual(out.min(), 0.0)
         self.assertLessEqual(out.max(), 1.0)
+    
+    def test_sample_3d_box_returns_full_volume(self):
+        in_shape = (10, 10, 10)
+        # Use an impossible scale so cbrt(target_volume) > each dim even with ratio=1
+        slices = RandomResizedCrop._sample_3d_box(
+            in_shape=in_shape, scale=(2.0, 2.0), ratio=(1.0, 1.0)
+        )
+        assert slices == [slice(0, 10), slice(0, 10), slice(0, 10)]
 
     def test_multiple_runs_different_results(self):
         arr = np.random.rand(*self.shape)

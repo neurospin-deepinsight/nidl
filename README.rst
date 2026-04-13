@@ -1,67 +1,109 @@
 .. -*- mode: rst -*-
 
-|PythonVersion|_ |Coveralls|_ |Testing|_ |Linter|_ |Doc|_ |PyPi|_
+.. image:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+    :target: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+    :alt: Python Version
 
-.. |PythonVersion| image:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
-.. _PythonVersion: target:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+.. image:: https://coveralls.io/repos/github/neurospin-deepinsight/nidl/badge.svg?branch=main
+    :target: https://coveralls.io/github/neurospin-deepinsight/nidl
+    :alt: Coverage Status
 
-.. |Coveralls| image:: https://coveralls.io/repos/github/neurospin-deepinsight/nidl/badge.svg?branch=main
-.. _Coveralls: target:: https://coveralls.io/github/neurospin-deepinsight/nidl
+.. image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/testing.yml/badge.svg
+    :target: https://github.com/neurospin-deepinsight/nidl/actions
+    :alt: Github Actions Test Status
 
-.. |Testing| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/testing.yml/badge.svg
-.. _Testing: target:: https://github.com/neurospin-deepinsight/nidl/actions
+.. image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/linters.yml/badge.svg
+    :target: https://github.com/neurospin-deepinsight/nidl/actions
+    :alt: Github Actions Linter Status
 
-.. |Linter| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/linters.yml/badge.svg
-.. _Linter: target:: https://github.com/neurospin-deepinsight/nidl/actions
+.. image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/documentation.yml/badge.svg
+    :target: http://neurospin-deepinsight.github.io/nidl
+    :alt: Github Actions Doc Build Status
 
-.. |Doc| image:: https://github.com/neurospin-deepinsight/nidl/actions/workflows/documentation.yml/badge.svg
-.. _Doc: target:: http://neurospin-deepinsight.github.io/nidl
+.. image:: https://badge.fury.io/py/nidl.svg
+    :target: https://pypi.org/project/nidl
+    :alt: Pypi Package
 
-.. |PyPi| image:: https://badge.fury.io/py/nidl.svg
-.. _PyPi: target:: https://badge.fury.io/py/nidl
+nidl
+====
 
+Nidl is a Python library to perform distributed training and evaluation
+of deep learning models on large-scale neuroimaging data (anatomical
+volumes and surfaces, fMRI). 
 
-A Deep Learning toolbox for NeuroImaging
-========================================
+It follows the PyTorch design for the training logic and the scikit-learn
+API for the models (in particular fit, predict and transform). 
 
-\:+1: If you are using the code please add a star to the repository :+1:
-
-This work is made available by a `community of people <./AUTHORS.rst>`_, amoung which the CEA Neurospin BAOBAB laboratory.
+Supervised, self-supervised and unsupervised models are available (with
+pre-trained weights) along with open datasets.
 
 
 Important links
----------------
+===============
 
-- `Official source code repo <https://github.com/neurospin-deepinsight/nidl>`_
-- `HTML documentation <https://neurospin-deepinsight.github.io/nidl>`_
-- `Release notes <./CHANGELOG.rst>`_
-
-
-Content
--------
-
-Nidl provides unified deep learning interfaces (compatible with `PyTorch Lightning <https://lightning.ai/pytorch-lightning>`_) to analyze brain volumes and surfaces. It also provides a way to describe your experiments using a single configuration file (for production, a more advanced tool is availble in `Hydra <https://hydra.cc>`_).
-
-
-Where to start
---------------
-
-Examples are available in the `gallery <https://neurospin-deepinsight.github.io/nidl/auto_gallery/index.html>`_. You can also refer to the `API documentation <https://neurospin-deepinsight.github.io/nidl/generated/documentation.html>`_.
+- Official source code repo: https://github.com/neurospin-deepinsight/nidl
+- HTML documentation (stable release): https://neurospin-deepinsight.github.io/nidl
 
 
 Install
--------
+=======
 
-The code is tested for the current stable PyTorch and torchvision versions, but should work with other versions as well. Make sure you have installed all the package dependencies. Complete instructions are available `here <https://neurospin-deepinsight.github.io/nidl/generated/installation.html>`_.
+Latest release
+--------------
+
+**1. Setup a virtual environment**
+
+We recommend that you install ``nidl`` in a virtual Python environment,
+either managed with the standard library ``venv`` or with ``conda``.
+Either way, create and activate a new python environment.
+
+With ``venv``:
+
+.. code-block:: bash
+
+    python3 -m venv /<path_to_new_env>
+    source /<path_to_new_env>/bin/activate
+
+Windows users should change the last line to ``\<path_to_new_env>\Scripts\activate.bat``
+in order to activate their virtual environment.
+
+With ``conda``:
+
+.. code-block:: bash
+
+    conda create -n nidl python=3.12
+    conda activate nidl
+
+**2. Install nidl with pip**
+
+Execute the following command in the command prompt / terminal
+in the proper python environment:
+
+.. code-block:: bash
+
+    python3 -m pip install -U nidl
 
 
-Contributing
-------------
+Check installation
+------------------
 
-If you want to contribute to nidl, be sure to review the `contribution guidelines <./CONTRIBUTING.rst>`_.
+Try importing nidl in a python / iPython session:
+
+.. code-block:: python
+
+    import nidl
+
+If no error is raised, you have installed nidl correctly.
 
 
-License
--------
+Where to start
+==============
 
-This project is under the following `LICENSE <./LICENSE.rst>`_.
+Examples are available in the `gallery <https://neurospin-deepinsight.github.io/nidl/auto_gallery/index.html>`_.
+
+
+Dependencies
+============
+
+The required dependencies to use the software are listed
+in the file `pyproject.toml <https://github.com/neurospin-deepinsight/nidl/blob/main/pyproject.toml>`_.

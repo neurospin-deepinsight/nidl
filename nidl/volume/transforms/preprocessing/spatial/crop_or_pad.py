@@ -5,19 +5,20 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Union
 
 import numpy as np
 import torch
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class CropOrPad(VolumeTransform):
     """Crop and/or pad a 3d volume to match the target shape.
     
-    It handles :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type).
 
     Parameters
@@ -64,7 +65,7 @@ class CropOrPad(VolumeTransform):
             all channels.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Cropped or padded data with same type as input and
             shape `target_shape`.

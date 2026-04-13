@@ -1,31 +1,9 @@
-Contributing to nidl
-====================
+Contributing
+============
 
 .. |fork_logo| image:: https://upload.wikimedia.org/wikipedia/commons/d/dd/Octicons-repo-forked.svg
-               :height: 20
-
-Contents
---------
-
-1. `Introduction <#introduction>`_
-
-2. `Issues <#issues>`_ 
-
-   a. `Asking Questions <#asking-questions>`_  
-   
-   b. `Reporting Bugs <#reporting-bugs>`_  
-   
-   c. `Requesting Features <#requesting-features>`_ 
- 
-3. `Pull Requests <#pull-requests>`_  
-
-   a. `Content <#content>`_  
-   
-   b. `CI Tests <#ci-tests>`_   
-   
-   c. `Coverage <#coverage>`_  
-   
-   d. `Style Guide <#style-guide>`_  
+               :height: 10
+               :width: 10
 
 Introduction
 ------------

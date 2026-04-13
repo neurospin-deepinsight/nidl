@@ -5,218 +5,319 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Optional
+from typing import Any, Optional, Union
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision
+from pytorch_lightning.utilities.types import LRSchedulerPLType
+from torch import nn
+from torch.optim import Optimizer
 
 from ...losses import InfoNCE
 from ..base import BaseEstimator, TransformerMixin
+from .utils.data_parsing import (
+    gather_two_views,
+    parse_two_views_batch,
+)
+from .utils.encoder import build_encoder
+from .utils.optimizer import configure_ssl_optimizers
+from .utils.projection_heads import SimCLRProjectionHead
 
 
 class SimCLR(TransformerMixin, BaseEstimator):
-    r"""SimCLR implementation.
+    r"""SimCLR [1]_.
 
-    At each iteration, we get for every data x two differently augmented
-    versions, which we refer to as x_i and x_j. Both of these images are
-    encoded into a one-dimensional feature vector, between which we want to
-    maximize similarity which minimizes it to all other data in the batch.
-    The encoder network is split into two parts: a base encoder network f(.),
-    and a projection head g(.). The base network is usually a deep CNN or SCNN,
-    and is responsible for extracting a representation vector from the
-    augmented data examples. Let's denote the representations obtained from the
-    encoder h=f(x). The projection head g(.) maps the representation h into a
-    space where we apply the contrastive loss, i.e., compare similarities
-    between vectors. In the original SimCLR paper g(.) was defined as a
-    two-layer MLP with ReLU activation in the hidden layer. Note that in the
-    follow-up paper, SimCLRv2, the authors mention that larger/wider MLPs can
-    boost the performance considerably.
+    SimCLR is a contrastive learning framework for self-supervised
+    representation learning. The key idea is to learn useful features
+    without labels by making different augmented views of the same image close
+    in a representation space, while pushing apart representations of different
+    images. Once trained, the encoder can be reused for downstream tasks such
+    as classification or regression.
 
-    After finishing the training with contrastive learning, we will remove
-    the projection head g(.), and use f(.) as a pretrained feature extractor.
-    The representations z that come out of the projection head g(.) have been
-    shown to perform worse than those of the base network f(.) when
-    finetuning the network for a new task. This is likely because the
-    representations z are trained to become invariant to many features that
-    can be important for downstream tasks. Thus, g(.) is only needed for the
-    contrastive learning stage.
+    The model consists of:
 
-    Now that the architecture is described, let's take a closer look at how we
-    train the model. As mentioned before, we want to maximize the similarity
-    between the representations of the two augmented versions of the same
-    image, i.e., z_i and z_j, while minimizing it to all other examples in the
-    batch. SimCLR thereby applies the InfoNCE loss, originally proposed by
-    Aaron van den Oord et al. for contrastive learning. In short, the InfoNCE
-    loss compares the similarity of z_i and z_j to the similarity of z_i to
-    any other representation in the batch by performing a softmax over the
-    similarity values. The loss can be formally written as:
+    - A base encoder (e.g., a CNN), which extracts representation vectors.
+    - A projection head, which maps representations into a space where the
+      contrastive objective is applied.
 
-    .. math::
+    During training, two augmented versions of each input are encoded into
+    two latent vectors. The objective is to maximize their similarity
+    while minimizing the similarity to all other samples in the batch. This is
+    achieved with the InfoNCE loss [2]_, [3]_.
 
-        \ell_{i,j} = -\log \frac{\exp(\text{sim}(z_i,z_j)/\tau)}{
-                     \sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                        \exp(\text{sim}(z_i,z_k)/\tau)}
-                   = -\text{sim}(z_i,z_j)/\tau
-                     +\log\left[\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}
-                        \exp(\text{sim}(z_i,z_k)/\tau)\right]
-
-    The function \text{sim} is a similarity metric, and the hyperparameter
-    \tau is called temperature determining how peaked the distribution is.
-    Since many similarity metrics are bounded, the temperature parameter
-    allows us to balance the influence of many dissimilar image patches versus
-    one similar patch. The similarity metric that is used in SimCLR is cosine
-    similarity, as defined below:
-
-    .. math::
-
-        \text{sim}(z_i,z_j) = \frac{z_i^\top \cdot z_j}{||z_i||\cdot||z_j||}
-
-    The maximum cosine similarity possible is 1, while the minimum is -1. In
-    general, we will see that the features of two different images will
-    converge to a cosine similarity around zero since the minimum, -1, would
-    require z_i and z_j to be in the exact opposite direction in all feature
-    dimensions, which does not allow for great flexibility.
-
-    Alternatively to performing the validation on the contrastive learning
-    loss as well, we could also take a simple, small downstream task, and
-    track the performance of the base network f(.) on that.
+    After training, the projection head is discarded, and the encoder serves
+    as a pretrained feature extractor.
 
     Parameters
     ----------
-    encoder: nn.Module
-        the encoder f(.). It must store the size of the encoded one-dimensional
-        feature vector in a `latent_size` parameter.
-    hidden_dims: list of str
-        the projector g(.) MLP architecture.
-    lr: float
-        the learning rate.
-    temperature: float
-        the SimCLR loss temperature parameter.
-    weight_decay: float
-        the Adam optimizer weight decay parameter.
-    max_epochs: int, default=None
-        optionaly, use a CosineAnnealingLR scheduler.
-    random_state: int, default=None
-        setting a seed for reproducibility.
-    kwargs: dict
-        Trainer parameters.
+    encoder : nn.Module or class of nn.Module
+        The encoder architecture. It can be given as an already instantiated
+        module or as a class of module (in which case it will be instantiated
+        with `encoder_kwargs`). It must be compatible with its projection head,
+        i.e. its output dimension.
+    encoder_kwargs : dict or None, default=None
+        Options for building the encoder (depends on each architecture).
+        Ignored if `encoder` is instantiated.
+    proj_input_dim : int, default=2048
+        Projector input dimension. It must be consistent with encoder's
+        output dimension.
+    proj_hidden_dim : int, default=2048
+        Projector hidden dimension.
+    proj_output_dim : int, default=128
+        Projector output dimension.
+    temperature : float, default=0.1
+        The InfoNCE loss temperature parameter.
+    optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
+        default="adamW"
+        Optimizer for training the model. If a string is given, it can be:
 
+            - 'sgd': Stochastic Gradient Descent (with optional momentum).
+            - 'adam': First-order gradient-based optimizer.
+            - 'adamW' (default): Adam with decoupled weight decay
+              regularization (see "Decoupled Weight Decay Regularization",
+              Loshchilov and Hutter, ICLR 2019).
+    learning_rate : float, default=3e-4
+        Initial learning rate.
+    weight_decay : float, default=5e-4
+        Weight decay in the optimizer.
+    exclude_bias_and_norm_wd : bool, default=True
+        Whether the bias terms and normalization layers get weight decay during
+        optimization or not.
+    optimizer_kwargs : dict or None, default=None
+        Extra named arguments for the optimizer.
+    lr_scheduler : {"none", "warmup_cosine"}, LRSchedulerPLType or None,\
+        default="warmup_cosine"
+        Learning rate scheduler to use.
+    lr_scheduler_kwargs : dict or None, default=None
+        Extra named arguments for the scheduler. By default, it is set to
+        {"warmup_epochs": 10, "warmup_start_lr": 1e-6, "min_lr": 0.0,
+        "interval": "step"}
+    **kwargs : dict, optional
+        Additional keyword arguments for the BaseEstimator class, such as
+        `max_epochs`, `max_steps`, `num_sanity_val_steps`,
+        `check_val_every_n_epoch`, `callbacks`, etc.
+    
     Attributes
     ----------
-    f
-        a :class:`~torch.nn.Module` containing the encoder.
-    g
-        a :class:`~torch.nn.Module` containing the projection head.
+    encoder : torch.nn.Module
+        Deep neural network mapping input data to low-dimensional vectors.
 
-    Notes
-    -----
-    A batch of data must contains two elements: two tensors with contrasted
-    images, and a list of tensors containing auxiliary variables.
+    projection_head : torch.nn.Module
+        Projector that maps encoder output to latent space for loss
+        optimization.
+
+    loss : InfoNCE
+        The InfoNCE loss function used for training.
+
+    optimizer : torch.optim.Optimizer
+        Optimizer used for training.
+
+    lr_scheduler : LRSchedulerPLType or None
+        Learning rate scheduler used for training.
+
+    References
+    ----------
+    .. [1] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
+           "A Simple Framework for Contrastive Learning of Visual
+           Representations", ICML 2020.
+    .. [2] Aaron van den Oord, Yazhe Li, Oriol Vinyals, "Representation
+           Learning with Contrastive Predictive Coding", arXiv 2018.
+    .. [3] Sohn Kihyuk, "Improved Deep Metric Learning with Multi-class N-pair
+           Loss Objective", NIPS 2016.
+
     """
 
     def __init__(
         self,
-        encoder: nn.Module,
-        hidden_dims: Sequence[str],
-        lr: float,
-        temperature: float,
-        weight_decay: float,
-        random_state: Optional[int] = None,
-        **kwargs,
+        encoder: Union[nn.Module, type[nn.Module]],
+        encoder_kwargs: Optional[dict[str, Any]] = None,
+        proj_input_dim: int = 2048,
+        proj_hidden_dim: int = 2048,
+        proj_output_dim: int = 128,
+        temperature: float = 0.1,
+        optimizer: Union[str, Optimizer, type[Optimizer]] = "adamW",
+        learning_rate: float = 3e-4,
+        weight_decay: float = 5e-4,
+        exclude_bias_and_norm_wd: bool = True,
+        optimizer_kwargs: Optional[dict[str, Any]] = None,
+        lr_scheduler: Optional[
+            Union[str, LRSchedulerPLType]
+        ] = "warmup_cosine",
+        lr_scheduler_kwargs: Optional[dict[str, Any]] = None,
+        **kwargs: Any,
     ):
+        ignore = kwargs.pop("ignore", ["callbacks"])
+        if "callbacks" not in ignore:
+            ignore.append("callbacks")
+        if isinstance(encoder, nn.Module) and "encoder" not in ignore:
+            ignore.append("encoder")
+
         super().__init__(
-            random_state=random_state, ignore=["encoder"], **kwargs
-        )
-        assert self.hparams.temperature > 0.0, (
-            "The temperature must be a positive float!"
-        )
-        assert hasattr(encoder, "latent_size"), (
-            "The encoder must store the size of the encoded one-dimensional "
-            "feature vector in a `latent_size` parameter!"
-        )
-        self.f = encoder
-        self.g = torchvision.ops.MLP(
-            in_channels=self.f.latent_size,
-            hidden_channels=hidden_dims,
-            activation_layer=nn.ReLU,
-            inplace=True,
-            bias=True,
-            dropout=0.0,
-        )
-        self.g = nn.Sequential(
-            *[
-                layer
-                for layer in self.g.children()
-                if not isinstance(layer, nn.Dropout)
-            ]
+            ignore=ignore,
+            **kwargs,
         )
 
-    def configure_optimizers(self):
-        """Declare a :class:`~torch.optim.AdamW` optimizer and, optionnaly
-        (``max_epochs`` is defined), a
-        :class:`~torch.optim.lr_scheduler.CosineAnnealingLR` learning-rate
-        scheduler.
-        """
-        optimizer = optim.AdamW(
-            self.parameters(),
-            lr=self.hparams.lr,
-            weight_decay=self.hparams.weight_decay,
-        )
-        if (
-            hasattr(self.hparams, "max_epochs")
-            and self.hparams.max_epochs is not None
-        ):
-            lr_scheduler = optim.lr_scheduler.CosineAnnealingLR(
-                optimizer,
-                T_max=self.hparams.max_epochs,
-                eta_min=(self.hparams.lr / 50),
-            )
-            return [optimizer], [lr_scheduler]
-        else:
-            return [optimizer]
+        self.parse_batch = parse_two_views_batch
+        self.encoder = build_encoder(encoder, encoder_kwargs)
 
-    def info_nce_loss(
-        self, batch: tuple[torch.Tensor, torch.Tensor], mode: str
-    ):
-        """Compute and log the InfoNCE loss using
-        :class:`~nidl.losses.InfoNCE`.
-        """
-        # Encode all images
-        n_samples = len(batch[0])
-        imgs = torch.cat(batch, dim=0)
-        feats = self.g(self.f(imgs))
-        # Calculate loss
-        nll = InfoNCE(self.hparams.temperature)(
-            feats[:n_samples], feats[n_samples:]
+        self.projection_head = SimCLRProjectionHead(
+            input_dim=proj_input_dim,
+            hidden_dim=proj_hidden_dim,
+            output_dim=proj_output_dim,
         )
-        # Logging loss
-        self.log(mode + "_loss", nll, prog_bar=True)
-        return nll
+
+        self.temperature = temperature
+        self.optimizer = optimizer
+        self.learning_rate = learning_rate
+        self.weight_decay = weight_decay
+        self.exclude_bias_and_norm_wd = exclude_bias_and_norm_wd
+        self.optimizer_kwargs = optimizer_kwargs
+        self.lr_scheduler = lr_scheduler
+        self.lr_scheduler_kwargs = lr_scheduler_kwargs
+        self._fill_default_lr_scheduler_kwargs()
+
+        self.loss = InfoNCE(self.temperature)
+
+    def _shared_step(self, batch: Sequence[Any], is_train: bool = True):
+        """Shared code for training and validation steps."""
+        X, y = self.parse_batch(batch, device=self.device)
+        z1 = self.projection_head(self.encoder(X[0]))
+        z2 = self.projection_head(self.encoder(X[1]))
+
+        # Gather before computing the contrastive loss.
+        z1, z2 = gather_two_views(z1, z2, module=self, sync_grads=is_train)
+        loss = self.loss(z1, z2)
+        outputs = {
+            "loss": loss,
+            "z1": z1.detach(),
+            "z2": z2.detach(),
+            "y": y.detach() if y is not None else None,
+        }
+        return outputs
 
     def training_step(
         self,
-        batch: tuple[torch.Tensor, torch.Tensor],
+        batch: Sequence[Any],
         batch_idx: int,
-        dataloader_idx: Optional[int] = 0,
+        dataloader_idx: int = 0,
     ):
-        return self.info_nce_loss(batch, mode="train")
+        """Perform one training step and computes training loss.
+
+        Parameters
+        ----------
+        batch: Sequence[Any]
+            A batch of data from the train dataloader. Supported formats are
+            ``[X1, X2]`` or ``([X1, X2], y)``, where ``X1`` and ``X2`` are
+            tensors representing two augmented views of the same samples.
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+
+        Returns
+        -------
+        outputs : dict
+            Dictionary containing:
+                - "loss": the InfoNCE loss computed on this batch (scalar);
+                - "z1": tensor of shape `(batch_size, n_features)`;
+                - "z2": tensor of shape `(batch_size, n_features)`;
+                - "y": eventual targets (returned as is).
+        """
+        outputs = self._shared_step(batch, is_train=True)
+        self.log("loss/train", outputs["loss"], prog_bar=True, sync_dist=True)
+        # Returns everything needed for further logging/metrics computation
+        return outputs
 
     def validation_step(
         self,
-        batch: tuple[torch.Tensor, torch.Tensor],
+        batch: Sequence[Any],
         batch_idx: int,
-        dataloader_idx: Optional[int] = 0,
+        dataloader_idx: int = 0,
     ):
-        self.info_nce_loss(batch, mode="val")
+        """Perform one validation step and computes validation loss.
+
+        Parameters
+        ----------
+        batch: Sequence[Any]
+            A batch of data from the validation dataloader. Supported formats
+            are ``[X1, X2]`` or ``([X1, X2], y)``.
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+
+        Returns
+        -------
+        outputs : dict
+            Dictionary containing:
+                - "loss": the InfoNCE loss computed on this batch (scalar);
+                - "z1": tensor of shape `(batch_size, n_features)`;
+                - "z2": tensor of shape `(batch_size, n_features)`;
+                - "y": eventual targets (returned as is).
+        """
+        outputs = self._shared_step(batch, is_train=False)
+        self.log("loss/val", outputs["loss"], prog_bar=True, sync_dist=True)
+        # Returns everything needed for further logging/metrics computation
+        return outputs
+
+    def test_step(self, batch, batch_idx):
+        """Skip the test step."""
+        return
 
     def transform_step(
         self,
         batch: torch.Tensor,
         batch_idx: int,
-        dataloader_idx: Optional[int] = 0,
+        dataloader_idx: int = 0,
     ):
-        return self.f(batch)
+        """Encode the input data into the latent space.
+
+        Importantly, we do not apply the projection head here since it is
+        not part of the final model at inference time (only used for training).
+
+        Parameters
+        ----------
+        batch: torch.Tensor
+            A batch of data that has been generated from `test_dataloader`.
+            This is given as is to the encoder.
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+
+        Returns
+        -------
+        features: torch.Tensor
+            The encoded features returned by the encoder.
+
+        """
+        return self.encoder(batch)
+
+    def configure_optimizers(self):
+        """Initialize the optimizer and learning rate scheduler in SimCLR."""
+        params = [
+            {"name": "backbone", "params": self.encoder.parameters()},
+            {"name": "head", "params": self.projection_head.parameters()},
+        ]
+        return configure_ssl_optimizers(
+            trainer=self.trainer,
+            optim_params=params,
+            optimizer=self.optimizer,
+            optimizer_kwargs=self.optimizer_kwargs,
+            learning_rate=self.learning_rate,
+            weight_decay=self.weight_decay,
+            exclude_bias_and_norm_wd=self.exclude_bias_and_norm_wd,
+            lr_scheduler=self.lr_scheduler,
+            lr_scheduler_kwargs=self.lr_scheduler_kwargs,
+        )
+
+    def _fill_default_lr_scheduler_kwargs(self):
+        if self.lr_scheduler_kwargs is None:
+            self.lr_scheduler_kwargs = {}
+
+        self.lr_scheduler_kwargs.setdefault("warmup_epochs", 10)
+        self.lr_scheduler_kwargs.setdefault("interval", "step")
+        self.lr_scheduler_kwargs.setdefault("warmup_start_lr", 1e-6)
+        self.lr_scheduler_kwargs.setdefault("min_lr", 0.0)

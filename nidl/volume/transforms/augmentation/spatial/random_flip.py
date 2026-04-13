@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 import random
 from typing import Optional, Union
@@ -13,13 +14,13 @@ import numpy as np
 import torch
 from nibabel.orientations import aff2axcodes
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomFlip(VolumeTransform):
     """Reverse the order of elements in a 3d volume along the given axes.
 
-    It handles a :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles a :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type and shape). Input shape must be
     :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
 
@@ -33,15 +34,13 @@ class RandomFlip(VolumeTransform):
         specifying volume orientation must be provided when the transformation
         is called. Check `Nibabel documentation on image orientation
         <https://nipy.org/nibabel/coordinate_systems.html>`_.
-
     flip_probability: float, default=1.0
         Per-axis probability to flip the volume.
-
     kwargs: dict
-        Keyword arguments given to base :class:`nidl.transforms.Transform`.
+        Keyword arguments.
 
     Notes
-    ----------
+    -----
     Current implementation always returns a new tensor/array without sharing
     memory with the input data.
 
@@ -53,7 +52,6 @@ class RandomFlip(VolumeTransform):
         flip_probability: float = 1.0,
         **kwargs,
     ):
-        """ """
         super().__init__(**kwargs)
 
         self.axes = self._parse_axes(axes)
@@ -81,7 +79,7 @@ class RandomFlip(VolumeTransform):
             If None, the identity matrix is used, assuming RAS orientation.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Flipped volume with same type and shape as the input.
         """
@@ -162,5 +160,5 @@ class RandomFlip(VolumeTransform):
                         f"Axes must be in 'LR', 'AP' or 'IS', got {axis}"
                     )
             else:
-                raise ValueError(f"Axes must be int or str, got {axis}")
+                raise TypeError(f"Axes must be int or str, got {axis}")
         return axes_tuple

@@ -1,3 +1,12 @@
+---
+# Workflow to check code using unit tests.
+#
+# To run this check locally from the repository folder:
+#
+# .. code-block:: bash
+#
+#   $ nosetests --with-coverage --cover-package=nidl --verbosity=2
+###
 name: "TESTING"
 
 on:
@@ -7,6 +16,7 @@ on:
   pull_request:
     branches:
       - "*"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,14 +27,13 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.9, 3.12]
-
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -34,6 +43,8 @@ jobs:
         python -m pip install --progress-bar off .[plugins,openbhb]
     - name: Run unit tests
       run: |
+        python -m coverage erase || true
+        rm -f .coverage .coverage.*
         nosetests --with-coverage --cover-package=nidl --verbosity=2
     - name: Coveralls
       uses: coverallsapp/github-action@v2

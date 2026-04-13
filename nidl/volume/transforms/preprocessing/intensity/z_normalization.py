@@ -5,13 +5,14 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from typing import Callable, Optional
 
 import numpy as np
 import torch
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class ZNormalization(VolumeTransform):
@@ -27,9 +28,9 @@ class ZNormalization(VolumeTransform):
     is the data mean, :math:`\\sigma(x)` is the data std, and
     :math:`\\epsilon` is a small constant added for numerical stability.
 
-    It can handle a :class:`np.ndarray` or :class:`torch.Tensor` as input and
-    it returns a consistent output (same type and shape). Input shape must be
-    :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
+    It can handle a :class:`numpy.ndarray` or :class:`torch.Tensor` as input
+    and it returns a consistent output (same type and shape). Input shape must
+    be :math:`(C, H, W, D)` or :math:`(H, W, D)` (spatial dimensions).
 
 
     Parameters
@@ -48,7 +49,7 @@ class ZNormalization(VolumeTransform):
         Keyword arguments given to :class:`nidl.transforms.Transform`.
 
     Notes
-    ----------
+    -----
     If the input volume has constant values, the output will have almost
     constant non-deterministic values.
 
@@ -73,7 +74,7 @@ class ZNormalization(VolumeTransform):
             The input data with shape :math:`(C, H, W, D)` or :math:`(H, W, D)`
 
         Returns
-        ----------
+        -------
         array or torch.Tensor
             The z-normalized data per channel with same type as input.
         """

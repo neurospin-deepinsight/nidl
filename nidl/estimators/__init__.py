@@ -6,7 +6,8 @@
 # for details.
 ##########################################################################
 
-""" Common estimators.
+""" This modules details the public API you should use and implement for a
+nidl compatible estimator, as well as the estimators available in nidl.
 """
 
 from .base import (

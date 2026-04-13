@@ -5,6 +5,7 @@
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
+from __future__ import annotations
 
 from collections.abc import Iterable
 from numbers import Number
@@ -16,7 +17,7 @@ import torch
 from nibabel.orientations import aff2axcodes
 from sklearn.utils.validation import check_array
 
-from ...volume_transform import TypeTransformInput, VolumeTransform
+from .....transforms import TypeTransformInput, VolumeTransform
 
 
 class Resample(VolumeTransform):
@@ -30,7 +31,7 @@ class Resample(VolumeTransform):
 
     Internally, it uses SimpleITK for fast and robust resampling.
 
-    It handles :class:`np.ndarray` or :class:`torch.Tensor` as input and
+    It handles :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type).
 
     Input shape must be :math:`(C, H, W, D)` or :math:`(H, W, D)`.
@@ -127,7 +128,7 @@ class Resample(VolumeTransform):
             spacing.
 
         Returns
-        ----------
+        -------
         data: np.ndarray or torch.Tensor
             Resampled data with shape :math:`(H', W', D')`  or
             :math:`(C, H', W', D')` and same type as input with
@@ -255,7 +256,7 @@ class Resample(VolumeTransform):
             return Stk.sitkNearestNeighbor
         elif interpolation == "linear":
             return Stk.sitkLinear
-        elif interpolation == "bspline" or interpolation == "cubic":
+        elif interpolation in {"bspline", "cubic"}:
             return Stk.sitkBSpline
         elif interpolation == "gaussian":
             return Stk.sitkGaussian
