@@ -27,7 +27,9 @@ dependencies = [
     "pandas",
     "scikit-learn <= 1.7.0",
     "simpleitk",
-    "nibabel"
+    "nibabel",
+    "einops",
+    "timm",
 ]
 dynamic = ["version"]
 

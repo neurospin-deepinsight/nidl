@@ -23,4 +23,9 @@ from .resnet3d import (
     resnet50,
     resnet50_trunc,
 )
-from .vit3d import VisionTransformer3D
+from .vit3d import (
+    VisionTransformer3D,
+    vit_base_patch16_128,
+    vit_large_patch16_128,
+    vit_small_patch16_128,
+)

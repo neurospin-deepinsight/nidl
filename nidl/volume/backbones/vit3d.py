@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from collections.abc import Sequence
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import torch
 from timm.layers import trunc_normal_
@@ -240,8 +240,8 @@ class VisionTransformer3D(nn.Module):
 
     def __init__(
         self,
-        img_size: int | Sequence[int],
-        patch_size: int | Sequence[int],
+        img_size: Union[int, Sequence[int]],
+        patch_size: Union[int, Sequence[int]],
         in_chans: int = 1,
         num_classes: int = 0,
         global_pool: str = "token",

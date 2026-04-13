@@ -28,6 +28,7 @@ from nidl.volume.backbones.utils.pos_embed import (
 from .utils.data_parsing import parse_x_or_xy_batch
 from .utils.encoder import build_encoder
 from .utils.momentum import MomentumUpdater, initialize_momentum_params
+from .utils.optimizer import configure_ssl_optimizers
 
 
 class IJEPA(TransformerMixin, BaseEstimator):
@@ -39,8 +40,9 @@ class IJEPA(TransformerMixin, BaseEstimator):
     predictor network to obtain the predictions.
 
     The target encoder is an Exponential Moving Average (EMA) of the context
-    encoder. It is used at inference time, the context encoder and predictor
-    being dropped.
+    encoder. It is used to avoid representation collapse of the context encoder
+    during training but it is thrown at inference. The context encoder is used
+    for downstream tasks.
 
 
     Parameters
@@ -126,7 +128,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
     Attributes
     ----------
     encoder : torch.nn.Module
-        It corresponds to the target encoder in the I-JEPA model.
+        It corresponds to the **context encoder** in the I-JEPA model.
 
     predictor : torch.nn.Module
         Predictor model trained to predict the masked part of an image from a
@@ -174,19 +176,19 @@ class IJEPA(TransformerMixin, BaseEstimator):
         if "encoder" not in ignore:
             ignore.append("encoder")
 
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, ignore=ignore)
 
         self.parse_batch = parse_x_or_xy_batch
 
-        self.target_encoder = IJEPAVisionTransformer(build_encoder(encoder))
-        self.context_encoder = IJEPAVisionTransformer(
+        self.target_encoder = IJEPAVisionTransformer(
             build_encoder(encoder, deepcopy=True)
         )
+        self.context_encoder = IJEPAVisionTransformer(build_encoder(encoder))
 
         # Copy context encoder params to target encoder + no_grad for target.
         initialize_momentum_params(self.context_encoder, self.target_encoder)
 
-        self.encoder = self.target_encoder.vit
+        self.encoder = self.context_encoder.vit
 
         # Instantiate momentum updates.
         self.momentum_updater = MomentumUpdater(ema_start, ema_end)
@@ -357,6 +359,57 @@ class IJEPA(TransformerMixin, BaseEstimator):
         # Returns everything needed for further logging/metrics computation
         return outputs
 
+    def test_step(self, batch, batch_idx):
+        """Skip the test step."""
+        return
+
+    def transform_step(
+        self,
+        batch: torch.Tensor,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ):
+        """Encode the input data into the latent space.
+
+        Importantly, we do not apply the predictor here since it is
+        not part of the final model at inference time (only used for training).
+
+        Parameters
+        ----------
+        batch: torch.Tensor
+            A batch of data that has been generated from `test_dataloader`.
+            This is given as is to the encoder.
+        batch_idx: int
+            The index of the current batch (ignored).
+        dataloader_idx: int, default=0
+            The index of the dataloader (ignored).
+
+        Returns
+        -------
+        features: torch.Tensor
+            The encoded features returned by the encoder.
+
+        """
+        return self.encoder(batch)
+
+    def configure_optimizers(self):
+        """Initialize the optimizer and learning rate scheduler."""
+        params = [
+            {"name": "backbone", "params": self.context_encoder.parameters()},
+            {"name": "predictor", "params": self.predictor.parameters()},
+        ]
+        return configure_ssl_optimizers(
+            trainer=self.trainer,
+            optim_params=params,
+            optimizer=self.optimizer,
+            optimizer_kwargs=self.optimizer_kwargs,
+            learning_rate=self.learning_rate,
+            weight_decay=self.weight_decay,
+            exclude_bias_and_norm_wd=self.exclude_bias_and_norm_wd,
+            lr_scheduler=self.lr_scheduler,
+            lr_scheduler_kwargs=self.lr_scheduler_kwargs,
+        )
+
     def _fill_default_lr_scheduler_kwargs(self):
         if self.lr_scheduler_kwargs is None:
             self.lr_scheduler_kwargs = {}
@@ -368,6 +421,62 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
 
 class IJEPAVisionTransformer(nn.Module):
+    """
+    Thin wrapper around a timm-like Vision Transformer encoder for I-JEPA.
+
+    This module adapts a Vision Transformer (ViT) implementation that follows
+    the `timm` encoder interface and exposes a reduced, I-JEPA-oriented API.
+    It delegates patch embedding, positional embedding, patch dropout,
+    transformer blocks, and final normalization to the wrapped encoder.
+
+    Unlike classification-oriented ViTs, this wrapper only returns patch-wise
+    tokens and does not return a class token or register tokens.
+
+    Parameters
+    ----------
+    vit : nn.Module
+        Vision Transformer-like encoder module. The wrapped module must expose
+        the following attributes or methods:
+
+        - ``has_class_token``
+        - ``num_reg_tokens``
+        - ``patch_embed``
+        - ``patch_drop``
+        - ``norm_pre``
+        - ``blocks``
+        - ``norm``
+        - ``_pos_embed``
+        - ``forward_features``
+        - ``embed_dim``
+
+        The encoder may operate on either 2D inputs (for example images) or
+        3D inputs (for example volumes), as long as its patch embedding module
+        defines a valid ``grid_size`` and the rest of the interface is
+        compatible.
+
+    Raises
+    ------
+    TypeError
+        If ``vit`` does not satisfy the expected timm-like Vision Transformer
+        interface.
+
+    Notes
+    -----
+    The forward pass applies the following stages in order:
+
+    1. Patch embedding
+    2. Positional embedding
+    3. Optional masking of patch tokens
+    4. Patch dropout
+    5. Pre-transformer normalization
+    6. Transformer blocks
+    7. Final normalization
+
+    The masking step is intended for I-JEPA-style masked prediction workflows,
+    where a subset of patch tokens is selected before being processed by the
+    transformer encoder.
+    """
+
     def __init__(self, vit: nn.Module):
         super().__init__()
         missings = self._is_vit_like(vit)
@@ -377,32 +486,59 @@ class IJEPAVisionTransformer(nn.Module):
                 f"missing {missings} "
             )
         self.vit = vit
-        # Raise error if class/reg tokens are present (not used in I-JEPA)
-        if self.has_class_token or self.num_reg_tokens > 0:
-            raise ValueError(
-                "Input encoder should not have [CLS] or [REG] tokens"
-            )
 
     def _is_vit_like(self, vit: nn.Module):
-        missings = {}
-        for k in (
-            "has_class_token",
-            "num_reg_tokens",
-            "patch_embed",
-            "patch_drop",
-            "norm_pre",
-            "blocks",
-            "norm",
-            "_pos_embed",
-            "forward_features",
-            "embed_dim",
-        ):
-            if not hasattr(vit, k):
-                missings.append(k)
+        """
+        Check whether a module follows the expected timm-like ViT interface.
+
+        Parameters
+        ----------
+        vit : nn.Module
+            Module to validate.
+
+        Returns
+        -------
+        list[str]
+            Names of required attributes or methods that are missing from
+            ``vit``. An empty list indicates that the module matches the
+            expected interface.
+
+        Notes
+        -----
+        This is a shallow interface check. It verifies the presence of required
+        members, but does not validate their semantics, signatures, or runtime
+        behavior.
+        """
+        missings = [
+            k
+            for k in (
+                "has_class_token",
+                "num_reg_tokens",
+                "patch_embed",
+                "patch_drop",
+                "norm_pre",
+                "blocks",
+                "norm",
+                "_pos_embed",
+                "forward_features",
+                "embed_dim",
+            )
+            if not hasattr(vit, k)
+        ]
         return missings
 
     @property
     def grid_size(self):
+        """
+        Patch grid size of the wrapped encoder.
+
+        Returns
+        -------
+        tuple[int, ...]
+            Spatial grid size produced by the patch embedding module. For a 2D
+            encoder this is typically ``(H_p, W_p)``, while for a 3D encoder it
+            is typically ``(D_p, H_p, W_p)``.
+        """
         return self.vit.patch_embed.grid_size
 
     @property
@@ -420,6 +556,17 @@ class IJEPAVisionTransformer(nn.Module):
     @property
     def num_reg_tokens(self):
         return self.vit.num_reg_tokens
+
+    @property
+    def num_prefix_tokens(self):
+        # Prefer timm's own bookkeeping if present
+        if hasattr(self.vit, "num_prefix_tokens"):
+            return self.vit.num_prefix_tokens
+        n = 0
+        if self.has_class_token:
+            n += 1
+        n += self.num_reg_tokens
+        return n
 
     def patch_embed(self, x: torch.Tensor):
         return self.vit.patch_embed(x)
@@ -442,25 +589,85 @@ class IJEPAVisionTransformer(nn.Module):
     def norm(self, x: torch.Tensor):
         return self.vit.norm(x)
 
+    def remove_prefix_tokens(self, x: torch.Tensor):
+        """
+        Remove [CLS] and register tokens from a token sequence.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Tensor of shape (B, N_total, D), including prefix tokens.
+
+        Returns
+        -------
+        torch.Tensor
+            Patch tokens only, shape (B, N_patch, D).
+        """
+        n_prefix = self.num_prefix_tokens
+        if n_prefix == 0:
+            return x
+        return x[:, n_prefix:, :]
+
     def forward(
         self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
     ):
-        """Forward pass through feature layers (embeddings, transformer blocks,
-        post-transformer norm) + masking of input patches."""
+        """
+        Encode an input into patch-level features, optionally applying masks.
+
+        The wrapped encoder is executed as patch embedding, positional
+        embedding, optional mask application, patch dropout, pre-normalization,
+        transformer blocks, and final normalization.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input batch of shape ``(B, C, H, W)`` or ``(B, C, D, H, W)``.
+            This is typically an image tensor for 2D models or a volume tensor
+            for 3D models.
+        masks : list[torch.Tensor] or None, optional
+            Patch-selection masks applied after positional embedding and before
+            the transformer blocks. List of ``M`` tensors, each of shape
+            ``(B, K)``, where:
+                - ``M`` is the number of blocks,
+                - ``B`` is the batch size,
+                - ``K`` is the number of patches to keep.
+            Each tensor contains the indices of the patches to retain in each
+            sample of the batch.
+            If ``None``, no masking is applied.
+
+        Returns
+        -------
+        torch.Tensor
+            Encoded patch-token representations after the final normalization
+            layer, shape ``(B * M, K, E)`` if ``masks`` is not None or
+            ``(B, L, E)`` otherwise with ``E``the embedding dimension and ``L``
+            the number of patch tokens.
+        """
         x = self.patch_embed(x)
-        x = self._pos_embed(x)
+        x = self._pos_embed(
+            x
+        )  # eventually appends CLS/REG tokens (ignored in I-JEPA)
 
         if masks is not None:
-            x = self.apply_masks(x, masks)
+            x = self.apply_masks(
+                x,
+                masks,
+                num_prefix_tokens=self.num_prefix_tokens,
+            )
 
         x = self.patch_drop(x)
         x = self.norm_pre(x)
         x = self.blocks(x)
         x = self.norm(x)
+        x = self.remove_prefix_tokens(x)
         return x
 
     @staticmethod
-    def apply_masks(x: torch.Tensor, masks: list[torch.Tensor]):
+    def apply_masks(
+        x: torch.Tensor,
+        masks: list[torch.Tensor],
+        num_prefix_tokens: int = 0,
+    ):
         """
         Applies patch-wise masks to a batched input tensor.
 
@@ -480,16 +687,31 @@ class IJEPAVisionTransformer(nn.Module):
             Each tensor contains the indices of the patches to retain in each
             sample of the batch.
 
+        num_prefix_tokens : int, default=0
+            Number of prefix tokens at the beginning of the sequence.
+
         Returns
         -------
         torch.Tensor
-            Tensor of shape ``(B * M, K, D),`` representing the retained
-            patches in the batch.
+            Tensor of shape ``(B * M, Nprefix + K, D),`` representing the
+            retained patches in the batch with eventual prefix tokens.
         """
+        if num_prefix_tokens > 0:
+            prefix = x[:, :num_prefix_tokens, :]  # (B, P, D)
+            patches = x[:, num_prefix_tokens:, :]  # (B, N_patch, D)
+        else:
+            prefix = None
+            patches = x
         all_x = []
         for m in masks:
-            mask_keep = m.unsqueeze(-1).repeat(1, 1, x.size(-1))
-            all_x += [torch.gather(x, dim=1, index=mask_keep)]
+            gather_idx = m.unsqueeze(-1).expand(-1, -1, patches.size(-1))
+            kept_patches = torch.gather(patches, dim=1, index=gather_idx)
+            if prefix is not None:
+                kept = torch.cat([prefix, kept_patches], dim=1)
+            else:
+                kept = kept_patches
+            all_x.append(kept)
+
         return torch.cat(all_x, dim=0)
 
 
@@ -634,7 +856,7 @@ class VisionTransformerPredictor(nn.Module):
         B = len(x)
         M = len(target_blocks)
 
-        # -- map from encoder-dim to pedictor-dim
+        # -- map from encoder-dim to predictor-dim
         x = self.predictor_embed(x)  # shape [B, K, D']
 
         # -- add positional embedding to contextual tokens
