@@ -10,24 +10,22 @@ from __future__ import annotations
 from typing import Union
 
 import pytorch_lightning as pl
-import torch
 from sklearn.base import BaseEstimator as sk_BaseEstimator
 from sklearn.model_selection import cross_validate
-from sklearn.utils.validation import check_array
-from torch.utils.data import DataLoader, DistributedSampler
-from tqdm import tqdm
+from torch.utils.data import DataLoader
 
 from nidl.estimators.base import BaseEstimator
 from nidl.utils.validation import _estimator_is
 
 
-class ModelProbingCV(pl.Callback):
+class ModelProbingCVCallback(pl.Callback):
     """Callback to probe the representation of an embedding estimator on a
     dataset using cross-validation.
 
     It has the following logic:
 
-    1) Embeds the input data through the estimator using `transform_step`.
+    1) Embeds the input data through the estimator using
+       `transform_with_targets`.
     2) For each CV split, train the probe on the training embedding split and
        make predictions on the test embedding split.
     3) Compute and log the scores computed between the true and predicted
@@ -177,39 +175,6 @@ class ModelProbingCV(pl.Callback):
                         sync_dist=True,
                     )
 
-    @staticmethod
-    def adapt_dataloader_for_ddp(dataloader, trainer):
-        """Wrap user dataloader with DistributedSampler if in DDP mode."""
-        dataset = dataloader.dataset
-
-        if trainer.world_size > 1:
-            # Create a distributed sampler
-            sampler = DistributedSampler(
-                dataset,
-                num_replicas=trainer.world_size,
-                rank=trainer.global_rank,
-                shuffle=False,
-            )
-            # Recreate the dataloader with this sampler
-            return DataLoader(
-                dataset,
-                batch_size=dataloader.batch_size,
-                num_workers=dataloader.num_workers,
-                pin_memory=dataloader.pin_memory,
-                sampler=sampler,
-                collate_fn=dataloader.collate_fn,
-                drop_last=dataloader.drop_last,
-                timeout=dataloader.timeout,
-                worker_init_fn=dataloader.worker_init_fn,
-                multiprocessing_context=dataloader.multiprocessing_context,
-                prefetch_factor=dataloader.prefetch_factor,
-                persistent_workers=dataloader.persistent_workers,
-                pin_memory_device=dataloader.pin_memory_device,
-                in_order=dataloader.in_order,
-            )
-        else:
-            return dataloader
-
     def probing(self, trainer, pl_module: BaseEstimator):
         """Perform the probing on the given estimator.
 
@@ -239,10 +204,7 @@ class ModelProbingCV(pl.Callback):
             )
 
         # Embed the data
-        X, y = self.extract_features(trainer, pl_module, self.dataloader)
-
-        # Check arrays
-        X, y = self.check_array(X, y)
+        X, y = self.extract_features(pl_module, self.dataloader)
 
         # For efficiency, fit/score on rank 0 only
         scores = None
@@ -257,7 +219,7 @@ class ModelProbingCV(pl.Callback):
         # Log metrics
         self.log_metrics(pl_module, scores)
 
-    def extract_features(self, trainer, pl_module, dataloader):
+    def extract_features(self, pl_module, dataloader):
         """Extract features from a dataloader with the BaseEstimator.
 
         By default, it uses the `transform_step` logic applied on each batch to
@@ -277,71 +239,14 @@ class ModelProbingCV(pl.Callback):
 
         Returns
         -------
-        tuple of (z, y)
-            Tuple of numpy arrays (z, y) where z are the extracted features
+        tuple of (X, y)
+            Tuple of numpy arrays (X, y) where X are the extracted features
             and y are the corresponding labels.
 
         """
-        is_training = pl_module.training  # Save state
-
-        dataloader = self.adapt_dataloader_for_ddp(dataloader, trainer)
-
-        pl_module.eval()
-        X, y = [], []
-
-        with torch.no_grad():
-            for batch_idx, batch in tqdm(
-                enumerate(dataloader),
-                desc="Extracting features",
-                disable=(not trainer.is_global_zero),
-                leave=False,
-            ):
-                x_batch, y_batch = batch
-                x_batch = x_batch.to(pl_module.device)
-                y_batch = y_batch.to(pl_module.device)
-                features = pl_module.transform_step(
-                    x_batch, batch_idx=batch_idx
-                )
-                X.append(features.detach())
-                y.append(y_batch.detach())
-
-        # Concatenate the embeddings
-        X = torch.cat(X)
-        y = torch.cat(y)
-
-        # Gather across GPUs
-        X = pl_module.all_gather(X).cpu().numpy()
-        y = pl_module.all_gather(y).cpu().numpy()
-
-        # Reduce (world_size, batch, ...) to (world_size * batch, ...)
-        if pl_module.trainer.world_size > 1:
-            X = X.reshape(X.shape[0] * X.shape[1], *X.shape[2:])
-            y = y.reshape(y.shape[0] * y.shape[1], *y.shape[2:])
-
-        if is_training:
-            pl_module.train()
-
-        return X, y
-
-    def check_array(self, X, y):
-        """Check the input arrays for cross-validation.
-
-        Parameters
-        ----------
-        X: np.ndarray
-            The input features.
-        y: np.ndarray
-            The input targets.
-
-        Returns
-        -------
-        tuple of (X, y)
-            The checked input features and targets.
-
-        """
-        X = check_array(X, ensure_2d=True)
-        y = check_array(y, ensure_2d=False)
-
+        X, y = pl_module.transform_with_targets(dataloader)
+        X = X.cpu().detach().numpy()
+        y = y.cpu().detach().numpy()
         return X, y
 
     def on_train_epoch_end(self, trainer, pl_module):

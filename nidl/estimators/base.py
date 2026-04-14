@@ -38,11 +38,22 @@ class BaseEstimator(pl.LightningModule):
     prediction/transformation in a distributed setting (multi-node multi-GPU)
     inheriting from the Lightning's Trainer capabilities.
 
-    Basicaly, this class defines:
+    It also provides a common interface for logging metrics, saving
+    hyperparameters and handling callbacks, which are modular pieces of code
+    that hook into the training loop without modifying your model code. They
+    can be used for a variety of purposes, such as early stopping, model
+    checkpointing, model's probing, metrics computations, etc.
 
-    - a `fit` method.
-    - a `transform` or `predict` method if the child class inherit from a
-      valid  Mixin class.
+    This class provides:
+
+    - a :meth:`fit` method.
+    - a :meth:`transform` if the child class inherits from
+      :class:`TransformerMixin`
+    - a :meth:`transform_with_targets` method if the child class inherits from
+      :class:`TransformerMixin`
+    - a :meth:`predict` method if the child class inherits from
+      :class:`RegressorMixin` (for regression) or :class:`ClassifierMixin`
+      (for classification) or :class:`ClusterMixin` (for clustering)
 
     Parameters
     ----------
@@ -222,7 +233,8 @@ class BaseEstimator(pl.LightningModule):
             fitted estimator.
         """
         trainer = pl.Trainer(**self.trainer_params_)
-        trainer.logger._default_hp_metric = None
+        if trainer.logger is not None:
+            trainer.logger._default_hp_metric = None
         pl.seed_everything(self.hparams.random_state)
         trainer.fit(self, train_dataloader, val_dataloader)
         self.fitted_ = True
@@ -267,6 +279,62 @@ class BaseEstimator(pl.LightningModule):
         if f.ndim > 2 and trainer.world_size > 1:
             f = f.reshape(f.shape[0] * f.shape[1], *f.shape[2:])
         return f
+
+    @available_if(_estimator_is("transformer"))
+    def transform_with_targets(
+        self,
+        test_dataloader: data.DataLoader,
+    ) -> tuple[Any, Any]:
+        """Return transformed samples and associated targets.
+
+        Parameters
+        ----------
+        test_dataloader: torch DataLoader
+            Testing samples in the form of ``(x, y)`` where y is the target.
+            The `transform_step` method is applied to `x` only and `y` is
+            returned as is.
+
+        Returns
+        -------
+        features, targets: torch Tensor, torch.Tensor
+            Transformed samples and associated targets.
+
+        Notes
+        -----
+        Outputs are gathered across GPUs in distributed settings, similarly to
+        :meth:`transform`.
+        """
+        check_is_fitted(self)
+        trainer = pl.Trainer(**self.trainer_params_)
+
+        self._return_targets_in_predict = True
+        try:
+            outputs = trainer.predict(
+                self, test_dataloader, return_predictions=True
+            )
+        finally:
+            self._return_targets_in_predict = False
+
+        features = torch.cat([out["features"] for out in outputs])
+        targets = torch.cat([out["targets"] for out in outputs])
+
+        features = features.to(trainer.strategy.root_device)
+        targets = targets.to(trainer.strategy.root_device)
+
+        features = trainer.strategy.all_gather(features)
+        targets = trainer.strategy.all_gather(targets)
+
+        if features.ndim > 2 and trainer.world_size > 1:
+            features = features.reshape(
+                features.shape[0] * features.shape[1], *features.shape[2:]
+            )
+
+        if targets.ndim > 1 and trainer.world_size > 1:
+            targets = targets.reshape(
+                targets.shape[0] * targets.shape[1], *targets.shape[2:]
+            )
+
+        return features, targets
 
     @available_if(_estimator_is(("regressor", "classifier", "clusterer")))
     def predict(self, test_dataloader: data.DataLoader) -> Any:
@@ -399,6 +467,28 @@ class BaseEstimator(pl.LightningModule):
         Share the same API as :meth:`BaseEstimator.predict_step`.
         """
 
+    @available_if(_estimator_is("transformer"))
+    def _transform_step_with_targets(
+        self,
+        batch: Any,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ) -> Mapping[str, Any]:
+        """Internal helper used by `transform_with_targets`.
+
+        By default, expects batches of the form ``(x, y)`` or similar sequences
+        whose second element contains the targets.
+        """
+        if not isinstance(batch, Sequence) or len(batch) < 2:
+            raise ValueError(
+                "`transform_with_targets` expects batches with at least two "
+                "elements, typically `(x, y)`."
+            )
+        x, y = batch[:2]
+
+        features = self.transform_step(x, batch_idx, dataloader_idx)
+        return {"features": features, "targets": y}
+
     @available_if(
         _estimator_is(("transformer", "regressor", "classifier", "clusterer"))
     )
@@ -439,6 +529,10 @@ class BaseEstimator(pl.LightningModule):
             the predicted output.
         """
         if _estimator_is("transformer"):
+            if getattr(self, "_return_targets_in_predict", False):
+                return self._transform_step_with_targets(
+                    batch, batch_idx, dataloader_idx
+                )
             return self.transform_step(batch, batch_idx, dataloader_idx)
         else:
             return super().predict_step(batch, batch_idx, dataloader_idx)
@@ -609,7 +703,7 @@ class BaseEstimator(pl.LightningModule):
             batch_size=batch_size,
             rank_zero_only=rank_zero_only,
         )
-    
+
     def on_load_checkpoint(self, checkpoint):
         """Hook that is called when using the `load_from_checkpoint` method."""
         self.fitted_ = True

@@ -6,6 +6,4 @@
 # for details.
 ##########################################################################
 
-from .classification_probing import ClassificationProbingCV
-from .multitask_probing import MultiTaskProbingCV
-from .regression_probing import RegressionProbingCV
+from .model_probing import ModelProbing
