@@ -43,7 +43,6 @@ from torch import nn
 from torch.utils.data import DataLoader, Subset
 from torchvision import transforms
 from torchvision.datasets import MNIST
-from tqdm import tqdm
 
 from nidl.estimators.ssl import SimCLR
 from nidl.transforms import MultiViewsTransform
@@ -276,42 +275,15 @@ model.to(device)
 # We study how well we can classify the digits in a small data setting by
 # reducing the number of training samples and measuring accuracy.
 
-# %%
-# Function to extract features and labels from a dataloader and a model
-
-# %%
-def extract_features(model, dataloader):
-    # X are the features and y the label of each sample
-    X, y = [], []
-
-    model.eval()
-    with torch.no_grad():
-        for batch_idx, batch in tqdm(
-            enumerate(dataloader),
-            desc="Extracting features",
-        ):
-            x_batch, y_batch = batch
-            x_batch = x_batch.to(model.device)
-            y_batch = y_batch.to(model.device)
-            features = model.transform_step(
-                x_batch, batch_idx=batch_idx
-            )
-            X.append(features.detach())
-            y.append(y_batch.detach())
-
-    # Concatenate the features
-    X = torch.cat(X)
-    y = torch.cat(y)
-
-    # Send to CPU and convert to numpy
-    X = X.cpu().numpy()
-    y = y.cpu().numpy()
-
-    return X,y
-
 # We first extract the features of the train and test sets
-X_train, y_train = extract_features(model, train_xy_loader)
-X_test, y_test = extract_features(model, test_xy_loader)
+X_train, y_train = model.transform_with_targets(train_xy_loader)
+X_test, y_test = model.transform_with_targets(test_xy_loader)
+
+# We move the features to CPU and convert them to numpy arrays.
+X_train = X_train.cpu().numpy()
+y_train = y_train.cpu().numpy()
+X_test = X_test.cpu().numpy()
+y_test = y_test.cpu().numpy()
 
 # %%
 # We define the linear probe

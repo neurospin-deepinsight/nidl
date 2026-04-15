@@ -13,3 +13,4 @@ Various utilities to help with development.
 from .bunch import Bunch
 from .color import print_multicolor
 from .lr_scheduler import LinearWarmupCosineAnnealingLR
+from .weights import Weights
