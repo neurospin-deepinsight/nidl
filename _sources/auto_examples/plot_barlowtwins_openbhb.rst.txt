@@ -472,7 +472,7 @@ We train both models on their respective dataloaders.
     Modules in train mode: 16                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 4.04it/s v_num: 2.000      
+    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:10 • 0:00:00 3.87it/s v_num: 4.000      
                                                                   loss/train: 34.056
                                                                   loss/val: 31.501  
     ┏━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
@@ -489,7 +489,7 @@ We train both models on their respective dataloaders.
     Modules in train mode: 16                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:18 • 0:00:00 2.71it/s v_num: 3.000      
+    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:18 • 0:00:00 2.71it/s v_num: 5.000      
                                                                   loss/train: 33.475
                                                                   loss/val: 30.364  
 
@@ -551,10 +551,10 @@ and SBM data.
 
  .. code-block:: none
 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.30it/s 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 1644.25it/s 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:10 • 0:00:00 2.38it/s 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 9.81it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.37it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 9.74it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:09 • 0:00:00 2.78it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 167.04it/s 
 
 
 
@@ -754,7 +754,7 @@ working with the original 3d brain scans instead of the ROI-averaged data.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (7 minutes 9.402 seconds)
+   **Total running time of the script:** (7 minutes 16.016 seconds)
 
 **Estimated memory usage:**  121 MB
 

@@ -7,18 +7,18 @@
    :ref:`user guide <user_guide>` for the big picture.
 
 
-nidl.callbacks.ModelProbing
-===========================
+nidl.callbacks.ModelProbingCallback
+===================================
 
 .. currentmodule:: nidl.callbacks
 
-.. autoclass:: ModelProbing
+.. autoclass:: ModelProbingCallback
    :members:
    :show-inheritance:
    :special-members: __init__,__call__
    :member-order: alphabetical
 
-.. include:: nidl.callbacks.ModelProbing.examples
+.. include:: nidl.callbacks.ModelProbingCallback.examples
 
 .. raw:: html
 

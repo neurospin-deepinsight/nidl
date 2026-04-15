@@ -1,13 +1,14 @@
 """
-Model probing callback of embedding estimators
-==============================================
+Model probing of embedding estimators
+=====================================
 
 This notebook will show you how to investigate the **data representation given
-by an embedding estimator during training**  (such as SimCLR, y-Aware
-Contrastive Learning or Barlow Twins) using the notion of "probing".
+by an embedding estimator** (such as SimCLR, y-Aware Contrastive Learning or Barlow 
+Twins) **during training and inference** using the notion of "probing".
 A standard machine learning model (e.g. linear or SVM) is trained and evaluated
-on the data embedding for a given task as the model is being fitted. It allows
-the user to understand what concepts are learned by the model.
+on the data embedding for a given task as the model is being fitted (for training 
+monitoring) or at inference. It allows the user to understand what concepts are learned 
+by the model.
 
 This has been first introduced by Guillaume Alain and Yoshua Bengio in 2017
 [1]_ to understand the internal behavior of a deep neural network along
@@ -16,7 +17,7 @@ the intermediate representation of a neural network? What information is
 contained for a given layer ?
 
 Then, it has been adapted to benchmark self-supervised vision models
-(like SimCLR, Barlow Twins, DINO, DINOv2) on classical datasets (ImageNet,
+(like SimCLR, Barlow Twins, DINO, DINOv2, DINOv3) on classical datasets (ImageNet,
 CIFAR, ...) by implementing linear probing and K-Nearest Neighbors probing
 on model's output representation.
 
@@ -54,7 +55,8 @@ from torchvision.datasets import MNIST
 from torchvision.ops import MLP
 from torchvision.utils import make_grid
 
-from nidl.callbacks.model_probing import ModelProbing
+from nidl.callbacks import ModelProbingCallback
+from nidl.estimators.probes import ModelProbing
 from nidl.datasets import OpenBHB
 from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
 from nidl.metrics import pearson_r
@@ -209,7 +211,7 @@ plt.show()
 # is performed every 2 epochs on the training and test sets. The classification
 # metrics (accuracy and f1-weighted) are logged to TensorBoard by default.
 
-callback = ModelProbing(
+callback = ModelProbingCallback(
     train_xy_loader,
     test_xy_loader,
     probe=LogisticRegression(max_iter=200),
@@ -312,6 +314,7 @@ plt.xlabel(f"Nb steps (batch size={batch_size})")
 plt.ylabel("Metric score")
 plt.title("Classification metrics during SimCLR training")
 plt.legend()
+plt.tight_layout()
 plt.show()
 
 # %%
@@ -320,6 +323,29 @@ plt.show()
 # more and more linearly separable for the digit classes. The accuracy
 # reaches more than 80% after 10 epochs, which is quite good for such a simple
 # model trained *without supervision* and a small number of epochs.
+
+# %% 
+# Classification metrics at inference
+# -----------------------------------
+#
+# In addition to monitoring the classification metrics during training, we can
+# also evaluate the linear probe at inference after training the SimCLR model.
+
+probing = ModelProbing(
+    embedding_estimator=model,  # <-- pass the trained SimCLR model as embedding estimator
+    probe=LogisticRegression(max_iter=200),
+    scoring=["accuracy", "f1_weighted"],
+)
+probing.fit(train_xy_loader)
+
+# %% 
+# We can now evaluate the probe on the test set and print the classification 
+# metrics:
+scores = probing.score(test_xy_loader)
+print("Classification metrics at inference:")
+for metric, score in scores.items():
+    print(f"{metric}: {score:.4f}")
+
 
 # %%
 # Probing of y-Aware representation on age and sex prediction
@@ -514,7 +540,7 @@ def make_task_scorer(metric_fn, task_index, **kwargs):
 # Finally, we create the multitask probing callback with the relevant
 # estimators and scorers for age and sex.
 
-callback = ModelProbing(
+callback = ModelProbingCallback(
     train_xy_loader,
     test_xy_loader,
     probe=MultiTaskEstimator([Ridge(), LogisticRegression(max_iter=200)]),

@@ -230,7 +230,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing callback of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -277,8 +277,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -319,8 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbing.html">nidl.callbacks.ModelProbing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbingCV.html">nidl.callbacks.ModelProbingCV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbingCallback.html">nidl.callbacks.ModelProbingCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbingCVCallback.html">nidl.callbacks.ModelProbingCVCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
 </ul>
@@ -436,11 +438,10 @@ importing our standard libraries below:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.Subset" title="torch.utils.data.Subset" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">Subset</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">transforms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class"><span class="n">MNIST</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.ssl</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class"><span class="n">SimCLR</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.transforms</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.transforms.MultiViewsTransform.html#nidl.transforms.MultiViewsTransform" title="nidl.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.utils.weights</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.utils.weights.Weights.html#nidl.utils.weights.Weights" title="nidl.utils.weights.Weights" class="sphx-glr-backref-module-nidl-utils-weights sphx-glr-backref-type-py-class"><span class="n">Weights</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.utils.weights</span><span class="w"> </span><span class="kn">import</span> <span class="n">Weights</span>
 </pre></div>
 </div>
 <p>We define some global parameters that will be used throughout the notebook.</p>
@@ -621,12 +622,12 @@ epochs and 100 batches per epoch to demonstrate the learning process.</p>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">load_pretrained</span></a><span class="p">:</span>
     <span class="c1"># Load model from checkpoint</span>
-    <a href="../modules/generated/nidl.utils.weights.Weights.html#nidl.utils.weights.Weights" title="nidl.utils.weights.Weights" class="sphx-glr-backref-module-nidl-utils-weights sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weights</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.utils.weights.Weights.html#nidl.utils.weights.Weights" title="nidl.utils.weights.Weights" class="sphx-glr-backref-module-nidl-utils-weights sphx-glr-backref-type-py-class"><span class="n">Weights</span></a><span class="p">(</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">Weights</span><span class="p">(</span>
         <span class="s1">&#39;hf-hub:neurospin/nidl_example_simclr_mnist&#39;</span><span class="p">,</span>
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_dir</span></a><span class="p">,</span>
         <span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;nidl_example_simclr_mnist.ckpt&#39;</span>
     <span class="p">)</span>
-    <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.utils.weights.Weights.html#nidl.utils.weights.Weights.load_checkpoint" title="nidl.utils.weights.Weights.load_checkpoint" class="sphx-glr-backref-module-nidl-utils-weights sphx-glr-backref-type-py-method"><span class="n">weights</span><span class="o">.</span><span class="n">load_checkpoint</span></a><span class="p">(</span>
+    <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span>
         <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class"><span class="n">SimCLR</span></a><span class="p">,</span>
         <span class="n">encoder</span><span class="o">=</span><span class="n">encoder</span><span class="p">,</span>
         <span class="n">devices</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -674,104 +675,21 @@ directly a logistic regression classifier on the learned representation with
 frozen weights of the encoder.</p>
 <p>We study how well we can classify the digits in a small data setting by
 reducing the number of training samples and measuring accuracy.</p>
-<p>Function to extract features and labels from a dataloader and a model</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">extract_features</span><span class="p">(</span><a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span> <span class="n">dataloader</span><span class="p">):</span>
-    <span class="c1"># X are the features and y the label of each sample</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We first extract the features of the train and test sets</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.transform_with_targets" title="nidl.estimators.BaseEstimator.transform_with_targets" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">transform_with_targets</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_loader</span></a><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.transform_with_targets" title="nidl.estimators.BaseEstimator.transform_with_targets" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">transform_with_targets</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a><span class="p">)</span>
 
-    <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module.eval" title="torch.nn.Module.eval" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">eval</span></a><span class="p">()</span>
-    <span class="k">with</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
-        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
-            <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">),</span>
-            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Extracting features&quot;</span><span class="p">,</span>
-        <span class="p">):</span>
-            <span class="n">x_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="o">=</span> <span class="n">batch</span>
-            <span class="n">x_batch</span> <span class="o">=</span> <span class="n">x_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">)</span>
-            <span class="n">y_batch</span> <span class="o">=</span> <span class="n">y_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a><span class="p">)</span>
-            <span class="n">features</span> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR.transform_step" title="nidl.estimators.ssl.SimCLR.transform_step" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">transform_step</span></a><span class="p">(</span>
-                <span class="n">x_batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="o">=</span><span class="n">batch_idx</span>
-            <span class="p">)</span>
-            <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
-            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_batch</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
-
-    <span class="c1"># Concatenate the features</span>
-    <span class="n">X</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.cat.html#torch.cat" title="torch.cat" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cat</span></a><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.cat.html#torch.cat" title="torch.cat" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cat</span></a><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-
-    <span class="c1"># Send to CPU and convert to numpy</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">X</span><span class="p">,</span><span class="n">y</span>
-
-<span class="c1"># We first extract the features of the train and test sets</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span></a> <span class="o">=</span> <span class="n">extract_features</span><span class="p">(</span><a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_loader</span></a><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span></a> <span class="o">=</span> <span class="n">extract_features</span><span class="p">(</span><a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a><span class="p">)</span>
+<span class="c1"># We move the features to CPU and convert them to numpy arrays.</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/data_connector.py:485: Your `predict_dataloader`&#39;s sampler has shuffling enabled, it is strongly recommended that you turn shuffling off for val/test dataloaders.
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
-
-Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  5.21it/s]
-Extracting features: 10it [00:00, 39.97it/s]
-Extracting features: 19it [00:00, 56.84it/s]
-Extracting features: 28it [00:00, 67.45it/s]
-Extracting features: 37it [00:00, 74.03it/s]
-Extracting features: 46it [00:00, 78.43it/s]
-Extracting features: 56it [00:00, 84.83it/s]
-Extracting features: 65it [00:00, 84.80it/s]
-Extracting features: 75it [00:01, 86.87it/s]
-Extracting features: 84it [00:01, 85.81it/s]
-Extracting features: 93it [00:01, 85.07it/s]
-Extracting features: 102it [00:01, 86.22it/s]
-Extracting features: 111it [00:01, 86.23it/s]
-Extracting features: 120it [00:01, 86.26it/s]
-Extracting features: 129it [00:01, 86.65it/s]
-Extracting features: 138it [00:01, 85.42it/s]
-Extracting features: 148it [00:01, 86.75it/s]
-Extracting features: 157it [00:01, 85.79it/s]
-Extracting features: 167it [00:02, 85.22it/s]
-Extracting features: 177it [00:02, 88.35it/s]
-Extracting features: 186it [00:02, 86.28it/s]
-Extracting features: 196it [00:02, 87.05it/s]
-Extracting features: 205it [00:02, 86.24it/s]
-Extracting features: 216it [00:02, 91.45it/s]
-Extracting features: 226it [00:02, 85.20it/s]
-Extracting features: 236it [00:02, 87.96it/s]
-Extracting features: 246it [00:03, 86.04it/s]
-Extracting features: 256it [00:03, 85.73it/s]
-Extracting features: 266it [00:03, 85.93it/s]
-Extracting features: 276it [00:03, 88.87it/s]
-Extracting features: 285it [00:03, 89.11it/s]
-Extracting features: 294it [00:03, 88.99it/s]
-Extracting features: 303it [00:03, 87.25it/s]
-Extracting features: 312it [00:03, 87.06it/s]
-Extracting features: 322it [00:03, 88.70it/s]
-Extracting features: 331it [00:03, 88.76it/s]
-Extracting features: 341it [00:04, 89.52it/s]
-Extracting features: 351it [00:04, 90.76it/s]
-Extracting features: 361it [00:04, 91.33it/s]
-Extracting features: 371it [00:04, 90.08it/s]
-Extracting features: 381it [00:04, 90.55it/s]
-Extracting features: 391it [00:04, 91.70it/s]
-Extracting features: 401it [00:04, 86.48it/s]
-Extracting features: 410it [00:04, 86.74it/s]
-Extracting features: 420it [00:04, 89.84it/s]
-Extracting features: 430it [00:05, 90.28it/s]
-Extracting features: 440it [00:05, 88.18it/s]
-Extracting features: 449it [00:05, 88.07it/s]
-Extracting features: 469it [00:05, 85.58it/s]
-
-Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  5.36it/s]
-Extracting features: 9it [00:00, 36.31it/s]
-Extracting features: 19it [00:00, 58.08it/s]
-Extracting features: 28it [00:00, 68.00it/s]
-Extracting features: 39it [00:00, 77.05it/s]
-Extracting features: 48it [00:00, 79.02it/s]
-Extracting features: 57it [00:00, 82.16it/s]
-Extracting features: 79it [00:01, 76.18it/s]
 </pre></div>
 </div>
 <p>We define the linear probe</p>
@@ -806,8 +724,8 @@ pretraining using SimCLR. We observe that prediction is already 70% accurate
 using 1% of the annotated training samples (600 samples over 60,000).
 This is one of the strenghts of self-supervised learning to reduce the need
 for annotated data in downstream tasks.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 4.800 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  207 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 5.020 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  202 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-simclr-mnist-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/35bb6e49ecd293702d39620bd6583aeb/plot_simclr_mnist.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_simclr_mnist.ipynb</span></code></a></p>

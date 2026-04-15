@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="This modules details the public API you should use and implement for a nidl compatible callback, as well as the callbacks available in nidl. Introduction: A callback is a lightning.pytorch.callback..." />
-<link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.callbacks.ModelProbing" href="generated/nidl.callbacks.ModelProbing.html"><link rel="prev" title="nidl.datasets.OpenBHB" href="generated/nidl.datasets.OpenBHB.html">
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.callbacks.ModelProbingCallback" href="generated/nidl.callbacks.ModelProbingCallback.html"><link rel="prev" title="nidl.datasets.OpenBHB" href="generated/nidl.datasets.OpenBHB.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
@@ -230,7 +230,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_examples/index.html">Examples</a><input aria-label="Toggle navigation of Examples" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_model_probing.html">Model probing of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -277,8 +277,10 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -319,8 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbing.html">nidl.callbacks.ModelProbing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCV.html">nidl.callbacks.ModelProbingCV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCallback.html">nidl.callbacks.ModelProbingCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCVCallback.html">nidl.callbacks.ModelProbingCVCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
 </ul>
@@ -411,8 +413,8 @@ logic from the actual implementation of these functionalities.</p>
         classDiagram
   Callback &lt;|-- BatchTypingCallback
   Callback &lt;|-- MetricsCallback
-  Callback &lt;|-- ModelProbing
-  Callback &lt;|-- ModelProbingCV
+  Callback &lt;|-- ModelProbingCVCallback
+  Callback &lt;|-- ModelProbingCallback
     </pre></section>
 <section id="probing-callbacks">
 <h2>Probing callbacks<a class="headerlink" href="#probing-callbacks" title="Link to this heading">¶</a></h2>
@@ -420,10 +422,10 @@ logic from the actual implementation of these functionalities.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.callbacks.ModelProbing.html#nidl.callbacks.ModelProbing" title="nidl.callbacks.ModelProbing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbing</span></code></a>(train_dataloader, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCallback.html#nidl.callbacks.ModelProbingCallback" title="nidl.callbacks.ModelProbingCallback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbingCallback</span></code></a>(train_dataloader, ...)</p></td>
 <td><p>Callback to probe the representation of an embedding estimator on a dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCV.html#nidl.callbacks.ModelProbingCV" title="nidl.callbacks.ModelProbingCV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbingCV</span></code></a>(dataloader, probe[, scoring, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCVCallback.html#nidl.callbacks.ModelProbingCVCallback" title="nidl.callbacks.ModelProbingCVCallback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbingCVCallback</span></code></a>(dataloader, probe[, ...])</p></td>
 <td><p>Callback to probe the representation of an embedding estimator on a dataset using cross-validation.</p></td>
 </tr>
 </tbody>
@@ -464,12 +466,12 @@ against the expected type.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="generated/nidl.callbacks.ModelProbing.html">
+          <a class="next-page" href="generated/nidl.callbacks.ModelProbingCallback.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">nidl.callbacks.ModelProbing</div>
+                <div class="title">nidl.callbacks.ModelProbingCallback</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

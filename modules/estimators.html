@@ -230,7 +230,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_examples/index.html">Examples</a><input aria-label="Toggle navigation of Examples" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_model_probing.html">Model probing callback of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_model_probing.html">Model probing of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -277,8 +277,10 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -319,8 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbing.html">nidl.callbacks.ModelProbing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCV.html">nidl.callbacks.ModelProbingCV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCallback.html">nidl.callbacks.ModelProbingCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.ModelProbingCVCallback.html">nidl.callbacks.ModelProbingCVCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
 </ul>
@@ -499,9 +501,9 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
     </pre></section>
 <section id="self-supervised-learning">
 <h2>Self-Supervised Learning<a class="headerlink" href="#self-supervised-learning" title="Link to this heading">¶</a></h2>
-<p>Self-supervised learning estimators, losses and associated tools.</p>
-<section id="estimators">
-<h3>Estimators<a class="headerlink" href="#estimators" title="Link to this heading">¶</a></h3>
+<p>Self-supervised learning embedding estimators, losses and associated tools.</p>
+<section id="embedding-estimators">
+<h3>Embedding estimators<a class="headerlink" href="#embedding-estimators" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -577,11 +579,25 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 </div>
 </section>
 </section>
+<section id="probing-estimators">
+<h2>Probing estimators<a class="headerlink" href="#probing-estimators" title="Link to this heading">¶</a></h2>
+<p>Probing estimators, which are used to evaluate the quality of the representations
+learned by an embedding estimator.</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.probes.ModelProbing.html#nidl.estimators.probes.ModelProbing" title="nidl.estimators.probes.ModelProbing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelProbing</span></code></a>(embedding_estimator, probe[, ...])</p></td>
+<td><p>Estimator to probe the representation of an embedding estimator.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="autoencoders">
 <h2>Autoencoders<a class="headerlink" href="#autoencoders" title="Link to this heading">¶</a></h2>
 <p>Autoencoder estimators and losses.</p>
 <section id="id12">
-<h3>Estimators<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<h3>Embedding estimators<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -608,6 +624,19 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 </table>
 </div>
 </section>
+</section>
+<section id="dummy-estimator">
+<h2>Dummy estimator<a class="headerlink" href="#dummy-estimator" title="Link to this heading">¶</a></h2>
+<p>A dummy estimator that does not perform any training. This can be useful for testing purposes.</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html#nidl.estimators.dummy.DummyEmbeddingEstimator" title="nidl.estimators.dummy.DummyEmbeddingEstimator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DummyEmbeddingEstimator</span></code></a>([strategy, ...])</p></td>
+<td><p>A dummy embedding estimator returning an embedding independent of the input data.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 
@@ -679,16 +708,18 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 </li>
 <li><a class="reference internal" href="#base-classes">Base Classes</a></li>
 <li><a class="reference internal" href="#self-supervised-learning">Self-Supervised Learning</a><ul>
-<li><a class="reference internal" href="#estimators">Estimators</a></li>
+<li><a class="reference internal" href="#embedding-estimators">Embedding estimators</a></li>
 <li><a class="reference internal" href="#losses">Losses</a></li>
 <li><a class="reference internal" href="#projection-heads">Projection heads</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#probing-estimators">Probing estimators</a></li>
 <li><a class="reference internal" href="#autoencoders">Autoencoders</a><ul>
-<li><a class="reference internal" href="#id12">Estimators</a></li>
+<li><a class="reference internal" href="#id12">Embedding estimators</a></li>
 <li><a class="reference internal" href="#id15">Losses</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#dummy-estimator">Dummy estimator</a></li>
 </ul>
 </li>
 </ul>

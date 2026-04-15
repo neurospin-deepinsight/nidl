@@ -49,7 +49,7 @@ Setup
 This notebook requires some packages besides nidl. Let's first start with
 importing our standard libraries below:
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-52
+.. GENERATED FROM PYTHON SOURCE LINES 35-51
 
 .. code-block:: Python
 
@@ -64,7 +64,6 @@ importing our standard libraries below:
     from torch.utils.data import DataLoader, Subset
     from torchvision import transforms
     from torchvision.datasets import MNIST
-    from tqdm import tqdm
 
     from nidl.estimators.ssl import SimCLR
     from nidl.transforms import MultiViewsTransform
@@ -77,7 +76,7 @@ importing our standard libraries below:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-61
+.. GENERATED FROM PYTHON SOURCE LINES 52-60
 
 We define some global parameters that will be used throughout the notebook.
 
@@ -88,11 +87,11 @@ training on your device. Note that the pretrained checkpoint is hosted on
 huggingface so you need to have installed the `huggingface_hub` library in
 your environment.
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-64
+.. GENERATED FROM PYTHON SOURCE LINES 62-63
 
 Directory where to download the data
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-81
+.. GENERATED FROM PYTHON SOURCE LINES 63-80
 
 .. code-block:: Python
 
@@ -120,7 +119,7 @@ Directory where to download the data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-89
+.. GENERATED FROM PYTHON SOURCE LINES 81-88
 
 Data Preparation
 ----------------
@@ -130,11 +129,11 @@ test images of handwritten digits. We'll apply standard scaling transforms,
 the test dataset will be used to evaluate the model performance on the digit
 recognition task.
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-92
+.. GENERATED FROM PYTHON SOURCE LINES 90-91
 
 Load MNIST dataset with standard scaling.
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-104
+.. GENERATED FROM PYTHON SOURCE LINES 93-103
 
 .. code-block:: Python
 
@@ -155,7 +154,7 @@ Load MNIST dataset with standard scaling.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-112
+.. GENERATED FROM PYTHON SOURCE LINES 104-111
 
 Dataset and data augmentations for contrastive learning
 -------------------------------------------------------
@@ -165,11 +164,11 @@ with grayscale images, we will use random resized crop and Gaussian blur. We
 reduce the size of the Gaussian kernel to 3x3 since MNIST images are only
 28x28 pixels.
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-115
+.. GENERATED FROM PYTHON SOURCE LINES 113-114
 
 Define augmentation transforms for contrastive learning
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-126
+.. GENERATED FROM PYTHON SOURCE LINES 116-125
 
 .. code-block:: Python
 
@@ -189,12 +188,12 @@ Define augmentation transforms for contrastive learning
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-129
+.. GENERATED FROM PYTHON SOURCE LINES 126-128
 
 We define the training and validation dataset to use during the
 self-supervised training.
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-144
+.. GENERATED FROM PYTHON SOURCE LINES 130-143
 
 .. code-block:: Python
 
@@ -218,15 +217,15 @@ self-supervised training.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-146
+.. GENERATED FROM PYTHON SOURCE LINES 144-145
 
 And finally we create the data loaders for training and testing the models.
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-149
+.. GENERATED FROM PYTHON SOURCE LINES 147-148
 
 Dataloaders with augmented images for self-supervised learning
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-180
+.. GENERATED FROM PYTHON SOURCE LINES 148-179
 
 .. code-block:: Python
 
@@ -275,7 +274,7 @@ Dataloaders with augmented images for self-supervised learning
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-187
+.. GENERATED FROM PYTHON SOURCE LINES 180-186
 
 Model Architecture
 ------------------
@@ -284,7 +283,7 @@ as encoder for SimCLR, with few parameters. The output dimension of the
 encoder is set to 32, which is approximately 30 times smaller that the input,
 but larger than the number of input classes (10).
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-213
+.. GENERATED FROM PYTHON SOURCE LINES 188-212
 
 .. code-block:: Python
 
@@ -319,17 +318,17 @@ but larger than the number of input classes (10).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-217
+.. GENERATED FROM PYTHON SOURCE LINES 213-216
 
 ## Training the SimCLR Model
 Now we'll configure and train our SimCLR model. We'll train for only 30
 epochs and 100 batches per epoch to demonstrate the learning process.
 
-.. GENERATED FROM PYTHON SOURCE LINES 219-220
+.. GENERATED FROM PYTHON SOURCE LINES 218-219
 
 Create and train SimCLR model
 
-.. GENERATED FROM PYTHON SOURCE LINES 222-243
+.. GENERATED FROM PYTHON SOURCE LINES 221-242
 
 .. code-block:: Python
 
@@ -361,7 +360,7 @@ Create and train SimCLR model
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 244-267
+.. GENERATED FROM PYTHON SOURCE LINES 243-266
 
 .. code-block:: Python
 
@@ -419,7 +418,7 @@ Create and train SimCLR model
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 268-278
+.. GENERATED FROM PYTHON SOURCE LINES 267-277
 
 Evaluation on digit classification task
 ---------------------------------------
@@ -432,46 +431,20 @@ frozen weights of the encoder.
 We study how well we can classify the digits in a small data setting by
 reducing the number of training samples and measuring accuracy.
 
-.. GENERATED FROM PYTHON SOURCE LINES 280-281
-
-Function to extract features and labels from a dataloader and a model
-
-.. GENERATED FROM PYTHON SOURCE LINES 283-316
+.. GENERATED FROM PYTHON SOURCE LINES 277-288
 
 .. code-block:: Python
 
-    def extract_features(model, dataloader):
-        # X are the features and y the label of each sample
-        X, y = [], []
-
-        model.eval()
-        with torch.no_grad():
-            for batch_idx, batch in tqdm(
-                enumerate(dataloader),
-                desc="Extracting features",
-            ):
-                x_batch, y_batch = batch
-                x_batch = x_batch.to(model.device)
-                y_batch = y_batch.to(model.device)
-                features = model.transform_step(
-                    x_batch, batch_idx=batch_idx
-                )
-                X.append(features.detach())
-                y.append(y_batch.detach())
-
-        # Concatenate the features
-        X = torch.cat(X)
-        y = torch.cat(y)
-
-        # Send to CPU and convert to numpy
-        X = X.cpu().numpy()
-        y = y.cpu().numpy()
-
-        return X,y
 
     # We first extract the features of the train and test sets
-    X_train, y_train = extract_features(model, train_xy_loader)
-    X_test, y_test = extract_features(model, test_xy_loader)
+    X_train, y_train = model.transform_with_targets(train_xy_loader)
+    X_test, y_test = model.transform_with_targets(test_xy_loader)
+
+    # We move the features to CPU and convert them to numpy arrays.
+    X_train = X_train.cpu().numpy()
+    y_train = y_train.cpu().numpy()
+    X_test = X_test.cpu().numpy()
+    y_test = y_test.cpu().numpy()
 
 
 
@@ -481,19 +454,19 @@ Function to extract features and labels from a dataloader and a model
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/trainer/connectors/data_connector.py:485: Your `predict_dataloader`'s sampler has shuffling enabled, it is strongly recommended that you turn shuffling off for val/test dataloaders.
     /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
       self.check_worker_number_rationality()
-    Extracting features: 0it [00:00, ?it/s]    Extracting features: 1it [00:00,  5.21it/s]    Extracting features: 10it [00:00, 39.97it/s]    Extracting features: 19it [00:00, 56.84it/s]    Extracting features: 28it [00:00, 67.45it/s]    Extracting features: 37it [00:00, 74.03it/s]    Extracting features: 46it [00:00, 78.43it/s]    Extracting features: 56it [00:00, 84.83it/s]    Extracting features: 65it [00:00, 84.80it/s]    Extracting features: 75it [00:01, 86.87it/s]    Extracting features: 84it [00:01, 85.81it/s]    Extracting features: 93it [00:01, 85.07it/s]    Extracting features: 102it [00:01, 86.22it/s]    Extracting features: 111it [00:01, 86.23it/s]    Extracting features: 120it [00:01, 86.26it/s]    Extracting features: 129it [00:01, 86.65it/s]    Extracting features: 138it [00:01, 85.42it/s]    Extracting features: 148it [00:01, 86.75it/s]    Extracting features: 157it [00:01, 85.79it/s]    Extracting features: 167it [00:02, 85.22it/s]    Extracting features: 177it [00:02, 88.35it/s]    Extracting features: 186it [00:02, 86.28it/s]    Extracting features: 196it [00:02, 87.05it/s]    Extracting features: 205it [00:02, 86.24it/s]    Extracting features: 216it [00:02, 91.45it/s]    Extracting features: 226it [00:02, 85.20it/s]    Extracting features: 236it [00:02, 87.96it/s]    Extracting features: 246it [00:03, 86.04it/s]    Extracting features: 256it [00:03, 85.73it/s]    Extracting features: 266it [00:03, 85.93it/s]    Extracting features: 276it [00:03, 88.87it/s]    Extracting features: 285it [00:03, 89.11it/s]    Extracting features: 294it [00:03, 88.99it/s]    Extracting features: 303it [00:03, 87.25it/s]    Extracting features: 312it [00:03, 87.06it/s]    Extracting features: 322it [00:03, 88.70it/s]    Extracting features: 331it [00:03, 88.76it/s]    Extracting features: 341it [00:04, 89.52it/s]    Extracting features: 351it [00:04, 90.76it/s]    Extracting features: 361it [00:04, 91.33it/s]    Extracting features: 371it [00:04, 90.08it/s]    Extracting features: 381it [00:04, 90.55it/s]    Extracting features: 391it [00:04, 91.70it/s]    Extracting features: 401it [00:04, 86.48it/s]    Extracting features: 410it [00:04, 86.74it/s]    Extracting features: 420it [00:04, 89.84it/s]    Extracting features: 430it [00:05, 90.28it/s]    Extracting features: 440it [00:05, 88.18it/s]    Extracting features: 449it [00:05, 88.07it/s]    Extracting features: 469it [00:05, 85.58it/s]
-    Extracting features: 0it [00:00, ?it/s]    Extracting features: 1it [00:00,  5.36it/s]    Extracting features: 9it [00:00, 36.31it/s]    Extracting features: 19it [00:00, 58.08it/s]    Extracting features: 28it [00:00, 68.00it/s]    Extracting features: 39it [00:00, 77.05it/s]    Extracting features: 48it [00:00, 79.02it/s]    Extracting features: 57it [00:00, 82.16it/s]    Extracting features: 79it [00:01, 76.18it/s]
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 317-318
+.. GENERATED FROM PYTHON SOURCE LINES 289-290
 
 We define the linear probe
 
-.. GENERATED FROM PYTHON SOURCE LINES 320-332
+.. GENERATED FROM PYTHON SOURCE LINES 292-304
 
 .. code-block:: Python
 
@@ -516,11 +489,11 @@ We define the linear probe
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 333-334
+.. GENERATED FROM PYTHON SOURCE LINES 305-306
 
 We plot the scaling curve and show the lowest and highest accuracies reached
 
-.. GENERATED FROM PYTHON SOURCE LINES 336-347
+.. GENERATED FROM PYTHON SOURCE LINES 308-319
 
 .. code-block:: Python
 
@@ -547,7 +520,7 @@ We plot the scaling curve and show the lowest and highest accuracies reached
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 348-352
+.. GENERATED FROM PYTHON SOURCE LINES 320-324
 
 We reach 90% accuracy on digit classification with self-supervised
 pretraining using SimCLR. We observe that prediction is already 70% accurate
@@ -558,9 +531,9 @@ for annotated data in downstream tasks.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 4.800 seconds)
+   **Total running time of the script:** (1 minutes 5.020 seconds)
 
-**Estimated memory usage:**  207 MB
+**Estimated memory usage:**  202 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_simclr_mnist.py:
