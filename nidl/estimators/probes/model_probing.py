@@ -120,7 +120,7 @@ class ModelProbing(BaseEstimator):
             Ignored.
 
         Returns
-        ----------
+        -------
         self: object
             The fitted estimator.
         """
@@ -154,7 +154,7 @@ class ModelProbing(BaseEstimator):
             `y` is ignored here.
 
         Returns
-        ----------
+        -------
         y_pred: torch.Tensor
             The predicted labels.
 
@@ -183,14 +183,14 @@ class ModelProbing(BaseEstimator):
             - a single string (see :ref:`scoring_string_names`);
             - a callable (see :ref:`scoring_callable`) that returns a single
               value.
-            - `None`, the `probe`'s
-            :ref:`default evaluation criterion <scoring_api_overview>` is used.
+            - `None`, the `probe`'s 
+              :ref:`default evaluation criterion <scoring_api_overview>` is used.
 
             If `scoring` represents multiple scores, one can use:
 
             - a list or tuple of unique strings;
-            - a callable returning a dictionary where the keys are the metric
-            names and the values are the metric scores;
+            - a callable returning a dictionary where the keys are the metric 
+              names and the values are the metric scores;
             - a dictionary with metric names as keys and callables a values.
 
         Returns
@@ -200,6 +200,7 @@ class ModelProbing(BaseEstimator):
             is used in the scoring strategy, returns a float. If multiple
             scores are defined, returns a dictionary with metric names as keys
             and metric scores as values.
+
         """
         check_is_fitted(self)
 

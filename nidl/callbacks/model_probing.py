@@ -11,10 +11,12 @@ import numbers
 from typing import Union
 
 import pytorch_lightning as pl
+import torch
 from sklearn.base import BaseEstimator as sk_BaseEstimator
 from sklearn.metrics import check_scoring
 from sklearn.utils.validation import check_array
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, DistributedSampler
+from tqdm import tqdm
 
 from nidl.estimators.base import BaseEstimator
 from nidl.utils.validation import _estimator_is
@@ -27,7 +29,7 @@ class ModelProbingCallback(pl.Callback):
     It has the following logic:
 
     1) Embeds the input data (training+test) through the estimator using
-       `transform_with_targets` (handles distributed multi-gpu forward pass).
+       `transform_step` method (handles distributed multi-gpu forward pass).
     2) Train the probe on the training embedding (handles multi-cpu training).
     3) Evaluate the probe on the test embedding and log the scores.
 
@@ -93,6 +95,9 @@ class ModelProbingCallback(pl.Callback):
     on_test_epoch_end: bool, default=False
         Whether to run the linear probing at the end of the test epoch.
 
+    prog_bar: bool, default=True
+        Whether to display the metrics in the progress bar.
+
     prefix_score: str, default=""
         Prefix to add to the score name when logging. This can be useful when
         using multiple `ModelProbing` callbacks to distinguish the logged
@@ -121,6 +126,7 @@ class ModelProbingCallback(pl.Callback):
         every_n_val_epochs: Union[int, None] = None,
         on_test_epoch_start: bool = False,
         on_test_epoch_end: bool = False,
+        prog_bar: bool = True,
         prefix_score: str = "",
     ):
         super().__init__()
@@ -132,36 +138,70 @@ class ModelProbingCallback(pl.Callback):
         self.every_n_val_epochs = every_n_val_epochs
         self._on_test_epoch_start = on_test_epoch_start
         self._on_test_epoch_end = on_test_epoch_end
+        self.prog_bar = prog_bar
         self.prefix_score = prefix_score
         self.counter_val_epochs = 0
 
         self.scorers = check_scoring(self.probe, scoring=self.scoring)
 
-    def log_metrics(self, trainer, scores):
+    def log_metrics(self, pl_module, scores):
         """Log the metrics given the predictions and the true labels."""
 
-        if not trainer.is_global_zero:
-            return
-
-        # Normalize scores into a dict
         if isinstance(scores, numbers.Number):
-            metrics = {f"{self.prefix_score}test_score": float(scores)}
-
+            pl_module.log(
+                f"{self.prefix_score}test_score",
+                float(scores),
+                prog_bar=self.prog_bar,
+                sync_dist=True,
+            )
         elif isinstance(scores, dict):
-            metrics = {
-                f"{self.prefix_score}test_{key}": float(value)
-                for key, value in scores.items()
-                if isinstance(value, numbers.Number)
-            }
-
+            for key, values in scores.items():
+                if isinstance(values, numbers.Number):
+                    pl_module.log(
+                        f"{self.prefix_score}test_{key}",
+                        float(values),
+                        prog_bar=self.prog_bar,
+                        sync_dist=True,
+                    )
         else:
             raise TypeError(
-                f"Scores should be a number or a dictionary, got {type(scores)}"
+                "Scores should be a number or a dictionary, got "
+                f"{type(scores)}"
             )
 
-        # Log through all configured loggers
-        for logger in trainer.loggers:
-            logger.log_metrics(metrics, step=trainer.global_step)
+    @staticmethod
+    def adapt_dataloader_for_ddp(dataloader, trainer):
+        """Wrap user dataloader with DistributedSampler if in DDP mode."""
+        dataset = dataloader.dataset
+
+        if trainer.world_size > 1:
+            # Create a distributed sampler
+            sampler = DistributedSampler(
+                dataset,
+                num_replicas=trainer.world_size,
+                rank=trainer.global_rank,
+                shuffle=False,
+                drop_last=False,
+            )
+            # Recreate the dataloader with this sampler
+            return DataLoader(
+                dataset,
+                batch_size=dataloader.batch_size,
+                num_workers=dataloader.num_workers,
+                pin_memory=dataloader.pin_memory,
+                sampler=sampler,
+                collate_fn=dataloader.collate_fn,
+                drop_last=dataloader.drop_last,
+                timeout=dataloader.timeout,
+                worker_init_fn=dataloader.worker_init_fn,
+                multiprocessing_context=dataloader.multiprocessing_context,
+                prefetch_factor=dataloader.prefetch_factor,
+                persistent_workers=dataloader.persistent_workers,
+                pin_memory_device=dataloader.pin_memory_device,
+                in_order=dataloader.in_order,
+            )
+        else:
+            return dataloader
 
     def probing(self, trainer, pl_module: BaseEstimator):
         """Perform the probing on the given estimator.
@@ -193,9 +233,11 @@ class ModelProbingCallback(pl.Callback):
 
         # Embed the data
         X_train, y_train = self.extract_features(
-            pl_module, self.train_dataloader
+            trainer, pl_module, self.train_dataloader
         )
-        X_test, y_test = self.extract_features(pl_module, self.test_dataloader)
+        X_test, y_test = self.extract_features(
+            trainer, pl_module, self.test_dataloader
+        )
 
         # Check arrays
         X_train, y_train = (
@@ -220,13 +262,15 @@ class ModelProbingCallback(pl.Callback):
             scores = trainer.strategy.broadcast(scores, src=0)
 
         # Compute/Log metrics
-        self.log_metrics(trainer, scores)
+        self.log_metrics(pl_module, scores)
 
-    def extract_features(self, pl_module, dataloader):
+    def extract_features(self, trainer, pl_module, dataloader):
         """Extract features from a dataloader with the BaseEstimator.
 
-        By default, it uses the `transform_with_targets` logic to get the
-        embeddings with the labels.
+        By default, it uses the `transform_step` logic applied on each batch to
+        get the embeddings with the labels.
+        The input dataloader should yield batches of the form `(X, y)` where X
+        is the input data and y is the label.
 
         Parameters
         ----------
@@ -240,14 +284,50 @@ class ModelProbingCallback(pl.Callback):
 
         Returns
         -------
-        tuple of (X, y)
-            Tuple of numpy arrays (X, y) where X are the extracted features
+        tuple of (z, y)
+            Tuple of numpy arrays (z, y) where z are the extracted features
             and y are the corresponding labels.
 
         """
-        X, y = pl_module.transform_with_targets(dataloader)
-        X = X.cpu().detach().numpy()
-        y = y.cpu().detach().numpy()
+        is_training = pl_module.training  # Save state
+
+        dataloader = self.adapt_dataloader_for_ddp(dataloader, trainer)
+
+        pl_module.eval()
+        X, y = [], []
+
+        with torch.no_grad():
+            for batch_idx, batch in tqdm(
+                enumerate(dataloader),
+                desc="Extracting features",
+                disable=(not self.prog_bar or not trainer.is_global_zero),
+                leave=False,
+            ):
+                x_batch, y_batch = batch
+                x_batch = x_batch.to(pl_module.device)
+                y_batch = y_batch.to(pl_module.device)
+                features = pl_module.transform_step(
+                    x_batch, batch_idx=batch_idx
+                )
+                X.append(features.detach())
+                y.append(y_batch.detach())
+
+        # Concatenate the embeddings
+        X = torch.cat(X)
+        y = torch.cat(y)
+
+        # Gather across GPUs
+        X = pl_module.all_gather(X).cpu().numpy()
+        y = pl_module.all_gather(y).cpu().numpy()
+
+        # Reduce (world_size, batch, ...) to (world_size * batch, ...)
+        if pl_module.trainer.world_size > 1:
+            X = X.reshape(X.shape[0] * X.shape[1], *X.shape[2:])
+            y = y.reshape(y.shape[0] * y.shape[1], *y.shape[2:])
+
+        if is_training:
+            pl_module.train()
+
         return X, y
 
     def on_train_epoch_end(self, trainer, pl_module):

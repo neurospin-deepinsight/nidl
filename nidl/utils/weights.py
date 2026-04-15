@@ -15,11 +15,10 @@ import urllib.parse as urlparse
 import urllib.request as urlrequest
 import warnings
 from pathlib import Path
+import pytorch_lightning as pl
 from typing import Any, Optional, Union
 
 import torch
-
-from ..estimators.base import BaseEstimator
 
 
 class Weights:
@@ -65,7 +64,7 @@ class Weights:
         )
 
     def load_checkpoint(self,
-                        model: BaseEstimator,
+                        model: pl.LightningModule,
                         #device: _DEVICE = 'cpu',
                         **kwargs: Any,
                         ):
