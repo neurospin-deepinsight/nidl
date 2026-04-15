@@ -59,14 +59,14 @@ class DummyEmbeddingEstimator(TransformerMixin, BaseEstimator):
     def training_step(self, *args, **kwargs):
         """No training needed for this dummy estimator."""
         return torch.zeros((), device=self.device, requires_grad=True)
-    
+
     def test_step(self, *args, **kwargs):
         """No testing needed for this dummy estimator."""
-        return None
+        return
 
     def configure_optimizers(self):
         """No optimizers needed for this dummy estimator."""
-        return None
+        return
 
     def transform_step(
         self, batch: Any, batch_idx: int, dataloader_idx: Optional[int] = 0
