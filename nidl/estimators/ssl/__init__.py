@@ -9,6 +9,7 @@
 """Self-supervised estimators."""
 
 from .barlowtwins import BarlowTwins
+from .dcl import DCL
 from .dino import DINO
 from .simclr import SimCLR
 from .yaware import YAwareContrastiveLearning
