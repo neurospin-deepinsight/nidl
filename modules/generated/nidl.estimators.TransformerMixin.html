@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/modules/generated/nidl.estimators.TransformerMixin.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:description" content="Examples using nidl.estimators.TransformerMixin: Model probing of embedding estimators Self-Supervised Contrastive Learning with SimCLR on MNIST Self-Supervised Learning with Barlow Twins Visualiza..." />
-<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_model_probing_thumb.png" />
+<meta property="og:description" content="Examples using nidl.estimators.TransformerMixin: Decoupled Contrastive Learning Model probing of embedding estimators Self-Supervised Contrastive Learning with SimCLR on MNIST Self-Supervised Learn..." />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_dcl_vs_simclr_thumb.png" />
 <meta property="og:image:alt" content="" />
-<meta name="description" content="Examples using nidl.estimators.TransformerMixin: Model probing of embedding estimators Self-Supervised Contrastive Learning with SimCLR on MNIST Self-Supervised Learning with Barlow Twins Visualiza..." />
+<meta name="description" content="Examples using nidl.estimators.TransformerMixin: Decoupled Contrastive Learning Model probing of embedding estimators Self-Supervised Contrastive Learning with SimCLR on MNIST Self-Supervised Learn..." />
 <link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.estimators.ssl.SimCLR" href="nidl.estimators.ssl.SimCLR.html"><link rel="prev" title="nidl.estimators.RegressorMixin" href="nidl.estimators.RegressorMixin.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
@@ -230,6 +230,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../auto_examples/index.html">Examples</a><input aria-label="Toggle navigation of Examples" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
@@ -402,7 +403,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.TransformerMixin<a class="headerlink" href="#nidl-estimators-transformermixin" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.TransformerMixin">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.</span></span><span class="sig-name descname"><span class="pre">TransformerMixin</span></span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/2e97fb7/nidl/estimators/base.py#L743"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.TransformerMixin" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.</span></span><span class="sig-name descname"><span class="pre">TransformerMixin</span></span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/estimators/base.py#L743"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.TransformerMixin" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mixin class for all transformers in nidl.</p>
 <p>This mixin sets the estimator type to <cite>transformer</cite> through the
@@ -411,7 +412,10 @@ signature, and not how to use it. Please refer to the
 
 <section id="examples-using-nidl-estimators-transformermixin">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">nidl.estimators.TransformerMixin</span></code><a class="headerlink" href="#examples-using-nidl-estimators-transformermixin" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This notebook will show you how to investigate the data representation given by an embedding estimator (such as SimCLR, y-Aware Contrastive Learning or Barlow  Twins) during training and inference using the notion of &quot;probing&quot;. A standard machine learning model (e.g. linear or SVM) is trained and evaluated on the data embedding for a given task as the model is being fitted (for training  monitoring) or at inference. It allows the user to understand what concepts are learned  by the model."><img alt="" src="../../_images/sphx_glr_plot_model_probing_thumb.png" />
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This tutorial illustrates the use of Decoupled Contrastive Learning (DCL) [1]_ which introduces a reformulation of the InfoNCE loss used in SimCLR [2]_ that removes the negative-positive coupling in the loss. This modification stabilizes optimization and improves performance, especially when training with small batch sizes."><img alt="" src="../../_images/sphx_glr_plot_dcl_vs_simclr_thumb.png" />
+<p><a class="reference internal" href="../../auto_examples/plot_dcl_vs_simclr.html"><span class="doc">Decoupled Contrastive Learning</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Decoupled Contrastive Learning</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This notebook will show you how to investigate the data representation given by an embedding estimator (such as SimCLR, y-Aware Contrastive Learning or Barlow  Twins) during training and inference using the notion of &quot;probing&quot;. A standard machine learning model (e.g. linear or SVM) is trained and evaluated on the data embedding for a given task as the model is being fitted (for training  monitoring) or at inference. It allows the user to understand what concepts are learned  by the model."><img alt="" src="../../_images/sphx_glr_plot_model_probing_thumb.png" />
 <p><a class="reference internal" href="../../auto_examples/plot_model_probing.html"><span class="doc">Model probing of embedding estimators</span></a></p>
   <div class="sphx-glr-thumbnail-title">Model probing of embedding estimators</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to implement and evaluate a SimCLR model [1]_ for self-supervised contrastive learning on the MNIST dataset using the nidl library."><img alt="" src="../../_images/sphx_glr_plot_simclr_mnist_thumb.png" />

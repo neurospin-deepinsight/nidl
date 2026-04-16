@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="This notebook will show you how to investigate the data representation given by an embedding estimator(such as SimCLR, y-Aware Contrastive Learning or Barlow Twins) during training and inference us..." />
-<link rel="search" title="Search" href="../search.html"><link rel="next" title="Presentation of the OpenBHB dataset" href="plot_openbhb.html"><link rel="prev" title="Examples" href="index.html">
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="Presentation of the OpenBHB dataset" href="plot_openbhb.html"><link rel="prev" title="Decoupled Contrastive Learning" href="plot_dcl_vs_simclr.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
@@ -230,6 +230,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Model probing of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
@@ -488,28 +489,28 @@ transforms. These datasets are used for training and testing the probing.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0.00/9.91M [00:00&lt;?, ?B/s]
-  1%|          | 98.3k/9.91M [00:00&lt;00:12, 788kB/s]
-  2%|▏         | 229k/9.91M [00:00&lt;00:10, 934kB/s]
-  6%|▌         | 590k/9.91M [00:00&lt;00:05, 1.81MB/s]
- 13%|█▎        | 1.25M/9.91M [00:00&lt;00:02, 3.13MB/s]
- 25%|██▍       | 2.46M/9.91M [00:00&lt;00:01, 5.45MB/s]
- 47%|████▋     | 4.62M/9.91M [00:00&lt;00:00, 9.90MB/s]
- 87%|████████▋ | 8.62M/9.91M [00:00&lt;00:00, 17.2MB/s]
-100%|██████████| 9.91M/9.91M [00:00&lt;00:00, 11.2MB/s]
+  1%|          | 98.3k/9.91M [00:00&lt;00:11, 876kB/s]
+  3%|▎         | 262k/9.91M [00:00&lt;00:08, 1.20MB/s]
+  5%|▌         | 524k/9.91M [00:00&lt;00:05, 1.69MB/s]
+ 10%|█         | 1.02M/9.91M [00:00&lt;00:03, 2.70MB/s]
+ 19%|█▉        | 1.87M/9.91M [00:00&lt;00:01, 4.39MB/s]
+ 34%|███▍      | 3.38M/9.91M [00:00&lt;00:00, 7.34MB/s]
+ 61%|██████    | 6.06M/9.91M [00:00&lt;00:00, 12.5MB/s]
+100%|██████████| 9.91M/9.91M [00:00&lt;00:00, 11.4MB/s]
 
   0%|          | 0.00/28.9k [00:00&lt;?, ?B/s]
-100%|██████████| 28.9k/28.9k [00:00&lt;00:00, 414kB/s]
+100%|██████████| 28.9k/28.9k [00:00&lt;00:00, 504kB/s]
 
   0%|          | 0.00/1.65M [00:00&lt;?, ?B/s]
-  6%|▌         | 98.3k/1.65M [00:00&lt;00:02, 732kB/s]
- 14%|█▍        | 229k/1.65M [00:00&lt;00:01, 874kB/s]
- 26%|██▌       | 426k/1.65M [00:00&lt;00:01, 1.14MB/s]
- 50%|████▉     | 819k/1.65M [00:00&lt;00:00, 1.84MB/s]
- 91%|█████████▏| 1.51M/1.65M [00:00&lt;00:00, 3.02MB/s]
-100%|██████████| 1.65M/1.65M [00:00&lt;00:00, 2.44MB/s]
+  6%|▌         | 98.3k/1.65M [00:00&lt;00:01, 935kB/s]
+ 12%|█▏        | 197k/1.65M [00:00&lt;00:01, 943kB/s]
+ 26%|██▌       | 426k/1.65M [00:00&lt;00:00, 1.50MB/s]
+ 44%|████▎     | 721k/1.65M [00:00&lt;00:00, 2.02MB/s]
+ 66%|██████▌   | 1.08M/1.65M [00:00&lt;00:00, 2.53MB/s]
+100%|██████████| 1.65M/1.65M [00:00&lt;00:00, 2.67MB/s]
 
   0%|          | 0.00/4.54k [00:00&lt;?, ?B/s]
-100%|██████████| 4.54k/4.54k [00:00&lt;00:00, 16.7MB/s]
+100%|██████████| 4.54k/4.54k [00:00&lt;00:00, 15.2MB/s]
 </pre></div>
 </div>
 </section>
@@ -686,8 +687,7 @@ enough for checking the evolution of the embedding geometry across training.</p>
 <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.fit" title="nidl.estimators.BaseEstimator.fit" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_ssl_loader</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_ssl_loader</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/lightning_fabric/utilities/seed.py:44: No seed found, seed set to 0
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
 ┏━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
 ┃   ┃ Name            ┃ Type                 ┃ Params ┃ Mode  ┃ FLOPs ┃
 ┡━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
@@ -704,66 +704,62 @@ Modules in eval mode: 0
 Total FLOPs: 0
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  8.37it/s]
-Extracting features: 5it [00:00, 24.69it/s]
-Extracting features: 15it [00:00, 56.98it/s]
-Extracting features: 26it [00:00, 76.23it/s]
-Extracting features: 34it [00:00, 77.32it/s]
-Extracting features: 43it [00:00, 79.38it/s]
-Extracting features: 54it [00:00, 85.74it/s]
-Extracting features: 63it [00:00, 86.66it/s]
-Extracting features: 74it [00:00, 92.09it/s]
-Extracting features: 84it [00:01, 87.50it/s]
-Extracting features: 93it [00:01, 85.51it/s]
-Extracting features: 103it [00:01, 86.99it/s]
-Extracting features: 112it [00:01, 85.74it/s]
-Extracting features: 121it [00:01, 85.38it/s]
-Extracting features: 131it [00:01, 89.41it/s]
-Extracting features: 140it [00:01, 87.75it/s]
-Extracting features: 149it [00:01, 87.76it/s]
-Extracting features: 158it [00:01, 85.94it/s]
-Extracting features: 168it [00:02, 86.38it/s]
-Extracting features: 178it [00:02, 87.32it/s]
-Extracting features: 187it [00:02, 87.83it/s]
-Extracting features: 197it [00:02, 88.76it/s]
-Extracting features: 206it [00:02, 87.25it/s]
-Extracting features: 215it [00:02, 82.24it/s]
-Extracting features: 225it [00:02, 87.11it/s]
-Extracting features: 235it [00:02, 87.82it/s]
-Extracting features: 244it [00:02, 86.57it/s]
-Extracting features: 253it [00:03, 83.75it/s]
-Extracting features: 263it [00:03, 87.62it/s]
-Extracting features: 273it [00:03, 88.82it/s]
-Extracting features: 282it [00:03, 86.55it/s]
-Extracting features: 292it [00:03, 87.86it/s]
-Extracting features: 301it [00:03, 85.93it/s]
-Extracting features: 310it [00:03, 84.29it/s]
-Extracting features: 320it [00:03, 84.89it/s]
-Extracting features: 330it [00:03, 88.02it/s]
-Extracting features: 339it [00:04, 84.51it/s]
-Extracting features: 350it [00:04, 89.26it/s]
-Extracting features: 359it [00:04, 87.72it/s]
-Extracting features: 368it [00:04, 86.69it/s]
-Extracting features: 377it [00:04, 84.79it/s]
-Extracting features: 387it [00:04, 86.81it/s]
-Extracting features: 396it [00:04, 87.44it/s]
-Extracting features: 405it [00:04, 87.47it/s]
-Extracting features: 414it [00:04, 87.04it/s]
-Extracting features: 423it [00:04, 86.85it/s]
-Extracting features: 433it [00:05, 89.51it/s]
-Extracting features: 442it [00:05, 88.47it/s]
-Extracting features: 452it [00:05, 91.81it/s]
+Extracting features: 3it [00:00, 24.79it/s]
+Extracting features: 7it [00:00, 32.73it/s]
+Extracting features: 18it [00:00, 61.10it/s]
+Extracting features: 28it [00:00, 75.03it/s]
+Extracting features: 39it [00:00, 86.92it/s]
+Extracting features: 48it [00:00, 85.63it/s]
+Extracting features: 58it [00:00, 87.45it/s]
+Extracting features: 68it [00:00, 89.06it/s]
+Extracting features: 77it [00:00, 87.17it/s]
+Extracting features: 88it [00:01, 91.19it/s]
+Extracting features: 98it [00:01, 91.27it/s]
+Extracting features: 108it [00:01, 92.02it/s]
+Extracting features: 118it [00:01, 91.85it/s]
+Extracting features: 129it [00:01, 93.76it/s]
+Extracting features: 139it [00:01, 92.63it/s]
+Extracting features: 149it [00:01, 93.75it/s]
+Extracting features: 159it [00:01, 93.43it/s]
+Extracting features: 169it [00:01, 91.30it/s]
+Extracting features: 179it [00:02, 92.43it/s]
+Extracting features: 189it [00:02, 93.08it/s]
+Extracting features: 199it [00:02, 91.42it/s]
+Extracting features: 209it [00:02, 90.83it/s]
+Extracting features: 219it [00:02, 92.63it/s]
+Extracting features: 229it [00:02, 92.69it/s]
+Extracting features: 239it [00:02, 91.01it/s]
+Extracting features: 250it [00:02, 95.34it/s]
+Extracting features: 260it [00:02, 94.76it/s]
+Extracting features: 270it [00:03, 93.66it/s]
+Extracting features: 281it [00:03, 96.71it/s]
+Extracting features: 291it [00:03, 91.84it/s]
+Extracting features: 302it [00:03, 96.53it/s]
+Extracting features: 312it [00:03, 93.41it/s]
+Extracting features: 322it [00:03, 92.39it/s]
+Extracting features: 332it [00:03, 90.61it/s]
+Extracting features: 342it [00:03, 92.19it/s]
+Extracting features: 352it [00:03, 91.95it/s]
+Extracting features: 362it [00:04, 90.24it/s]
+Extracting features: 372it [00:04, 91.51it/s]
+Extracting features: 382it [00:04, 92.10it/s]
+Extracting features: 392it [00:04, 92.53it/s]
+Extracting features: 402it [00:04, 94.09it/s]
+Extracting features: 412it [00:04, 92.31it/s]
+Extracting features: 422it [00:04, 90.71it/s]
+Extracting features: 432it [00:04, 92.66it/s]
+Extracting features: 443it [00:04, 94.17it/s]
+Extracting features: 454it [00:05, 98.16it/s]
 
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  7.05it/s]
-Extracting features: 7it [00:00, 32.78it/s]
-Extracting features: 17it [00:00, 58.75it/s]
-Extracting features: 27it [00:00, 68.55it/s]
-Extracting features: 36it [00:00, 75.49it/s]
-Extracting features: 46it [00:00, 82.03it/s]
-Extracting features: 55it [00:00, 81.72it/s]
-Extracting features: 70it [00:00, 101.98it/s]
+Extracting features: 1it [00:00,  6.35it/s]
+Extracting features: 13it [00:00, 54.67it/s]
+Extracting features: 24it [00:00, 73.19it/s]
+Extracting features: 33it [00:00, 77.32it/s]
+Extracting features: 44it [00:00, 87.19it/s]
+Extracting features: 54it [00:00, 87.99it/s]
+Extracting features: 67it [00:00, 100.27it/s]
 
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
@@ -771,204 +767,216 @@ Extracting features: 70it [00:00, 101.98it/s]
   super().__init__(loader)
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  5.66it/s]
-Extracting features: 10it [00:00, 42.38it/s]
-Extracting features: 20it [00:00, 62.35it/s]
-Extracting features: 29it [00:00, 70.63it/s]
-Extracting features: 39it [00:00, 78.10it/s]
-Extracting features: 48it [00:00, 81.46it/s]
-Extracting features: 57it [00:00, 82.67it/s]
-Extracting features: 67it [00:00, 86.05it/s]
-Extracting features: 77it [00:01, 87.20it/s]
-Extracting features: 88it [00:01, 93.50it/s]
-Extracting features: 98it [00:01, 86.20it/s]
-Extracting features: 110it [00:01, 92.11it/s]
-Extracting features: 120it [00:01, 87.02it/s]
-Extracting features: 129it [00:01, 86.27it/s]
-Extracting features: 139it [00:01, 86.76it/s]
-Extracting features: 148it [00:01, 85.99it/s]
-Extracting features: 158it [00:01, 88.21it/s]
-Extracting features: 168it [00:02, 88.72it/s]
-Extracting features: 177it [00:02, 88.04it/s]
-Extracting features: 187it [00:02, 88.58it/s]
-Extracting features: 197it [00:02, 88.58it/s]
-Extracting features: 206it [00:02, 87.45it/s]
-Extracting features: 215it [00:02, 87.38it/s]
-Extracting features: 224it [00:02, 87.35it/s]
-Extracting features: 233it [00:02, 86.73it/s]
-Extracting features: 242it [00:02, 86.93it/s]
-Extracting features: 251it [00:03, 87.65it/s]
-Extracting features: 261it [00:03, 85.65it/s]
-Extracting features: 271it [00:03, 86.19it/s]
-Extracting features: 281it [00:03, 89.13it/s]
-Extracting features: 291it [00:03, 91.16it/s]
-Extracting features: 301it [00:03, 89.68it/s]
-Extracting features: 310it [00:03, 87.51it/s]
-Extracting features: 319it [00:03, 88.20it/s]
-Extracting features: 329it [00:03, 87.91it/s]
-Extracting features: 339it [00:04, 88.72it/s]
-Extracting features: 348it [00:04, 87.53it/s]
-Extracting features: 358it [00:04, 90.79it/s]
-Extracting features: 368it [00:04, 88.35it/s]
-Extracting features: 377it [00:04, 88.48it/s]
-Extracting features: 386it [00:04, 88.67it/s]
-Extracting features: 396it [00:04, 86.95it/s]
-Extracting features: 406it [00:04, 88.95it/s]
-Extracting features: 415it [00:04, 87.32it/s]
-Extracting features: 424it [00:04, 85.91it/s]
-Extracting features: 434it [00:05, 89.20it/s]
-Extracting features: 443it [00:05, 86.56it/s]
-Extracting features: 456it [00:05, 98.73it/s]
+Extracting features: 2it [00:00, 12.82it/s]
+Extracting features: 12it [00:00, 52.66it/s]
+Extracting features: 22it [00:00, 68.81it/s]
+Extracting features: 33it [00:00, 81.87it/s]
+Extracting features: 42it [00:00, 83.01it/s]
+Extracting features: 53it [00:00, 90.50it/s]
+Extracting features: 64it [00:00, 94.78it/s]
+Extracting features: 74it [00:00, 90.37it/s]
+Extracting features: 84it [00:01, 88.84it/s]
+Extracting features: 94it [00:01, 90.16it/s]
+Extracting features: 104it [00:01, 90.87it/s]
+Extracting features: 114it [00:01, 92.87it/s]
+Extracting features: 124it [00:01, 91.42it/s]
+Extracting features: 134it [00:01, 91.03it/s]
+Extracting features: 145it [00:01, 94.86it/s]
+Extracting features: 155it [00:01, 93.56it/s]
+Extracting features: 165it [00:01, 92.16it/s]
+Extracting features: 176it [00:02, 96.23it/s]
+Extracting features: 186it [00:02, 92.90it/s]
+Extracting features: 196it [00:02, 91.65it/s]
+Extracting features: 206it [00:02, 91.89it/s]
+Extracting features: 216it [00:02, 90.41it/s]
+Extracting features: 227it [00:02, 93.88it/s]
+Extracting features: 237it [00:02, 92.61it/s]
+Extracting features: 247it [00:02, 93.50it/s]
+Extracting features: 257it [00:02, 92.59it/s]
+Extracting features: 267it [00:03, 92.53it/s]
+Extracting features: 277it [00:03, 92.75it/s]
+Extracting features: 287it [00:03, 93.67it/s]
+Extracting features: 297it [00:03, 90.31it/s]
+Extracting features: 307it [00:03, 92.28it/s]
+Extracting features: 317it [00:03, 91.96it/s]
+Extracting features: 327it [00:03, 92.72it/s]
+Extracting features: 337it [00:03, 93.99it/s]
+Extracting features: 347it [00:03, 93.92it/s]
+Extracting features: 357it [00:03, 88.67it/s]
+Extracting features: 367it [00:04, 90.78it/s]
+Extracting features: 377it [00:04, 90.06it/s]
+Extracting features: 387it [00:04, 91.96it/s]
+Extracting features: 398it [00:04, 92.20it/s]
+Extracting features: 408it [00:04, 93.22it/s]
+Extracting features: 418it [00:04, 92.67it/s]
+Extracting features: 428it [00:04, 91.90it/s]
+Extracting features: 438it [00:04, 93.24it/s]
+Extracting features: 449it [00:04, 90.86it/s]
+Extracting features: 469it [00:05, 118.47it/s]
 
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  7.02it/s]
-Extracting features: 6it [00:00, 28.27it/s]
-Extracting features: 15it [00:00, 53.67it/s]
-Extracting features: 26it [00:00, 70.34it/s]
-Extracting features: 35it [00:00, 75.88it/s]
-Extracting features: 44it [00:00, 79.53it/s]
-Extracting features: 53it [00:00, 82.25it/s]
-Extracting features: 66it [00:00, 95.75it/s]
+Extracting features: 1it [00:00,  9.06it/s]
+Extracting features: 6it [00:00, 30.60it/s]
+Extracting features: 17it [00:00, 61.77it/s]
+Extracting features: 27it [00:00, 72.82it/s]
+Extracting features: 37it [00:00, 79.10it/s]
+Extracting features: 48it [00:00, 85.76it/s]
+Extracting features: 58it [00:00, 88.98it/s]
+Extracting features: 78it [00:00, 120.85it/s]
 
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:470: ConvergenceWarning: lbfgs failed to converge after 200 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=200).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
   super().__init__(loader)
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  5.64it/s]
-Extracting features: 10it [00:00, 42.60it/s]
-Extracting features: 20it [00:00, 64.51it/s]
-Extracting features: 29it [00:00, 73.48it/s]
-Extracting features: 38it [00:00, 76.12it/s]
-Extracting features: 47it [00:00, 80.26it/s]
-Extracting features: 56it [00:00, 82.91it/s]
-Extracting features: 66it [00:00, 86.02it/s]
-Extracting features: 75it [00:01, 86.77it/s]
-Extracting features: 85it [00:01, 87.89it/s]
-Extracting features: 94it [00:01, 88.13it/s]
-Extracting features: 103it [00:01, 87.97it/s]
-Extracting features: 115it [00:01, 93.41it/s]
-Extracting features: 125it [00:01, 90.78it/s]
-Extracting features: 135it [00:01, 87.83it/s]
-Extracting features: 144it [00:01, 86.95it/s]
-Extracting features: 153it [00:01, 86.41it/s]
-Extracting features: 162it [00:01, 87.21it/s]
-Extracting features: 171it [00:02, 85.60it/s]
-Extracting features: 181it [00:02, 86.42it/s]
-Extracting features: 191it [00:02, 89.99it/s]
-Extracting features: 201it [00:02, 86.95it/s]
-Extracting features: 210it [00:02, 87.03it/s]
-Extracting features: 220it [00:02, 85.69it/s]
-Extracting features: 231it [00:02, 89.45it/s]
-Extracting features: 241it [00:02, 89.67it/s]
-Extracting features: 250it [00:02, 86.57it/s]
-Extracting features: 260it [00:03, 89.41it/s]
-Extracting features: 270it [00:03, 89.57it/s]
-Extracting features: 279it [00:03, 88.50it/s]
-Extracting features: 288it [00:03, 88.42it/s]
-Extracting features: 297it [00:03, 88.78it/s]
-Extracting features: 306it [00:03, 88.29it/s]
-Extracting features: 315it [00:03, 87.21it/s]
-Extracting features: 325it [00:03, 90.03it/s]
-Extracting features: 335it [00:03, 88.24it/s]
-Extracting features: 345it [00:04, 90.27it/s]
-Extracting features: 355it [00:04, 90.35it/s]
-Extracting features: 365it [00:04, 89.77it/s]
-Extracting features: 374it [00:04, 88.69it/s]
-Extracting features: 383it [00:04, 88.45it/s]
-Extracting features: 392it [00:04, 88.54it/s]
-Extracting features: 402it [00:04, 91.22it/s]
-Extracting features: 412it [00:04, 88.41it/s]
-Extracting features: 422it [00:04, 91.20it/s]
-Extracting features: 432it [00:05, 89.50it/s]
-Extracting features: 441it [00:05, 88.30it/s]
-Extracting features: 450it [00:05, 87.78it/s]
+Extracting features: 1it [00:00,  6.71it/s]
+Extracting features: 11it [00:00, 50.93it/s]
+Extracting features: 21it [00:00, 68.82it/s]
+Extracting features: 31it [00:00, 79.43it/s]
+Extracting features: 41it [00:00, 86.13it/s]
+Extracting features: 50it [00:00, 84.18it/s]
+Extracting features: 60it [00:00, 88.59it/s]
+Extracting features: 70it [00:00, 90.95it/s]
+Extracting features: 80it [00:00, 93.06it/s]
+Extracting features: 90it [00:01, 91.51it/s]
+Extracting features: 100it [00:01, 92.09it/s]
+Extracting features: 110it [00:01, 92.08it/s]
+Extracting features: 121it [00:01, 94.97it/s]
+Extracting features: 131it [00:01, 92.93it/s]
+Extracting features: 141it [00:01, 94.37it/s]
+Extracting features: 151it [00:01, 94.79it/s]
+Extracting features: 161it [00:01, 94.76it/s]
+Extracting features: 171it [00:01, 93.64it/s]
+Extracting features: 181it [00:02, 91.16it/s]
+Extracting features: 191it [00:02, 91.72it/s]
+Extracting features: 201it [00:02, 91.86it/s]
+Extracting features: 211it [00:02, 92.20it/s]
+Extracting features: 221it [00:02, 92.84it/s]
+Extracting features: 231it [00:02, 93.41it/s]
+Extracting features: 241it [00:02, 91.34it/s]
+Extracting features: 251it [00:02, 91.75it/s]
+Extracting features: 261it [00:02, 91.99it/s]
+Extracting features: 271it [00:03, 93.12it/s]
+Extracting features: 281it [00:03, 92.65it/s]
+Extracting features: 291it [00:03, 91.90it/s]
+Extracting features: 301it [00:03, 91.17it/s]
+Extracting features: 311it [00:03, 92.07it/s]
+Extracting features: 321it [00:03, 91.56it/s]
+Extracting features: 331it [00:03, 92.01it/s]
+Extracting features: 341it [00:03, 91.39it/s]
+Extracting features: 351it [00:03, 90.99it/s]
+Extracting features: 361it [00:04, 89.81it/s]
+Extracting features: 371it [00:04, 91.36it/s]
+Extracting features: 381it [00:04, 90.61it/s]
+Extracting features: 391it [00:04, 90.26it/s]
+Extracting features: 401it [00:04, 90.65it/s]
+Extracting features: 411it [00:04, 91.35it/s]
+Extracting features: 421it [00:04, 93.28it/s]
+Extracting features: 432it [00:04, 93.67it/s]
+Extracting features: 443it [00:04, 95.34it/s]
+Extracting features: 453it [00:05, 94.67it/s]
 
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  7.02it/s]
-Extracting features: 7it [00:00, 32.62it/s]
-Extracting features: 17it [00:00, 58.08it/s]
-Extracting features: 27it [00:00, 72.37it/s]
-Extracting features: 35it [00:00, 74.37it/s]
-Extracting features: 44it [00:00, 79.30it/s]
-Extracting features: 53it [00:00, 78.19it/s]
-Extracting features: 67it [00:00, 96.25it/s]
+Extracting features: 1it [00:00,  6.84it/s]
+Extracting features: 11it [00:00, 48.32it/s]
+Extracting features: 22it [00:00, 68.73it/s]
+Extracting features: 32it [00:00, 75.79it/s]
+Extracting features: 42it [00:00, 83.32it/s]
+Extracting features: 52it [00:00, 86.82it/s]
+Extracting features: 64it [00:00, 96.91it/s]
 
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:470: ConvergenceWarning: lbfgs failed to converge after 200 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=200).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
   super().__init__(loader)
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  6.47it/s]
-Extracting features: 10it [00:00, 44.54it/s]
-Extracting features: 20it [00:00, 62.90it/s]
-Extracting features: 32it [00:00, 79.59it/s]
-Extracting features: 41it [00:00, 79.51it/s]
-Extracting features: 50it [00:00, 80.52it/s]
-Extracting features: 60it [00:00, 86.34it/s]
-Extracting features: 69it [00:00, 85.20it/s]
-Extracting features: 80it [00:01, 86.73it/s]
-Extracting features: 90it [00:01, 88.78it/s]
-Extracting features: 100it [00:01, 91.78it/s]
-Extracting features: 110it [00:01, 91.28it/s]
-Extracting features: 120it [00:01, 88.49it/s]
-Extracting features: 130it [00:01, 88.07it/s]
-Extracting features: 139it [00:01, 87.75it/s]
-Extracting features: 149it [00:01, 90.60it/s]
-Extracting features: 159it [00:01, 86.82it/s]
-Extracting features: 169it [00:02, 89.69it/s]
-Extracting features: 179it [00:02, 88.77it/s]
-Extracting features: 188it [00:02, 85.85it/s]
-Extracting features: 198it [00:02, 88.47it/s]
-Extracting features: 207it [00:02, 87.51it/s]
-Extracting features: 216it [00:02, 86.49it/s]
-Extracting features: 226it [00:02, 87.38it/s]
-Extracting features: 237it [00:02, 89.08it/s]
-Extracting features: 246it [00:02, 86.55it/s]
-Extracting features: 255it [00:03, 85.00it/s]
-Extracting features: 264it [00:03, 86.32it/s]
-Extracting features: 274it [00:03, 87.11it/s]
-Extracting features: 283it [00:03, 87.61it/s]
-Extracting features: 293it [00:03, 88.61it/s]
-Extracting features: 302it [00:03, 85.37it/s]
-Extracting features: 312it [00:03, 87.59it/s]
-Extracting features: 321it [00:03, 87.93it/s]
-Extracting features: 330it [00:03, 87.83it/s]
-Extracting features: 339it [00:03, 87.44it/s]
-Extracting features: 348it [00:04, 86.64it/s]
-Extracting features: 358it [00:04, 89.72it/s]
-Extracting features: 368it [00:04, 88.79it/s]
-Extracting features: 377it [00:04, 88.69it/s]
-Extracting features: 386it [00:04, 89.03it/s]
-Extracting features: 395it [00:04, 87.15it/s]
-Extracting features: 404it [00:04, 87.29it/s]
-Extracting features: 414it [00:04, 88.42it/s]
-Extracting features: 425it [00:04, 89.91it/s]
-Extracting features: 434it [00:05, 88.31it/s]
-Extracting features: 444it [00:05, 88.78it/s]
-Extracting features: 457it [00:05, 99.29it/s]
+Extracting features: 1it [00:00,  6.67it/s]
+Extracting features: 11it [00:00, 51.06it/s]
+Extracting features: 22it [00:00, 72.58it/s]
+Extracting features: 31it [00:00, 78.64it/s]
+Extracting features: 41it [00:00, 83.77it/s]
+Extracting features: 51it [00:00, 88.16it/s]
+Extracting features: 61it [00:00, 89.22it/s]
+Extracting features: 71it [00:00, 91.82it/s]
+Extracting features: 81it [00:00, 92.75it/s]
+Extracting features: 91it [00:01, 91.28it/s]
+Extracting features: 102it [00:01, 90.98it/s]
+Extracting features: 112it [00:01, 92.07it/s]
+Extracting features: 122it [00:01, 91.93it/s]
+Extracting features: 132it [00:01, 93.95it/s]
+Extracting features: 142it [00:01, 93.51it/s]
+Extracting features: 152it [00:01, 95.30it/s]
+Extracting features: 162it [00:01, 96.17it/s]
+Extracting features: 172it [00:01, 93.06it/s]
+Extracting features: 182it [00:02, 92.50it/s]
+Extracting features: 192it [00:02, 92.12it/s]
+Extracting features: 202it [00:02, 91.96it/s]
+Extracting features: 212it [00:02, 92.82it/s]
+Extracting features: 222it [00:02, 94.23it/s]
+Extracting features: 232it [00:02, 95.69it/s]
+Extracting features: 242it [00:02, 94.76it/s]
+Extracting features: 253it [00:02, 96.40it/s]
+Extracting features: 263it [00:02, 94.44it/s]
+Extracting features: 273it [00:03, 94.27it/s]
+Extracting features: 283it [00:03, 94.24it/s]
+Extracting features: 293it [00:03, 95.64it/s]
+Extracting features: 303it [00:03, 95.57it/s]
+Extracting features: 313it [00:03, 93.09it/s]
+Extracting features: 323it [00:03, 93.33it/s]
+Extracting features: 333it [00:03, 92.95it/s]
+Extracting features: 343it [00:03, 91.48it/s]
+Extracting features: 353it [00:03, 91.56it/s]
+Extracting features: 363it [00:04, 91.02it/s]
+Extracting features: 373it [00:04, 91.66it/s]
+Extracting features: 383it [00:04, 92.19it/s]
+Extracting features: 393it [00:04, 91.42it/s]
+Extracting features: 403it [00:04, 92.09it/s]
+Extracting features: 413it [00:04, 91.26it/s]
+Extracting features: 424it [00:04, 91.00it/s]
+Extracting features: 434it [00:04, 92.62it/s]
+Extracting features: 445it [00:04, 94.58it/s]
+Extracting features: 460it [00:04, 109.79it/s]
 
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:00,  6.42it/s]
-Extracting features: 10it [00:00, 44.36it/s]
-Extracting features: 19it [00:00, 60.91it/s]
-Extracting features: 29it [00:00, 73.92it/s]
-Extracting features: 39it [00:00, 79.95it/s]
-Extracting features: 49it [00:00, 83.50it/s]
-Extracting features: 58it [00:00, 85.24it/s]
+Extracting features: 1it [00:00,  7.66it/s]
+Extracting features: 8it [00:00, 40.13it/s]
+Extracting features: 19it [00:00, 69.22it/s]
+Extracting features: 28it [00:00, 75.46it/s]
+Extracting features: 38it [00:00, 82.61it/s]
+Extracting features: 47it [00:00, 84.32it/s]
+Extracting features: 57it [00:00, 88.26it/s]
+Extracting features: 73it [00:00, 109.69it/s]
 
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 100/100 0:00:10 •        11.25it/s v_num: 0.000
-                                    0:00:00                    loss/train: 0.615
-                                                               loss/val: 0.950
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 100/100 0:00:10 •        11.00it/s v_num: 0.000
+                                    0:00:00                    loss/train: 0.614
+                                                               loss/val: 1.101
                                                                test_accuracy:
-                                                               0.887
+                                                               0.882
                                                                test_f1_weighted:
-                                                               0.886
+                                                               0.882
 
 SimCLR(
   (encoder): LeNetEncoder(
@@ -1058,7 +1066,16 @@ also evaluate the linear probe at inference after training the SimCLR model.</p>
   self.check_worker_number_rationality()
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
   super().__init__(loader)
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 469/469 0:00:04 • 0:00:00 95.32it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 469/469 0:00:04 • 0:00:00 98.77it/s
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:470: ConvergenceWarning: lbfgs failed to converge after 200 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=200).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
 
 ModelProbing(
   (embedding_estimator): SimCLR(
@@ -1096,10 +1113,10 @@ metrics:</p>
   self.check_worker_number_rationality()
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 79/79 0:00:00 • 0:00:00 99.55it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 79/79 0:00:00 • 0:00:00 111.11it/s
 Classification metrics at inference:
-accuracy: 0.8870
-f1_weighted: 0.8866
+accuracy: 0.8821
+f1_weighted: 0.8816
 </pre></div>
 </div>
 </section>
@@ -1155,11 +1172,10 @@ The target variables are age (regression) and sex (classification).</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fetching ... files: 0it [00:00, ?it/s]
-Fetching ... files: 1it [00:00, 9058.97it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching ... files: 1it [00:00, 7958.83it/s]
 
 Fetching ... files: 0it [00:00, ?it/s]
-Fetching ... files: 1it [00:00, 14820.86it/s]
+Fetching ... files: 1it [00:00, 13934.56it/s]
 </pre></div>
 </div>
 <p>To perform contrastive learning, we will use random masking and Gaussian
@@ -1365,61 +1381,19 @@ Total FLOPs: 0
   super().__init__(loader)
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:05,  5.05s/it]
-Extracting features: 11it [00:10,  1.25it/s]
-Extracting features: 21it [00:11,  2.35it/s]
+Extracting features: 1it [00:03,  3.15s/it]
+Extracting features: 2it [00:04,  1.99s/it]
+Extracting features: 7it [00:04,  2.17it/s]
+Extracting features: 11it [00:07,  1.83it/s]
+Extracting features: 12it [00:09,  1.37it/s]
+Extracting features: 17it [00:09,  2.56it/s]
+Extracting features: 21it [00:09,  3.71it/s]
+Extracting features: 22it [00:10,  3.13it/s]
 
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:02,  2.03s/it]
-Extracting features: 5it [00:02,  3.05it/s]
-
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  self.check_worker_number_rationality()
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  super().__init__(loader)
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  self.check_worker_number_rationality()
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  super().__init__(loader)
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  self.check_worker_number_rationality()
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  super().__init__(loader)
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  self.check_worker_number_rationality()
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  super().__init__(loader)
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  self.check_worker_number_rationality()
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  super().__init__(loader)
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  self.check_worker_number_rationality()
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  super().__init__(loader)
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  self.check_worker_number_rationality()
-/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
-  super().__init__(loader)
-
-Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:03,  3.34s/it]
-Extracting features: 2it [00:03,  1.49s/it]
-Extracting features: 3it [00:05,  1.52s/it]
-Extracting features: 8it [00:05,  2.62it/s]
-Extracting features: 10it [00:05,  3.52it/s]
-Extracting features: 12it [00:07,  1.90it/s]
-Extracting features: 13it [00:09,  1.21it/s]
-Extracting features: 15it [00:09,  1.69it/s]
-Extracting features: 20it [00:10,  3.30it/s]
-Extracting features: 22it [00:10,  3.85it/s]
-Extracting features: 23it [00:11,  3.48it/s]
-Extracting features: 25it [00:11,  3.89it/s]
-
-
-Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:02,  2.10s/it]
+Extracting features: 1it [00:01,  1.70s/it]
+Extracting features: 2it [00:01,  1.25it/s]
 
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
@@ -1451,18 +1425,15 @@ Extracting features: 1it [00:02,  2.10s/it]
   super().__init__(loader)
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:05,  5.16s/it]
-Extracting features: 9it [00:05,  2.26it/s]
-Extracting features: 11it [00:09,  1.15it/s]
-Extracting features: 14it [00:10,  1.60it/s]
-Extracting features: 19it [00:10,  2.64it/s]
-Extracting features: 21it [00:11,  2.50it/s]
-Extracting features: 24it [00:11,  3.46it/s]
-Extracting features: 26it [00:11,  3.95it/s]
+Extracting features: 1it [00:04,  4.56s/it]
+Extracting features: 9it [00:04,  2.62it/s]
+Extracting features: 13it [00:08,  1.61it/s]
+Extracting features: 19it [00:08,  2.81it/s]
+Extracting features: 22it [00:09,  2.82it/s]
 
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:02,  2.06s/it]
+Extracting features: 1it [00:01,  1.87s/it]
 
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
@@ -1494,15 +1465,63 @@ Extracting features: 1it [00:02,  2.06s/it]
   super().__init__(loader)
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:04,  4.96s/it]
-Extracting features: 6it [00:05,  1.49it/s]
-Extracting features: 11it [00:10,  1.16it/s]
-Extracting features: 21it [00:11,  2.48it/s]
+Extracting features: 1it [00:03,  3.24s/it]
+Extracting features: 3it [00:04,  1.40s/it]
+Extracting features: 9it [00:04,  2.82it/s]
+Extracting features: 11it [00:07,  1.85it/s]
+Extracting features: 13it [00:08,  1.83it/s]
+Extracting features: 14it [00:09,  1.60it/s]
+Extracting features: 20it [00:09,  3.70it/s]
+Extracting features: 23it [00:09,  4.00it/s]
+Extracting features: 25it [00:10,  4.45it/s]
 
 
 Extracting features: 0it [00:00, ?it/s]
-Extracting features: 1it [00:01,  1.52s/it]
-Extracting features: 2it [00:02,  1.01it/s]
+Extracting features: 1it [00:01,  1.81s/it]
+
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+
+Extracting features: 0it [00:00, ?it/s]
+Extracting features: 1it [00:03,  3.27s/it]
+Extracting features: 3it [00:04,  1.39s/it]
+Extracting features: 5it [00:04,  1.38it/s]
+Extracting features: 11it [00:07,  1.94it/s]
+Extracting features: 13it [00:08,  1.76it/s]
+Extracting features: 15it [00:09,  2.16it/s]
+Extracting features: 21it [00:09,  4.05it/s]
+Extracting features: 23it [00:10,  4.13it/s]
+Extracting features: 25it [00:10,  4.79it/s]
+
+
+Extracting features: 0it [00:00, ?it/s]
+Extracting features: 1it [00:01,  1.89s/it]
 
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:470: ConvergenceWarning: lbfgs failed to converge after 200 iteration(s) (status=1):
 STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
@@ -1513,15 +1532,15 @@ You might also want to scale the data as shown in:
 Please also refer to the documentation for alternative solver options:
     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
   n_iter_i = _check_optimize_result(
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 3.36it/s v_num: 3.000
-                                                              loss/train: 7.942
-                                                              loss/val: 11.042
-                                                              test_age/r2: 0.674
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:10 • 0:00:00 3.65it/s v_num: 3.000
+                                                              loss/train: 7.944
+                                                              loss/val: 11.054
+                                                              test_age/r2: 0.621
                                                               test_age/pearsonr:
-                                                              0.826
+                                                              0.793
                                                               test_sex/accuracy:
-                                                              0.765 test_sex/f1:
-                                                              0.744
+                                                              0.764 test_sex/f1:
+                                                              0.746
 
 YAwareContrastiveLearning(
   (encoder): MLP(
@@ -1601,8 +1620,8 @@ at regular intervals during training and log the relevant metrics to
 TensorBoard. This provides insights on what concepts are being learned by
 the model and how the representation evolves to become more suitable for
 downstream tasks.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 40.867 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  414 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 27.681 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  266 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-model-probing-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e4c6575a58207362fb35822d44f91bc7/plot_model_probing.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_model_probing.ipynb</span></code></a></p>
@@ -1632,14 +1651,14 @@ downstream tasks.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="plot_dcl_vs_simclr.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Examples</div>
+                <div class="title">Decoupled Contrastive Learning</div>
                 
               </div>
             </a>

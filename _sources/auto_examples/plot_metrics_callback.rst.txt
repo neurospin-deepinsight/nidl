@@ -421,18 +421,18 @@ Finally, we fit the model:
     /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
     /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
       super().__init__(loader)
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        27.59it/s v_num: 10.000    
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:08 •        30.74it/s v_num: 10.000    
                                         0:00:00                    acc1/train: 0.990
                                                                    f1/train: 0.990  
                                                                    precision/train: 
                                                                    0.990            
                                                                    recall/train:    
                                                                    0.990 acc1/val:  
-                                                                   0.977 f1/val:    
-                                                                   0.977            
+                                                                   0.978 f1/val:    
+                                                                   0.978            
                                                                    precision/val:   
-                                                                   0.977 recall/val:
-                                                                   0.977            
+                                                                   0.978 recall/val:
+                                                                   0.978            
 
     SupervisedCrossEntropy(
       (backbone): LeNet(
@@ -681,15 +681,15 @@ computation as the model's weights are changing over iterations.
     Modules in train mode: 14                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:43 • 0:00:00 5.82it/s v_num: 11.000    
-                                                                   loss/train: 0.328
-                                                                   loss/val: 1.127  
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:49 • 0:00:00 5.19it/s v_num: 11.000    
+                                                                   loss/train: 0.319
+                                                                   loss/val: 1.118  
                                                                    alignment/val:   
-                                                                   0.119            
+                                                                   0.120            
                                                                    uniformity/val:  
-                                                                   -3.441           
+                                                                   -3.431           
                                                                    contrastive_acc/…
-                                                                   0.750            
+                                                                   0.755            
 
     SimCLR(
       (encoder): LeNet(
@@ -789,9 +789,9 @@ increases:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (10 minutes 8.233 seconds)
+   **Total running time of the script:** (10 minutes 56.766 seconds)
 
-**Estimated memory usage:**  2387 MB
+**Estimated memory usage:**  2370 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_metrics_callback.py:

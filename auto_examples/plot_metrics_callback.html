@@ -230,6 +230,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing of embedding estimators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
@@ -651,18 +652,18 @@ Total FLOPs: 0
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
   super().__init__(loader)
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        27.59it/s v_num: 10.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:08 •        30.74it/s v_num: 10.000
                                     0:00:00                    acc1/train: 0.990
                                                                f1/train: 0.990
                                                                precision/train:
                                                                0.990
                                                                recall/train:
                                                                0.990 acc1/val:
-                                                               0.977 f1/val:
-                                                               0.977
+                                                               0.978 f1/val:
+                                                               0.978
                                                                precision/val:
-                                                               0.977 recall/val:
-                                                               0.977
+                                                               0.978 recall/val:
+                                                               0.978
 
 SupervisedCrossEntropy(
   (backbone): LeNet(
@@ -830,15 +831,15 @@ Total estimated model params size (MB): 0
 Modules in train mode: 14
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:43 • 0:00:00 5.82it/s v_num: 11.000
-                                                               loss/train: 0.328
-                                                               loss/val: 1.127
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:49 • 0:00:00 5.19it/s v_num: 11.000
+                                                               loss/train: 0.319
+                                                               loss/val: 1.118
                                                                alignment/val:
-                                                               0.119
+                                                               0.120
                                                                uniformity/val:
-                                                               -3.441
+                                                               -3.431
                                                                contrastive_acc/…
-                                                               0.750
+                                                               0.755
 
 SimCLR(
   (encoder): LeNet(
@@ -901,8 +902,8 @@ increases:</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (10 minutes 8.233 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2387 MB</p>
+<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (10 minutes 56.766 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2370 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-metrics-callback-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/dfa4ecd93e1a6b50d625160b65e18c28/plot_metrics_callback.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_metrics_callback.ipynb</span></code></a></p>

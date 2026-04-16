@@ -15,6 +15,23 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial illustrates the use of Decoupled Contrastive Learning (DCL) [1]_ which introduces a reformulation of the InfoNCE loss used in SimCLR [2]_ that removes the negative-positive coupling in the loss. This modification stabilizes optimization and improves performance, especially when training with small batch sizes.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_dcl_vs_simclr_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/plot_dcl_vs_simclr`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Decoupled Contrastive Learning</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This notebook will show you how to investigate the data representation given by an embedding estimator (such as SimCLR, y-Aware Contrastive Learning or Barlow  Twins) during training and inference using the notion of &quot;probing&quot;. A standard machine learning model (e.g. linear or SVM) is trained and evaluated on the data embedding for a given task as the model is being fitted (for training  monitoring) or at inference. It allows the user to understand what concepts are learned  by the model.">
 
 .. only:: html
@@ -125,6 +142,7 @@ Examples
 .. toctree::
    :hidden:
 
+   /auto_examples/plot_dcl_vs_simclr
    /auto_examples/plot_model_probing
    /auto_examples/plot_openbhb
    /auto_examples/plot_simclr_mnist
