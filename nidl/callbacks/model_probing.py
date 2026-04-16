@@ -22,7 +22,7 @@ from nidl.estimators.base import BaseEstimator
 from nidl.utils.validation import _estimator_is
 
 
-class ModelProbing(pl.Callback):
+class ModelProbingCallback(pl.Callback):
     """Callback to probe the representation of an embedding estimator on a
     dataset.
 
@@ -106,8 +106,8 @@ class ModelProbing(pl.Callback):
     Examples
     --------
     >>> from sklearn.linear_model import LogisticRegression
-    >>> from nidl.callbacks import ModelProbing
-    >>> callback = ModelProbing(
+    >>> from nidl.callbacks import ModelProbingCallback
+    >>> callback = ModelProbingCallback(
     ...     train_dataloader=train_loader,
     ...     test_dataloader=test_loader,
     ...     probe=LogisticRegression(),
@@ -143,10 +143,6 @@ class ModelProbing(pl.Callback):
         self.counter_val_epochs = 0
 
         self.scorers = check_scoring(self.probe, scoring=self.scoring)
-
-    def fit(self, X, y):
-        """Fit the probe on the training data embeddings."""
-        return self.probe.fit(X, y)
 
     def log_metrics(self, pl_module, scores):
         """Log the metrics given the predictions and the true labels."""
@@ -257,7 +253,7 @@ class ModelProbing(pl.Callback):
         scores = None
         if trainer.is_global_zero:
             # Fit the probe
-            self.fit(X_train, y_train)
+            self.probe.fit(X_train, y_train)
             # Compute scores
             scores = self.scorers(self.probe, X_test, y_test)
 
@@ -304,7 +300,7 @@ class ModelProbing(pl.Callback):
             for batch_idx, batch in tqdm(
                 enumerate(dataloader),
                 desc="Extracting features",
-                disable=(not trainer.is_global_zero or self.prog_bar is False),
+                disable=(not self.prog_bar or not trainer.is_global_zero),
                 leave=False,
             ):
                 x_batch, y_batch = batch

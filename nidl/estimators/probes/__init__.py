@@ -6,11 +6,4 @@
 # for details.
 ##########################################################################
 
-"""Self-supervised estimators."""
-
-from .barlowtwins import BarlowTwins
-from .dcl import DCL
-from .dino import DINO
-from .ijepa import IJEPA
-from .simclr import SimCLR
-from .yaware import YAwareContrastiveLearning
+from .model_probing import ModelProbing

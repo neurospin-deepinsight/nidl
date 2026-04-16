@@ -41,8 +41,8 @@ Classes for all callbacks performing model's probing.
    :toctree: generated/
    :template: class.rst
 
-    ModelProbing
-    ModelProbingCV
+    ModelProbingCallback
+    ModelProbingCVCallback
 
 
 Metrics callback
