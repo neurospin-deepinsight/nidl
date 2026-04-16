@@ -166,6 +166,8 @@ class PatchEmbed3D(nn.Module):
                 f"Expected input size {self.img_size}, got "
                 f"{tuple(x.shape[-3:])}."
             )
+        if len(x.shape) != 5:
+            raise ValueError(f"Expected input shape (B, C, D, H, W), got {x.shape}.")
 
         x = self.proj(x)
         if not self.flatten:
@@ -189,8 +191,10 @@ class VisionTransformer3D(nn.Module):
         Number of input channels.
     num_classes : int, default=0
         Number of output classes. If non-positive, head is identity.
-    global_pool : {"token", "avg", "max", "avgmax", ""}, default="token"
-        Pooling mode.
+    global_pool : {"cls_token", "avg", "max", "avgmax", ""},
+        default="cls_token"
+        Pooling mode. If "", no pooling is applied and the full token sequence
+        is returned.
     embed_dim : int, default=768
         Embedding dimension.
     depth : int, default=12
@@ -244,7 +248,7 @@ class VisionTransformer3D(nn.Module):
         patch_size: Union[int, Sequence[int]],
         in_chans: int = 1,
         num_classes: int = 0,
-        global_pool: str = "token",
+        global_pool: str = "cls_token",
         embed_dim: int = 768,
         depth: int = 12,
         num_heads: int = 12,
@@ -279,7 +283,7 @@ class VisionTransformer3D(nn.Module):
         self.num_classes = int(num_classes)
         self.global_pool = global_pool
         self.embed_dim = embed_dim
-        self.class_token = class_token
+        self.has_class_token = class_token
         self.num_reg_tokens = int(reg_tokens)
         self.no_embed_class = bool(no_embed_class)
         self.dynamic_img_size = dynamic_img_size
@@ -317,7 +321,8 @@ class VisionTransformer3D(nn.Module):
             )
             self.pos_embed = nn.Parameter(torch.zeros(1, pos_len, embed_dim))
         elif pos_embed == "sincos":
-            pos = build_3d_sincos_posemb(self.grid_size, embed_dim)
+            pos = build_3d_sincos_posemb(*self.grid_size, embed_dim=embed_dim)
+            pos = pos.flatten(2).transpose(1, 2)  # (1, N_patches, C)
             if not self.no_embed_class and self.num_prefix_tokens > 0:
                 prefix = torch.zeros(
                     1, self.num_prefix_tokens, embed_dim, dtype=pos.dtype
@@ -411,6 +416,9 @@ class VisionTransformer3D(nn.Module):
         torch.Tensor
             Tokens after prefix concatenation and positional embedding.
         """
+        if len(x.shape) != 3:
+            raise ValueError(f"Expected input shape (B, N, C), got {x.shape}.")
+
         B = x.shape[0]
         prefix = []
         if self.cls_token is not None:
@@ -420,6 +428,10 @@ class VisionTransformer3D(nn.Module):
 
         if self.no_embed_class:
             if self.pos_embed is not None:
+                if x.shape[1] != self.pos_embed.shape[1]:
+                    raise ValueError(
+                        f"Expected {self.pos_embed.shape[1]} patch tokens, got {x.shape[1]}."
+                    )
                 x = x + self.pos_embed
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
@@ -427,6 +439,10 @@ class VisionTransformer3D(nn.Module):
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
             if self.pos_embed is not None:
+                if x.shape[1] != self.pos_embed.shape[1]:
+                    raise ValueError(
+                        f"Expected {self.pos_embed.shape[1]} tokens, got {x.shape[1]}."
+                    )
                 x = x + self.pos_embed
 
         return self.pos_drop(x)
@@ -468,8 +484,8 @@ class VisionTransformer3D(nn.Module):
 
         if pool_type == "":
             return x
-        if pool_type == "token":
-            if not self.class_token:
+        if pool_type == "cls_token":
+            if not self.has_class_token:
                 raise ValueError(
                     "global_pool='token' requires class_token=True."
                 )

@@ -127,8 +127,13 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
     Attributes
     ----------
-    encoder : torch.nn.Module
-        It corresponds to the **context encoder** in the I-JEPA model.
+    context_encoder : torch.nn.Module
+        It corresponds to the context encoder in the I-JEPA model. It is used
+        at inference time for downstream tasks.
+
+    target_encoder : torch.nn.Module
+        It corresponds to the target encoder in the I-JEPA model. It is an EMA
+        of the context encoder during training and is not used at inference.
 
     predictor : torch.nn.Module
         Predictor model trained to predict the masked part of an image from a
@@ -187,8 +192,6 @@ class IJEPA(TransformerMixin, BaseEstimator):
 
         # Copy context encoder params to target encoder + no_grad for target.
         initialize_momentum_params(self.context_encoder, self.target_encoder)
-
-        self.encoder = self.context_encoder.vit
 
         # Instantiate momentum updates.
         self.momentum_updater = MomentumUpdater(ema_start, ema_end)
@@ -378,7 +381,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
         ----------
         batch: torch.Tensor
             A batch of data that has been generated from `test_dataloader`.
-            This is given as is to the encoder.
+            This is given as is to the context encoder.
         batch_idx: int
             The index of the current batch (ignored).
         dataloader_idx: int, default=0
@@ -390,7 +393,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
             The encoded features returned by the encoder.
 
         """
-        return self.encoder(batch)
+        return self.context_encoder.vit(batch)
 
     def configure_optimizers(self):
         """Initialize the optimizer and learning rate scheduler."""
@@ -705,6 +708,7 @@ class IJEPAVisionTransformer(nn.Module):
         all_x = []
         for m in masks:
             gather_idx = m.unsqueeze(-1).expand(-1, -1, patches.size(-1))
+            gather_idx = gather_idx.to(patches.device, dtype=torch.long, non_blocking=True)
             kept_patches = torch.gather(patches, dim=1, index=gather_idx)
             if prefix is not None:
                 kept = torch.cat([prefix, kept_patches], dim=1)
@@ -1113,8 +1117,8 @@ class Masker(nn.Module):
         if self.dim == 3:
             axis3 = round(math.pow(max_keep, 1 / self.dim))
             block_size.append(axis3)
-            perm = torch.randperm(3, generator=generator)
-            block_size = block_size[perm]
+            perm = torch.randperm(3, generator=generator).tolist()
+            block_size = [block_size[i] for i in perm]
         # Constrain block size to be smaller than the input size
         for i, gs in enumerate(self.grid_size):
             block_size[i] = min(block_size[i], gs - 1)

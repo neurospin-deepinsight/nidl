@@ -16,7 +16,7 @@ from torch import nn
 
 def build_encoder(
     encoder: Union[nn.Module, type[nn.Module]],
-    encoder_kwargs: Optional[dict[str, Any]],
+    encoder_kwargs: Optional[dict[str, Any]] = None,
     deepcopy: bool = False,
 ) -> nn.Module:
     """Builds the encoder based on the provided configuration.
@@ -29,7 +29,7 @@ def build_encoder(
               be used as is.
             - a class inheriting from `nn.Module`, in which case it will
               be instantiated with the provided `encoder_kwargs`.
-    encoder_kwargs : Optional[dict[str, Any]]
+    encoder_kwargs : Optional[dict[str, Any]], default=None
         The keyword arguments to use when instantiating the encoder.
         Ignored if `encoder` is already an instantiated `nn.Module`.
     deepcopy : bool, default=False
