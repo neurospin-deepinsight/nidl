@@ -126,6 +126,7 @@ Embedding estimators
    :template: class.rst
 
     SimCLR
+    DCL
     YAwareContrastiveLearning
     BarlowTwins
     DINO
@@ -146,6 +147,7 @@ Losses
    :template: class.rst
 
     InfoNCE
+    DCLLoss
     YAwareInfoNCE
     BarlowTwinsLoss
     DINOLoss
