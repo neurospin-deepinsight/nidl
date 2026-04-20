@@ -31,7 +31,7 @@ def _to_3tuple(x: int | Sequence[int]) -> tuple[int, int, int]:
     Returns
     -------
     tuple of int
-        Tuple in ``(D, H, W)`` order.
+        Tuple in ``(H, W, D)`` order.
     """
     if isinstance(x, Sequence) and not isinstance(x, (str, bytes)):
         if len(x) != 3:
@@ -50,9 +50,9 @@ def _assert_divisible(
     Parameters
     ----------
     img_size : tuple of int
-        Input size in ``(D, H, W)``.
+        Input size in ``(H, W, D)``.
     patch_size : tuple of int
-        Patch size in ``(D, H, W)``.
+        Patch size in ``(H, W, D)``.
 
     Raises
     ------
@@ -73,9 +73,9 @@ class PatchEmbed3D(nn.Module):
     Parameters
     ----------
     img_size : int or sequence of int
-        Input volume size in ``(D, H, W)``.
+        Input volume size in ``(H, W, D)``.
     patch_size : int or sequence of int
-        Patch size in ``(D, H, W)``. Image size must
+        Patch size in ``(H, W, D)``. Image size must
         be divisible by patch size in each direction.
     in_chans : int, default=1
         Number of input channels.
@@ -93,11 +93,11 @@ class PatchEmbed3D(nn.Module):
     Attributes
     ----------
     img_size : tuple of int
-        Input size in ``(D, H, W)``.
+        Input size in ``(H, W, D)``.
     patch_size : tuple of int
-        Patch size in ``(D, H, W)``.
+        Patch size in ``(H, W, D)``.
     grid_size : tuple of int
-        Patch grid size in ``(D, H, W)``.
+        Patch grid size in ``(H, W, D)``.
     num_patches : int
         Number of patches.
     """
@@ -148,13 +148,13 @@ class PatchEmbed3D(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Input tensor of shape ``(B, C, D, H, W)``.
+            Input tensor of shape ``(B, C, H, W, D)``.
 
         Returns
         -------
         torch.Tensor
             If ``flatten=True``, patch tokens of shape ``(B, N, C)``.
-            Otherwise, projected tensor of shape ``(B, C, D', H', W')``.
+            Otherwise, projected tensor of shape ``(B, C, H', W', D')``.
 
         Raises
         ------
@@ -167,13 +167,15 @@ class PatchEmbed3D(nn.Module):
                 f"{tuple(x.shape[-3:])}."
             )
         if len(x.shape) != 5:
-            raise ValueError(f"Expected input shape (B, C, D, H, W), got {x.shape}.")
+            raise ValueError(
+                f"Expected input shape (B, C, H, W, D), got {x.shape}."
+            )
 
         x = self.proj(x)
         if not self.flatten:
             return x
 
-        # (B, C, D', H', W') -> (B, N, C)
+        # (B, C, H', W', D') -> (B, N, C)
         return x.flatten(2).transpose(1, 2)
 
 
@@ -430,7 +432,8 @@ class VisionTransformer3D(nn.Module):
             if self.pos_embed is not None:
                 if x.shape[1] != self.pos_embed.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} patch tokens, got {x.shape[1]}."
+                        f"Expected {self.pos_embed.shape[1]} patch tokens, got"
+                        f" {x.shape[1]}."
                     )
                 x = x + self.pos_embed
             if prefix:
@@ -441,7 +444,8 @@ class VisionTransformer3D(nn.Module):
             if self.pos_embed is not None:
                 if x.shape[1] != self.pos_embed.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} tokens, got {x.shape[1]}."
+                        f"Expected {self.pos_embed.shape[1]} tokens, got "
+                        f"{x.shape[1]}."
                     )
                 x = x + self.pos_embed
 
@@ -510,7 +514,7 @@ class VisionTransformer3D(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Input tensor of shape ``(B, C, D, H, W)``.
+            Input tensor of shape ``(B, C, H, W, D)``.
 
         Returns
         -------
@@ -557,7 +561,7 @@ class VisionTransformer3D(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Input tensor of shape ``(B, C, D, H, W)``.
+            Input tensor of shape ``(B, C, H, W, D)``.
 
         Returns
         -------
@@ -580,7 +584,7 @@ class VisionTransformer3D(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Input tensor of shape ``(B, C, D, H, W)``.
+            Input tensor of shape ``(B, C, H, W, D)``.
         indices : sequence of int or int, default=(-1,)
             Block indices to return. Negative indices are supported.
         norm : bool, default=False
@@ -698,7 +702,7 @@ def _resize_pos_embed_2d_to_3d(
     old_grid_size : tuple of int
         Original 2D grid size in ``(H, W)``.
     new_grid_size : tuple of int
-        Target 3D grid size in ``(D, H, W)``.
+        Target 3D grid size in ``(H, W, D)``.
 
     Returns
     -------
@@ -714,7 +718,7 @@ def _resize_pos_embed_2d_to_3d(
     grid = pos_embed[:, num_prefix_tokens:]
 
     H0, W0 = old_grid_size
-    D1, H1, W1 = new_grid_size
+    H1, W1, D1 = new_grid_size
     C = grid.shape[-1]
 
     grid = grid.reshape(1, H0, W0, C).permute(0, 3, 1, 2)  # (1, C, H0, W0)
@@ -724,10 +728,10 @@ def _resize_pos_embed_2d_to_3d(
         mode="bicubic",
         align_corners=False,
     )
-    grid = grid.unsqueeze(2).repeat(1, 1, D1, 1, 1) / max(
+    grid = grid.unsqueeze(-1).repeat(1, 1, 1, 1, D1) / max(
         D1, 1
-    )  # (1, C, D1, H1, W1)
-    grid = grid.permute(0, 2, 3, 4, 1).reshape(1, D1 * H1 * W1, C)
+    )  # (1, C, H1, W1, D1)
+    grid = grid.permute(0, 2, 3, 4, 1).reshape(1, H1 * W1 * D1, C)
     return torch.cat([prefix, grid], dim=1)
 
 

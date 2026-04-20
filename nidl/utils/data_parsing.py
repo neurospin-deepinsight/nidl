@@ -97,17 +97,22 @@ def parse_xy_batch(
         If the batch format is not recognized or labels are not present.
     """
     if not isinstance(batch, (tuple, list)) or len(batch) != 2:
-        raise ValueError("Batch must be a tuple/list of (X, y) tensors.")
+        raise ValueError(
+            "Batch must be a tuple/list of (X, y) tensors. Got\n"
+            + inspect_batch(batch)
+        )
 
     X, y = batch
 
     if not isinstance(X, torch.Tensor) or not isinstance(y, torch.Tensor):
-        raise TypeError("Both X and y must be torch.Tensor.")
+        raise TypeError(
+            "Both X and y must be torch.Tensor. Got\n" + inspect_batch(batch)
+        )
 
     if X.shape[0] != y.shape[0]:
         raise ValueError(
             f"Batch size mismatch: X has {X.shape[0]} samples but y has "
-            f"{y.shape[0]}"
+            f"{y.shape[0]}\n" + inspect_batch(batch)
         )
 
     X = X.to(device, non_blocking=True)
@@ -157,12 +162,15 @@ def parse_x_or_xy_batch(
         elif len(batch) == 1:
             X = batch[0]
             if not isinstance(X, torch.Tensor):
-                raise TypeError("Batch element must be a torch.Tensor.")
+                raise TypeError(
+                    "Batch element must be a torch.Tensor. Got\n"
+                    + inspect_batch(batch)
+                )
             return X.to(device, non_blocking=True), None
 
     raise TypeError(
         "Unsupported batch format. Expected X or (X, y) where both are "
-        "tensors."
+        "tensors. Got\n" + inspect_batch(batch)
     )
 
 

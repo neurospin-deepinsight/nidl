@@ -20,15 +20,17 @@ from torch import nn
 from torch.optim import Optimizer
 
 from nidl.estimators.base import BaseEstimator, TransformerMixin
+from nidl.estimators.ssl.utils.encoder import build_encoder
+from nidl.estimators.ssl.utils.momentum import (
+    MomentumUpdater,
+    initialize_momentum_params,
+)
+from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
+from nidl.utils.data_parsing import parse_x_or_xy_batch
 from nidl.volume.backbones.utils.pos_embed import (
     build_2d_sincos_posemb,
     build_3d_sincos_posemb,
 )
-
-from .utils.data_parsing import parse_x_or_xy_batch
-from .utils.encoder import build_encoder
-from .utils.momentum import MomentumUpdater, initialize_momentum_params
-from .utils.optimizer import configure_ssl_optimizers
 
 
 class IJEPA(TransformerMixin, BaseEstimator):
@@ -48,7 +50,8 @@ class IJEPA(TransformerMixin, BaseEstimator):
     Parameters
     ----------
     encoder : nn.Module
-        The encoder architecture.
+        Vision Transformer-like encoder module. This encoder should follow the
+        `timm` interface of VisionTransformer.
     
     dim: {2, 3}, default=3
         Input data dimensionality. 3 == 3d volumes and 2 == 2d images.
@@ -244,7 +247,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
         h = self.forward_target(x, target_blocks)
 
         # Compute context features
-        z = self.context_encoder(x, [context_block])
+        z = self.context_encoder(x, context_block.unsqueeze(0))
 
         # Predict target features from context features
         z = self.predictor(z, context_block, target_blocks)
@@ -296,11 +299,12 @@ class IJEPA(TransformerMixin, BaseEstimator):
     def forward_target(
         self,
         x: torch.Tensor,
-        target_blocks: list[torch.Tensor],
+        target_blocks: torch.Tensor,
     ):
-        h = self.target_encoder.forward_features(x)
+        h = self.target_encoder(x)
+        h = torch.nn.functional.layer_norm(h, (h.size(-1),))
         # create targets (only preserve tokens in the target blocks).
-        h = self.target_encoder.apply_masks(h, target_blocks)
+        h = IJEPAVisionTransformer.apply_masks(h, target_blocks)
         return h
 
     def on_train_batch_end(
@@ -390,10 +394,11 @@ class IJEPA(TransformerMixin, BaseEstimator):
         Returns
         -------
         features: torch.Tensor
-            The encoded features returned by the encoder.
+            The encoded features returned by the context encoder averaged
+            across the sequence dimension.
 
         """
-        return self.context_encoder.vit(batch)
+        return self.context_encoder(batch).mean(dim=1)
 
     def configure_optimizers(self):
         """Initialize the optimizer and learning rate scheduler."""
@@ -449,7 +454,6 @@ class IJEPAVisionTransformer(nn.Module):
         - ``blocks``
         - ``norm``
         - ``_pos_embed``
-        - ``forward_features``
         - ``embed_dim``
 
         The encoder may operate on either 2D inputs (for example images) or
@@ -523,7 +527,6 @@ class IJEPAVisionTransformer(nn.Module):
                 "blocks",
                 "norm",
                 "_pos_embed",
-                "forward_features",
                 "embed_dim",
             )
             if not hasattr(vit, k)
@@ -540,7 +543,7 @@ class IJEPAVisionTransformer(nn.Module):
         tuple[int, ...]
             Spatial grid size produced by the patch embedding module. For a 2D
             encoder this is typically ``(H_p, W_p)``, while for a 3D encoder it
-            is typically ``(D_p, H_p, W_p)``.
+            is typically ``(H_p, W_p, D_p)``.
         """
         return self.vit.patch_embed.grid_size
 
@@ -573,9 +576,6 @@ class IJEPAVisionTransformer(nn.Module):
 
     def patch_embed(self, x: torch.Tensor):
         return self.vit.patch_embed(x)
-
-    def forward_features(self, x: torch.Tensor):
-        return self.vit.forward_features(x)
 
     def _pos_embed(self, x: torch.Tensor):
         return self.vit._pos_embed(x)
@@ -611,9 +611,7 @@ class IJEPAVisionTransformer(nn.Module):
             return x
         return x[:, n_prefix:, :]
 
-    def forward(
-        self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
-    ):
+    def forward(self, x: torch.Tensor, masks: Optional[torch.Tensor] = None):
         """
         Encode an input into patch-level features, optionally applying masks.
 
@@ -627,10 +625,9 @@ class IJEPAVisionTransformer(nn.Module):
             Input batch of shape ``(B, C, H, W)`` or ``(B, C, D, H, W)``.
             This is typically an image tensor for 2D models or a volume tensor
             for 3D models.
-        masks : list[torch.Tensor] or None, optional
+        masks : torch.Tensor or None, optional
             Patch-selection masks applied after positional embedding and before
-            the transformer blocks. List of ``M`` tensors, each of shape
-            ``(B, K)``, where:
+            the transformer blocks. Tensor of shape ``(M, B, K)``, where:
                 - ``M`` is the number of blocks,
                 - ``B`` is the batch size,
                 - ``K`` is the number of patches to keep.
@@ -668,7 +665,7 @@ class IJEPAVisionTransformer(nn.Module):
     @staticmethod
     def apply_masks(
         x: torch.Tensor,
-        masks: list[torch.Tensor],
+        masks: torch.Tensor,
         num_prefix_tokens: int = 0,
     ):
         """
@@ -682,8 +679,8 @@ class IJEPAVisionTransformer(nn.Module):
                 - ``N`` is the number of input patches,
                 - ``D`` is the embedding dimension.
 
-        masks : List[torch.Tensor]
-            List of ``M`` tensors, each of shape ``(B, K)``, where:
+        masks : torch.Tensor
+            Tensor of shape``(M, B, K)`` where:
                 - ``M`` is the number of blocks,
                 - ``B`` is the batch size,
                 - ``K`` is the number of patches to keep.
@@ -708,7 +705,9 @@ class IJEPAVisionTransformer(nn.Module):
         all_x = []
         for m in masks:
             gather_idx = m.unsqueeze(-1).expand(-1, -1, patches.size(-1))
-            gather_idx = gather_idx.to(patches.device, dtype=torch.long, non_blocking=True)
+            gather_idx = gather_idx.to(
+                patches.device, dtype=torch.long, non_blocking=True
+            )
             kept_patches = torch.gather(patches, dim=1, index=gather_idx)
             if prefix is not None:
                 kept = torch.cat([prefix, kept_patches], dim=1)
@@ -742,9 +741,10 @@ class VisionTransformerPredictor(nn.Module):
         self.dim = dim
         self.grid_size = _parse_grid_size(grid_size, dim)
 
-        h, w = self.grid_size[:2]
-        if dim == 3:
-            d = self.grid_size[2]
+        if dim == 2:
+            h, w = self.grid_size
+        elif dim == 3:
+            h, w, d = self.grid_size
 
         self.predictor_embed = nn.Linear(
             embed_dim, predictor_embed_dim, bias=True
@@ -817,7 +817,7 @@ class VisionTransformerPredictor(nn.Module):
         elif isinstance(m, nn.LayerNorm):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
-        elif isinstance(m, nn.Conv2d):
+        elif isinstance(m, (nn.Conv2d, nn.Conv3d)):
             trunc_normal_(m.weight, std=self.init_std)
             if m.bias is not None:
                 nn.init.constant_(m.bias, 0)
@@ -826,7 +826,7 @@ class VisionTransformerPredictor(nn.Module):
         self,
         x: torch.Tensor,
         context_block: torch.Tensor,
-        target_blocks: list[torch.Tensor],
+        target_blocks: torch.Tensor,
     ):
         """
         Perform forward pass of the I-JEPA predictor to infer target token
@@ -840,13 +840,14 @@ class VisionTransformerPredictor(nn.Module):
             embedding dimension.
 
         context_block : torch.Tensor
-            Tensor containing indices of the input (context) tokens given to
-            the context encoder.
+            Tensor of shape ``(B, K)`` containing indices of the input
+            (context) tokens given to the context encoder.
 
-        target_blocks : List[torch.Tensor]
-            List of ``M`` tensors containing indices of the target tokens to
-            predict from the context tokens. ``M`` is the number of target
-            blocks to predict from a single context.
+        target_blocks : torch.Tensor
+            Tensor of shape ``(M, B, L)`` containing indices of the target
+            tokens to predict from the context tokens. ``M`` is the number of
+            target blocks to predict from a single context, ``B``is the batch
+            size and ``L`` is the number of target tokens in each block.
 
         Returns
         -------
@@ -866,7 +867,7 @@ class VisionTransformerPredictor(nn.Module):
         # -- add positional embedding to contextual tokens
         x_pos_embed = self.predictor_pos_embed.repeat(B, 1, 1)
         x += IJEPAVisionTransformer.apply_masks(
-            x_pos_embed, [context_block]
+            x_pos_embed, context_block.unsqueeze(0)
         )  # shape [B, K, D']
 
         _, K, _ = x.shape
@@ -1026,7 +1027,7 @@ class Masker(nn.Module):
 
         Returns
         -------
-        (context_block, target_blocks): torch.Tensor, List[torch.Tensor]
+        (context_block, target_blocks): torch.Tensor, torch.Tensor
             ``context_block`` has shape ``(B, Kc)`` where ``B`` is the batch
               size and ``Kc`` is the number of context patch indices kept.
             ``target_blocks`` has shape ``(M, B, Kt)`` where ``M`` is the
