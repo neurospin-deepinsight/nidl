@@ -48,6 +48,7 @@ pretrained weights from the Hugging Face Hub, you also need
 # %%
 from __future__ import annotations
 
+import os
 from typing import Callable, Optional
 
 import matplotlib.pyplot as plt
@@ -145,6 +146,7 @@ class MedMNIST3DDataset:
 
         info = INFO[dataset_name]
         dataset_cls = getattr(medmnist, info["python_class"])
+        os.makedirs(root, exist_ok=True)
         self.dataset = dataset_cls(
             split=split,
             root=root,

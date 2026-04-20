@@ -55,7 +55,7 @@ class DCLLoss(nn.Module):
         \\mathbf{1}_{[j \\ne i]},
         \\exp\\!\\big(\\operatorname{sim}(z_i^{(k)}, z_j^{(l)})/\\tau\\big)
 
-    See the class :py:class:`~nidl.losses.dcl.DCLW` for an implementation with
+    See the class :class:`~nidl.losses.dcl.DCLWLoss` for an implementation with
     a negative von Mises-Fisher weighting function such as proposed in [1]_.
 
     Parameters
@@ -78,19 +78,23 @@ class DCLLoss(nn.Module):
 
     """
 
-    def __init__(self,
-            temperature: float = 0.1,
-            pos_weight_fn: Optional[Callable[[Tensor, Tensor], Tensor]] = None,
-          ):
+    def __init__(
+        self,
+        temperature: float = 0.1,
+        pos_weight_fn: Optional[Callable[[Tensor, Tensor], Tensor]] = None,
+    ):
         super().__init__()
         # Check parameters
         if temperature < 0:
-            raise ValueError("temperature parameter should be "
-                             f"positive (got {temperature})")
+            raise ValueError(
+                f"temperature parameter should be positive (got {temperature})"
+            )
         if not (isinstance(pos_weight_fn, Callable) or pos_weight_fn is None):
-            raise ValueError("pos_weight_fn should be None or a callable "
-                             "function that takes 2 tensors as input and "
-                             "outputs a tensor.")
+            raise ValueError(
+                "pos_weight_fn should be None or a callable "
+                "function that takes 2 tensors as input and "
+                "outputs a tensor."
+            )
 
         self.temperature = temperature
         self.pos_weight_fn = pos_weight_fn
@@ -125,7 +129,7 @@ class DCLLoss(nn.Module):
         cos_sim = cos_sim / self.temperature
         # Find positive example -> batch_size//2 away from the original example
         pos_mask = self_mask.roll(shifts=cos_sim.shape[0] // 2, dims=0)
-    
+
         # Extract similarity from positive pairs and apply weights
         pos_sim = cos_sim[pos_mask]
         if self.pos_weight_fn is not None:
@@ -139,14 +143,17 @@ class DCLLoss(nn.Module):
         return loss
 
     def __repr__(self):
-        return (f"{type(self).__name__}(temperature={self.temperature}, "
-            f"pos_weight_fn={self.pos_weight_fn})")
+        return (
+            f"{type(self).__name__}(temperature={self.temperature}, "
+            f"pos_weight_fn={self.pos_weight_fn})"
+        )
+
 
 class DCLWLoss(DCLLoss):
     """Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.
 
     It implements the DCL with vMF weighting as described in [1]_.
-    See the documentation for :py:class:`~nidl.losses.dcl.DCL` for more
+    See the documentation for :class:`~nidl.losses.dcl.DCLLoss` for more
     details.
 
     The vMF weighting function is defined as:
@@ -185,8 +192,10 @@ class DCLWLoss(DCLLoss):
 
     def __init__(self, sigma=0.5, temperature=0.1):
         # Define the negative von Mises-Fisher weighting function
-        def neg_von_mises_fisher(z1,z2):
+        def neg_von_mises_fisher(z1, z2):
             cos_sim = func.cosine_similarity(z1, z2, dim=1) / sigma
             return 2 - z1.shape[0] * func.softmax(cos_sim, dim=0)
-        super().__init__(pos_weight_fn=neg_von_mises_fisher,
-                         temperature=temperature)
+
+        super().__init__(
+            pos_weight_fn=neg_von_mises_fisher, temperature=temperature
+        )

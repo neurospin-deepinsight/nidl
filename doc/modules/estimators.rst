@@ -148,6 +148,7 @@ Losses
 
     InfoNCE
     DCLLoss
+    DCLWLoss
     YAwareInfoNCE
     BarlowTwinsLoss
     DINOLoss
