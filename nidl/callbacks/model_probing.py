@@ -19,6 +19,7 @@ from torch.utils.data import DataLoader, DistributedSampler
 from tqdm import tqdm
 
 from nidl.estimators.base import BaseEstimator
+from nidl.utils.data_parsing import inspect_batch
 from nidl.utils.validation import _estimator_is
 
 
@@ -240,14 +241,23 @@ class ModelProbingCallback(pl.Callback):
         )
 
         # Check arrays
-        X_train, y_train = (
-            check_array(X_train),
-            check_array(y_train, ensure_2d=False),  # can be 1d
-        )
-        X_test, y_test = (
-            check_array(X_test),
-            check_array(y_test, ensure_2d=False),  # can be 1d
-        )
+        try:
+            X_train, y_train = (
+                check_array(X_train),
+                check_array(y_train, ensure_2d=False),  # can be 1d
+            )
+            X_test, y_test = (
+                check_array(X_test),
+                check_array(y_test, ensure_2d=False),  # can be 1d
+            )
+        except ValueError as e:
+            raise ValueError(
+                "The extracted features and labels should be array-like, got "
+                f"{inspect_batch(X_train, name='X_train')} and "
+                f"{inspect_batch(y_train, name='y_train')} for training, and "
+                f"{inspect_batch(X_test, name='X_test')} and "
+                f"{inspect_batch(y_test, name='y_test')} for test."
+            ) from e
 
         # For efficiency, fit/score on rank 0 only
         scores = None
