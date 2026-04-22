@@ -15,15 +15,15 @@ from pytorch_lightning.utilities.types import LRSchedulerPLType
 from torch import nn
 from torch.optim import Optimizer
 
-from ...losses import DCLLoss
-from ..base import BaseEstimator, TransformerMixin
-from .utils.data_parsing import (
+from nidl.estimators.base import BaseEstimator, TransformerMixin
+from nidl.estimators.ssl.utils.encoder import build_encoder
+from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
+from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
+from nidl.losses import DCLLoss
+from nidl.utils.data_parsing import (
     gather_two_views,
     parse_two_views_batch,
 )
-from .utils.encoder import build_encoder
-from .utils.optimizer import configure_ssl_optimizers
-from .utils.projection_heads import SimCLRProjectionHead
 
 
 class DCL(TransformerMixin, BaseEstimator):

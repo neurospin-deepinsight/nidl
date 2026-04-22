@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import numpy as np
 import torch
@@ -67,6 +67,111 @@ def inspect_batch(x, name="batch", max_items=4) -> str:
 
     _inspect(x, name)
     return "\n".join(lines)
+
+
+def parse_xy_batch(
+    batch: tuple[torch.Tensor, torch.Tensor], device: torch.device
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Parse a (X, y) labeled batch into a pair of torch Tensors.
+
+    This is useful for supervised models requiring labels.
+
+    Parameters
+    ----------
+    batch : tuple[torch.Tensor, torch.Tensor]
+        Supported format is ``(X, y)`` where ``X``and ``y``are
+        torch.Tensor with same first (batch) dimension.
+    device : torch.device
+        The device to move the tensors to.
+
+    Returns
+    -------
+    X : torch.Tensor
+        Input data moved to the correct device.
+    y : torch.Tensor
+        Labels moved to the correct device.
+
+    Raises
+    ------
+    ValueError
+        If the batch format is not recognized or labels are not present.
+    """
+    if not isinstance(batch, (tuple, list)) or len(batch) != 2:
+        raise ValueError(
+            "Batch must be a tuple/list of (X, y) tensors. Got\n"
+            + inspect_batch(batch)
+        )
+
+    X, y = batch
+
+    if not isinstance(X, torch.Tensor) or not isinstance(y, torch.Tensor):
+        raise TypeError(
+            "Both X and y must be torch.Tensor. Got\n" + inspect_batch(batch)
+        )
+
+    if X.shape[0] != y.shape[0]:
+        raise ValueError(
+            f"Batch size mismatch: X has {X.shape[0]} samples but y has "
+            f"{y.shape[0]}\n" + inspect_batch(batch)
+        )
+
+    X = X.to(device, non_blocking=True)
+    y = y.to(device, non_blocking=True)
+
+    return X, y
+
+
+def parse_x_or_xy_batch(
+    batch: Union[torch.Tensor, tuple[torch.Tensor, torch.Tensor]],
+    device: torch.device,
+) -> tuple[torch.Tensor, Optional[torch.Tensor]]:
+    """Parse a X or (X, y) batch into a pair of torch Tensors.
+
+    This is useful for supervised and unsupervised models.
+
+    Parameters
+    ----------
+    batch : torch.Tensor or tuple[torch.Tensor, torch.Tensor]
+        Supported format is ``X`` and ``(X, y)`` where ``X``and ``y``are
+        torch.Tensor with same first (batch) dimension.
+    device : torch.device
+        The device to move the tensors to.
+
+    Returns
+    -------
+    X : torch.Tensor
+        Input data moved to the correct device.
+    y : torch.Tensor or None
+        Optional labels moved to the correct device.
+
+    Raises
+    ------
+    ValueError
+        If the batch format is not recognized.
+    """
+    # Case 1: unlabeled batch
+    if isinstance(batch, torch.Tensor):
+        X = batch.to(device, non_blocking=True)
+        return X, None
+
+    # Case 2: labeled batch
+    if isinstance(batch, (tuple, list)):
+        if len(batch) == 2:
+            X, y = parse_xy_batch(batch, device)
+            return X, y
+        elif len(batch) == 1:
+            X = batch[0]
+            if not isinstance(X, torch.Tensor):
+                raise TypeError(
+                    "Batch element must be a torch.Tensor. Got\n"
+                    + inspect_batch(batch)
+                )
+            return X.to(device, non_blocking=True), None
+
+    raise TypeError(
+        "Unsupported batch format. Expected X or (X, y) where both are "
+        "tensors. Got\n" + inspect_batch(batch)
+    )
 
 
 def parse_two_views_batch(

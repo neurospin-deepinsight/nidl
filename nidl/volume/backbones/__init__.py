@@ -6,7 +6,7 @@
 # for details.
 ##########################################################################
 
-""" This modules details the public API you should use and implement for a
+"""This modules details the public API you should use and implement for a
 nidl compatible backbone, as well as the backbones available in nidl.
 """
 
@@ -22,4 +22,10 @@ from .resnet3d import (
     resnet18_trunc,
     resnet50,
     resnet50_trunc,
+)
+from .vit3d import (
+    VisionTransformer3D,
+    vit_base_patch16_128,
+    vit_large_patch16_128,
+    vit_small_patch16_128,
 )

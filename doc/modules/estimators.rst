@@ -126,9 +126,11 @@ Embedding estimators
    :template: class.rst
 
     SimCLR
+    DCL
     YAwareContrastiveLearning
     BarlowTwins
     DINO
+    IJEPA
 
 .. autoclasstree:: nidl.estimators.ssl
    :strict:
@@ -145,6 +147,8 @@ Losses
    :template: class.rst
 
     InfoNCE
+    DCLLoss
+    DCLWLoss
     YAwareInfoNCE
     BarlowTwinsLoss
     DINOLoss
