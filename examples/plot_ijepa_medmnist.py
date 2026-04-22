@@ -101,7 +101,7 @@ hf_checkpoint = "nidl_example_ijepa_medmnist.ckpt"
 accelerator = "gpu" if torch.cuda.is_available() else "cpu"
 # Parameters for the data loaders. Reduce them if you run out of memory.
 batch_size = 16
-num_workers = 4
+num_workers = 10
 # Training configuration
 max_epochs = 20
 learning_rate = 3e-4
@@ -302,8 +302,10 @@ if load_pretrained:
         devices=1,
         accelerator=accelerator,
         enable_checkpointing=False,
+        weights_only=False,
         logger=False,
     )
+print(model.trainer_params_)
 
 # %%
 # Evaluation with a linear probe

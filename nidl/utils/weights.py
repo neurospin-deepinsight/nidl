@@ -67,7 +67,8 @@ class Weights:
     def load_checkpoint(
         self,
         model: pl.LightningModule,
-        # device: _DEVICE = 'cpu',
+        *,
+        map_location: Union[str, dict, torch.device] = "cpu",
         **kwargs: Any,
     ):
         """Load the checkpoint.
@@ -76,12 +77,20 @@ class Weights:
         ----------
         model: LightningModule
             an pytorch_lightning's module class.
-        device: torch.device or str
-            the device on which to load the model and to use for inference.
-            Default to cpu. Only single device is supported for now.
-        **kwargs: Any extra keyword args needed to init the model. Can also be
+        map_location : Union[str, dict,  torch.device]
+            Device mapping used when loading the checkpoint.
+        **kwargs: Any
+            Any extra keyword args needed to init the model. Can also be
             used to override saved hyperparameter values, in particular to
             override trainer parameters such as `accelerator` or `devices`.
+
+        Returns
+        -------
+        pl.LightningModule or None
+            The instantiated LightningModule loaded from the checkpoint.
+            Returns None if the provided file is not recognized as a Lightning
+            checkpoint.
+
         """
         if not self.is_lightning_ckpt:
             warnings.warn(
@@ -96,14 +105,16 @@ class Weights:
         # If `devices` and `accelerator` not in kwargs, add default values.
         # This is necessary to override the device and accelerator saved in the
         # checkpoint and ensure that the trainer within the estimator
-        # will be instantiated with values compatible with the user"s setup.
+        # will be instantiated with values compatible with the user's setup.
         params_init = dict(
             kwargs,
             **({"devices": "auto"} if "devices" not in kwargs else {}),
             **({"accelerator": "auto"} if "accelerator" not in kwargs else {}),
         )
         return model.load_from_checkpoint(
-            checkpoint_path=self.weight_file, map_location="cpu", **params_init
+            checkpoint_path=self.weight_file,
+            map_location=map_location,
+            **params_init,
         )
 
     def load_pretrained(self, model: torch.nn.Module):

@@ -49,7 +49,6 @@ from torch.utils.data import DataLoader, Subset
 from torchvision import transforms
 from torchvision.datasets import CIFAR10
 from torchvision.models import resnet18
-from tqdm import tqdm
 
 from nidl.estimators.ssl import DCL, SimCLR
 from nidl.transforms import MultiViewsTransform
@@ -68,16 +67,16 @@ data_dir = "/tmp/cifar10"
 # Whether to load the pretrained models or train them on your device
 load_pretrained = True
 # If loading model, directory where to save the weights
-model_dir = "/tmp/nidl_example_dcl_vs_simclr"
+model_dir = "/tmp/nidl_example_dcl_vs_simclr_"
 # What accelerator to use: GPU if available, else CPU
-accelerator = "cpu"  # "gpu" if torch.cuda.is_available() else "cpu"
+accelerator = "gpu" if torch.cuda.is_available() else "cpu"
 
 # Latent size of the representation
 # /!\ If changing latent_size then you cannot load pretrained weights
 latent_size = 128
 
 # Number of workers (cpu cores) to use in dataloaders
-num_workers = 4
+num_workers = 10
 
 # We fix the seed and generator for reproducibility
 seed = 42
@@ -87,9 +86,11 @@ seed = seed_everything(seed)
 # %%
 # Check parameters values
 if latent_size != 128 and load_pretrained == True:
-    raise ValueError('Pretrained models have a latent size of 128 which can'
-                      ' not be modified. Set load_pretrained=True or'
-                      ' latent_size=128')
+    raise ValueError(
+        "Pretrained models have a latent size of 128 which can"
+        " not be modified. Set load_pretrained=True or"
+        " latent_size=128"
+    )
 
 # %%
 # DCL Loss Function
@@ -136,25 +137,24 @@ if latent_size != 128 and load_pretrained == True:
 # We subsample the test dataset to run the notebook faster.
 
 # %%
-scale_transforms = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
-])
+scale_transforms = transforms.Compose(
+    [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
+)
 
-train_xy_dataset = CIFAR10(data_dir,
-                         train=True,
-                         transform=scale_transforms,
-                         download=True)
-train_indices = rd_generator.choice(np.arange(len(train_xy_dataset)),
-    size=10000,replace=False)
+train_xy_dataset = CIFAR10(
+    data_dir, train=True, transform=scale_transforms, download=True
+)
+train_indices = rd_generator.choice(
+    np.arange(len(train_xy_dataset)), size=10000, replace=False
+)
 train_xy_dataset = Subset(train_xy_dataset, train_indices)
 
-test_xy_dataset = CIFAR10(data_dir,
-                        train=False,
-                        transform=scale_transforms,
-                        download=True)
-test_indices = rd_generator.choice(np.arange(len(test_xy_dataset)),
-    size=5000,replace=False)
+test_xy_dataset = CIFAR10(
+    data_dir, train=False, transform=scale_transforms, download=True
+)
+test_indices = rd_generator.choice(
+    np.arange(len(test_xy_dataset)), size=5000, replace=False
+)
 test_xy_dataset = Subset(test_xy_dataset, test_indices)
 
 # %%
@@ -169,38 +169,44 @@ test_xy_dataset = Subset(test_xy_dataset, test_indices)
 
 # %%
 # Define augmentation transforms for contrastive learning
-contrast_transforms = transforms.Compose([transforms.RandomResizedCrop(size=32),
-                                          transforms.RandomHorizontalFlip(),
-                                          transforms.RandomApply([
-                                              transforms.ColorJitter(brightness=0.8,
-                                                                     contrast=0.8,
-                                                                     saturation=0.8,
-                                                                     hue=0.2)
-                                          ], p=0.8),
-                                          transforms.RandomGrayscale(p=0.2),
-                                          transforms.GaussianBlur(kernel_size=9),
-                                          transforms.ToTensor(),
-                                          transforms.Normalize((0.5,), (0.5,))
-                                         ])
+contrast_transforms = transforms.Compose(
+    [
+        transforms.RandomResizedCrop(size=32),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomApply(
+            [
+                transforms.ColorJitter(
+                    brightness=0.8, contrast=0.8, saturation=0.8, hue=0.2
+                )
+            ],
+            p=0.8,
+        ),
+        transforms.RandomGrayscale(p=0.2),
+        transforms.GaussianBlur(kernel_size=9),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,)),
+    ]
+)
 
 # %%
 # Load CIFAR10 data with contrastive transforms
 train_ssl_dataset = CIFAR10(
     root=data_dir,
     train=True,
-    transform=MultiViewsTransform(contrast_transforms, n_views=2))
+    transform=MultiViewsTransform(contrast_transforms, n_views=2),
+)
 
 # %%
 # Create labelled dataloaders for the downstream task.
 
 # %%
 train_xy_loader = DataLoader(
-        train_xy_dataset,
-        batch_size=256,
-        shuffle=False,
-        drop_last=False,
-        num_workers=num_workers,
-    )
+    train_xy_dataset,
+    batch_size=256,
+    shuffle=False,
+    drop_last=False,
+    num_workers=num_workers,
+)
 test_xy_loader = DataLoader(
     test_xy_dataset,
     batch_size=256,
@@ -209,13 +215,14 @@ test_xy_loader = DataLoader(
     num_workers=num_workers,
 )
 
+
 # We define a function that yields the data loader for
 # SSL training given the batch size.
 def get_ssl_loader(batch_size):
-    '''
+    """
     Creates and returns a DataLoader for SSL training with specified batch
     size.
-    '''
+    """
     train_ssl_loader = DataLoader(
         train_ssl_dataset,
         batch_size=batch_size,
@@ -225,6 +232,7 @@ def get_ssl_loader(batch_size):
     )
     return train_ssl_loader
 
+
 # %%
 # Model Architecture
 # ------------------
@@ -233,21 +241,24 @@ def get_ssl_loader(batch_size):
 # images are small, the kernel's size in the first convolutional layer is
 # decreased from 7 to 3 as reported in the ResNet paper.
 
+
 # %%
 def resnet18_encoder(latent_size):
-    '''
+    """
     Creates a modified ResNet18 encoder with custom latent size for CIFAR10
     images with reduced kernel size and removed max pooling.
-    '''
+    """
     encoder = resnet18(num_classes=latent_size)
     encoder.latent_size = latent_size
     # Because CIFAR10 images are small, we reduce the kernel size of the first
     # convolutional layer from 7 to 3.
     # And remove the MaxPool layer.
-    encoder.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1,
-                              padding=1, bias=False)
+    encoder.conv1 = nn.Conv2d(
+        3, 64, kernel_size=3, stride=1, padding=1, bias=False
+    )
     encoder.maxpool = nn.Identity()
     return encoder
+
 
 # %%
 # Defining SimCLR and DCL Models
@@ -262,12 +273,12 @@ def configure_models(batch_size):
 
     simclr = SimCLR(
         encoder=resnet18_encoder(latent_size),
-        proj_input_dim = latent_size,
-        proj_hidden_dim = latent_size,
-        proj_output_dim = latent_size,
-        temperature = 0.07,
-        optimizer = "sgd",
-        learning_rate = 0.03 * batch_size/256,
+        proj_input_dim=latent_size,
+        proj_hidden_dim=latent_size,
+        proj_output_dim=latent_size,
+        temperature=0.07,
+        optimizer="sgd",
+        learning_rate=0.03 * batch_size / 256,
         random_state=seed,
         max_epochs=100,
         enable_checkpointing=True,
@@ -277,12 +288,12 @@ def configure_models(batch_size):
 
     dcl = DCL(
         encoder=resnet18_encoder(latent_size),
-        proj_input_dim = latent_size,
-        proj_hidden_dim = latent_size,
-        proj_output_dim = latent_size,
-        temperature = 0.07,
-        optimizer = "sgd",
-        learning_rate = 0.03 * batch_size/256,
+        proj_input_dim=latent_size,
+        proj_hidden_dim=latent_size,
+        proj_output_dim=latent_size,
+        temperature=0.07,
+        optimizer="sgd",
+        learning_rate=0.03 * batch_size / 256,
         random_state=seed,
         max_epochs=100,
         enable_checkpointing=True,
@@ -290,6 +301,7 @@ def configure_models(batch_size):
         devices=1,
     )
     return simclr, dcl
+
 
 # %%
 # Comparing SimCLR and DCL Models for different batch sizes
@@ -303,40 +315,13 @@ def configure_models(batch_size):
 # Then we train both models for a given batch size, evaluate their performances
 # and plot the results.
 
-# %%
-# Function to extract features and labels from a dataloader and a trained model
-def extract_features(model, dataloader, device):
-    # X are the features and y the label of each sample
-    X, y = [], []
-    model.to(device)
-    model.eval()
-    # Inference loop
-    with torch.no_grad():
-        for batch_idx, batch in tqdm(
-            enumerate(dataloader),
-            desc="Extracting features",
-        ):
-            x_batch, y_batch = batch
-            x_batch = x_batch.to(device)
-            y_batch = y_batch.to(device)
-            features = model.transform_step(
-                x_batch, batch_idx=batch_idx
-            )
-            X.append(features.detach())
-            y.append(y_batch.detach())
 
-    # Concatenate the features
-    X = torch.cat(X)
-    y = torch.cat(y)
-    # Send to CPU and convert to numpy
-    X = X.cpu().numpy()
-    y = y.cpu().numpy()
-    return X,y
-
-def eval_model_cifar10(model, train_xy_loader, test_xy_loader, device):
+def eval_model_cifar10(model, train_xy_loader, test_xy_loader):
     # We first extract the features of the train and test sets
-    X_train, y_train = extract_features(model, train_xy_loader, device)
-    X_test, y_test = extract_features(model, test_xy_loader, device)
+    X_train, y_train = model.transform_with_targets(train_xy_loader)
+    X_test, y_test = model.transform_with_targets(test_xy_loader)
+    X_train, y_train = X_train.cpu().numpy(), y_train.cpu().numpy()
+    X_test, y_test = X_test.cpu().numpy(), y_test.cpu().numpy()
 
     # We define the linear probe
     estimator = LogisticRegression(max_iter=500, random_state=seed, n_jobs=1)
@@ -345,48 +330,42 @@ def eval_model_cifar10(model, train_xy_loader, test_xy_loader, device):
     # We predict the targets on the test set and compute accuracy
     y_predict = estimator.predict(X_test)
     acc = accuracy_score(y_test, y_predict)
-    print(f'Accuracy: {acc}')
+    print(f"Accuracy: {acc}")
     return acc
 
-def evaluate_models(dcl,
-                    simclr,
-                    train_xy_loader,
-                    test_xy_loader,
-                    device):
-    
-    acc_simclr = eval_model_cifar10(simclr, train_xy_loader, test_xy_loader,
-                                    device)
-    acc_dcl = eval_model_cifar10(dcl, train_xy_loader, test_xy_loader,
-                                 device)
+
+def evaluate_models(dcl, simclr, train_xy_loader, test_xy_loader):
+    acc_simclr = eval_model_cifar10(simclr, train_xy_loader, test_xy_loader)
+    acc_dcl = eval_model_cifar10(dcl, train_xy_loader, test_xy_loader)
     return acc_simclr, acc_dcl
+
 
 # %%
 # Train models from scratch
-def train_models(batch_size,
-                 simclr,
-                 dcl):
+def train_models(batch_size, simclr, dcl):
     # Fit models
-    print(f'----------Fitting DCL for batch size = {batch_size}----------')
+    print(f"----------Fitting DCL for batch size = {batch_size}----------")
     # Get SSL loader
     train_ssl_loader = get_ssl_loader(batch_size)
     dcl.fit(train_ssl_loader)
-    print(f'----------Fitting SimCLR for batch size = {batch_size}----------')
+    print(f"----------Fitting SimCLR for batch size = {batch_size}----------")
     # Get SSL loader
     train_ssl_loader = get_ssl_loader(batch_size)
     simclr.fit(train_ssl_loader)
     return simclr, dcl
 
+
 # Load trained models' weights from HuggingFace
 def load_weights(batch_size):
     weights_simclr = Weights(
-        name='hf-hub:neurospin/nidl_example_dcl_vs_simclr',
+        name="hf-hub:neurospin/nidl_example_dcl_vs_simclr",
         data_dir=model_dir,
-        filepath=f'example_simclr_bs_{batch_size}.ckpt',
+        filepath=f"example_simclr_bs_{batch_size}.ckpt",
     )
     weights_dcl = Weights(
-        name='hf-hub:neurospin/nidl_example_dcl_vs_simclr',
+        name="hf-hub:neurospin/nidl_example_dcl_vs_simclr",
         data_dir=model_dir,
-        filepath=f'example_dcl_bs_{batch_size}.ckpt',
+        filepath=f"example_dcl_bs_{batch_size}.ckpt",
     )
 
     simclr = weights_simclr.load_checkpoint(
@@ -409,6 +388,7 @@ def load_weights(batch_size):
 
     return simclr, dcl
 
+
 # %%
 # Iterate over several batch sizes and save each model's accuracy on CIFAR10
 
@@ -416,10 +396,7 @@ def load_weights(batch_size):
 batch_sizes = [32, 128, 256]
 
 # Store classification results
-accuracies = {
-    'simclr':[],
-    'dcl':[]
-    }
+accuracies = {"simclr": [], "dcl": []}
 
 for bs in batch_sizes:
     # Load weights or else train models
@@ -427,24 +404,17 @@ for bs in batch_sizes:
         simclr, dcl = load_weights(batch_size=bs)
     else:
         simclr, dcl = configure_models(bs)
-        simclr, dcl = train_models(
-            bs, simclr=simclr, dcl=dcl)
-        
-    # The device on which inference will be done
-    if accelerator == 'cpu':
-        device = 'cpu'
-    elif accelerator == 'gpu':
-        device = 'cuda:0'
+        simclr, dcl = train_models(bs, simclr=simclr, dcl=dcl)
 
     # Evaluate models on cifar10
     acc_simclr, acc_dcl = evaluate_models(
-        simclr=simclr, dcl=dcl,
+        simclr=simclr,
+        dcl=dcl,
         train_xy_loader=train_xy_loader,
         test_xy_loader=test_xy_loader,
-        device=device,
-        )
-    accuracies['simclr'].append(acc_simclr)
-    accuracies['dcl'].append(acc_dcl)
+    )
+    accuracies["simclr"].append(acc_simclr)
+    accuracies["dcl"].append(acc_dcl)
 
 # %%
 # Results
@@ -452,12 +422,12 @@ for bs in batch_sizes:
 #
 
 # %%
-plt.plot(batch_sizes, accuracies['simclr'], label='simclr', c='b')
-plt.plot(batch_sizes, accuracies['dcl'], label='dcl', c='g')
-plt.xlabel('Batch size')
-plt.ylabel('Accuracy on CIFAR10')
-plt.title('DCL vs SimCLR comparison on predicting CIFAR10 labels.')
-plt.ylim(0.5,0.8)
+plt.plot(batch_sizes, accuracies["simclr"], label="simclr", c="b")
+plt.plot(batch_sizes, accuracies["dcl"], label="dcl", c="g")
+plt.xlabel("Batch size")
+plt.ylabel("Accuracy on CIFAR10")
+plt.title("DCL vs SimCLR comparison on predicting CIFAR10 labels.")
+plt.ylim(0.5, 0.8)
 plt.legend()
 plt.show()
 
