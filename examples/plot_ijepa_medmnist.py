@@ -89,9 +89,9 @@ dataset_name = "organmnist3d"
 # Spatial size used by MedMNIST+ for 3D datasets
 img_size = 64
 # Whether to load a pretrained checkpoint from HF or train locally
-load_pretrained = False
+load_pretrained = True
 # Fill these two values once a checkpoint is published on HF
-hf_repo_id = "hf-hub:neurospin/nidl_example_ijepa_medmnist"
+hf_repo_id = "neurospin/nidl_example_ijepa_medmnist"
 hf_checkpoint = "nidl_example_ijepa_medmnist.ckpt"
 
 # %%
