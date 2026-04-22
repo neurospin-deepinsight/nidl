@@ -117,13 +117,21 @@ class Weights:
             **params_init,
         )
 
-    def load_pretrained(self, model: torch.nn.Module):
+    def load_pretrained(
+        self, model: torch.nn.Module, weights_only: bool = True
+    ):
         """Load the model weights.
 
         Parameters
         ----------
         model: torch.nn.Module
             an input model with a `load_pretrained` method decalred.
+        weights_only: bool, default=False
+            Indicates whether unpickler should be restricted to
+            loading only tensors, primitive types, dictionaries
+            and any types added via
+            :func:`torch.serialization.add_safe_globals`.
+
         """
         if self.weight_file is None:
             warnings.warn("Define weight file location first!", stacklevel=2)
@@ -137,7 +145,9 @@ class Weights:
                 stacklevel=2,
             )
             return
-        model.load_state_dict(torch.load(self.weight_file, weights_only=True))
+        model.load_state_dict(
+            torch.load(self.weight_file, weights_only=weights_only)
+        )
 
     @classmethod
     def hub_split(cls, hub_name: str) -> tuple[str, Optional[str]]:

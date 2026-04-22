@@ -67,7 +67,7 @@ data_dir = "/tmp/cifar10"
 # Whether to load the pretrained models or train them on your device
 load_pretrained = True
 # If loading model, directory where to save the weights
-model_dir = "/tmp/nidl_example_dcl_vs_simclr_"
+model_dir = "/tmp/nidl_example_dcl_vs_simclr"
 # What accelerator to use: GPU if available, else CPU
 accelerator = "gpu" if torch.cuda.is_available() else "cpu"
 
@@ -76,7 +76,7 @@ accelerator = "gpu" if torch.cuda.is_available() else "cpu"
 latent_size = 128
 
 # Number of workers (cpu cores) to use in dataloaders
-num_workers = 10
+num_workers = 4
 
 # We fix the seed and generator for reproducibility
 seed = 42

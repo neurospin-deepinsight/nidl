@@ -92,7 +92,7 @@ img_size = 64
 load_pretrained = True
 # Fill these two values once a checkpoint is published on HF
 hf_repo_id = "neurospin/nidl_example_ijepa_medmnist"
-hf_checkpoint = "nidl_example_ijepa_medmnist.ckpt"
+hf_checkpoint = "nidl_example_ijepa_medmnist.pt"
 
 # %%
 # Reproducibility and training configuration
@@ -101,7 +101,7 @@ hf_checkpoint = "nidl_example_ijepa_medmnist.ckpt"
 accelerator = "gpu" if torch.cuda.is_available() else "cpu"
 # Parameters for the data loaders. Reduce them if you run out of memory.
 batch_size = 16
-num_workers = 10
+num_workers = 4
 # Training configuration
 max_epochs = 20
 learning_rate = 3e-4
@@ -263,49 +263,41 @@ encoder = VisionTransformer3D(
 # configuration).
 
 # %%
-if not load_pretrained:
-    model = IJEPA(
-        encoder=encoder,
-        dim=3,
-        context_block_scale=(0.85, 1.0),
-        target_block_scale=(0.15, 0.2),
-        aspect_ratio=(0.75, 1.5),
-        num_target_blocks=4,
-        min_keep=4,
-        allow_overlap=False,
-        predictor_embed_dim=256,
-        predictor_depth_pred=6,
-        learning_rate=learning_rate,
-        optimizer="adamW",
-        weight_decay=weight_decay,
-        max_epochs=max_epochs,
-        check_val_every_n_epoch=1,
-        use_distributed_sampler=False,
-        enable_checkpointing=False,
-        accelerator=accelerator,
-        devices=1,
-        random_state=random_seed,
-    )
-
-    model.fit(train_ssl_loader)
+model = IJEPA(
+    encoder=encoder,
+    dim=3,
+    context_block_scale=(0.85, 1.0),
+    target_block_scale=(0.15, 0.2),
+    aspect_ratio=(0.75, 1.5),
+    num_target_blocks=4,
+    min_keep=4,
+    allow_overlap=False,
+    predictor_embed_dim=256,
+    predictor_depth_pred=6,
+    learning_rate=learning_rate,
+    optimizer="adamW",
+    weight_decay=weight_decay,
+    max_epochs=max_epochs,
+    check_val_every_n_epoch=1,
+    use_distributed_sampler=False,
+    enable_checkpointing=False,
+    accelerator=accelerator,
+    devices=1,
+    random_state=random_seed,
+)
 
 # %%
-if load_pretrained:
+
+if not load_pretrained:
+    model.fit(train_ssl_loader)
+else:
     weights = Weights(
         f"hf-hub:{hf_repo_id}",
         data_dir=model_dir,
         filepath=hf_checkpoint,
     )
-    model = weights.load_checkpoint(
-        IJEPA,
-        encoder=encoder,
-        devices=1,
-        accelerator=accelerator,
-        enable_checkpointing=False,
-        weights_only=False,
-        logger=False,
-    )
-print(model.trainer_params_)
+    weights.load_pretrained(model)
+    model.fitted_ = True
 
 # %%
 # Evaluation with a linear probe
