@@ -260,17 +260,16 @@ class ModelProbingCV(pl.Callback):
     def extract_features(self, trainer, pl_module, dataloader):
         """Extract features from a dataloader with the BaseEstimator.
 
-        By default, it uses the `transform_step` logic applied on each batch to
-        get the embeddings with the labels.
-        The input dataloader should yield batches of the form `(X, y)` where X
-        is the input data and y is the label.
+        It uses the `transform_step_with_targets` logic applied on each
+        batch to get the embeddings with the labels.
 
         Parameters
         ----------
         trainer: pl.Trainer
             The pytorch-lightning trainer.
         pl_module: BaseEstimator
-            The BaseEstimator module that implements the 'transform_step'.
+            The BaseEstimator module that implements
+            :meth:`~nidl.estimators.base.transform_step_with_targets`.
         dataloader: torch.utils.data.DataLoader
             The dataloader to extract features from. It should yield batches of
             the form `(X, y)` where `X` is the input data and `y` is the label.
@@ -296,14 +295,15 @@ class ModelProbingCV(pl.Callback):
                 disable=(not trainer.is_global_zero),
                 leave=False,
             ):
-                x_batch, y_batch = batch
-                x_batch = x_batch.to(pl_module.device)
-                y_batch = y_batch.to(pl_module.device)
-                features = pl_module.transform_step(
-                    x_batch, batch_idx=batch_idx
+                # Move batch the same way Lightning would
+                batch = trainer.strategy.batch_to_device(
+                    batch, pl_module.device, dataloader_idx=0
                 )
-                X.append(features.detach())
-                y.append(y_batch.detach())
+                out = pl_module.transform_step_with_targets(
+                    batch, batch_idx=batch_idx
+                )
+                X.append(out["features"].detach())
+                y.append(out["targets"].detach())
 
         # Concatenate the embeddings
         X = torch.cat(X)

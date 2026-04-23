@@ -399,6 +399,28 @@ class BaseEstimator(pl.LightningModule):
         Share the same API as :meth:`BaseEstimator.predict_step`.
         """
 
+    @available_if(_estimator_is("transformer"))
+    def transform_step_with_targets(
+        self,
+        batch: Any,
+        batch_idx: int,
+        dataloader_idx: Optional[int] = 0,
+    ) -> Mapping[str, Any]:
+        """Internal helper used by `transform_with_targets`.
+
+        By default, expects batches of the form ``(x, y)`` or similar sequences
+        whose second element contains the targets.
+        """
+        if not isinstance(batch, Sequence) or len(batch) < 2:
+            raise ValueError(
+                "`transform_with_targets` expects batches with at least two "
+                "elements, typically `(x, y)`."
+            )
+        x, y = batch[:2]
+
+        features = self.transform_step(x, batch_idx, dataloader_idx)
+        return {"features": features, "targets": y}
+
     @available_if(
         _estimator_is(("transformer", "regressor", "classifier", "clusterer"))
     )
@@ -439,6 +461,10 @@ class BaseEstimator(pl.LightningModule):
             the predicted output.
         """
         if _estimator_is("transformer"):
+            if getattr(self, "_return_targets_in_predict", False):
+                return self.transform_step_with_targets(
+                    batch, batch_idx, dataloader_idx
+                )
             return self.transform_step(batch, batch_idx, dataloader_idx)
         else:
             return super().predict_step(batch, batch_idx, dataloader_idx)
