@@ -233,6 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -264,10 +265,14 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -288,10 +293,14 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -401,7 +410,7 @@ function signature, and not how to use it. Please refer to the
 <h1>nidl.volume.backbones.resnet50<a class="headerlink" href="#nidl-volume-backbones-resnet50" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="nidl.volume.backbones.resnet50">
-<span class="sig-prename descclassname"><span class="pre">nidl.volume.backbones.</span></span><span class="sig-name descname"><span class="pre">resnet50</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/volume/backbones/resnet3d.py#L366"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.volume.backbones.resnet50" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nidl.volume.backbones.</span></span><span class="sig-name descname"><span class="pre">resnet50</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/volume/backbones/resnet3d.py#L366"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.volume.backbones.resnet50" title="Link to this definition">¶</a></dt>
 <dd><p>3D ResNet-50 architecture adapted from He et al. 2015. See
 <a class="reference external" href="https://doi.org/10.48550/arXiv.1512.03385">https://doi.org/10.48550/arXiv.1512.03385</a> for details.</p>
 </dd></dl>

@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="The current logic in nidl is to separate the implementation of the actual model (i.e. everything required to fit the model on data) from everything else, such as metrics computation and logging. Th..." />
-<link rel="search" title="Search" href="../search.html"><link rel="next" title="Weakly Supervised Contrastive Learning with y-Aware" href="plot_yaware_openbhb.html"><link rel="prev" title="Self-Supervised Learning with Barlow Twins" href="plot_barlowtwins_openbhb.html">
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="Weakly Supervised Contrastive Learning with y-Aware" href="plot_yaware_openbhb.html"><link rel="prev" title="Self-Supervised Learning with I-JEPA on MedMNIST3D" href="plot_ijepa_medmnist.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
@@ -235,6 +235,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -652,18 +661,18 @@ Total FLOPs: 0
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
   super().__init__(loader)
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:08 •        30.74it/s v_num: 10.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:08 •        31.00it/s v_num: 12.000
                                     0:00:00                    acc1/train: 0.990
                                                                f1/train: 0.990
                                                                precision/train:
                                                                0.990
                                                                recall/train:
                                                                0.990 acc1/val:
-                                                               0.978 f1/val:
-                                                               0.978
+                                                               0.975 f1/val:
+                                                               0.975
                                                                precision/val:
-                                                               0.978 recall/val:
-                                                               0.978
+                                                               0.975 recall/val:
+                                                               0.975
 
 SupervisedCrossEntropy(
   (backbone): LeNet(
@@ -831,7 +840,7 @@ Total estimated model params size (MB): 0
 Modules in train mode: 14
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:49 • 0:00:00 5.19it/s v_num: 11.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:49 • 0:00:00 5.11it/s v_num: 13.000
                                                                loss/train: 0.319
                                                                loss/val: 1.118
                                                                alignment/val:
@@ -902,8 +911,8 @@ increases:</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (10 minutes 56.766 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2370 MB</p>
+<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (11 minutes 7.210 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2258 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-metrics-callback-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/dfa4ecd93e1a6b50d625160b65e18c28/plot_metrics_callback.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_metrics_callback.ipynb</span></code></a></p>
@@ -934,14 +943,14 @@ increases:</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="plot_barlowtwins_openbhb.html">
+          <a class="prev-page" href="plot_ijepa_medmnist.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Self-Supervised Learning with Barlow Twins</div>
+                <div class="title">Self-Supervised Learning with I-JEPA on MedMNIST3D</div>
                 
               </div>
             </a>

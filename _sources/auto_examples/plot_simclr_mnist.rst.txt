@@ -531,9 +531,9 @@ for annotated data in downstream tasks.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 50.806 seconds)
+   **Total running time of the script:** (0 minutes 48.621 seconds)
 
-**Estimated memory usage:**  189 MB
+**Estimated memory usage:**  193 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_simclr_mnist.py:

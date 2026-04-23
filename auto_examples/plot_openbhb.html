@@ -235,6 +235,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -492,7 +501,7 @@ being in the same physical space across subjects.</p></li>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(121, 145, 121)
 
-&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fa169cda3f0&gt;
+&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fb9d92e94c0&gt;
 </pre></div>
 </div>
 </section>
@@ -546,7 +555,7 @@ a brain template using the Neuromorphometrics atlas**:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fa16a3caf60&gt;
+<img src="../_images/sphx_glr_plot_openbhb_003.png" srcset="../_images/sphx_glr_plot_openbhb_003.png" alt="plot openbhb" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fb9d7f18ec0&gt;
 </pre></div>
 </div>
 </section>
@@ -701,11 +710,9 @@ in millimiter.</p></li>
 </div>
 <img src="../_images/sphx_glr_plot_openbhb_005.png" srcset="../_images/sphx_glr_plot_openbhb_005.png" alt="Cortical thickness (in $mm$), Sulcal depth (in $mm$), Curvature" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
 [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
-[fetch_surf_fsaverage] Downloaded 704512 of 34242788 bytes (2.1%%,   47.8s
+[fetch_surf_fsaverage] Downloaded 5881856 of 34242788 bytes (17.2%%,    4.8s
 remaining)
-[fetch_surf_fsaverage] Downloaded 16621568 of 34242788 bytes (48.5%%,    2.1s
-remaining)
-[fetch_surf_fsaverage]  ...done. (5 seconds, 0 min)
+[fetch_surf_fsaverage]  ...done. (4 seconds, 0 min)
 
 [fetch_surf_fsaverage] Extracting data from
 /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
@@ -1056,8 +1063,8 @@ organization, Proceedings of the National Academy of Sciences, 2024
 <a class="reference external" href="https://www.jneurosci.org/content/31/19/7174">https://www.jneurosci.org/content/31/19/7174</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (5 minutes 6.835 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2417 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (4 minutes 57.526 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2286 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9891edd964521be9e6f154fc1a8056c6/plot_openbhb.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_openbhb.ipynb</span></code></a></p>

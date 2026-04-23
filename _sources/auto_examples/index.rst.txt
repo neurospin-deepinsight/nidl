@@ -100,6 +100,23 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to pretrain a 3D vision transformer with I-JEPA [1]_ on a MedMNIST3D dataset [2]_ using the nidl library. It will also show you how to evaluate the learned representations with a simple linear probe.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_ijepa_medmnist_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/plot_ijepa_medmnist`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Self-Supervised Learning with I-JEPA on MedMNIST3D</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The current logic in nidl is to separate the implementation of the actual model (i.e. everything required to fit the model on data) from everything else, such as metrics computation and logging. This is usually performed to check the behavior of a model during training or validation but it is not essential for fitting.">
 
 .. only:: html
@@ -147,6 +164,7 @@ Examples
    /auto_examples/plot_openbhb
    /auto_examples/plot_simclr_mnist
    /auto_examples/plot_barlowtwins_openbhb
+   /auto_examples/plot_ijepa_medmnist
    /auto_examples/plot_metrics_callback
    /auto_examples/plot_yaware_openbhb
 

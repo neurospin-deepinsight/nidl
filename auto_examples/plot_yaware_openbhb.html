@@ -235,6 +235,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -763,7 +772,7 @@ Total FLOPs: 0
   self.check_worker_number_rationality()
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 4.35it/s v_num: 12.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 5.63it/s v_num: 14.000
                                                               loss/train: 8.325
                                                               loss/val: 11.548
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
@@ -822,7 +831,7 @@ Total FLOPs: 0
   self.check_worker_number_rationality()
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:18 • 0:00:00 2.86it/s v_num: 13.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:17 • 0:00:00 1.97it/s v_num: 15.000
                                                               loss/train: 8.976
                                                               loss/val: 11.904
 
@@ -869,10 +878,10 @@ and SBM data.</p>
   self.check_worker_number_rationality()
 /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
   self.check_worker_number_rationality()
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.65it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 17.00it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:08 • 0:00:00 3.09it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 244.68it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.83it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 28.98it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:08 • 0:00:00 2.87it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 150.04it/s
 </pre></div>
 </div>
 <p>We also extract the ages of the subjects for coloring the points in the
@@ -1010,7 +1019,7 @@ more effectively than SBM in this context. This is confirmed when looking at
 the age prediction results, where VBM outperforms SBM for both linear
 regression and KNN regression. However, the results can be improved by
 working with the original 3d brain scans instead of the ROI-averaged data.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 4.693 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 57.901 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  115 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-yaware-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

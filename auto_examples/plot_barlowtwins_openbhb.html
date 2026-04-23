@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="This tutorial will show you how to fit and evaluate a Barlow Twins model 1 on the OpenBHB dataset using NIDL. We will follow these steps using the NIDL library: Load the OpenBHB dataset., Define th..." />
-<link rel="search" title="Search" href="../search.html"><link rel="next" title="Visualization of metrics during training of PyTorch-Lightning models" href="plot_metrics_callback.html"><link rel="prev" title="Self-Supervised Contrastive Learning with SimCLR on MNIST" href="plot_simclr_mnist.html">
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="Self-Supervised Learning with I-JEPA on MedMNIST3D" href="plot_ijepa_medmnist.html"><link rel="prev" title="Self-Supervised Contrastive Learning with SimCLR on MNIST" href="plot_simclr_mnist.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
@@ -235,6 +235,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -717,7 +726,7 @@ Total estimated model params size (MB): 0
 Modules in train mode: 16
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 5.24it/s v_num: 4.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:10 • 0:00:00 4.45it/s v_num: 4.000
                                                               loss/train: 34.056
                                                               loss/val: 31.501
 ┏━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
@@ -734,7 +743,7 @@ Total estimated model params size (MB): 0
 Modules in train mode: 16
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:18 • 0:00:00 2.07it/s v_num: 5.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:18 • 0:00:00 2.20it/s v_num: 5.000
                                                               loss/train: 33.475
                                                               loss/val: 30.364
 
@@ -778,10 +787,10 @@ and SBM data.</p>
 <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_test_sbm</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.transform" title="nidl.estimators.BaseEstimator.transform" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">sbm_model</span><span class="o">.</span><span class="n">transform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataloader_sbm_test</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.19it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 14.24it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 2.22it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 8.61it/s
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.90it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 7.58it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:09 • 0:00:00 2.66it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 5.51it/s
 </pre></div>
 </div>
 <p>We also extract the ages of the subjects for coloring the points in the
@@ -919,8 +928,8 @@ more effectively than SBM in this context. This is confirmed when looking at
 the age prediction results, where VBM outperforms SBM for both linear
 regression and KNN regression. However, the results can be improved by
 working with the original 3d brain scans instead of the ROI-averaged data.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 1.252 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  120 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 19.385 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  119 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-barlowtwins-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/be9680f7a41c069a0bf1b905441c2b63/plot_barlowtwins_openbhb.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_barlowtwins_openbhb.ipynb</span></code></a></p>
@@ -941,12 +950,12 @@ working with the original 3d brain scans instead of the ROI-averaged data.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="plot_metrics_callback.html">
+          <a class="next-page" href="plot_ijepa_medmnist.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Visualization of metrics during training of PyTorch-Lightning models</div>
+                <div class="title">Self-Supervised Learning with I-JEPA on MedMNIST3D</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

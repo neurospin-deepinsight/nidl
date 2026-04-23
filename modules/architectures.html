@@ -235,6 +235,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -400,8 +409,8 @@ nidl compatible backbone, as well as the backbones available in nidl.</p>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>An backbone is a <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.12.0a0+git0775839 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> class and contains definitions
-of models for addressing different tasks, including image classification,
-image segmentation, represnetation learning…</p>
+of models for addressing different tasks, such as image classification,
+image segmentation, representation learning.</p>
 <section id="pre-trained-weights">
 <h3>Pre-trained weights<a class="headerlink" href="#pre-trained-weights" title="Link to this heading">¶</a></h3>
 <p>nidl offers pre-trained weights for every provided architecture. The weights
@@ -441,6 +450,9 @@ various utility functions.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.volume.backbones.ResNetTruncated.html#nidl.volume.backbones.ResNetTruncated" title="nidl.volume.backbones.ResNetTruncated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResNetTruncated</span></code></a>(*args[, depth])</p></td>
 <td><p>3D truncated ResNet-18 architecture adapted from He et al. 2015.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.volume.backbones.VisionTransformer3D.html#nidl.volume.backbones.VisionTransformer3D" title="nidl.volume.backbones.VisionTransformer3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VisionTransformer3D</span></code></a>(img_size, patch_size[, ...])</p></td>
+<td><p>3D Vision Transformer with a timm-like interface.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -449,6 +461,7 @@ various utility functions.</p>
   Module &lt;|-- AlexNet
   Module &lt;|-- DenseNet
   Module &lt;|-- ResNet
+  Module &lt;|-- VisionTransformer3D
   ResNet &lt;|-- ResNetTruncated
     </pre><div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
@@ -464,6 +477,15 @@ various utility functions.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.volume.backbones.resnet50_trunc.html#nidl.volume.backbones.resnet50_trunc" title="nidl.volume.backbones.resnet50_trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resnet50_trunc</span></code></a>(depth, **kwargs)</p></td>
 <td><p>3D truncated ResNet-50 architecture adapted from He et al. 2015.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.volume.backbones.vit_small_patch16_128.html#nidl.volume.backbones.vit_small_patch16_128" title="nidl.volume.backbones.vit_small_patch16_128"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vit_small_patch16_128</span></code></a>(**kwargs)</p></td>
+<td><p>Build a small 3D ViT.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.volume.backbones.vit_base_patch16_128.html#nidl.volume.backbones.vit_base_patch16_128" title="nidl.volume.backbones.vit_base_patch16_128"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vit_base_patch16_128</span></code></a>(**kwargs)</p></td>
+<td><p>Build a base 3D ViT.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.volume.backbones.vit_large_patch16_128.html#nidl.volume.backbones.vit_large_patch16_128" title="nidl.volume.backbones.vit_large_patch16_128"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vit_large_patch16_128</span></code></a>(**kwargs)</p></td>
+<td><p>Build a large 3D ViT.</p></td>
 </tr>
 </tbody>
 </table>

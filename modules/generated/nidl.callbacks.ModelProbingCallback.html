@@ -235,6 +235,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -403,15 +412,17 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.callbacks.ModelProbingCallback<a class="headerlink" href="#nidl-callbacks-modelprobingcallback" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.callbacks.</span></span><span class="sig-name descname"><span class="pre">ModelProbingCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_train_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_val_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.callbacks.</span></span><span class="sig-name descname"><span class="pre">ModelProbingCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_train_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_val_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L26"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Callback</span></code></p>
-<p>Callback to probe the representation of an embedding estimator on a
-dataset.</p>
+<p>Callback to probe the representation of
+<a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a> on a dataset.</p>
 <p>It has the following logic:</p>
 <ol class="arabic simple">
 <li><p>Embeds the input data (training+test) through the estimator using
-<cite>transform_step</cite> method (handles distributed multi-gpu forward pass).</p></li>
-<li><p>Train the probe on the training embedding (handles multi-cpu training).</p></li>
+<code class="docutils literal notranslate"><span class="pre">transform_step_with_targets</span></code> method (handles distributed multi-gpu
+forward pass).</p></li>
+<li><p>Train a scikit-learn probe on the training embedding (handles multi-cpu
+training).</p></li>
 <li><p>Evaluate the probe on the test embedding and log the scores.</p></li>
 </ol>
 <p>The probing can be performed at the end of training epochs, validation
@@ -490,29 +501,28 @@ metrics, such as <code class="docutils literal notranslate"><span class="pre">&q
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_train_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_val_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L119"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_train_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every_n_val_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_test_epoch_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L122"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.adapt_dataloader_for_ddp">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">adapt_dataloader_for_ddp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L172"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.adapt_dataloader_for_ddp" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">adapt_dataloader_for_ddp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L175"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.adapt_dataloader_for_ddp" title="Link to this definition">¶</a></dt>
 <dd><p>Wrap user dataloader with DistributedSampler if in DDP mode.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.extract_features">
-<span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L267"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.extract_features" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L279"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.extract_features" title="Link to this definition">¶</a></dt>
 <dd><p>Extract features from a dataloader with the BaseEstimator.</p>
-<p>By default, it uses the <cite>transform_step</cite> logic applied on each batch to
-get the embeddings with the labels.
-The input dataloader should yield batches of the form <cite>(X, y)</cite> where X
-is the input data and y is the label.</p>
+<p>It uses the <cite>transform_step_with_targets</cite> logic applied on each
+batch to get the embeddings with the labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>trainer: pl.Trainer</strong></dt><dd><p>The pytorch-lightning trainer instance.</p>
 </dd>
-<dt><strong>pl_module: BaseEstimator</strong></dt><dd><p>The BaseEstimator module that implements the ‘transform_step’.</p>
+<dt><strong>pl_module: BaseEstimator</strong></dt><dd><p>The <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a> module that
+implements <code class="docutils literal notranslate"><span class="pre">transform_step_with_targets</span></code>.</p>
 </dd>
 <dt><strong>dataloader: torch.utils.data.DataLoader</strong></dt><dd><p>The dataloader to extract features from. It should yield batches of
 the form <cite>(X, y)</cite> where <cite>X</cite> is the input data and <cite>y</cite> is the label.</p>
@@ -531,25 +541,25 @@ and y are the corresponding labels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.log_metrics">
-<span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L147"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.log_metrics" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L150"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.log_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Log the metrics given the predictions and the true labels.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.on_test_epoch_end">
-<span class="sig-name descname"><span class="pre">on_test_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L354"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_test_epoch_end" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_test_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L366"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_test_epoch_end" title="Link to this definition">¶</a></dt>
 <dd><p>Called when the test epoch ends.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.on_test_epoch_start">
-<span class="sig-name descname"><span class="pre">on_test_epoch_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L350"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_test_epoch_start" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_test_epoch_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L362"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_test_epoch_start" title="Link to this definition">¶</a></dt>
 <dd><p>Called when the test epoch begins.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.on_train_epoch_end">
-<span class="sig-name descname"><span class="pre">on_train_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L333"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_train_epoch_end" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_train_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L345"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_train_epoch_end" title="Link to this definition">¶</a></dt>
 <dd><p>Called when the train epoch ends.</p>
 <p>To access all batch outputs at the end of the epoch, you can cache step outputs as an attribute of the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">pytorch_lightning.core.LightningModule</span></code> and access them in this hook:</p>
@@ -576,13 +586,13 @@ and y are the corresponding labels.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.on_validation_epoch_end">
-<span class="sig-name descname"><span class="pre">on_validation_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L341"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_validation_epoch_end" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_validation_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L353"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.on_validation_epoch_end" title="Link to this definition">¶</a></dt>
 <dd><p>Called when the val epoch ends.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.callbacks.ModelProbingCallback.probing">
-<span class="sig-name descname"><span class="pre">probing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8283cb2/nidl/callbacks/model_probing.py#L206"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.probing" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">probing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/8a68cfb/nidl/callbacks/model_probing.py#L209"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.callbacks.ModelProbingCallback.probing" title="Link to this definition">¶</a></dt>
 <dd><p>Perform the probing on the given estimator.</p>
 <p>This method performs the following steps:
 1) Extracts the features from the training and test dataloaders
@@ -592,14 +602,13 @@ and y are the corresponding labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>pl_module: BaseEstimator</strong></dt><dd><p>The BaseEstimator module that implements the <cite>transform_step</cite>.</p>
+<dt><strong>pl_module: BaseEstimator</strong></dt><dd><p>The <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a> module that
+implements <code class="docutils literal notranslate"><span class="pre">transform_step_with_targets</span></code>.</p>
 </dd>
-</dl>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>ValueError: If the pl_module does not inherit from <cite>BaseEstimator</cite> or</dt><dd></dd>
-<dt>from <cite>TransformerMixin</cite>.</dt><dd></dd>
+<dt><strong>Raises</strong></dt><dd></dd>
+<dt><strong>——</strong></dt><dd></dd>
+<dt><strong>ValueError: If the pl_module does not inherit from `BaseEstimator` or</strong></dt><dd></dd>
+<dt><strong>from `TransformerMixin`.</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>

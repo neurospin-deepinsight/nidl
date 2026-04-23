@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/auto_examples/sg_execution_times.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:description" content="49:30.873 total execution time for 7 files from auto_examples:,,, Example, Time, Mem (MB),,, Decoupled Contrastive Learning( plot_dcl_vs_simclr.py), 11:02.841, 1203.3,, Visualization of metrics dur..." />
+<meta property="og:description" content="52:46.956 total execution time for 8 files from auto_examples:,,, Example, Time, Mem (MB),,, Visualization of metrics during training of PyTorch-Lightning models( plot_metrics_callback.py), 11:07.2..." />
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
-<meta name="description" content="49:30.873 total execution time for 7 files from auto_examples:,,, Example, Time, Mem (MB),,, Decoupled Contrastive Learning( plot_dcl_vs_simclr.py), 11:02.841, 1203.3,, Visualization of metrics dur..." />
+<meta name="description" content="52:46.956 total execution time for 8 files from auto_examples:,,, Example, Time, Mem (MB),,, Visualization of metrics during training of PyTorch-Lightning models( plot_metrics_callback.py), 11:07.2..." />
 <link rel="search" title="Search" href="../search.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
@@ -235,6 +235,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -395,7 +404,7 @@
         <article role="main" id="furo-main-content">
           <section id="computation-times">
 <span id="sphx-glr-auto-examples-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">¶</a></h1>
-<p><strong>49:30.873</strong> total execution time for 7 files <strong>from auto_examples</strong>:</p>
+<p><strong>52:46.956</strong> total execution time for 8 files <strong>from auto_examples</strong>:</p>
 <div class="docutils container">
 <style scoped>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
@@ -417,33 +426,37 @@ $(document).ready( function () {
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="plot_dcl_vs_simclr.html#sphx-glr-auto-examples-plot-dcl-vs-simclr-py"><span class="std std-ref">Decoupled Contrastive Learning</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_dcl_vs_simclr.py</span></code>)</p></td>
-<td><p>11:02.841</p></td>
-<td><p>1203.3</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="plot_metrics_callback.html#sphx-glr-auto-examples-plot-metrics-callback-py"><span class="std std-ref">Visualization of metrics during training of PyTorch-Lightning models</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_metrics_callback.py</span></code>)</p></td>
+<td><p>11:07.210</p></td>
+<td><p>2257.9</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="plot_metrics_callback.html#sphx-glr-auto-examples-plot-metrics-callback-py"><span class="std std-ref">Visualization of metrics during training of PyTorch-Lightning models</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_metrics_callback.py</span></code>)</p></td>
-<td><p>10:56.766</p></td>
-<td><p>2370.4</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="plot_dcl_vs_simclr.html#sphx-glr-auto-examples-plot-dcl-vs-simclr-py"><span class="std std-ref">Decoupled Contrastive Learning</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_dcl_vs_simclr.py</span></code>)</p></td>
+<td><p>10:46.642</p></td>
+<td><p>1236.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="plot_model_probing.html#sphx-glr-auto-examples-plot-model-probing-py"><span class="std std-ref">Model probing of embedding estimators</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_model_probing.py</span></code>)</p></td>
-<td><p>07:27.681</p></td>
-<td><p>266.3</p></td>
+<td><p>07:26.607</p></td>
+<td><p>261.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="plot_yaware_openbhb.html#sphx-glr-auto-examples-plot-yaware-openbhb-py"><span class="std std-ref">Weakly Supervised Contrastive Learning with y-Aware</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_yaware_openbhb.py</span></code>)</p></td>
-<td><p>07:04.693</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="plot_barlowtwins_openbhb.html#sphx-glr-auto-examples-plot-barlowtwins-openbhb-py"><span class="std std-ref">Self-Supervised Learning with Barlow Twins</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_barlowtwins_openbhb.py</span></code>)</p></td>
+<td><p>07:19.385</p></td>
+<td><p>119.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="plot_yaware_openbhb.html#sphx-glr-auto-examples-plot-yaware-openbhb-py"><span class="std std-ref">Weakly Supervised Contrastive Learning with y-Aware</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_yaware_openbhb.py</span></code>)</p></td>
+<td><p>06:57.901</p></td>
 <td><p>114.8</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="plot_barlowtwins_openbhb.html#sphx-glr-auto-examples-plot-barlowtwins-openbhb-py"><span class="std std-ref">Self-Supervised Learning with Barlow Twins</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_barlowtwins_openbhb.py</span></code>)</p></td>
-<td><p>07:01.252</p></td>
-<td><p>120.0</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="plot_openbhb.html#sphx-glr-auto-examples-plot-openbhb-py"><span class="std std-ref">Presentation of the OpenBHB dataset</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_openbhb.py</span></code>)</p></td>
-<td><p>05:06.835</p></td>
-<td><p>2416.8</p></td>
+<td><p>04:57.526</p></td>
+<td><p>2286.1</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="plot_simclr_mnist.html#sphx-glr-auto-examples-plot-simclr-mnist-py"><span class="std std-ref">Self-Supervised Contrastive Learning with SimCLR on MNIST</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_simclr_mnist.py</span></code>)</p></td>
-<td><p>00:50.806</p></td>
-<td><p>189.4</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="plot_ijepa_medmnist.html#sphx-glr-auto-examples-plot-ijepa-medmnist-py"><span class="std std-ref">Self-Supervised Learning with I-JEPA on MedMNIST3D</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_ijepa_medmnist.py</span></code>)</p></td>
+<td><p>03:23.065</p></td>
+<td><p>782.3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="plot_simclr_mnist.html#sphx-glr-auto-examples-plot-simclr-mnist-py"><span class="std std-ref">Self-Supervised Contrastive Learning with SimCLR on MNIST</span></a> (<code class="docutils literal notranslate"><span class="pre">plot_simclr_mnist.py</span></code>)</p></td>
+<td><p>00:48.621</p></td>
+<td><p>193.3</p></td>
 </tr>
 </tbody>
 </table>

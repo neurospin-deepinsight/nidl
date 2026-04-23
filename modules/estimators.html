@@ -235,6 +235,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
 </ul>
@@ -266,10 +267,14 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
@@ -290,10 +295,14 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -511,14 +520,20 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimCLR</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
 <td><p>SimCLR <a class="reference internal" href="generated/nidl.estimators.ssl.SimCLR.html#rfa9275c25f8b-1" id="id1"><span>[Rfa9275c25f8b-1]</span></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning" title="nidl.estimators.ssl.YAwareContrastiveLearning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YAwareContrastiveLearning</span></code></a>(encoder[, ...])</p></td>
-<td><p>y-Aware Contrastive Learning <a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html#r8ad1d13554f2-1" id="id2"><span>[R8ad1d13554f2-1]</span></a>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.DCL.html#nidl.estimators.ssl.DCL" title="nidl.estimators.ssl.DCL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DCL</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
+<td><p>Decoupled Contrastive Learning <a class="reference internal" href="generated/nidl.estimators.ssl.DCL.html#r23fac62c525a-1" id="id2"><span>[R23fac62c525a-1]</span></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#nidl.estimators.ssl.BarlowTwins" title="nidl.estimators.ssl.BarlowTwins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwins</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
-<td><p>Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#rf18316f97edd-1" id="id3"><span>[Rf18316f97edd-1]</span></a>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning" title="nidl.estimators.ssl.YAwareContrastiveLearning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YAwareContrastiveLearning</span></code></a>(encoder[, ...])</p></td>
+<td><p>y-Aware Contrastive Learning <a class="reference internal" href="generated/nidl.estimators.ssl.YAwareContrastiveLearning.html#r8ad1d13554f2-1" id="id3"><span>[R8ad1d13554f2-1]</span></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html#nidl.estimators.ssl.DINO" title="nidl.estimators.ssl.DINO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DINO</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
-<td><p>DINO <a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html#rf531b9701544-1" id="id4"><span>[Rf531b9701544-1]</span></a>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#nidl.estimators.ssl.BarlowTwins" title="nidl.estimators.ssl.BarlowTwins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwins</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
+<td><p>Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.BarlowTwins.html#rf18316f97edd-1" id="id4"><span>[Rf18316f97edd-1]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html#nidl.estimators.ssl.DINO" title="nidl.estimators.ssl.DINO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DINO</span></code></a>(encoder[, encoder_kwargs, ...])</p></td>
+<td><p>DINO <a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html#rf531b9701544-1" id="id5"><span>[Rf531b9701544-1]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.IJEPA.html#nidl.estimators.ssl.IJEPA" title="nidl.estimators.ssl.IJEPA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IJEPA</span></code></a>(encoder[, dim, context_block_scale, ...])</p></td>
+<td><p>Implementation of I-JEPA <a class="reference internal" href="generated/nidl.estimators.ssl.IJEPA.html#re5620117445e-1" id="id6"><span>[Re5620117445e-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -528,11 +543,13 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
   BaseEstimator &lt;|-- BarlowTwins
   BaseEstimator &lt;|-- DCL
   BaseEstimator &lt;|-- DINO
+  BaseEstimator &lt;|-- IJEPA
   BaseEstimator &lt;|-- SimCLR
   BaseEstimator &lt;|-- YAwareContrastiveLearning
   TransformerMixin &lt;|-- BarlowTwins
   TransformerMixin &lt;|-- DCL
   TransformerMixin &lt;|-- DINO
+  TransformerMixin &lt;|-- IJEPA
   TransformerMixin &lt;|-- SimCLR
   TransformerMixin &lt;|-- YAwareContrastiveLearning
     </pre></section>
@@ -542,16 +559,22 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.InfoNCE.html#nidl.losses.InfoNCE" title="nidl.losses.InfoNCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InfoNCE</span></code></a>([temperature])</p></td>
-<td><p>Implementation of the InfoNCE loss <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-1" id="id5"><span>[Re38fc64e0ed4-1]</span></a>, <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-2" id="id6"><span>[Re38fc64e0ed4-2]</span></a>.</p></td>
+<td><p>Implementation of the InfoNCE loss <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-1" id="id7"><span>[Re38fc64e0ed4-1]</span></a>, <a class="reference internal" href="generated/nidl.losses.InfoNCE.html#re38fc64e0ed4-2" id="id8"><span>[Re38fc64e0ed4-2]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.losses.DCLLoss.html#nidl.losses.DCLLoss" title="nidl.losses.DCLLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DCLLoss</span></code></a>([temperature, pos_weight_fn])</p></td>
+<td><p>Implementation of the Decoupled Contrastive Learning loss <a class="reference internal" href="generated/nidl.losses.DCLLoss.html#r0cf4714be807-1" id="id9"><span>[R0cf4714be807-1]</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.DCLWLoss.html#nidl.losses.DCLWLoss" title="nidl.losses.DCLWLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DCLWLoss</span></code></a>([sigma, temperature])</p></td>
+<td><p>Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#nidl.losses.YAwareInfoNCE" title="nidl.losses.YAwareInfoNCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YAwareInfoNCE</span></code></a>([kernel, bandwidth, temperature])</p></td>
-<td><p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#ra2feb9ab43ec-1" id="id7"><span>[Ra2feb9ab43ec-1]</span></a>.</p></td>
+<td><p>Implementation of the y-Aware InfoNCE loss <a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html#ra2feb9ab43ec-1" id="id10"><span>[Ra2feb9ab43ec-1]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#nidl.losses.BarlowTwinsLoss" title="nidl.losses.BarlowTwinsLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwinsLoss</span></code></a>([lambd])</p></td>
-<td><p>Implementation of the Barlow Twins loss <a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#re83c9b545e4a-1" id="id8"><span>[Re83c9b545e4a-1]</span></a>.</p></td>
+<td><p>Implementation of the Barlow Twins loss <a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html#re83c9b545e4a-1" id="id11"><span>[Re83c9b545e4a-1]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.losses.DINOLoss.html#nidl.losses.DINOLoss" title="nidl.losses.DINOLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DINOLoss</span></code></a>([output_dim, warmup_teacher_temp, ...])</p></td>
-<td><p>Implementation of the DINO loss <a class="reference internal" href="generated/nidl.losses.DINOLoss.html#re2e7efabd714-1" id="id9"><span>[Re2e7efabd714-1]</span></a>.</p></td>
+<td><p>Implementation of the DINO loss <a class="reference internal" href="generated/nidl.losses.DINOLoss.html#re2e7efabd714-1" id="id12"><span>[Re2e7efabd714-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -572,10 +595,10 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <td><p>Projection head used for yAware contrastive learning.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#nidl.estimators.ssl.utils.BarlowTwinsProjectionHead" title="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BarlowTwinsProjectionHead</span></code></a>([input_dim, ...])</p></td>
-<td><p>Projection head used for Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#r86bff2d09119-1" id="id10"><span>[R86bff2d09119-1]</span></a>.</p></td>
+<td><p>Projection head used for Barlow Twins <a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html#r86bff2d09119-1" id="id13"><span>[R86bff2d09119-1]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html#nidl.estimators.ssl.utils.DINOProjectionHead" title="nidl.estimators.ssl.utils.DINOProjectionHead"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DINOProjectionHead</span></code></a>([input_dim, hidden_dim, ...])</p></td>
-<td><p>Projection head used in DINO <a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html#re0843dd52443-1" id="id11"><span>[Re0843dd52443-1]</span></a>.</p></td>
+<td><p>Projection head used in DINO <a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html#re0843dd52443-1" id="id14"><span>[Re0843dd52443-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -599,13 +622,13 @@ learned by an embedding estimator.</p>
 <section id="autoencoders">
 <h2>Autoencoders<a class="headerlink" href="#autoencoders" title="Link to this heading">¶</a></h2>
 <p>Autoencoder estimators and losses.</p>
-<section id="id12">
-<h3>Embedding estimators<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<section id="id15">
+<h3>Embedding estimators<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#nidl.estimators.autoencoders.VAE" title="nidl.estimators.autoencoders.VAE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VAE</span></code></a>(encoder, decoder, encoder_out_dim, ...)</p></td>
-<td><p>Variational Auto-Encoder (VAE) <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-1" id="id13"><span>[Rfc808ee91d8e-1]</span></a> <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-2" id="id14"><span>[Rfc808ee91d8e-2]</span></a>.</p></td>
+<td><p>Variational Auto-Encoder (VAE) <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-1" id="id16"><span>[Rfc808ee91d8e-1]</span></a> <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-2" id="id17"><span>[Rfc808ee91d8e-2]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -615,13 +638,13 @@ learned by an embedding estimator.</p>
   BaseEstimator &lt;|-- VAE
   TransformerMixin &lt;|-- VAE
     </pre></section>
-<section id="id15">
-<h3>Losses<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<section id="id18">
+<h3>Losses<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#nidl.losses.BetaVAELoss" title="nidl.losses.BetaVAELoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetaVAELoss</span></code></a>([beta, default_dist])</p></td>
-<td><p>Compute the Beta-VAE loss <a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#rd208eb1f92d3-1" id="id16"><span>[Rd208eb1f92d3-1]</span></a>.</p></td>
+<td><p>Compute the Beta-VAE loss <a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html#rd208eb1f92d3-1" id="id19"><span>[Rd208eb1f92d3-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -718,8 +741,8 @@ learned by an embedding estimator.</p>
 </li>
 <li><a class="reference internal" href="#probing-estimators">Probing estimators</a></li>
 <li><a class="reference internal" href="#autoencoders">Autoencoders</a><ul>
-<li><a class="reference internal" href="#id12">Embedding estimators</a></li>
-<li><a class="reference internal" href="#id15">Losses</a></li>
+<li><a class="reference internal" href="#id15">Embedding estimators</a></li>
+<li><a class="reference internal" href="#id18">Losses</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#dummy-estimator">Dummy estimator</a></li>

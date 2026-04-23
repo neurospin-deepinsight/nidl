@@ -1,0 +1,1850 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Self-Supervised Learning with I-JEPA on MedMNIST3D" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neurospin-deepinsight.github.io/auto_examples/plot_ijepa_medmnist.html" />
+<meta property="og:site_name" content="Nidl" />
+<meta property="og:description" content="This example demonstrates how to pretrain a 3D vision transformer with I-JEPA 1 on a MedMNIST3D dataset 2 using the nidl library. It will also show you how to evaluate the learned representations w..." />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
+<meta property="og:image:alt" content="Nidl" />
+<meta name="description" content="This example demonstrates how to pretrain a 3D vision transformer with I-JEPA 1 on a MedMNIST3D dataset 2 using the nidl library. It will also show you how to evaluate the learned representations w..." />
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="Visualization of metrics during training of PyTorch-Lightning models" href="plot_metrics_callback.html"><link rel="prev" title="Self-Supervised Learning with Barlow Twins" href="plot_barlowtwins_openbhb.html">
+        <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>Self-Supervised Learning with I-JEPA on MedMNIST3D - Nidl</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=2da93098" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=749372d1" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/solid.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/brands.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  --admonition-font-size: 100%;
+  --admonition-title-font-size: 100%;
+  --color-announcement-background: #FBB360;
+  --color-announcement-text: #111418;
+  --color-admonition-title--note: #448aff;
+  --color-admonition-title-background--note: #448aff10;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  --color-announcement-background: #935610;
+  --color-announcement-text: #FFFFFF;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  --color-announcement-background: #935610;
+  --color-announcement-text: #FFFFFF;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     <p>This is the development documentation of nidl (0.0.1)  
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Nidl</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/nidl-transparent.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Nidl</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_metrics_callback.html">Visualization of metrics during training of PyTorch-Lightning models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../user_guide.html">User guide</a><input aria-label="Toggle navigation of User guide" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html#what-is-nidl">2. What is <code class="docutils literal notranslate"><span class="pre">nidl</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html#using-nidl-for-the-first-time">3. Using <code class="docutils literal notranslate"><span class="pre">nidl</span></code> for the first time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html#applications-to-neuroimaging">4. Applications to Neuroimaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supervised_learning/index.html">5. Supervised Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self_supervised_learning/index.html">6. Self Supervised Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autoencoders/index.html">7. Auto Encoders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_probing.html">8. Model Probing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_augmentation/index.html">9. Data Augmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pretrained_models.html">10. Pretrained Models</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../architectures/index.html">11. Architectures</a><input aria-label="Toggle navigation of 11. Architectures" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../architectures/volume.html">11.1. Volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architectures/surface.html">11.2. Surface</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../open_datasets.html">12. Open Datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../modules/index.html">API References</a><input aria-label="Toggle navigation of API References" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/estimators.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.estimators</span></code>: Available estimators</a><input aria-label="Toggle navigation of nidl.estimators: Available estimators" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.BaseEstimator.html">nidl.estimators.BaseEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ClassifierMixin.html">nidl.estimators.ClassifierMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ClusterMixin.html">nidl.estimators.ClusterMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.utils.weights.Weights.html">nidl.utils.weights.Weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.AlexNet.html">nidl.volume.backbones.AlexNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.Transform.html">nidl.transforms.Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.Identity.html">nidl.transforms.Identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.MultiViewsTransform.html">nidl.transforms.MultiViewsTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.VolumeTransform.html">nidl.transforms.VolumeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.RobustRescaling.html">nidl.volume.transforms.preprocessing.RobustRescaling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.ZNormalization.html">nidl.volume.transforms.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.CropOrPad.html">nidl.volume.transforms.preprocessing.CropOrPad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.Resample.html">nidl.volume.transforms.preprocessing.Resample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.Resize.html">nidl.volume.transforms.preprocessing.Resize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomGaussianBlur.html">nidl.volume.transforms.augmentation.RandomGaussianBlur</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomGaussianNoise.html">nidl.volume.transforms.augmentation.RandomGaussianNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomErasing.html">nidl.volume.transforms.augmentation.RandomErasing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomFlip.html">nidl.volume.transforms.augmentation.RandomFlip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomResizedCrop.html">nidl.volume.transforms.augmentation.RandomResizedCrop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomRotation.html">nidl.volume.transforms.augmentation.RandomRotation</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/datasets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.datasets</span></code>: Available datasets</a><input aria-label="Toggle navigation of nidl.datasets: Available datasets" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.BaseImageDataset.html">nidl.datasets.BaseImageDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.BaseNumpyDataset.html">nidl.datasets.BaseNumpyDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.ImageDataFrameDataset.html">nidl.datasets.ImageDataFrameDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.OpenBHB.html">nidl.datasets.OpenBHB</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbingCallback.html">nidl.callbacks.ModelProbingCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbingCVCallback.html">nidl.callbacks.ModelProbingCVCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/metrics.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.metrics</span></code>: Available metrics</a><input aria-label="Toggle navigation of nidl.metrics: Available metrics" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.pearson_r.html">nidl.metrics.pearson_r</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.alignment_score.html">nidl.metrics.alignment_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.uniformity_score.html">nidl.metrics.uniformity_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.contrastive_accuracy_score.html">nidl.metrics.contrastive_accuracy_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.procrustes_similarity.html">nidl.metrics.procrustes_similarity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.procrustes_r2.html">nidl.metrics.procrustes_r2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.kruskal_similarity.html">nidl.metrics.kruskal_similarity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maintenance.html">Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Versions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl">GitHub Repository</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/blob/main/doc/auto_examples/plot_ijepa_medmnist.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/edit/main/doc/auto_examples/plot_ijepa_medmnist.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-ijepa-medmnist-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="self-supervised-learning-with-i-jepa-on-medmnist3d">
+<span id="sphx-glr-auto-examples-plot-ijepa-medmnist-py"></span><h1>Self-Supervised Learning with I-JEPA on MedMNIST3D<a class="headerlink" href="#self-supervised-learning-with-i-jepa-on-medmnist3d" title="Link to this heading">¶</a></h1>
+<p>This example demonstrates how to pretrain a 3D vision transformer with I-JEPA
+<a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> on a MedMNIST3D dataset <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> using the nidl library. It will also show you
+how to evaluate the learned representations with a simple linear probe.</p>
+<p><strong>I-JEPA</strong>: the key idea behind I-JEPA is to learn representations by
+predicting masked-out image blocks from their surrounding context in the
+<em>latent space</em> . This is the main difference with Masked Autoencoders (MAE)
+which predicts the masked-out blocks in the <em>pixel space</em>.</p>
+<p><strong>3D adaptation</strong>: I-JEPA is designed to be flexible. Even if the
+original implementation only used 2d images, its extension to 3d volumes
+is straightforward. There are two key differences with the 2d case: the
+tokenization is performed with 3D patches, and the positional embeddings are
+3D as well. As for the masking strategy, it follows the same random block
+subsampling strategy as in 2d.</p>
+<p>In this tutorial, we will follow these steps:</p>
+<ol class="arabic simple">
+<li><p>Load a MedMNIST3D dataset.</p></li>
+<li><p>Build a 3D vision transformer encoder.</p></li>
+<li><p>Train an I-JEPA model, or optionally load pretrained weights from the
+Hugging Face Hub.</p></li>
+<li><p>Evaluate the pretrained encoder on the downstream classification task with a
+logistic regression probe.</p></li>
+</ol>
+<p>In this example we use <code class="docutils literal notranslate"><span class="pre">OrganMNIST3D</span></code>, one of the 3D datasets distributed by
+MedMNIST. MedMNIST3D datasets are lightweight 3D medical image classification
+benchmarks standardized to a common spatial size, which makes them convenient
+for prototyping self-supervised pipelines.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id3" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Assran, M., Bardes, A., Xu, Q., et al.
+“Self-Supervised Learning from Images with a Joint-Embedding Predictive
+Architecture”, CVPR 2023.</p>
+</aside>
+<aside class="footnote brackets" id="id4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Yang, J., et al.”MedMNIST v2 - A large-scale lightweight benchmark for
+2D and 3D biomedical image classification”, Nature Scientific Data 2023.</p>
+</aside>
+</aside>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
+<p>This example requires <code class="docutils literal notranslate"><span class="pre">medmnist</span></code> in addition to <code class="docutils literal notranslate"><span class="pre">nidl</span></code>. If you want to load
+pretrained weights from the Hugging Face Hub, you also need
+<code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> installed in your environment.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/typing.html#typing.Callable" title="typing.Callable" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Callable</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/typing.html#typing.Optional" title="typing.Optional" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Optional</span></a>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">medmnist</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lightning_fabric</span><span class="w"> </span><span class="kn">import</span> <span class="n">seed_everything</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">medmnist</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">INFO</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score" title="sklearn.metrics.accuracy_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">accuracy_score</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">Compose</span></a>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.ssl</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.estimators.ssl.IJEPA.html#nidl.estimators.ssl.IJEPA" title="nidl.estimators.ssl.IJEPA" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class"><span class="n">IJEPA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.utils.weights</span><span class="w"> </span><span class="kn">import</span> <span class="n">Weights</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.volume.backbones</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html#nidl.volume.backbones.VisionTransformer3D" title="nidl.volume.backbones.VisionTransformer3D" class="sphx-glr-backref-module-nidl-volume-backbones sphx-glr-backref-type-py-class"><span class="n">VisionTransformer3D</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.volume.transforms.augmentation</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.volume.transforms.augmentation.RandomResizedCrop.html#nidl.volume.transforms.augmentation.RandomResizedCrop" title="nidl.volume.transforms.augmentation.RandomResizedCrop" class="sphx-glr-backref-module-nidl-volume-transforms-augmentation sphx-glr-backref-type-py-class"><span class="n">RandomResizedCrop</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.volume.transforms.preprocessing</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.volume.transforms.preprocessing.ZNormalization.html#nidl.volume.transforms.preprocessing.ZNormalization" title="nidl.volume.transforms.preprocessing.ZNormalization" class="sphx-glr-backref-module-nidl-volume-transforms-preprocessing sphx-glr-backref-type-py-class"><span class="n">ZNormalization</span></a>
+</pre></div>
+</div>
+<p>We define some global parameters that will be used throughout the example.</p>
+<p>Training a 3D I-JEPA model can take substantial time depending on your
+hardware. By default, this example trains a lightweight configuration that is
+suitable for a tutorial. If you later publish pretrained weights to the
+Hugging Face Hub, set <code class="docutils literal notranslate"><span class="pre">load_pretrained</span> <span class="pre">=</span> <span class="pre">True</span></code> and fill the corresponding
+repository information below.</p>
+<p>Data-related parameters</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Directory where to download MedMNIST data</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <span class="s2">&quot;/tmp/medmnist&quot;</span>
+<span class="c1"># Directory where to cache optional pretrained weights</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_dir</span></a> <span class="o">=</span> <span class="s2">&quot;/tmp/nidl_example_ijepa_medmnist&quot;</span>
+<span class="c1"># MedMNIST3D dataset to use</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a> <span class="o">=</span> <span class="s2">&quot;organmnist3d&quot;</span>
+<span class="c1"># Spatial size used by MedMNIST+ for 3D datasets</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">img_size</span></a> <span class="o">=</span> <span class="mi">64</span>
+<span class="c1"># Whether to load a pretrained checkpoint from HF or train locally</span>
+<a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">load_pretrained</span></a> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Fill these two values once a checkpoint is published on HF</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_repo_id</span></a> <span class="o">=</span> <span class="s2">&quot;neurospin/nidl_example_ijepa_medmnist&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_checkpoint</span></a> <span class="o">=</span> <span class="s2">&quot;nidl_example_ijepa_medmnist.pt&quot;</span>
+</pre></div>
+</div>
+<p>Reproducibility and training configuration</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># What accelerator to use: GPU if available, else CPU</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accelerator</span></a> <span class="o">=</span> <span class="s2">&quot;gpu&quot;</span> <span class="k">if</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+<span class="c1"># Parameters for the data loaders. Reduce them if you run out of memory.</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a> <span class="o">=</span> <span class="mi">16</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a> <span class="o">=</span> <span class="mi">4</span>
+<span class="c1"># Training configuration</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">max_epochs</span></a> <span class="o">=</span> <span class="mi">20</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">learning_rate</span></a> <span class="o">=</span> <span class="mf">3e-4</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weight_decay</span></a> <span class="o">=</span> <span class="mf">5e-4</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_seed</span></a> <span class="o">=</span> <span class="mi">42</span>
+
+<span class="n">seed_everything</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_seed</span></a><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="numpy.random.Generator" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rd_generator</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="n">seed</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_seed</span></a><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="data-preparation">
+<h2>Data preparation<a class="headerlink" href="#data-preparation" title="Link to this heading">¶</a></h2>
+<p>We first define a small MedMNIST3D dataset wrapper and the transforms used
+for self-supervised pretraining and downstream evaluation.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MedMNIST3DDataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple wrapper around a MedMNIST3D split.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">transform</span><span class="p">:</span> <a href="https://docs.python.org/3/library/typing.html#typing.Optional" title="typing.Optional" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Optional</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/typing.html#typing.Callable" title="typing.Callable" class="sphx-glr-backref-module-typing sphx-glr-backref-type-py-data"><span class="n">Callable</span></a><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="n">download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a> <span class="ow">not</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">INFO</span></a><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown MedMNIST dataset &#39;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Available datasets include: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">INFO</span></a><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;3d&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;This example is written for MedMNIST3D datasets, got &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">info</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">INFO</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">]</span>
+        <span class="n">dataset_cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">medmnist</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;python_class&quot;</span><span class="p">])</span>
+        <a href="https://docs.python.org/3/library/os.html#os.makedirs" title="os.makedirs" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset_cls</span><span class="p">(</span>
+            <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span>
+            <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+            <span class="n">download</span><span class="o">=</span><span class="n">download</span><span class="p">,</span>
+            <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="p">,</span>
+            <span class="n">as_rgb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_transform</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">Compose</span></a><span class="p">(</span>
+    <span class="p">[</span>
+        <a href="../modules/generated/nidl.volume.transforms.augmentation.RandomResizedCrop.html#nidl.volume.transforms.augmentation.RandomResizedCrop" title="nidl.volume.transforms.augmentation.RandomResizedCrop" class="sphx-glr-backref-module-nidl-volume-transforms-augmentation sphx-glr-backref-type-py-class"><span class="n">RandomResizedCrop</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">img_size</span></a><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+        <a href="../modules/generated/nidl.volume.transforms.preprocessing.ZNormalization.html#nidl.volume.transforms.preprocessing.ZNormalization" title="nidl.volume.transforms.preprocessing.ZNormalization" class="sphx-glr-backref-module-nidl-volume-transforms-preprocessing sphx-glr-backref-type-py-class"><span class="n">ZNormalization</span></a><span class="p">(),</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.from_numpy.html#torch.from_numpy" title="torch.from_numpy" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span></a><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eval_transform</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">Compose</span></a><span class="p">(</span>
+    <span class="p">[</span>
+        <a href="../modules/generated/nidl.volume.transforms.preprocessing.ZNormalization.html#nidl.volume.transforms.preprocessing.ZNormalization" title="nidl.volume.transforms.preprocessing.ZNormalization" class="sphx-glr-backref-module-nidl-volume-transforms-preprocessing sphx-glr-backref-type-py-class"><span class="n">ZNormalization</span></a><span class="p">(),</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.from_numpy.html#torch.from_numpy" title="torch.from_numpy" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span></a><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We create one dataset for self-supervised training, and labeled datasets for
+linear probing.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ssl_dataset</span> <span class="o">=</span> <span class="n">MedMNIST3DDataset</span><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">,</span>
+    <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span>
+    <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_transform</span></a><span class="p">,</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">img_size</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">train_xy_dataset</span> <span class="o">=</span> <span class="n">MedMNIST3DDataset</span><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">,</span>
+    <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span>
+    <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eval_transform</span></a><span class="p">,</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">img_size</span></a><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">test_xy_dataset</span> <span class="o">=</span> <span class="n">MedMNIST3DDataset</span><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_name</span></a><span class="p">,</span>
+    <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span>
+    <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eval_transform</span></a><span class="p">,</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">img_size</span></a><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0.00/361M [00:00&lt;?, ?B/s]
+  0%|          | 32.8k/361M [00:00&lt;21:26, 281kB/s]
+  0%|          | 65.5k/361M [00:00&lt;21:22, 282kB/s]
+  0%|          | 131k/361M [00:00&lt;14:39, 411kB/s]
+  0%|          | 197k/361M [00:00&lt;16:38, 362kB/s]
+  0%|          | 295k/361M [00:00&lt;12:40, 475kB/s]
+  0%|          | 360k/361M [00:00&lt;12:01, 500kB/s]
+  0%|          | 459k/361M [00:00&lt;10:01, 600kB/s]
+  0%|          | 557k/361M [00:01&lt;08:55, 674kB/s]
+  0%|          | 655k/361M [00:01&lt;08:19, 722kB/s]
+  0%|          | 754k/361M [00:01&lt;07:56, 758kB/s]
+  0%|          | 852k/361M [00:01&lt;07:40, 784kB/s]
+  0%|          | 950k/361M [00:01&lt;07:33, 795kB/s]
+  0%|          | 1.08M/361M [00:01&lt;06:45, 889kB/s]
+  0%|          | 1.18M/361M [00:01&lt;06:54, 868kB/s]
+  0%|          | 1.28M/361M [00:01&lt;07:00, 856kB/s]
+  0%|          | 1.38M/361M [00:01&lt;07:07, 842kB/s]
+  0%|          | 1.47M/361M [00:02&lt;07:09, 838kB/s]
+  0%|          | 1.57M/361M [00:02&lt;07:11, 835kB/s]
+  0%|          | 1.67M/361M [00:02&lt;09:16, 647kB/s]
+  1%|          | 1.84M/361M [00:02&lt;07:12, 832kB/s]
+  1%|          | 1.93M/361M [00:02&lt;07:10, 835kB/s]
+  1%|          | 2.03M/361M [00:02&lt;07:10, 835kB/s]
+  1%|          | 2.13M/361M [00:02&lt;07:09, 836kB/s]
+  1%|          | 2.23M/361M [00:03&lt;07:08, 839kB/s]
+  1%|          | 2.33M/361M [00:03&lt;07:06, 841kB/s]
+  1%|          | 2.46M/361M [00:03&lt;06:29, 923kB/s]
+  1%|          | 2.56M/361M [00:03&lt;06:38, 900kB/s]
+  1%|          | 2.65M/361M [00:03&lt;06:46, 883kB/s]
+  1%|          | 2.79M/361M [00:03&lt;06:15, 955kB/s]
+  1%|          | 2.88M/361M [00:03&lt;06:28, 922kB/s]
+  1%|          | 3.01M/361M [00:03&lt;06:05, 982kB/s]
+  1%|          | 3.15M/361M [00:03&lt;05:49, 1.02MB/s]
+  1%|          | 3.28M/361M [00:04&lt;07:21, 811kB/s]
+  1%|          | 3.41M/361M [00:04&lt;06:42, 889kB/s]
+  1%|          | 3.54M/361M [00:04&lt;06:16, 950kB/s]
+  1%|          | 3.67M/361M [00:04&lt;05:58, 998kB/s]
+  1%|          | 3.80M/361M [00:04&lt;07:22, 808kB/s]
+  1%|          | 3.90M/361M [00:04&lt;07:17, 817kB/s]
+  1%|          | 4.00M/361M [00:05&lt;07:14, 823kB/s]
+  1%|          | 4.13M/361M [00:05&lt;06:35, 902kB/s]
+  1%|          | 4.23M/361M [00:05&lt;06:43, 886kB/s]
+  1%|          | 4.36M/361M [00:05&lt;06:15, 952kB/s]
+  1%|          | 4.49M/361M [00:05&lt;05:56, 1.00MB/s]
+  1%|▏         | 4.62M/361M [00:05&lt;05:43, 1.04MB/s]
+  1%|▏         | 4.75M/361M [00:05&lt;05:35, 1.06MB/s]
+  1%|▏         | 4.88M/361M [00:05&lt;05:29, 1.08MB/s]
+  1%|▏         | 5.01M/361M [00:05&lt;05:26, 1.09MB/s]
+  1%|▏         | 5.14M/361M [00:06&lt;05:23, 1.10MB/s]
+  1%|▏         | 5.31M/361M [00:06&lt;04:58, 1.19MB/s]
+  2%|▏         | 5.44M/361M [00:06&lt;05:03, 1.17MB/s]
+  2%|▏         | 5.57M/361M [00:06&lt;05:07, 1.16MB/s]
+  2%|▏         | 5.70M/361M [00:06&lt;05:09, 1.15MB/s]
+  2%|▏         | 5.83M/361M [00:06&lt;05:11, 1.14MB/s]
+  2%|▏         | 5.96M/361M [00:06&lt;06:47, 871kB/s]
+  2%|▏         | 6.06M/361M [00:07&lt;06:53, 859kB/s]
+  2%|▏         | 6.16M/361M [00:07&lt;06:59, 846kB/s]
+  2%|▏         | 6.32M/361M [00:07&lt;05:57, 993kB/s]
+  2%|▏         | 6.46M/361M [00:07&lt;05:47, 1.02MB/s]
+  2%|▏         | 6.59M/361M [00:07&lt;05:39, 1.04MB/s]
+  2%|▏         | 6.72M/361M [00:07&lt;05:34, 1.06MB/s]
+  2%|▏         | 6.85M/361M [00:07&lt;07:08, 829kB/s]
+  2%|▏         | 6.95M/361M [00:07&lt;07:06, 831kB/s]
+  2%|▏         | 7.05M/361M [00:08&lt;07:05, 833kB/s]
+  2%|▏         | 7.14M/361M [00:08&lt;07:04, 835kB/s]
+  2%|▏         | 7.24M/361M [00:08&lt;07:03, 836kB/s]
+  2%|▏         | 7.34M/361M [00:08&lt;07:03, 837kB/s]
+  2%|▏         | 7.50M/361M [00:08&lt;05:53, 1.00MB/s]
+  2%|▏         | 7.63M/361M [00:08&lt;05:44, 1.03MB/s]
+  2%|▏         | 7.77M/361M [00:08&lt;05:35, 1.05MB/s]
+  2%|▏         | 7.90M/361M [00:08&lt;05:29, 1.07MB/s]
+  2%|▏         | 8.03M/361M [00:09&lt;05:25, 1.08MB/s]
+  2%|▏         | 8.16M/361M [00:09&lt;05:23, 1.09MB/s]
+  2%|▏         | 8.29M/361M [00:09&lt;06:55, 849kB/s]
+  2%|▏         | 8.39M/361M [00:09&lt;07:00, 839kB/s]
+  2%|▏         | 8.49M/361M [00:09&lt;07:01, 837kB/s]
+  2%|▏         | 8.59M/361M [00:09&lt;07:00, 838kB/s]
+  2%|▏         | 8.68M/361M [00:09&lt;07:00, 839kB/s]
+  2%|▏         | 8.78M/361M [00:09&lt;07:00, 839kB/s]
+  2%|▏         | 9.01M/361M [00:10&lt;05:03, 1.16MB/s]
+  3%|▎         | 9.14M/361M [00:10&lt;05:06, 1.15MB/s]
+  3%|▎         | 9.27M/361M [00:10&lt;05:07, 1.14MB/s]
+  3%|▎         | 9.40M/361M [00:10&lt;05:09, 1.14MB/s]
+  3%|▎         | 9.54M/361M [00:10&lt;06:41, 876kB/s]
+  3%|▎         | 9.73M/361M [00:10&lt;05:27, 1.08MB/s]
+  3%|▎         | 9.90M/361M [00:10&lt;05:03, 1.16MB/s]
+  3%|▎         | 10.0M/361M [00:11&lt;05:05, 1.15MB/s]
+  3%|▎         | 10.2M/361M [00:11&lt;06:32, 895kB/s]
+  3%|▎         | 10.3M/361M [00:11&lt;06:10, 949kB/s]
+  3%|▎         | 10.4M/361M [00:11&lt;05:53, 993kB/s]
+  3%|▎         | 10.6M/361M [00:11&lt;05:41, 1.03MB/s]
+  3%|▎         | 10.7M/361M [00:11&lt;05:32, 1.06MB/s]
+  3%|▎         | 10.8M/361M [00:11&lt;05:26, 1.08MB/s]
+  3%|▎         | 10.9M/361M [00:11&lt;05:23, 1.08MB/s]
+  3%|▎         | 11.1M/361M [00:12&lt;05:20, 1.09MB/s]
+  3%|▎         | 11.2M/361M [00:12&lt;06:50, 853kB/s]
+  3%|▎         | 11.3M/361M [00:12&lt;06:51, 852kB/s]
+  3%|▎         | 11.4M/361M [00:12&lt;06:52, 849kB/s]
+  3%|▎         | 11.5M/361M [00:12&lt;06:19, 923kB/s]
+  3%|▎         | 11.6M/361M [00:12&lt;06:27, 902kB/s]
+  3%|▎         | 11.7M/361M [00:12&lt;06:35, 885kB/s]
+  3%|▎         | 11.8M/361M [00:13&lt;06:40, 872kB/s]
+  3%|▎         | 11.9M/361M [00:13&lt;06:44, 864kB/s]
+  3%|▎         | 12.0M/361M [00:13&lt;06:47, 858kB/s]
+  3%|▎         | 12.1M/361M [00:13&lt;06:49, 853kB/s]
+  3%|▎         | 12.3M/361M [00:13&lt;06:14, 933kB/s]
+  3%|▎         | 12.4M/361M [00:13&lt;05:52, 991kB/s]
+  3%|▎         | 12.5M/361M [00:13&lt;05:38, 1.03MB/s]
+  3%|▎         | 12.6M/361M [00:13&lt;05:29, 1.06MB/s]
+  4%|▎         | 12.8M/361M [00:13&lt;05:26, 1.07MB/s]
+  4%|▎         | 12.9M/361M [00:14&lt;07:01, 826kB/s]
+  4%|▎         | 13.0M/361M [00:14&lt;07:00, 829kB/s]
+  4%|▎         | 13.1M/361M [00:14&lt;06:59, 831kB/s]
+  4%|▎         | 13.2M/361M [00:14&lt;06:58, 832kB/s]
+  4%|▎         | 13.3M/361M [00:14&lt;06:59, 830kB/s]
+  4%|▎         | 13.4M/361M [00:14&lt;06:24, 906kB/s]
+  4%|▎         | 13.5M/361M [00:14&lt;06:33, 884kB/s]
+  4%|▍         | 13.6M/361M [00:15&lt;06:40, 868kB/s]
+  4%|▍         | 13.7M/361M [00:15&lt;06:50, 847kB/s]
+  4%|▍         | 13.8M/361M [00:15&lt;06:51, 845kB/s]
+  4%|▍         | 14.0M/361M [00:15&lt;06:15, 926kB/s]
+  4%|▍         | 14.1M/361M [00:15&lt;05:53, 984kB/s]
+  4%|▍         | 14.2M/361M [00:15&lt;05:40, 1.02MB/s]
+  4%|▍         | 14.4M/361M [00:15&lt;05:30, 1.05MB/s]
+  4%|▍         | 14.5M/361M [00:15&lt;05:25, 1.07MB/s]
+  4%|▍         | 14.6M/361M [00:15&lt;05:20, 1.08MB/s]
+  4%|▍         | 14.7M/361M [00:16&lt;06:50, 844kB/s]
+  4%|▍         | 14.8M/361M [00:16&lt;06:51, 842kB/s]
+  4%|▍         | 15.0M/361M [00:16&lt;06:18, 915kB/s]
+  4%|▍         | 15.1M/361M [00:16&lt;05:56, 971kB/s]
+  4%|▍         | 15.2M/361M [00:16&lt;05:41, 1.01MB/s]
+  4%|▍         | 15.4M/361M [00:16&lt;05:31, 1.04MB/s]
+  4%|▍         | 15.5M/361M [00:16&lt;05:24, 1.07MB/s]
+  4%|▍         | 15.6M/361M [00:17&lt;06:53, 836kB/s]
+  4%|▍         | 15.7M/361M [00:17&lt;06:54, 833kB/s]
+  4%|▍         | 15.8M/361M [00:17&lt;06:55, 833kB/s]
+  4%|▍         | 15.9M/361M [00:17&lt;06:55, 832kB/s]
+  4%|▍         | 16.0M/361M [00:17&lt;06:56, 830kB/s]
+  4%|▍         | 16.1M/361M [00:17&lt;06:54, 832kB/s]
+  4%|▍         | 16.2M/361M [00:17&lt;06:53, 835kB/s]
+  5%|▍         | 16.3M/361M [00:17&lt;06:53, 835kB/s]
+  5%|▍         | 16.5M/361M [00:18&lt;05:45, 1.00MB/s]
+  5%|▍         | 16.6M/361M [00:18&lt;05:32, 1.04MB/s]
+  5%|▍         | 16.7M/361M [00:18&lt;05:24, 1.06MB/s]
+  5%|▍         | 16.9M/361M [00:18&lt;05:18, 1.08MB/s]
+  5%|▍         | 17.0M/361M [00:18&lt;05:15, 1.09MB/s]
+  5%|▍         | 17.1M/361M [00:18&lt;06:45, 848kB/s]
+  5%|▍         | 17.3M/361M [00:18&lt;06:15, 916kB/s]
+  5%|▍         | 17.4M/361M [00:19&lt;05:54, 970kB/s]
+  5%|▍         | 17.5M/361M [00:19&lt;05:39, 1.01MB/s]
+  5%|▍         | 17.7M/361M [00:19&lt;05:29, 1.04MB/s]
+  5%|▍         | 17.8M/361M [00:19&lt;05:22, 1.07MB/s]
+  5%|▍         | 17.9M/361M [00:19&lt;05:16, 1.08MB/s]
+  5%|▍         | 18.1M/361M [00:19&lt;06:45, 848kB/s]
+  5%|▌         | 18.2M/361M [00:19&lt;06:14, 916kB/s]
+  5%|▌         | 18.3M/361M [00:19&lt;05:53, 970kB/s]
+  5%|▌         | 18.4M/361M [00:20&lt;05:39, 1.01MB/s]
+  5%|▌         | 18.6M/361M [00:20&lt;07:00, 815kB/s]
+  5%|▌         | 18.7M/361M [00:20&lt;06:25, 889kB/s]
+  5%|▌         | 18.9M/361M [00:20&lt;05:36, 1.02MB/s]
+  5%|▌         | 19.0M/361M [00:20&lt;05:27, 1.05MB/s]
+  5%|▌         | 19.1M/361M [00:20&lt;05:21, 1.07MB/s]
+  5%|▌         | 19.3M/361M [00:20&lt;06:44, 845kB/s]
+  5%|▌         | 19.4M/361M [00:21&lt;06:45, 845kB/s]
+  5%|▌         | 19.5M/361M [00:21&lt;06:45, 843kB/s]
+  5%|▌         | 19.6M/361M [00:21&lt;05:45, 991kB/s]
+  5%|▌         | 19.8M/361M [00:21&lt;05:32, 1.03MB/s]
+  6%|▌         | 19.9M/361M [00:21&lt;05:23, 1.06MB/s]
+  6%|▌         | 20.0M/361M [00:21&lt;05:17, 1.07MB/s]
+  6%|▌         | 20.2M/361M [00:21&lt;06:50, 831kB/s]
+  6%|▌         | 20.3M/361M [00:22&lt;06:51, 829kB/s]
+  6%|▌         | 20.3M/361M [00:22&lt;06:54, 823kB/s]
+  6%|▌         | 20.5M/361M [00:22&lt;06:21, 894kB/s]
+  6%|▌         | 20.6M/361M [00:22&lt;06:29, 875kB/s]
+  6%|▌         | 20.7M/361M [00:22&lt;06:36, 860kB/s]
+  6%|▌         | 20.8M/361M [00:22&lt;06:07, 928kB/s]
+  6%|▌         | 20.9M/361M [00:22&lt;06:20, 895kB/s]
+  6%|▌         | 21.0M/361M [00:22&lt;05:57, 953kB/s]
+  6%|▌         | 21.1M/361M [00:23&lt;06:11, 915kB/s]
+  6%|▌         | 21.2M/361M [00:23&lt;06:23, 888kB/s]
+  6%|▌         | 21.3M/361M [00:23&lt;06:31, 870kB/s]
+  6%|▌         | 21.5M/361M [00:23&lt;05:32, 1.02MB/s]
+  6%|▌         | 21.6M/361M [00:23&lt;05:24, 1.05MB/s]
+  6%|▌         | 21.8M/361M [00:23&lt;05:19, 1.06MB/s]
+  6%|▌         | 21.9M/361M [00:23&lt;06:52, 823kB/s]
+  6%|▌         | 22.0M/361M [00:23&lt;06:52, 823kB/s]
+  6%|▌         | 22.1M/361M [00:24&lt;06:18, 896kB/s]
+  6%|▌         | 22.2M/361M [00:24&lt;05:55, 953kB/s]
+  6%|▌         | 22.4M/361M [00:24&lt;05:41, 994kB/s]
+  6%|▌         | 22.5M/361M [00:24&lt;05:31, 1.02MB/s]
+  6%|▋         | 22.6M/361M [00:24&lt;06:59, 808kB/s]
+  6%|▋         | 22.7M/361M [00:24&lt;06:57, 812kB/s]
+  6%|▋         | 22.9M/361M [00:24&lt;05:53, 957kB/s]
+  6%|▋         | 23.0M/361M [00:25&lt;05:40, 993kB/s]
+  6%|▋         | 23.2M/361M [00:25&lt;05:33, 1.01MB/s]
+  6%|▋         | 23.3M/361M [00:25&lt;06:57, 809kB/s]
+  6%|▋         | 23.4M/361M [00:25&lt;06:55, 813kB/s]
+  6%|▋         | 23.5M/361M [00:25&lt;06:53, 817kB/s]
+  7%|▋         | 23.6M/361M [00:25&lt;06:49, 824kB/s]
+  7%|▋         | 23.7M/361M [00:25&lt;06:47, 829kB/s]
+  7%|▋         | 23.8M/361M [00:25&lt;06:45, 834kB/s]
+  7%|▋         | 23.9M/361M [00:26&lt;06:43, 836kB/s]
+  7%|▋         | 24.0M/361M [00:26&lt;06:43, 837kB/s]
+  7%|▋         | 24.1M/361M [00:26&lt;06:42, 839kB/s]
+  7%|▋         | 24.2M/361M [00:26&lt;06:41, 841kB/s]
+  7%|▋         | 24.3M/361M [00:26&lt;06:40, 842kB/s]
+  7%|▋         | 24.4M/361M [00:26&lt;06:40, 842kB/s]
+  7%|▋         | 24.5M/361M [00:26&lt;06:03, 926kB/s]
+  7%|▋         | 24.6M/361M [00:26&lt;06:13, 901kB/s]
+  7%|▋         | 24.7M/361M [00:27&lt;05:48, 967kB/s]
+  7%|▋         | 24.9M/361M [00:27&lt;05:32, 1.01MB/s]
+  7%|▋         | 25.0M/361M [00:27&lt;05:21, 1.05MB/s]
+  7%|▋         | 25.1M/361M [00:27&lt;05:14, 1.07MB/s]
+  7%|▋         | 25.3M/361M [00:27&lt;05:09, 1.09MB/s]
+  7%|▋         | 25.4M/361M [00:27&lt;06:57, 804kB/s]
+  7%|▋         | 25.5M/361M [00:27&lt;06:51, 817kB/s]
+  7%|▋         | 25.6M/361M [00:27&lt;06:47, 823kB/s]
+  7%|▋         | 25.7M/361M [00:28&lt;08:32, 655kB/s]
+  7%|▋         | 25.8M/361M [00:28&lt;07:20, 762kB/s]
+  7%|▋         | 26.0M/361M [00:28&lt;06:04, 921kB/s]
+  7%|▋         | 26.1M/361M [00:28&lt;05:44, 975kB/s]
+  7%|▋         | 26.2M/361M [00:28&lt;05:30, 1.01MB/s]
+  7%|▋         | 26.4M/361M [00:28&lt;06:55, 807kB/s]
+  7%|▋         | 26.5M/361M [00:29&lt;06:50, 816kB/s]
+  7%|▋         | 26.6M/361M [00:29&lt;06:47, 822kB/s]
+  7%|▋         | 26.7M/361M [00:29&lt;06:44, 828kB/s]
+  7%|▋         | 26.8M/361M [00:29&lt;06:41, 833kB/s]
+  7%|▋         | 26.9M/361M [00:29&lt;06:39, 837kB/s]
+  7%|▋         | 27.0M/361M [00:29&lt;06:39, 837kB/s]
+  7%|▋         | 27.1M/361M [00:29&lt;06:38, 840kB/s]
+  8%|▊         | 27.2M/361M [00:29&lt;06:37, 842kB/s]
+  8%|▊         | 27.3M/361M [00:29&lt;06:37, 842kB/s]
+  8%|▊         | 27.4M/361M [00:30&lt;06:38, 838kB/s]
+  8%|▊         | 27.5M/361M [00:30&lt;06:41, 832kB/s]
+  8%|▊         | 27.6M/361M [00:30&lt;06:43, 827kB/s]
+  8%|▊         | 27.7M/361M [00:30&lt;06:42, 830kB/s]
+  8%|▊         | 27.8M/361M [00:30&lt;05:33, 1.00MB/s]
+  8%|▊         | 28.0M/361M [00:30&lt;05:25, 1.03MB/s]
+  8%|▊         | 28.1M/361M [00:30&lt;05:16, 1.05MB/s]
+  8%|▊         | 28.2M/361M [00:30&lt;05:11, 1.07MB/s]
+  8%|▊         | 28.3M/361M [00:31&lt;06:38, 836kB/s]
+  8%|▊         | 28.4M/361M [00:31&lt;06:37, 838kB/s]
+  8%|▊         | 28.6M/361M [00:31&lt;05:37, 986kB/s]
+  8%|▊         | 28.7M/361M [00:31&lt;05:25, 1.02MB/s]
+  8%|▊         | 28.9M/361M [00:31&lt;05:17, 1.05MB/s]
+  8%|▊         | 29.0M/361M [00:31&lt;06:39, 833kB/s]
+  8%|▊         | 29.1M/361M [00:31&lt;06:37, 836kB/s]
+  8%|▊         | 29.2M/361M [00:32&lt;06:38, 834kB/s]
+  8%|▊         | 29.3M/361M [00:32&lt;06:36, 837kB/s]
+  8%|▊         | 29.4M/361M [00:32&lt;06:35, 839kB/s]
+  8%|▊         | 29.5M/361M [00:32&lt;06:34, 841kB/s]
+  8%|▊         | 29.6M/361M [00:32&lt;06:34, 842kB/s]
+  8%|▊         | 29.7M/361M [00:32&lt;06:34, 842kB/s]
+  8%|▊         | 29.8M/361M [00:32&lt;06:33, 842kB/s]
+  8%|▊         | 29.9M/361M [00:32&lt;06:33, 843kB/s]
+  8%|▊         | 30.0M/361M [00:33&lt;06:32, 844kB/s]
+  8%|▊         | 30.1M/361M [00:33&lt;06:32, 844kB/s]
+  8%|▊         | 30.2M/361M [00:33&lt;06:32, 844kB/s]
+  8%|▊         | 30.3M/361M [00:33&lt;06:32, 845kB/s]
+  8%|▊         | 30.4M/361M [00:33&lt;06:32, 843kB/s]
+  8%|▊         | 30.5M/361M [00:33&lt;05:56, 929kB/s]
+  9%|▊         | 30.7M/361M [00:33&lt;04:26, 1.24MB/s]
+  9%|▊         | 30.9M/361M [00:33&lt;04:34, 1.20MB/s]
+  9%|▊         | 31.0M/361M [00:33&lt;04:40, 1.18MB/s]
+  9%|▊         | 31.1M/361M [00:34&lt;04:43, 1.16MB/s]
+  9%|▊         | 31.3M/361M [00:34&lt;06:12, 886kB/s]
+  9%|▊         | 31.4M/361M [00:34&lt;05:49, 945kB/s]
+  9%|▊         | 31.5M/361M [00:34&lt;05:32, 992kB/s]
+  9%|▉         | 31.7M/361M [00:34&lt;05:20, 1.03MB/s]
+  9%|▉         | 31.8M/361M [00:34&lt;05:12, 1.06MB/s]
+  9%|▉         | 31.9M/361M [00:34&lt;05:06, 1.08MB/s]
+  9%|▉         | 32.0M/361M [00:35&lt;06:29, 846kB/s]
+  9%|▉         | 32.1M/361M [00:35&lt;06:29, 845kB/s]
+  9%|▉         | 32.2M/361M [00:35&lt;06:29, 844kB/s]
+  9%|▉         | 32.3M/361M [00:35&lt;06:30, 843kB/s]
+  9%|▉         | 32.4M/361M [00:35&lt;06:30, 842kB/s]
+  9%|▉         | 32.6M/361M [00:35&lt;05:59, 914kB/s]
+  9%|▉         | 32.7M/361M [00:35&lt;06:10, 886kB/s]
+  9%|▉         | 32.8M/361M [00:35&lt;05:18, 1.03MB/s]
+  9%|▉         | 33.0M/361M [00:36&lt;04:29, 1.22MB/s]
+  9%|▉         | 33.2M/361M [00:36&lt;04:36, 1.19MB/s]
+  9%|▉         | 33.3M/361M [00:36&lt;04:41, 1.16MB/s]
+  9%|▉         | 33.4M/361M [00:36&lt;06:11, 884kB/s]
+  9%|▉         | 33.6M/361M [00:36&lt;05:52, 930kB/s]
+  9%|▉         | 33.7M/361M [00:36&lt;05:36, 976kB/s]
+  9%|▉         | 33.8M/361M [00:37&lt;06:54, 791kB/s]
+  9%|▉         | 34.0M/361M [00:37&lt;05:31, 987kB/s]
+  9%|▉         | 34.1M/361M [00:37&lt;05:21, 1.02MB/s]
+  9%|▉         | 34.3M/361M [00:37&lt;05:14, 1.04MB/s]
+ 10%|▉         | 34.4M/361M [00:37&lt;05:10, 1.05MB/s]
+ 10%|▉         | 34.5M/361M [00:37&lt;06:32, 833kB/s]
+ 10%|▉         | 34.6M/361M [00:37&lt;06:32, 832kB/s]
+ 10%|▉         | 34.8M/361M [00:37&lt;06:01, 903kB/s]
+ 10%|▉         | 34.9M/361M [00:38&lt;06:09, 883kB/s]
+ 10%|▉         | 35.0M/361M [00:38&lt;06:17, 864kB/s]
+ 10%|▉         | 35.1M/361M [00:38&lt;06:23, 851kB/s]
+ 10%|▉         | 35.2M/361M [00:38&lt;06:29, 838kB/s]
+ 10%|▉         | 35.3M/361M [00:38&lt;06:31, 833kB/s]
+ 10%|▉         | 35.4M/361M [00:38&lt;06:34, 826kB/s]
+ 10%|▉         | 35.5M/361M [00:38&lt;06:36, 823kB/s]
+ 10%|▉         | 35.6M/361M [00:38&lt;06:35, 824kB/s]
+ 10%|▉         | 35.7M/361M [00:39&lt;06:36, 821kB/s]
+ 10%|▉         | 35.7M/361M [00:39&lt;06:35, 823kB/s]
+ 10%|▉         | 35.8M/361M [00:39&lt;06:36, 821kB/s]
+ 10%|▉         | 35.9M/361M [00:39&lt;06:37, 818kB/s]
+ 10%|▉         | 36.0M/361M [00:39&lt;06:38, 816kB/s]
+ 10%|▉         | 36.1M/361M [00:39&lt;06:34, 825kB/s]
+ 10%|█         | 36.2M/361M [00:39&lt;06:31, 830kB/s]
+ 10%|█         | 36.3M/361M [00:39&lt;06:29, 834kB/s]
+ 10%|█         | 36.4M/361M [00:40&lt;06:28, 837kB/s]
+ 10%|█         | 36.5M/361M [00:40&lt;06:27, 839kB/s]
+ 10%|█         | 36.6M/361M [00:40&lt;06:26, 841kB/s]
+ 10%|█         | 36.7M/361M [00:40&lt;06:25, 842kB/s]
+ 10%|█         | 36.8M/361M [00:40&lt;06:25, 842kB/s]
+ 10%|█         | 37.0M/361M [00:40&lt;05:49, 927kB/s]
+ 10%|█         | 37.1M/361M [00:40&lt;05:59, 902kB/s]
+ 10%|█         | 37.2M/361M [00:40&lt;06:06, 885kB/s]
+ 10%|█         | 37.3M/361M [00:40&lt;06:11, 874kB/s]
+ 10%|█         | 37.4M/361M [00:41&lt;06:16, 861kB/s]
+ 10%|█         | 37.5M/361M [00:41&lt;06:18, 857kB/s]
+ 10%|█         | 37.6M/361M [00:41&lt;06:20, 852kB/s]
+ 10%|█         | 37.7M/361M [00:41&lt;05:46, 933kB/s]
+ 10%|█         | 37.9M/361M [00:41&lt;04:39, 1.16MB/s]
+ 11%|█         | 38.0M/361M [00:41&lt;04:41, 1.15MB/s]
+ 11%|█         | 38.1M/361M [00:41&lt;04:43, 1.14MB/s]
+ 11%|█         | 38.3M/361M [00:41&lt;04:44, 1.14MB/s]
+ 11%|█         | 38.4M/361M [00:41&lt;04:45, 1.13MB/s]
+ 11%|█         | 38.5M/361M [00:42&lt;04:46, 1.13MB/s]
+ 11%|█         | 38.7M/361M [00:42&lt;04:46, 1.13MB/s]
+ 11%|█         | 38.8M/361M [00:42&lt;04:46, 1.13MB/s]
+ 11%|█         | 38.9M/361M [00:42&lt;06:12, 866kB/s]
+ 11%|█         | 39.0M/361M [00:42&lt;06:14, 861kB/s]
+ 11%|█         | 39.2M/361M [00:42&lt;05:46, 929kB/s]
+ 11%|█         | 39.3M/361M [00:42&lt;05:04, 1.06MB/s]
+ 11%|█         | 39.5M/361M [00:43&lt;04:58, 1.08MB/s]
+ 11%|█         | 39.6M/361M [00:43&lt;04:55, 1.09MB/s]
+ 11%|█         | 39.7M/361M [00:43&lt;04:52, 1.10MB/s]
+ 11%|█         | 39.8M/361M [00:43&lt;04:50, 1.11MB/s]
+ 11%|█         | 40.0M/361M [00:43&lt;06:14, 858kB/s]
+ 11%|█         | 40.1M/361M [00:43&lt;06:17, 851kB/s]
+ 11%|█         | 40.2M/361M [00:43&lt;06:19, 846kB/s]
+ 11%|█         | 40.3M/361M [00:43&lt;06:19, 846kB/s]
+ 11%|█         | 40.4M/361M [00:44&lt;06:19, 845kB/s]
+ 11%|█         | 40.5M/361M [00:44&lt;06:20, 844kB/s]
+ 11%|█         | 40.6M/361M [00:44&lt;05:47, 925kB/s]
+ 11%|█▏        | 40.7M/361M [00:44&lt;05:26, 982kB/s]
+ 11%|█▏        | 40.9M/361M [00:44&lt;05:13, 1.02MB/s]
+ 11%|█▏        | 41.0M/361M [00:44&lt;06:36, 808kB/s]
+ 11%|█▏        | 41.1M/361M [00:44&lt;06:32, 816kB/s]
+ 11%|█▏        | 41.2M/361M [00:45&lt;05:57, 896kB/s]
+ 11%|█▏        | 41.3M/361M [00:45&lt;06:03, 882kB/s]
+ 11%|█▏        | 41.5M/361M [00:45&lt;05:36, 950kB/s]
+ 11%|█▏        | 41.5M/361M [00:45&lt;05:47, 921kB/s]
+ 12%|█▏        | 41.6M/361M [00:45&lt;05:56, 898kB/s]
+ 12%|█▏        | 41.7M/361M [00:45&lt;06:02, 883kB/s]
+ 12%|█▏        | 41.8M/361M [00:45&lt;06:07, 871kB/s]
+ 12%|█▏        | 41.9M/361M [00:45&lt;06:10, 863kB/s]
+ 12%|█▏        | 42.0M/361M [00:45&lt;06:12, 857kB/s]
+ 12%|█▏        | 42.2M/361M [00:46&lt;05:40, 937kB/s]
+ 12%|█▏        | 42.3M/361M [00:46&lt;05:21, 993kB/s]
+ 12%|█▏        | 42.4M/361M [00:46&lt;05:09, 1.03MB/s]
+ 12%|█▏        | 42.6M/361M [00:46&lt;05:00, 1.06MB/s]
+ 12%|█▏        | 42.7M/361M [00:46&lt;04:55, 1.08MB/s]
+ 12%|█▏        | 42.8M/361M [00:46&lt;06:18, 841kB/s]
+ 12%|█▏        | 42.9M/361M [00:46&lt;06:18, 842kB/s]
+ 12%|█▏        | 43.0M/361M [00:47&lt;06:18, 842kB/s]
+ 12%|█▏        | 43.1M/361M [00:47&lt;06:18, 842kB/s]
+ 12%|█▏        | 43.2M/361M [00:47&lt;06:18, 841kB/s]
+ 12%|█▏        | 43.3M/361M [00:47&lt;06:17, 842kB/s]
+ 12%|█▏        | 43.5M/361M [00:47&lt;05:17, 1.00MB/s]
+ 12%|█▏        | 43.6M/361M [00:47&lt;05:07, 1.03MB/s]
+ 12%|█▏        | 43.7M/361M [00:47&lt;05:01, 1.05MB/s]
+ 12%|█▏        | 43.9M/361M [00:47&lt;04:58, 1.06MB/s]
+ 12%|█▏        | 44.0M/361M [00:47&lt;04:34, 1.16MB/s]
+ 12%|█▏        | 44.2M/361M [00:48&lt;04:20, 1.22MB/s]
+ 12%|█▏        | 44.3M/361M [00:48&lt;04:28, 1.18MB/s]
+ 12%|█▏        | 44.5M/361M [00:48&lt;05:59, 883kB/s]
+ 12%|█▏        | 44.6M/361M [00:48&lt;05:38, 936kB/s]
+ 12%|█▏        | 44.7M/361M [00:48&lt;05:24, 977kB/s]
+ 12%|█▏        | 44.9M/361M [00:48&lt;05:14, 1.01MB/s]
+ 12%|█▏        | 45.0M/361M [00:48&lt;05:06, 1.03MB/s]
+ 12%|█▏        | 45.1M/361M [00:49&lt;05:00, 1.05MB/s]
+ 13%|█▎        | 45.3M/361M [00:49&lt;06:23, 825kB/s]
+ 13%|█▎        | 45.4M/361M [00:49&lt;06:23, 825kB/s]
+ 13%|█▎        | 45.4M/361M [00:49&lt;06:23, 824kB/s]
+ 13%|█▎        | 45.5M/361M [00:49&lt;06:23, 824kB/s]
+ 13%|█▎        | 45.6M/361M [00:49&lt;06:25, 818kB/s]
+ 13%|█▎        | 45.7M/361M [00:49&lt;06:25, 819kB/s]
+ 13%|█▎        | 45.8M/361M [00:49&lt;06:24, 822kB/s]
+ 13%|█▎        | 45.9M/361M [00:50&lt;06:23, 822kB/s]
+ 13%|█▎        | 46.0M/361M [00:50&lt;06:23, 822kB/s]
+ 13%|█▎        | 46.1M/361M [00:50&lt;06:25, 819kB/s]
+ 13%|█▎        | 46.2M/361M [00:50&lt;06:24, 820kB/s]
+ 13%|█▎        | 46.3M/361M [00:50&lt;06:23, 821kB/s]
+ 13%|█▎        | 46.4M/361M [00:50&lt;06:25, 818kB/s]
+ 13%|█▎        | 46.5M/361M [00:50&lt;06:22, 823kB/s]
+ 13%|█▎        | 46.7M/361M [00:50&lt;05:47, 907kB/s]
+ 13%|█▎        | 46.8M/361M [00:51&lt;05:55, 885kB/s]
+ 13%|█▎        | 46.9M/361M [00:51&lt;05:33, 944kB/s]
+ 13%|█▎        | 47.0M/361M [00:51&lt;05:48, 903kB/s]
+ 13%|█▎        | 47.1M/361M [00:51&lt;05:58, 877kB/s]
+ 13%|█▎        | 47.2M/361M [00:51&lt;06:05, 861kB/s]
+ 13%|█▎        | 47.4M/361M [00:51&lt;04:27, 1.18MB/s]
+ 13%|█▎        | 47.5M/361M [00:51&lt;04:32, 1.15MB/s]
+ 13%|█▎        | 47.7M/361M [00:51&lt;04:36, 1.14MB/s]
+ 13%|█▎        | 47.8M/361M [00:52&lt;04:38, 1.12MB/s]
+ 13%|█▎        | 47.9M/361M [00:52&lt;04:41, 1.11MB/s]
+ 13%|█▎        | 48.1M/361M [00:52&lt;06:09, 848kB/s]
+ 13%|█▎        | 48.2M/361M [00:52&lt;06:12, 842kB/s]
+ 13%|█▎        | 48.3M/361M [00:52&lt;06:13, 838kB/s]
+ 13%|█▎        | 48.4M/361M [00:52&lt;06:15, 833kB/s]
+ 13%|█▎        | 48.5M/361M [00:52&lt;06:17, 829kB/s]
+ 13%|█▎        | 48.6M/361M [00:52&lt;05:17, 984kB/s]
+ 13%|█▎        | 48.8M/361M [00:53&lt;05:08, 1.01MB/s]
+ 14%|█▎        | 48.9M/361M [00:53&lt;05:02, 1.03MB/s]
+ 14%|█▎        | 49.0M/361M [00:53&lt;06:24, 812kB/s]
+ 14%|█▎        | 49.1M/361M [00:53&lt;06:24, 813kB/s]
+ 14%|█▎        | 49.3M/361M [00:53&lt;05:50, 892kB/s]
+ 14%|█▎        | 49.3M/361M [00:53&lt;05:55, 879kB/s]
+ 14%|█▎        | 49.4M/361M [00:53&lt;05:59, 869kB/s]
+ 14%|█▎        | 49.6M/361M [00:54&lt;05:31, 940kB/s]
+ 14%|█▎        | 49.7M/361M [00:54&lt;05:41, 913kB/s]
+ 14%|█▍        | 49.8M/361M [00:54&lt;05:49, 892kB/s]
+ 14%|█▍        | 49.9M/361M [00:54&lt;05:55, 877kB/s]
+ 14%|█▍        | 50.0M/361M [00:54&lt;05:28, 949kB/s]
+ 14%|█▍        | 50.1M/361M [00:54&lt;05:39, 918kB/s]
+ 14%|█▍        | 50.2M/361M [00:54&lt;05:47, 896kB/s]
+ 14%|█▍        | 50.3M/361M [00:54&lt;05:53, 880kB/s]
+ 14%|█▍        | 50.4M/361M [00:54&lt;05:26, 953kB/s]
+ 14%|█▍        | 50.5M/361M [00:55&lt;05:37, 920kB/s]
+ 14%|█▍        | 50.7M/361M [00:55&lt;04:52, 1.06MB/s]
+ 14%|█▍        | 50.8M/361M [00:55&lt;04:47, 1.08MB/s]
+ 14%|█▍        | 51.0M/361M [00:55&lt;06:08, 843kB/s]
+ 14%|█▍        | 51.1M/361M [00:55&lt;05:16, 982kB/s]
+ 14%|█▍        | 51.3M/361M [00:55&lt;04:43, 1.09MB/s]
+ 14%|█▍        | 51.4M/361M [00:55&lt;04:41, 1.10MB/s]
+ 14%|█▍        | 51.5M/361M [00:56&lt;04:39, 1.11MB/s]
+ 14%|█▍        | 51.7M/361M [00:56&lt;04:38, 1.11MB/s]
+ 14%|█▍        | 51.8M/361M [00:56&lt;04:37, 1.12MB/s]
+ 14%|█▍        | 51.9M/361M [00:56&lt;04:37, 1.12MB/s]
+ 14%|█▍        | 52.1M/361M [00:56&lt;04:36, 1.12MB/s]
+ 14%|█▍        | 52.2M/361M [00:56&lt;04:35, 1.12MB/s]
+ 14%|█▍        | 52.3M/361M [00:56&lt;04:35, 1.12MB/s]
+ 15%|█▍        | 52.5M/361M [00:56&lt;05:56, 866kB/s]
+ 15%|█▍        | 52.6M/361M [00:57&lt;05:32, 930kB/s]
+ 15%|█▍        | 52.7M/361M [00:57&lt;05:16, 977kB/s]
+ 15%|█▍        | 52.9M/361M [00:57&lt;04:42, 1.09MB/s]
+ 15%|█▍        | 53.1M/361M [00:57&lt;03:52, 1.33MB/s]
+ 15%|█▍        | 53.3M/361M [00:57&lt;03:49, 1.34MB/s]
+ 15%|█▍        | 53.4M/361M [00:57&lt;04:53, 1.05MB/s]
+ 15%|█▍        | 53.6M/361M [00:57&lt;04:49, 1.06MB/s]
+ 15%|█▍        | 53.7M/361M [00:58&lt;04:45, 1.08MB/s]
+ 15%|█▍        | 53.8M/361M [00:58&lt;04:42, 1.09MB/s]
+ 15%|█▍        | 54.0M/361M [00:58&lt;05:58, 857kB/s]
+ 15%|█▍        | 54.1M/361M [00:58&lt;06:00, 852kB/s]
+ 15%|█▍        | 54.2M/361M [00:58&lt;06:01, 850kB/s]
+ 15%|█▌        | 54.3M/361M [00:58&lt;06:01, 849kB/s]
+ 15%|█▌        | 54.4M/361M [00:58&lt;07:42, 664kB/s]
+ 15%|█▌        | 54.5M/361M [00:59&lt;07:15, 705kB/s]
+ 15%|█▌        | 54.6M/361M [00:59&lt;06:55, 739kB/s]
+ 15%|█▌        | 54.7M/361M [00:59&lt;06:05, 839kB/s]
+ 15%|█▌        | 54.9M/361M [00:59&lt;04:27, 1.15MB/s]
+ 15%|█▌        | 55.1M/361M [00:59&lt;04:28, 1.14MB/s]
+ 15%|█▌        | 55.2M/361M [00:59&lt;04:29, 1.14MB/s]
+ 15%|█▌        | 55.3M/361M [00:59&lt;04:30, 1.13MB/s]
+ 15%|█▌        | 55.4M/361M [01:00&lt;05:49, 874kB/s]
+ 15%|█▌        | 55.5M/361M [01:00&lt;05:52, 867kB/s]
+ 15%|█▌        | 55.6M/361M [01:00&lt;05:54, 862kB/s]
+ 15%|█▌        | 55.7M/361M [01:00&lt;05:57, 855kB/s]
+ 15%|█▌        | 56.0M/361M [01:00&lt;04:22, 1.16MB/s]
+ 16%|█▌        | 56.1M/361M [01:00&lt;04:25, 1.15MB/s]
+ 16%|█▌        | 56.2M/361M [01:00&lt;04:27, 1.14MB/s]
+ 16%|█▌        | 56.4M/361M [01:00&lt;04:28, 1.14MB/s]
+ 16%|█▌        | 56.5M/361M [01:00&lt;04:29, 1.13MB/s]
+ 16%|█▌        | 56.6M/361M [01:01&lt;05:50, 871kB/s]
+ 16%|█▌        | 56.7M/361M [01:01&lt;05:52, 864kB/s]
+ 16%|█▌        | 56.8M/361M [01:01&lt;05:55, 858kB/s]
+ 16%|█▌        | 56.9M/361M [01:01&lt;05:56, 854kB/s]
+ 16%|█▌        | 57.0M/361M [01:01&lt;05:57, 852kB/s]
+ 16%|█▌        | 57.1M/361M [01:01&lt;05:28, 928kB/s]
+ 16%|█▌        | 57.2M/361M [01:01&lt;05:36, 903kB/s]
+ 16%|█▌        | 57.4M/361M [01:02&lt;05:14, 968kB/s]
+ 16%|█▌        | 57.5M/361M [01:02&lt;05:00, 1.01MB/s]
+ 16%|█▌        | 57.6M/361M [01:02&lt;04:50, 1.04MB/s]
+ 16%|█▌        | 57.8M/361M [01:02&lt;04:24, 1.15MB/s]
+ 16%|█▌        | 57.9M/361M [01:02&lt;04:25, 1.14MB/s]
+ 16%|█▌        | 58.1M/361M [01:02&lt;04:26, 1.14MB/s]
+ 16%|█▌        | 58.2M/361M [01:02&lt;04:27, 1.13MB/s]
+ 16%|█▌        | 58.3M/361M [01:02&lt;04:28, 1.13MB/s]
+ 16%|█▌        | 58.5M/361M [01:02&lt;04:29, 1.13MB/s]
+ 16%|█▌        | 58.6M/361M [01:03&lt;05:50, 865kB/s]
+ 16%|█▌        | 58.7M/361M [01:03&lt;05:30, 916kB/s]
+ 16%|█▋        | 58.9M/361M [01:03&lt;05:13, 964kB/s]
+ 16%|█▋        | 59.0M/361M [01:03&lt;05:01, 1.00MB/s]
+ 16%|█▋        | 59.1M/361M [01:03&lt;04:51, 1.04MB/s]
+ 16%|█▋        | 59.2M/361M [01:03&lt;04:45, 1.06MB/s]
+ 16%|█▋        | 59.4M/361M [01:04&lt;06:03, 831kB/s]
+ 16%|█▋        | 59.5M/361M [01:04&lt;05:12, 966kB/s]
+ 17%|█▋        | 59.7M/361M [01:04&lt;05:01, 1.00MB/s]
+ 17%|█▋        | 59.8M/361M [01:04&lt;04:53, 1.03MB/s]
+ 17%|█▋        | 59.9M/361M [01:04&lt;04:47, 1.05MB/s]
+ 17%|█▋        | 60.1M/361M [01:04&lt;04:44, 1.06MB/s]
+ 17%|█▋        | 60.2M/361M [01:04&lt;06:02, 832kB/s]
+ 17%|█▋        | 60.3M/361M [01:04&lt;06:03, 829kB/s]
+ 17%|█▋        | 60.4M/361M [01:05&lt;06:02, 831kB/s]
+ 17%|█▋        | 60.5M/361M [01:05&lt;06:01, 832kB/s]
+ 17%|█▋        | 60.6M/361M [01:05&lt;06:02, 830kB/s]
+ 17%|█▋        | 60.7M/361M [01:05&lt;06:02, 830kB/s]
+ 17%|█▋        | 60.8M/361M [01:05&lt;06:03, 826kB/s]
+ 17%|█▋        | 60.9M/361M [01:05&lt;06:03, 827kB/s]
+ 17%|█▋        | 61.0M/361M [01:05&lt;05:31, 906kB/s]
+ 17%|█▋        | 61.1M/361M [01:05&lt;05:11, 964kB/s]
+ 17%|█▋        | 61.2M/361M [01:06&lt;05:25, 922kB/s]
+ 17%|█▋        | 61.4M/361M [01:06&lt;05:07, 975kB/s]
+ 17%|█▋        | 61.5M/361M [01:06&lt;05:23, 929kB/s]
+ 17%|█▋        | 61.6M/361M [01:06&lt;05:05, 981kB/s]
+ 17%|█▋        | 61.7M/361M [01:06&lt;05:20, 935kB/s]
+ 17%|█▋        | 61.8M/361M [01:06&lt;05:34, 897kB/s]
+ 17%|█▋        | 61.9M/361M [01:06&lt;05:39, 882kB/s]
+ 17%|█▋        | 62.0M/361M [01:06&lt;05:43, 871kB/s]
+ 17%|█▋        | 62.1M/361M [01:06&lt;05:16, 946kB/s]
+ 17%|█▋        | 62.2M/361M [01:07&lt;05:27, 915kB/s]
+ 17%|█▋        | 62.5M/361M [01:07&lt;03:34, 1.39MB/s]
+ 17%|█▋        | 62.7M/361M [01:07&lt;03:33, 1.40MB/s]
+ 17%|█▋        | 62.8M/361M [01:07&lt;04:36, 1.08MB/s]
+ 17%|█▋        | 63.0M/361M [01:07&lt;04:33, 1.09MB/s]
+ 17%|█▋        | 63.1M/361M [01:07&lt;04:31, 1.10MB/s]
+ 17%|█▋        | 63.2M/361M [01:07&lt;04:29, 1.11MB/s]
+ 18%|█▊        | 63.4M/361M [01:08&lt;04:28, 1.11MB/s]
+ 18%|█▊        | 63.5M/361M [01:08&lt;04:27, 1.12MB/s]
+ 18%|█▊        | 63.6M/361M [01:08&lt;05:43, 868kB/s]
+ 18%|█▊        | 63.8M/361M [01:08&lt;04:39, 1.07MB/s]
+ 18%|█▊        | 64.0M/361M [01:08&lt;04:35, 1.08MB/s]
+ 18%|█▊        | 64.1M/361M [01:08&lt;04:32, 1.09MB/s]
+ 18%|█▊        | 64.2M/361M [01:08&lt;04:29, 1.10MB/s]
+ 18%|█▊        | 64.4M/361M [01:08&lt;04:28, 1.11MB/s]
+ 18%|█▊        | 64.5M/361M [01:09&lt;05:44, 863kB/s]
+ 18%|█▊        | 64.6M/361M [01:09&lt;05:45, 859kB/s]
+ 18%|█▊        | 64.7M/361M [01:09&lt;05:47, 854kB/s]
+ 18%|█▊        | 64.8M/361M [01:09&lt;05:48, 852kB/s]
+ 18%|█▊        | 64.9M/361M [01:09&lt;05:19, 927kB/s]
+ 18%|█▊        | 65.0M/361M [01:09&lt;05:28, 904kB/s]
+ 18%|█▊        | 65.1M/361M [01:09&lt;05:34, 886kB/s]
+ 18%|█▊        | 65.2M/361M [01:10&lt;05:38, 874kB/s]
+ 18%|█▊        | 65.3M/361M [01:10&lt;05:13, 946kB/s]
+ 18%|█▊        | 65.4M/361M [01:10&lt;05:23, 916kB/s]
+ 18%|█▊        | 65.5M/361M [01:10&lt;05:32, 891kB/s]
+ 18%|█▊        | 65.7M/361M [01:10&lt;05:10, 954kB/s]
+ 18%|█▊        | 65.8M/361M [01:10&lt;04:55, 1.00MB/s]
+ 18%|█▊        | 65.9M/361M [01:10&lt;04:46, 1.03MB/s]
+ 18%|█▊        | 66.1M/361M [01:10&lt;04:39, 1.06MB/s]
+ 18%|█▊        | 66.2M/361M [01:10&lt;04:36, 1.07MB/s]
+ 18%|█▊        | 66.3M/361M [01:11&lt;04:34, 1.08MB/s]
+ 18%|█▊        | 66.5M/361M [01:11&lt;04:31, 1.09MB/s]
+ 18%|█▊        | 66.6M/361M [01:11&lt;04:28, 1.10MB/s]
+ 18%|█▊        | 66.7M/361M [01:11&lt;05:46, 850kB/s]
+ 18%|█▊        | 66.8M/361M [01:11&lt;05:21, 917kB/s]
+ 19%|█▊        | 67.0M/361M [01:11&lt;05:03, 970kB/s]
+ 19%|█▊        | 67.1M/361M [01:11&lt;04:51, 1.01MB/s]
+ 19%|█▊        | 67.2M/361M [01:12&lt;04:43, 1.04MB/s]
+ 19%|█▊        | 67.4M/361M [01:12&lt;04:37, 1.06MB/s]
+ 19%|█▊        | 67.5M/361M [01:12&lt;04:32, 1.08MB/s]
+ 19%|█▊        | 67.6M/361M [01:12&lt;04:29, 1.09MB/s]
+ 19%|█▊        | 67.8M/361M [01:12&lt;05:44, 852kB/s]
+ 19%|█▉        | 67.9M/361M [01:12&lt;05:45, 849kB/s]
+ 19%|█▉        | 68.0M/361M [01:12&lt;05:46, 846kB/s]
+ 19%|█▉        | 68.1M/361M [01:12&lt;05:46, 846kB/s]
+ 19%|█▉        | 68.2M/361M [01:13&lt;05:47, 844kB/s]
+ 19%|█▉        | 68.3M/361M [01:13&lt;05:17, 923kB/s]
+ 19%|█▉        | 68.4M/361M [01:13&lt;05:25, 901kB/s]
+ 19%|█▉        | 68.5M/361M [01:13&lt;05:03, 966kB/s]
+ 19%|█▉        | 68.6M/361M [01:13&lt;05:15, 929kB/s]
+ 19%|█▉        | 68.7M/361M [01:13&lt;05:23, 905kB/s]
+ 19%|█▉        | 68.8M/361M [01:13&lt;05:30, 886kB/s]
+ 19%|█▉        | 68.9M/361M [01:13&lt;05:35, 872kB/s]
+ 19%|█▉        | 69.0M/361M [01:14&lt;05:38, 863kB/s]
+ 19%|█▉        | 69.2M/361M [01:14&lt;04:45, 1.02MB/s]
+ 19%|█▉        | 69.3M/361M [01:14&lt;04:37, 1.05MB/s]
+ 19%|█▉        | 69.4M/361M [01:14&lt;04:31, 1.08MB/s]
+ 19%|█▉        | 69.6M/361M [01:14&lt;04:27, 1.09MB/s]
+ 19%|█▉        | 69.7M/361M [01:14&lt;04:25, 1.10MB/s]
+ 19%|█▉        | 69.8M/361M [01:14&lt;04:23, 1.11MB/s]
+ 19%|█▉        | 70.0M/361M [01:14&lt;04:21, 1.11MB/s]
+ 19%|█▉        | 70.1M/361M [01:15&lt;05:38, 860kB/s]
+ 19%|█▉        | 70.2M/361M [01:15&lt;05:40, 856kB/s]
+ 19%|█▉        | 70.3M/361M [01:15&lt;05:41, 852kB/s]
+ 19%|█▉        | 70.4M/361M [01:15&lt;05:42, 850kB/s]
+ 19%|█▉        | 70.5M/361M [01:15&lt;05:43, 847kB/s]
+ 20%|█▉        | 70.6M/361M [01:15&lt;05:14, 926kB/s]
+ 20%|█▉        | 70.7M/361M [01:15&lt;04:57, 976kB/s]
+ 20%|█▉        | 70.9M/361M [01:15&lt;04:48, 1.01MB/s]
+ 20%|█▉        | 71.0M/361M [01:15&lt;04:39, 1.04MB/s]
+ 20%|█▉        | 71.1M/361M [01:16&lt;05:58, 810kB/s]
+ 20%|█▉        | 71.3M/361M [01:16&lt;05:30, 879kB/s]
+ 20%|█▉        | 71.4M/361M [01:16&lt;05:08, 939kB/s]
+ 20%|█▉        | 71.5M/361M [01:16&lt;04:54, 983kB/s]
+ 20%|█▉        | 71.7M/361M [01:16&lt;04:45, 1.01MB/s]
+ 20%|█▉        | 71.8M/361M [01:16&lt;04:38, 1.04MB/s]
+ 20%|█▉        | 71.9M/361M [01:16&lt;04:35, 1.05MB/s]
+ 20%|█▉        | 72.1M/361M [01:17&lt;04:33, 1.06MB/s]
+ 20%|█▉        | 72.2M/361M [01:17&lt;05:50, 826kB/s]
+ 20%|█▉        | 72.3M/361M [01:17&lt;05:49, 827kB/s]
+ 20%|██        | 72.4M/361M [01:17&lt;05:49, 826kB/s]
+ 20%|██        | 72.5M/361M [01:17&lt;05:49, 828kB/s]
+ 20%|██        | 72.6M/361M [01:17&lt;05:51, 823kB/s]
+ 20%|██        | 72.7M/361M [01:17&lt;05:50, 823kB/s]
+ 20%|██        | 72.8M/361M [01:18&lt;05:52, 819kB/s]
+ 20%|██        | 72.9M/361M [01:18&lt;05:51, 821kB/s]
+ 20%|██        | 73.0M/361M [01:18&lt;05:50, 824kB/s]
+ 20%|██        | 73.1M/361M [01:18&lt;05:51, 820kB/s]
+ 20%|██        | 73.2M/361M [01:18&lt;05:49, 826kB/s]
+ 20%|██        | 73.3M/361M [01:18&lt;05:50, 822kB/s]
+ 20%|██        | 73.4M/361M [01:18&lt;05:49, 825kB/s]
+ 20%|██        | 73.5M/361M [01:18&lt;05:48, 826kB/s]
+ 20%|██        | 73.6M/361M [01:18&lt;05:47, 828kB/s]
+ 20%|██        | 73.7M/361M [01:19&lt;05:49, 823kB/s]
+ 20%|██        | 73.8M/361M [01:19&lt;05:51, 820kB/s]
+ 20%|██        | 74.0M/361M [01:19&lt;04:30, 1.06MB/s]
+ 20%|██        | 74.1M/361M [01:19&lt;04:28, 1.07MB/s]
+ 21%|██        | 74.2M/361M [01:19&lt;04:26, 1.08MB/s]
+ 21%|██        | 74.4M/361M [01:19&lt;04:06, 1.16MB/s]
+ 21%|██        | 74.5M/361M [01:19&lt;04:12, 1.14MB/s]
+ 21%|██        | 74.6M/361M [01:19&lt;04:15, 1.12MB/s]
+ 21%|██        | 74.8M/361M [01:20&lt;04:17, 1.11MB/s]
+ 21%|██        | 74.9M/361M [01:20&lt;04:18, 1.11MB/s]
+ 21%|██        | 75.0M/361M [01:20&lt;04:20, 1.10MB/s]
+ 21%|██        | 75.2M/361M [01:20&lt;04:20, 1.10MB/s]
+ 21%|██        | 75.3M/361M [01:20&lt;05:35, 853kB/s]
+ 21%|██        | 75.4M/361M [01:20&lt;05:36, 849kB/s]
+ 21%|██        | 75.5M/361M [01:20&lt;05:11, 919kB/s]
+ 21%|██        | 75.6M/361M [01:21&lt;05:17, 899kB/s]
+ 21%|██        | 75.7M/361M [01:21&lt;05:23, 883kB/s]
+ 21%|██        | 75.8M/361M [01:21&lt;05:27, 871kB/s]
+ 21%|██        | 75.9M/361M [01:21&lt;05:31, 862kB/s]
+ 21%|██        | 76.2M/361M [01:21&lt;04:01, 1.18MB/s]
+ 21%|██        | 76.3M/361M [01:21&lt;04:04, 1.17MB/s]
+ 21%|██        | 76.4M/361M [01:21&lt;04:07, 1.15MB/s]
+ 21%|██        | 76.5M/361M [01:21&lt;04:09, 1.14MB/s]
+ 21%|██        | 76.7M/361M [01:21&lt;04:10, 1.14MB/s]
+ 21%|██        | 76.8M/361M [01:22&lt;04:11, 1.13MB/s]
+ 21%|██▏       | 76.9M/361M [01:22&lt;04:11, 1.13MB/s]
+ 21%|██▏       | 77.1M/361M [01:22&lt;05:27, 870kB/s]
+ 21%|██▏       | 77.2M/361M [01:22&lt;05:29, 863kB/s]
+ 21%|██▏       | 77.3M/361M [01:22&lt;05:05, 931kB/s]
+ 21%|██▏       | 77.5M/361M [01:22&lt;04:28, 1.06MB/s]
+ 21%|██▏       | 77.6M/361M [01:22&lt;04:24, 1.07MB/s]
+ 22%|██▏       | 77.7M/361M [01:22&lt;04:20, 1.09MB/s]
+ 22%|██▏       | 77.9M/361M [01:23&lt;05:32, 852kB/s]
+ 22%|██▏       | 78.0M/361M [01:23&lt;05:33, 850kB/s]
+ 22%|██▏       | 78.1M/361M [01:23&lt;05:34, 847kB/s]
+ 22%|██▏       | 78.2M/361M [01:23&lt;05:35, 845kB/s]
+ 22%|██▏       | 78.3M/361M [01:23&lt;04:22, 1.08MB/s]
+ 22%|██▏       | 78.5M/361M [01:23&lt;04:01, 1.17MB/s]
+ 22%|██▏       | 78.6M/361M [01:23&lt;04:04, 1.16MB/s]
+ 22%|██▏       | 78.8M/361M [01:24&lt;04:06, 1.15MB/s]
+ 22%|██▏       | 78.9M/361M [01:24&lt;05:21, 878kB/s]
+ 22%|██▏       | 79.0M/361M [01:24&lt;07:31, 626kB/s]
+ 22%|██▏       | 79.2M/361M [01:24&lt;06:33, 717kB/s]
+ 22%|██▏       | 79.3M/361M [01:24&lt;06:21, 741kB/s]
+ 22%|██▏       | 79.4M/361M [01:24&lt;06:11, 759kB/s]
+ 22%|██▏       | 79.6M/361M [01:25&lt;04:47, 979kB/s]
+ 22%|██▏       | 79.7M/361M [01:25&lt;04:39, 1.01MB/s]
+ 22%|██▏       | 79.8M/361M [01:25&lt;04:33, 1.03MB/s]
+ 22%|██▏       | 80.0M/361M [01:25&lt;04:28, 1.05MB/s]
+ 22%|██▏       | 80.1M/361M [01:25&lt;04:25, 1.06MB/s]
+ 22%|██▏       | 80.2M/361M [01:25&lt;04:23, 1.07MB/s]
+ 22%|██▏       | 80.3M/361M [01:25&lt;04:21, 1.08MB/s]
+ 22%|██▏       | 80.5M/361M [01:25&lt;04:19, 1.08MB/s]
+ 22%|██▏       | 80.6M/361M [01:26&lt;04:18, 1.09MB/s]
+ 22%|██▏       | 80.7M/361M [01:26&lt;04:17, 1.09MB/s]
+ 22%|██▏       | 80.9M/361M [01:26&lt;04:17, 1.09MB/s]
+ 22%|██▏       | 81.0M/361M [01:26&lt;05:33, 841kB/s]
+ 22%|██▏       | 81.1M/361M [01:26&lt;05:33, 839kB/s]
+ 22%|██▏       | 81.2M/361M [01:26&lt;05:38, 828kB/s]
+ 22%|██▏       | 81.3M/361M [01:26&lt;05:10, 902kB/s]
+ 23%|██▎       | 81.4M/361M [01:27&lt;05:19, 877kB/s]
+ 23%|██▎       | 81.5M/361M [01:27&lt;05:24, 862kB/s]
+ 23%|██▎       | 81.7M/361M [01:27&lt;05:00, 932kB/s]
+ 23%|██▎       | 81.8M/361M [01:27&lt;05:10, 900kB/s]
+ 23%|██▎       | 81.9M/361M [01:27&lt;04:51, 960kB/s]
+ 23%|██▎       | 82.0M/361M [01:27&lt;05:04, 919kB/s]
+ 23%|██▎       | 82.1M/361M [01:27&lt;05:14, 889kB/s]
+ 23%|██▎       | 82.2M/361M [01:27&lt;05:20, 870kB/s]
+ 23%|██▎       | 82.3M/361M [01:27&lt;05:28, 851kB/s]
+ 23%|██▎       | 82.4M/361M [01:28&lt;05:31, 842kB/s]
+ 23%|██▎       | 82.5M/361M [01:28&lt;05:34, 835kB/s]
+ 23%|██▎       | 82.6M/361M [01:28&lt;04:40, 994kB/s]
+ 23%|██▎       | 82.8M/361M [01:28&lt;04:33, 1.02MB/s]
+ 23%|██▎       | 82.9M/361M [01:28&lt;04:27, 1.04MB/s]
+ 23%|██▎       | 83.0M/361M [01:28&lt;04:22, 1.06MB/s]
+ 23%|██▎       | 83.2M/361M [01:28&lt;05:37, 825kB/s]
+ 23%|██▎       | 83.3M/361M [01:29&lt;05:11, 893kB/s]
+ 23%|██▎       | 83.5M/361M [01:29&lt;04:33, 1.02MB/s]
+ 23%|██▎       | 83.6M/361M [01:29&lt;04:27, 1.04MB/s]
+ 23%|██▎       | 83.7M/361M [01:29&lt;04:23, 1.05MB/s]
+ 23%|██▎       | 83.9M/361M [01:29&lt;04:21, 1.06MB/s]
+ 23%|██▎       | 84.0M/361M [01:29&lt;04:17, 1.08MB/s]
+ 23%|██▎       | 84.1M/361M [01:29&lt;04:16, 1.08MB/s]
+ 23%|██▎       | 84.2M/361M [01:29&lt;04:15, 1.08MB/s]
+ 23%|██▎       | 84.4M/361M [01:30&lt;04:16, 1.08MB/s]
+ 23%|██▎       | 84.5M/361M [01:30&lt;04:14, 1.09MB/s]
+ 23%|██▎       | 84.6M/361M [01:30&lt;04:13, 1.09MB/s]
+ 23%|██▎       | 84.8M/361M [01:30&lt;04:12, 1.10MB/s]
+ 23%|██▎       | 84.9M/361M [01:30&lt;04:10, 1.11MB/s]
+ 24%|██▎       | 85.0M/361M [01:30&lt;05:22, 858kB/s]
+ 24%|██▎       | 85.2M/361M [01:30&lt;04:59, 923kB/s]
+ 24%|██▎       | 85.3M/361M [01:30&lt;04:43, 976kB/s]
+ 24%|██▎       | 85.4M/361M [01:31&lt;04:31, 1.02MB/s]
+ 24%|██▎       | 85.6M/361M [01:31&lt;05:37, 819kB/s]
+ 24%|██▎       | 85.7M/361M [01:31&lt;05:34, 825kB/s]
+ 24%|██▎       | 85.8M/361M [01:31&lt;05:32, 829kB/s]
+ 24%|██▍       | 85.9M/361M [01:31&lt;05:03, 908kB/s]
+ 24%|██▍       | 86.0M/361M [01:31&lt;05:09, 890kB/s]
+ 24%|██▍       | 86.1M/361M [01:31&lt;04:47, 957kB/s]
+ 24%|██▍       | 86.2M/361M [01:32&lt;04:57, 924kB/s]
+ 24%|██▍       | 86.3M/361M [01:32&lt;05:05, 901kB/s]
+ 24%|██▍       | 86.4M/361M [01:32&lt;05:11, 884kB/s]
+ 24%|██▍       | 86.5M/361M [01:32&lt;05:15, 872kB/s]
+ 24%|██▍       | 86.6M/361M [01:32&lt;05:18, 864kB/s]
+ 24%|██▍       | 86.7M/361M [01:32&lt;04:51, 941kB/s]
+ 24%|██▍       | 86.9M/361M [01:32&lt;04:36, 995kB/s]
+ 24%|██▍       | 87.0M/361M [01:32&lt;04:25, 1.03MB/s]
+ 24%|██▍       | 87.1M/361M [01:32&lt;04:18, 1.06MB/s]
+ 24%|██▍       | 87.3M/361M [01:33&lt;04:13, 1.08MB/s]
+ 24%|██▍       | 87.4M/361M [01:33&lt;04:10, 1.09MB/s]
+ 24%|██▍       | 87.5M/361M [01:33&lt;04:08, 1.10MB/s]
+ 24%|██▍       | 87.7M/361M [01:33&lt;04:06, 1.11MB/s]
+ 24%|██▍       | 87.8M/361M [01:33&lt;04:05, 1.11MB/s]
+ 24%|██▍       | 87.9M/361M [01:33&lt;04:05, 1.12MB/s]
+ 24%|██▍       | 88.0M/361M [01:33&lt;05:17, 861kB/s]
+ 24%|██▍       | 88.2M/361M [01:34&lt;04:55, 926kB/s]
+ 24%|██▍       | 88.3M/361M [01:34&lt;04:39, 978kB/s]
+ 24%|██▍       | 88.4M/361M [01:34&lt;05:41, 800kB/s]
+ 25%|██▍       | 88.6M/361M [01:34&lt;05:11, 876kB/s]
+ 25%|██▍       | 88.7M/361M [01:34&lt;04:50, 938kB/s]
+ 25%|██▍       | 88.8M/361M [01:34&lt;04:37, 983kB/s]
+ 25%|██▍       | 89.0M/361M [01:34&lt;04:26, 1.02MB/s]
+ 25%|██▍       | 89.1M/361M [01:34&lt;04:19, 1.05MB/s]
+ 25%|██▍       | 89.2M/361M [01:35&lt;05:26, 835kB/s]
+ 25%|██▍       | 89.4M/361M [01:35&lt;04:40, 969kB/s]
+ 25%|██▍       | 89.6M/361M [01:35&lt;04:12, 1.08MB/s]
+ 25%|██▍       | 89.7M/361M [01:35&lt;04:09, 1.09MB/s]
+ 25%|██▍       | 89.8M/361M [01:35&lt;04:08, 1.09MB/s]
+ 25%|██▍       | 90.0M/361M [01:35&lt;03:51, 1.17MB/s]
+ 25%|██▍       | 90.1M/361M [01:35&lt;03:53, 1.16MB/s]
+ 25%|██▍       | 90.2M/361M [01:35&lt;03:56, 1.15MB/s]
+ 25%|██▌       | 90.4M/361M [01:36&lt;03:58, 1.14MB/s]
+ 25%|██▌       | 90.5M/361M [01:36&lt;03:59, 1.13MB/s]
+ 25%|██▌       | 90.6M/361M [01:36&lt;03:59, 1.13MB/s]
+ 25%|██▌       | 90.8M/361M [01:36&lt;04:00, 1.13MB/s]
+ 25%|██▌       | 90.9M/361M [01:36&lt;05:11, 868kB/s]
+ 25%|██▌       | 91.0M/361M [01:36&lt;04:51, 929kB/s]
+ 25%|██▌       | 91.2M/361M [01:36&lt;04:35, 979kB/s]
+ 25%|██▌       | 91.3M/361M [01:37&lt;04:25, 1.02MB/s]
+ 25%|██▌       | 91.4M/361M [01:37&lt;04:17, 1.05MB/s]
+ 25%|██▌       | 91.6M/361M [01:37&lt;05:23, 834kB/s]
+ 25%|██▌       | 91.7M/361M [01:37&lt;05:22, 836kB/s]
+ 25%|██▌       | 91.8M/361M [01:37&lt;04:34, 982kB/s]
+ 25%|██▌       | 91.9M/361M [01:37&lt;04:24, 1.02MB/s]
+ 25%|██▌       | 92.1M/361M [01:37&lt;04:16, 1.05MB/s]
+ 26%|██▌       | 92.2M/361M [01:37&lt;04:11, 1.07MB/s]
+ 26%|██▌       | 92.3M/361M [01:38&lt;05:18, 844kB/s]
+ 26%|██▌       | 92.4M/361M [01:38&lt;05:18, 843kB/s]
+ 26%|██▌       | 92.5M/361M [01:38&lt;05:18, 844kB/s]
+ 26%|██▌       | 92.7M/361M [01:38&lt;04:52, 918kB/s]
+ 26%|██▌       | 92.8M/361M [01:38&lt;04:15, 1.05MB/s]
+ 26%|██▌       | 93.0M/361M [01:38&lt;04:10, 1.07MB/s]
+ 26%|██▌       | 93.1M/361M [01:38&lt;04:06, 1.09MB/s]
+ 26%|██▌       | 93.2M/361M [01:39&lt;04:04, 1.10MB/s]
+ 26%|██▌       | 93.4M/361M [01:39&lt;04:02, 1.11MB/s]
+ 26%|██▌       | 93.5M/361M [01:39&lt;04:03, 1.10MB/s]
+ 26%|██▌       | 93.6M/361M [01:39&lt;04:01, 1.11MB/s]
+ 26%|██▌       | 93.7M/361M [01:39&lt;05:11, 859kB/s]
+ 26%|██▌       | 93.8M/361M [01:39&lt;05:12, 855kB/s]
+ 26%|██▌       | 93.9M/361M [01:39&lt;05:14, 851kB/s]
+ 26%|██▌       | 94.0M/361M [01:39&lt;05:14, 850kB/s]
+ 26%|██▌       | 94.2M/361M [01:40&lt;04:48, 925kB/s]
+ 26%|██▌       | 94.3M/361M [01:40&lt;04:31, 982kB/s]
+ 26%|██▌       | 94.4M/361M [01:40&lt;04:23, 1.02MB/s]
+ 26%|██▌       | 94.6M/361M [01:40&lt;04:16, 1.04MB/s]
+ 26%|██▌       | 94.7M/361M [01:40&lt;05:26, 817kB/s]
+ 26%|██▌       | 94.8M/361M [01:40&lt;04:59, 891kB/s]
+ 26%|██▋       | 94.9M/361M [01:40&lt;05:04, 876kB/s]
+ 26%|██▋       | 95.0M/361M [01:41&lt;05:08, 864kB/s]
+ 26%|██▋       | 95.1M/361M [01:41&lt;05:12, 851kB/s]
+ 26%|██▋       | 95.3M/361M [01:41&lt;04:48, 924kB/s]
+ 26%|██▋       | 95.4M/361M [01:41&lt;04:56, 897kB/s]
+ 26%|██▋       | 95.5M/361M [01:41&lt;05:03, 877kB/s]
+ 26%|██▋       | 95.6M/361M [01:41&lt;04:19, 1.02MB/s]
+ 26%|██▋       | 95.8M/361M [01:41&lt;03:55, 1.13MB/s]
+ 27%|██▋       | 95.9M/361M [01:41&lt;03:56, 1.12MB/s]
+ 27%|██▋       | 96.1M/361M [01:41&lt;03:41, 1.20MB/s]
+ 27%|██▋       | 96.2M/361M [01:42&lt;03:47, 1.17MB/s]
+ 27%|██▋       | 96.3M/361M [01:42&lt;03:50, 1.15MB/s]
+ 27%|██▋       | 96.5M/361M [01:42&lt;05:01, 880kB/s]
+ 27%|██▋       | 96.6M/361M [01:42&lt;05:04, 871kB/s]
+ 27%|██▋       | 96.7M/361M [01:42&lt;04:42, 937kB/s]
+ 27%|██▋       | 96.8M/361M [01:42&lt;04:28, 987kB/s]
+ 27%|██▋       | 97.0M/361M [01:42&lt;04:18, 1.03MB/s]
+ 27%|██▋       | 97.1M/361M [01:43&lt;04:10, 1.05MB/s]
+ 27%|██▋       | 97.2M/361M [01:43&lt;05:17, 833kB/s]
+ 27%|██▋       | 97.3M/361M [01:43&lt;05:16, 835kB/s]
+ 27%|██▋       | 97.4M/361M [01:43&lt;05:15, 837kB/s]
+ 27%|██▋       | 97.6M/361M [01:43&lt;04:48, 914kB/s]
+ 27%|██▋       | 97.6M/361M [01:43&lt;04:54, 894kB/s]
+ 27%|██▋       | 97.7M/361M [01:43&lt;04:59, 881kB/s]
+ 27%|██▋       | 97.8M/361M [01:43&lt;05:02, 870kB/s]
+ 27%|██▋       | 97.9M/361M [01:44&lt;05:05, 863kB/s]
+ 27%|██▋       | 98.1M/361M [01:44&lt;04:40, 940kB/s]
+ 27%|██▋       | 98.2M/361M [01:44&lt;04:48, 911kB/s]
+ 27%|██▋       | 98.3M/361M [01:44&lt;04:55, 891kB/s]
+ 27%|██▋       | 98.4M/361M [01:44&lt;04:33, 960kB/s]
+ 27%|██▋       | 98.6M/361M [01:44&lt;03:43, 1.18MB/s]
+ 27%|██▋       | 98.8M/361M [01:44&lt;03:17, 1.33MB/s]
+ 27%|██▋       | 99.0M/361M [01:44&lt;03:14, 1.35MB/s]
+ 27%|██▋       | 99.1M/361M [01:45&lt;04:09, 1.05MB/s]
+ 27%|██▋       | 99.3M/361M [01:45&lt;04:06, 1.06MB/s]
+ 28%|██▊       | 99.7M/361M [01:45&lt;02:25, 1.79MB/s]
+ 28%|██▊       | 100M/361M [01:45&lt;01:53, 2.31MB/s]
+ 28%|██▊       | 101M/361M [01:45&lt;01:21, 3.21MB/s]
+ 28%|██▊       | 101M/361M [01:45&lt;01:02, 4.17MB/s]
+ 28%|██▊       | 103M/361M [01:45&lt;00:39, 6.54MB/s]
+ 29%|██▉       | 104M/361M [01:45&lt;00:30, 8.53MB/s]
+ 29%|██▉       | 106M/361M [01:45&lt;00:22, 11.4MB/s]
+ 30%|██▉       | 108M/361M [01:46&lt;00:19, 13.2MB/s]
+ 30%|███       | 109M/361M [01:46&lt;00:23, 10.9MB/s]
+ 31%|███       | 110M/361M [01:46&lt;00:25, 9.92MB/s]
+ 31%|███       | 111M/361M [01:46&lt;00:28, 8.76MB/s]
+ 31%|███       | 112M/361M [01:46&lt;00:29, 8.53MB/s]
+ 31%|███▏      | 113M/361M [01:46&lt;00:32, 7.74MB/s]
+ 32%|███▏      | 114M/361M [01:46&lt;00:29, 8.28MB/s]
+ 32%|███▏      | 115M/361M [01:47&lt;00:27, 9.04MB/s]
+ 32%|███▏      | 117M/361M [01:47&lt;00:25, 9.67MB/s]
+ 33%|███▎      | 118M/361M [01:47&lt;00:22, 10.7MB/s]
+ 33%|███▎      | 120M/361M [01:47&lt;00:18, 12.7MB/s]
+ 34%|███▎      | 121M/361M [01:47&lt;00:18, 12.7MB/s]
+ 34%|███▍      | 122M/361M [01:47&lt;00:18, 12.7MB/s]
+ 34%|███▍      | 124M/361M [01:47&lt;00:20, 11.8MB/s]
+ 35%|███▍      | 125M/361M [01:47&lt;00:19, 12.2MB/s]
+ 35%|███▌      | 127M/361M [01:47&lt;00:18, 13.0MB/s]
+ 35%|███▌      | 128M/361M [01:48&lt;00:16, 13.7MB/s]
+ 36%|███▌      | 130M/361M [01:48&lt;00:15, 14.7MB/s]
+ 36%|███▋      | 131M/361M [01:48&lt;00:15, 14.6MB/s]
+ 37%|███▋      | 133M/361M [01:48&lt;00:15, 14.8MB/s]
+ 37%|███▋      | 135M/361M [01:48&lt;00:14, 15.4MB/s]
+ 38%|███▊      | 136M/361M [01:48&lt;00:14, 15.5MB/s]
+ 38%|███▊      | 138M/361M [01:48&lt;00:14, 15.1MB/s]
+ 39%|███▊      | 139M/361M [01:48&lt;00:15, 14.6MB/s]
+ 39%|███▉      | 141M/361M [01:48&lt;00:13, 15.9MB/s]
+ 40%|███▉      | 143M/361M [01:48&lt;00:12, 17.0MB/s]
+ 40%|████      | 145M/361M [01:49&lt;00:12, 17.1MB/s]
+ 41%|████      | 147M/361M [01:49&lt;00:14, 14.4MB/s]
+ 41%|████      | 149M/361M [01:49&lt;00:15, 13.9MB/s]
+ 42%|████▏     | 150M/361M [01:49&lt;00:15, 13.6MB/s]
+ 42%|████▏     | 151M/361M [01:49&lt;00:15, 13.5MB/s]
+ 42%|████▏     | 153M/361M [01:49&lt;00:15, 13.6MB/s]
+ 43%|████▎     | 154M/361M [01:49&lt;00:16, 12.7MB/s]
+ 43%|████▎     | 156M/361M [01:49&lt;00:16, 12.2MB/s]
+ 43%|████▎     | 157M/361M [01:50&lt;00:17, 12.0MB/s]
+ 44%|████▍     | 159M/361M [01:50&lt;00:14, 13.5MB/s]
+ 45%|████▍     | 161M/361M [01:50&lt;00:12, 16.3MB/s]
+ 45%|████▍     | 163M/361M [01:50&lt;00:13, 14.3MB/s]
+ 45%|████▌     | 164M/361M [01:50&lt;00:15, 13.1MB/s]
+ 46%|████▌     | 166M/361M [01:50&lt;00:14, 13.1MB/s]
+ 46%|████▌     | 167M/361M [01:50&lt;00:15, 12.4MB/s]
+ 47%|████▋     | 168M/361M [01:50&lt;00:17, 11.3MB/s]
+ 47%|████▋     | 169M/361M [01:51&lt;00:17, 10.8MB/s]
+ 47%|████▋     | 170M/361M [01:51&lt;00:18, 10.1MB/s]
+ 47%|████▋     | 172M/361M [01:51&lt;00:18, 10.1MB/s]
+ 48%|████▊     | 173M/361M [01:51&lt;00:19, 9.53MB/s]
+ 48%|████▊     | 174M/361M [01:51&lt;00:19, 9.68MB/s]
+ 48%|████▊     | 175M/361M [01:51&lt;00:17, 10.6MB/s]
+ 49%|████▉     | 177M/361M [01:51&lt;00:15, 12.1MB/s]
+ 49%|████▉     | 178M/361M [01:51&lt;00:13, 13.2MB/s]
+ 50%|████▉     | 180M/361M [01:51&lt;00:13, 13.4MB/s]
+ 50%|█████     | 181M/361M [01:51&lt;00:12, 14.2MB/s]
+ 51%|█████     | 183M/361M [01:52&lt;00:12, 14.2MB/s]
+ 51%|█████     | 184M/361M [01:52&lt;00:12, 14.3MB/s]
+ 51%|█████▏    | 186M/361M [01:52&lt;00:11, 14.7MB/s]
+ 52%|█████▏    | 187M/361M [01:52&lt;00:12, 14.2MB/s]
+ 52%|█████▏    | 189M/361M [01:52&lt;00:11, 14.5MB/s]
+ 53%|█████▎    | 190M/361M [01:52&lt;00:11, 14.5MB/s]
+ 53%|█████▎    | 192M/361M [01:52&lt;00:12, 14.1MB/s]
+ 53%|█████▎    | 193M/361M [01:52&lt;00:11, 14.4MB/s]
+ 54%|█████▍    | 195M/361M [01:52&lt;00:12, 13.7MB/s]
+ 54%|█████▍    | 196M/361M [01:53&lt;00:13, 12.5MB/s]
+ 55%|█████▍    | 197M/361M [01:53&lt;00:13, 12.3MB/s]
+ 55%|█████▍    | 199M/361M [01:53&lt;00:12, 12.8MB/s]
+ 55%|█████▌    | 201M/361M [01:53&lt;00:11, 13.9MB/s]
+ 56%|█████▌    | 202M/361M [01:53&lt;00:13, 12.2MB/s]
+ 56%|█████▌    | 203M/361M [01:53&lt;00:14, 11.0MB/s]
+ 57%|█████▋    | 204M/361M [01:53&lt;00:15, 9.97MB/s]
+ 57%|█████▋    | 206M/361M [01:53&lt;00:15, 10.3MB/s]
+ 57%|█████▋    | 207M/361M [01:54&lt;00:16, 9.61MB/s]
+ 57%|█████▋    | 208M/361M [01:54&lt;00:15, 9.76MB/s]
+ 58%|█████▊    | 209M/361M [01:54&lt;00:13, 11.0MB/s]
+ 58%|█████▊    | 210M/361M [01:54&lt;00:13, 11.4MB/s]
+ 59%|█████▊    | 212M/361M [01:54&lt;00:12, 11.8MB/s]
+ 59%|█████▉    | 213M/361M [01:54&lt;00:11, 12.4MB/s]
+ 59%|█████▉    | 214M/361M [01:54&lt;00:12, 11.6MB/s]
+ 60%|█████▉    | 216M/361M [01:54&lt;00:12, 11.7MB/s]
+ 60%|██████    | 217M/361M [01:54&lt;00:11, 12.1MB/s]
+ 60%|██████    | 218M/361M [01:55&lt;00:11, 12.3MB/s]
+ 61%|██████    | 220M/361M [01:55&lt;00:11, 11.9MB/s]
+ 61%|██████    | 221M/361M [01:55&lt;00:10, 12.9MB/s]
+ 62%|██████▏   | 223M/361M [01:55&lt;00:09, 13.9MB/s]
+ 62%|██████▏   | 225M/361M [01:55&lt;00:08, 15.7MB/s]
+ 63%|██████▎   | 226M/361M [01:55&lt;00:08, 15.1MB/s]
+ 63%|██████▎   | 228M/361M [01:55&lt;00:09, 14.5MB/s]
+ 63%|██████▎   | 229M/361M [01:55&lt;00:09, 14.5MB/s]
+ 64%|██████▍   | 231M/361M [01:55&lt;00:08, 15.9MB/s]
+ 65%|██████▍   | 234M/361M [01:55&lt;00:07, 17.7MB/s]
+ 65%|██████▌   | 235M/361M [01:56&lt;00:07, 17.4MB/s]
+ 66%|██████▌   | 237M/361M [01:56&lt;00:07, 16.4MB/s]
+ 66%|██████▌   | 239M/361M [01:56&lt;00:07, 16.9MB/s]
+ 67%|██████▋   | 241M/361M [01:56&lt;00:07, 16.7MB/s]
+ 67%|██████▋   | 243M/361M [01:56&lt;00:06, 17.0MB/s]
+ 68%|██████▊   | 244M/361M [01:56&lt;00:07, 15.5MB/s]
+ 68%|██████▊   | 246M/361M [01:56&lt;00:08, 13.1MB/s]
+ 68%|██████▊   | 247M/361M [01:56&lt;00:09, 12.5MB/s]
+ 69%|██████▉   | 249M/361M [01:57&lt;00:09, 11.5MB/s]
+ 69%|██████▉   | 250M/361M [01:57&lt;00:10, 10.7MB/s]
+ 70%|██████▉   | 251M/361M [01:57&lt;00:09, 11.3MB/s]
+ 70%|██████▉   | 253M/361M [01:57&lt;00:08, 12.2MB/s]
+ 70%|███████   | 254M/361M [01:57&lt;00:08, 12.7MB/s]
+ 71%|███████   | 256M/361M [01:57&lt;00:08, 13.0MB/s]
+ 71%|███████   | 257M/361M [01:57&lt;00:08, 12.7MB/s]
+ 71%|███████▏  | 258M/361M [01:57&lt;00:08, 12.7MB/s]
+ 72%|███████▏  | 260M/361M [01:58&lt;00:09, 11.2MB/s]
+ 72%|███████▏  | 261M/361M [01:58&lt;00:08, 11.8MB/s]
+ 73%|███████▎  | 262M/361M [01:58&lt;00:09, 10.3MB/s]
+ 73%|███████▎  | 263M/361M [01:58&lt;00:09, 10.5MB/s]
+ 73%|███████▎  | 265M/361M [01:58&lt;00:08, 11.7MB/s]
+ 74%|███████▎  | 266M/361M [01:58&lt;00:07, 12.8MB/s]
+ 74%|███████▍  | 268M/361M [01:58&lt;00:07, 13.1MB/s]
+ 75%|███████▍  | 270M/361M [01:58&lt;00:06, 14.5MB/s]
+ 75%|███████▌  | 271M/361M [01:58&lt;00:05, 15.8MB/s]
+ 76%|███████▌  | 274M/361M [01:58&lt;00:05, 17.1MB/s]
+ 76%|███████▋  | 276M/361M [01:59&lt;00:04, 19.2MB/s]
+ 77%|███████▋  | 279M/361M [01:59&lt;00:03, 22.0MB/s]
+ 78%|███████▊  | 282M/361M [01:59&lt;00:03, 23.1MB/s]
+ 79%|███████▊  | 284M/361M [01:59&lt;00:03, 23.1MB/s]
+ 79%|███████▉  | 286M/361M [01:59&lt;00:03, 23.1MB/s]
+ 80%|███████▉  | 289M/361M [01:59&lt;00:03, 22.5MB/s]
+ 81%|████████  | 291M/361M [01:59&lt;00:03, 23.0MB/s]
+ 81%|████████  | 293M/361M [01:59&lt;00:03, 22.2MB/s]
+ 82%|████████▏ | 296M/361M [01:59&lt;00:02, 23.7MB/s]
+ 83%|████████▎ | 299M/361M [02:00&lt;00:02, 23.3MB/s]
+ 83%|████████▎ | 301M/361M [02:00&lt;00:02, 21.5MB/s]
+ 84%|████████▍ | 303M/361M [02:00&lt;00:02, 21.1MB/s]
+ 84%|████████▍ | 305M/361M [02:00&lt;00:02, 19.7MB/s]
+ 85%|████████▍ | 307M/361M [02:00&lt;00:02, 19.3MB/s]
+ 86%|████████▌ | 309M/361M [02:00&lt;00:02, 17.8MB/s]
+ 86%|████████▌ | 311M/361M [02:00&lt;00:02, 17.8MB/s]
+ 87%|████████▋ | 313M/361M [02:00&lt;00:02, 17.1MB/s]
+ 87%|████████▋ | 315M/361M [02:00&lt;00:02, 18.0MB/s]
+ 88%|████████▊ | 317M/361M [02:01&lt;00:02, 17.9MB/s]
+ 88%|████████▊ | 319M/361M [02:01&lt;00:02, 17.8MB/s]
+ 89%|████████▊ | 320M/361M [02:01&lt;00:02, 16.9MB/s]
+ 89%|████████▉ | 322M/361M [02:01&lt;00:02, 17.6MB/s]
+ 90%|████████▉ | 324M/361M [02:01&lt;00:02, 16.7MB/s]
+ 90%|█████████ | 326M/361M [02:01&lt;00:02, 14.3MB/s]
+ 91%|█████████ | 327M/361M [02:01&lt;00:02, 13.7MB/s]
+ 91%|█████████ | 329M/361M [02:01&lt;00:02, 13.7MB/s]
+ 91%|█████████▏| 330M/361M [02:01&lt;00:02, 13.3MB/s]
+ 92%|█████████▏| 332M/361M [02:02&lt;00:02, 13.4MB/s]
+ 92%|█████████▏| 333M/361M [02:02&lt;00:02, 12.9MB/s]
+ 92%|█████████▏| 334M/361M [02:02&lt;00:02, 13.0MB/s]
+ 93%|█████████▎| 336M/361M [02:02&lt;00:01, 13.2MB/s]
+ 93%|█████████▎| 337M/361M [02:02&lt;00:02, 11.8MB/s]
+ 94%|█████████▎| 338M/361M [02:02&lt;00:01, 11.7MB/s]
+ 94%|█████████▍| 339M/361M [02:02&lt;00:02, 10.4MB/s]
+ 94%|█████████▍| 341M/361M [02:02&lt;00:02, 9.49MB/s]
+ 94%|█████████▍| 342M/361M [02:03&lt;00:02, 8.62MB/s]
+ 95%|█████████▍| 342M/361M [02:03&lt;00:02, 8.44MB/s]
+ 95%|█████████▌| 344M/361M [02:03&lt;00:01, 9.26MB/s]
+ 95%|█████████▌| 345M/361M [02:03&lt;00:01, 10.3MB/s]
+ 96%|█████████▌| 347M/361M [02:03&lt;00:01, 11.9MB/s]
+ 96%|█████████▋| 348M/361M [02:03&lt;00:00, 13.6MB/s]
+ 97%|█████████▋| 350M/361M [02:03&lt;00:00, 14.7MB/s]
+ 97%|█████████▋| 352M/361M [02:03&lt;00:00, 15.6MB/s]
+ 98%|█████████▊| 354M/361M [02:03&lt;00:00, 16.3MB/s]
+ 98%|█████████▊| 356M/361M [02:04&lt;00:00, 16.4MB/s]
+ 99%|█████████▉| 357M/361M [02:04&lt;00:00, 16.6MB/s]
+ 99%|█████████▉| 359M/361M [02:04&lt;00:00, 17.0MB/s]
+100%|█████████▉| 361M/361M [02:04&lt;00:00, 16.4MB/s]
+100%|██████████| 361M/361M [02:04&lt;00:00, 2.91MB/s]
+</pre></div>
+</div>
+<p>Finally, we create the data loaders.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_ssl_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <span class="n">ssl_dataset</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <span class="n">train_xy_dataset</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <span class="n">test_xy_dataset</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="model-architecture">
+<h2>Model architecture<a class="headerlink" href="#model-architecture" title="Link to this heading">¶</a></h2>
+<p>We use the 3D vision transformer from <cite>nidl</cite> as backbone.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html#nidl.volume.backbones.VisionTransformer3D" title="nidl.volume.backbones.VisionTransformer3D" class="sphx-glr-backref-module-nidl-volume-backbones sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">encoder</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html#nidl.volume.backbones.VisionTransformer3D" title="nidl.volume.backbones.VisionTransformer3D" class="sphx-glr-backref-module-nidl-volume-backbones sphx-glr-backref-type-py-class"><span class="n">VisionTransformer3D</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">img_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">img_size</span></a><span class="p">,</span>
+    <span class="n">patch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">in_chans</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">embed_dim</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">num_heads</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">mlp_ratio</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="training-the-i-jepa-model">
+<h2>Training the I-JEPA model<a class="headerlink" href="#training-the-i-jepa-model" title="Link to this heading">¶</a></h2>
+<p>We either train a compact I-JEPA model directly, or load a pretrained
+checkpoint from the Hugging Face Hub (which was trained with the same
+configuration).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../modules/generated/nidl.estimators.ssl.IJEPA.html#nidl.estimators.ssl.IJEPA" title="nidl.estimators.ssl.IJEPA" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.ssl.IJEPA.html#nidl.estimators.ssl.IJEPA" title="nidl.estimators.ssl.IJEPA" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class"><span class="n">IJEPA</span></a><span class="p">(</span>
+    <a href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html#nidl.volume.backbones.VisionTransformer3D" title="nidl.volume.backbones.VisionTransformer3D" class="sphx-glr-backref-module-nidl-volume-backbones sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">encoder</span></a><span class="o">=</span><a href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html#nidl.volume.backbones.VisionTransformer3D" title="nidl.volume.backbones.VisionTransformer3D" class="sphx-glr-backref-module-nidl-volume-backbones sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">encoder</span></a><span class="p">,</span>
+    <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">context_block_scale</span><span class="o">=</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+    <span class="n">target_block_scale</span><span class="o">=</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+    <span class="n">aspect_ratio</span><span class="o">=</span><span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+    <span class="n">num_target_blocks</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">min_keep</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">allow_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">predictor_embed_dim</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">predictor_depth_pred</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">learning_rate</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">learning_rate</span></a><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;adamW&quot;</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weight_decay</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">weight_decay</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">max_epochs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">max_epochs</span></a><span class="p">,</span>
+    <span class="n">check_val_every_n_epoch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">use_distributed_sampler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">enable_checkpointing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accelerator</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accelerator</span></a><span class="p">,</span>
+    <span class="n">devices</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_seed</span></a><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">load_pretrained</span></a><span class="p">:</span>
+    <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.fit" title="nidl.estimators.BaseEstimator.fit" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_ssl_loader</span></a><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">Weights</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;hf-hub:</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_repo_id</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model_dir</span></a><span class="p">,</span>
+        <span class="n">filepath</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">hf_checkpoint</span></a><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">weights</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">load_pretrained</span></a><span class="p">(</span><a href="../modules/generated/nidl.estimators.ssl.IJEPA.html#nidl.estimators.ssl.IJEPA" title="nidl.estimators.ssl.IJEPA" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+    <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span><span class="o">.</span><span class="n">fitted_</span></a> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
+<section id="evaluation-with-a-linear-probe">
+<h2>Evaluation with a linear probe<a class="headerlink" href="#evaluation-with-a-linear-probe" title="Link to this heading">¶</a></h2>
+<p>Once pretraining is complete, we extract frozen representations and fit a
+logistic regression classifier on top of them.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.transform_with_targets" title="nidl.estimators.BaseEstimator.transform_with_targets" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">transform_with_targets</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_loader</span></a><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.transform_with_targets" title="nidl.estimators.BaseEstimator.transform_with_targets" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">transform_with_targets</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a><span class="p">)</span>
+
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span><span class="o">.</span><span class="n">cpu</span></a><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61/61 0:00:33 • 0:00:00 1.82it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 39/39 0:00:21 • 0:00:00 1.85it/s
+</pre></div>
+</div>
+<p>We train linear probes on increasing fractions of the labeled training set to
+assess sample efficiency.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">estimator</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">(</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">random_seed</span></a><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_sizes</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.unique.html#numpy.unique" title="numpy.unique" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">unique</span></a><span class="p">(</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.logspace.html#numpy.logspace" title="numpy.logspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span>
+        <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">log10</span></a><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">)</span> <span class="o">//</span> <span class="mi">20</span><span class="p">)),</span>
+        <a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">log10</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">)),</span>
+        <span class="mi">8</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accs</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a> <span class="ow">in</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_sizes</span></a><span class="p">:</span>
+    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression.fit" title="sklearn.linear_model.LogisticRegression.fit" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-method"><span class="n">estimator</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">[:</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_train</span></a><span class="p">[:</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">size</span></a><span class="p">])</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pred</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression.predict" title="sklearn.linear_model.LogisticRegression.predict" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-method"><span class="n">estimator</span><span class="o">.</span><span class="n">predict</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_test</span></a><span class="p">)</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accs</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score" title="sklearn.metrics.accuracy_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">accuracy_score</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_test</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y_pred</span></a><span class="p">))</span>
+</pre></div>
+</div>
+<p>We plot the scaling curve.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_sizes</span></a> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">),</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accs</span></a><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.ylim.html#matplotlib.pyplot.ylim" title="matplotlib.pyplot.ylim" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.ylabel.html#matplotlib.pyplot.ylabel" title="matplotlib.pyplot.ylabel" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span></a><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.xlabel.html#matplotlib.pyplot.xlabel" title="matplotlib.pyplot.xlabel" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span></a><span class="p">(</span><span class="s2">&quot;Proportion of labeled training samples&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.xscale.html#matplotlib.pyplot.xscale" title="matplotlib.pyplot.xscale" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">xscale</span></a><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html#matplotlib.pyplot.text" title="matplotlib.pyplot.text" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">text</span></a><span class="p">(</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_sizes</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">),</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+    <span class="n">va</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.text.html#matplotlib.pyplot.text" title="matplotlib.pyplot.text" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">text</span></a><span class="p">(</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_sizes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_train</span></a><span class="p">),</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">accs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="n">va</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_ijepa_medmnist_001.png" srcset="../_images/sphx_glr_plot_ijepa_medmnist_001.png" alt="plot ijepa medmnist" class = "sphx-glr-single-img"/><p>This example shows how to train and evaluate the I-JEPA model on MedMNIST3D
+using <code class="docutils literal notranslate"><span class="pre">nidl</span></code>. The same pipeline can be applied to other 3D medical imaging
+datasets, and you can also expand it to include more complex training setups
+with logging and callbacks.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (3 minutes 23.065 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  782 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-ijepa-medmnist-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/bba0c7438527798e35a04829d334cf21/plot_ijepa_medmnist.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_ijepa_medmnist.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c39a573cc6fce8f5d371b5e61da83898/plot_ijepa_medmnist.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_ijepa_medmnist.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ad088b7bf07aa9accaad0f82f739f049/plot_ijepa_medmnist.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_ijepa_medmnist.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="plot_metrics_callback.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Visualization of metrics during training of PyTorch-Lightning models</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="plot_barlowtwins_openbhb.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Self-Supervised Learning with Barlow Twins</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; The nidl developers
+- Code and documentation distributed under CeCILL-B license.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fa-brands fa-solid fa-github fa-2x" href="https://github.com/neurospin-deepinsight/nidl" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Self-Supervised Learning with I-JEPA on MedMNIST3D</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#data-preparation">Data preparation</a></li>
+<li><a class="reference internal" href="#model-architecture">Model architecture</a></li>
+<li><a class="reference internal" href="#training-the-i-jepa-model">Training the I-JEPA model</a></li>
+<li><a class="reference internal" href="#evaluation-with-a-linear-probe">Evaluation with a linear probe</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=4ea706d9"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>
