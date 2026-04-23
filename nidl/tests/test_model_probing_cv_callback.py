@@ -45,17 +45,17 @@ class DummyEmbeddingModule(TransformerMixin, BaseEstimator):
     def forward(self, x):
         return self.layer(x)
 
-    def transform_step(self, x, batch_idx=None):
+    def transform_step(self, x, batch_idx=None, dataloader_idx=0):
         # Identity features: exactly the original X used in the DataLoader
         return x
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx, dataloader_idx=0):
         x, y = batch
         logits = self(x)
         loss = F.cross_entropy(logits, y)
         return loss
 
-    def test_step(self, batch, batch_idx):
+    def test_step(self, batch, batch_idx, dataloader_idx=0):
         return None
 
     def configure_optimizers(self):

@@ -287,12 +287,16 @@ class BaseEstimator(pl.LightningModule):
     ) -> tuple[Any, Any]:
         """Return transformed samples and associated targets.
 
+        A default :meth:`transform_step_with_targets` method is available
+        but it can be overrides to define your own logic.
+
         Parameters
         ----------
         test_dataloader: torch DataLoader
-            Testing samples in the form of ``(x, y)`` where y is the target.
-            The `transform_step` method is applied to `x` only and `y` is
-            returned as is.
+            Testing samples. By default, the form expected is ``(x, y)``
+            where ``y`` is the target and ``x`` the input. This logic can
+            be overrides by rewriting your own
+            :meth:`transform_step_with_targets`.
 
         Returns
         -------
@@ -369,8 +373,9 @@ class BaseEstimator(pl.LightningModule):
 
         Parameters
         ----------
-        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`
-            the current data.
+        batch: Any
+            Output of your training loader iterable, normally a
+            :class:`~torch.utils.data.DataLoader`
         batch_idx: int
             the index of this batch.
         dataloader_idx: int, default=0
@@ -427,8 +432,9 @@ class BaseEstimator(pl.LightningModule):
 
         Parameters
         ----------
-        batch: iterable, normally a :class:`~torch.utils.data.DataLoader`
-            the current data.
+        batch: Any
+            Output of your validation loader iterable, normally a
+            :class:`~torch.utils.data.DataLoader`
         batch_idx: int
             the index of this batch.
         dataloader_idx: int, default=0
@@ -468,16 +474,35 @@ class BaseEstimator(pl.LightningModule):
         """
 
     @available_if(_estimator_is("transformer"))
-    def _transform_step_with_targets(
+    def transform_step_with_targets(
         self,
         batch: Any,
         batch_idx: int,
         dataloader_idx: Optional[int] = 0,
     ) -> Mapping[str, Any]:
-        """Internal helper used by `transform_with_targets`.
+        """Step function called during :meth:`~transform_with_targets`.
 
-        By default, expects batches of the form ``(x, y)`` or similar sequences
-        whose second element contains the targets.
+        :meth:`~transform_with_targets` is used to scale the inference step of
+        embedding estimators to multi-devices.
+
+        Parameters
+        ----------
+        batch: Any
+            Output of your test loader iterable, normally a
+            :class:`~torch.utils.data.DataLoader`. It expects batches of
+            the form ``(x, y)`` where only ``x`` is processed by
+            the :meth:`~transform_step` and ``y`` is returned as-is.
+        batch_idx: int
+            the index of this batch.
+        dataloader_idx: int, default=0
+            the index of the dataloader that produced this batch (only if
+            multiple dataloaders are used).
+
+        Returns
+        -------
+        dict[str, Any]
+            Dictionary with keys ``"features"`` and ``"targets"`` and values
+            should be ``torch.Tensor``.
         """
         if not isinstance(batch, Sequence) or len(batch) < 2:
             raise ValueError(
@@ -530,7 +555,7 @@ class BaseEstimator(pl.LightningModule):
         """
         if _estimator_is("transformer"):
             if getattr(self, "_return_targets_in_predict", False):
-                return self._transform_step_with_targets(
+                return self.transform_step_with_targets(
                     batch, batch_idx, dataloader_idx
                 )
             return self.transform_step(batch, batch_idx, dataloader_idx)

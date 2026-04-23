@@ -22,12 +22,14 @@ from nidl.utils.validation import _estimator_is
 
 
 class ModelProbingCVCallback(pl.Callback):
-    """Callback to probe the representation of an embedding estimator on a
-    dataset using cross-validation.
+    """Callback to probe the representation of of
+    :class:`~nidl.estimators.base.BaseEstimator` on a dataset using
+    cross-validation.
 
     It has the following logic:
 
-    1) Embeds the input data through the estimator using `transform_step`.
+    1) Embeds the input data through the estimator using
+       ``transform_step_with_targets``.
     2) For each CV split, train the probe on the training embedding split and
        make predictions on the test embedding split.
     3) Compute and log the scores computed between the true and predicted
@@ -222,8 +224,8 @@ class ModelProbingCVCallback(pl.Callback):
         Parameters
         ----------
         pl_module: BaseEstimator
-            The BaseEstimator module that implements the `transform_step`.
-
+            The :class:`~nidl.estimators.base.BaseEstimator` module that
+            implements ``transform_step_with_targets``.
         Raises
         ------
         ValueError: If the pl_module does not inherit from `BaseEstimator` or
@@ -260,17 +262,16 @@ class ModelProbingCVCallback(pl.Callback):
     def extract_features(self, trainer, pl_module, dataloader):
         """Extract features from a dataloader with the BaseEstimator.
 
-        By default, it uses the `transform_step` logic applied on each batch to
-        get the embeddings with the labels.
-        The input dataloader should yield batches of the form `(X, y)` where X
-        is the input data and y is the label.
+        It uses the ``transform_step_with_targets`` logic applied on each
+        batch to get the embeddings with the labels.
 
         Parameters
         ----------
         trainer: pl.Trainer
             The pytorch-lightning trainer.
         pl_module: BaseEstimator
-            The BaseEstimator module that implements the 'transform_step'.
+            The :class:`~nidl.estimators.base.BaseEstimator` module that
+            implements ``transform_step_with_targets``.
         dataloader: torch.utils.data.DataLoader
             The dataloader to extract features from. It should yield batches of
             the form `(X, y)` where `X` is the input data and `y` is the label.
@@ -296,14 +297,15 @@ class ModelProbingCVCallback(pl.Callback):
                 disable=(not self.prog_bar or not trainer.is_global_zero),
                 leave=False,
             ):
-                x_batch, y_batch = batch
-                x_batch = x_batch.to(pl_module.device)
-                y_batch = y_batch.to(pl_module.device)
-                features = pl_module.transform_step(
-                    x_batch, batch_idx=batch_idx
+                # Move batch the same way Lightning would
+                batch = trainer.strategy.batch_to_device(
+                    batch, pl_module.device, dataloader_idx=0
                 )
-                X.append(features.detach())
-                y.append(y_batch.detach())
+                out = pl_module.transform_step_with_targets(
+                    batch, batch_idx=batch_idx
+                )
+                X.append(out["features"].detach())
+                y.append(out["targets"].detach())
 
         # Concatenate the embeddings
         X = torch.cat(X)

@@ -12,8 +12,8 @@ Introduction
 ------------
 
 An backbone is a :class:`torch.nn.Module` class and contains definitions
-of models for addressing different tasks, including image classification,
-image segmentation, represnetation learning...
+of models for addressing different tasks, such as image classification,
+image segmentation, representation learning.
 
 Pre-trained weights
 ...................
@@ -53,6 +53,7 @@ various utility functions.
     DenseNet
     ResNet
     ResNetTruncated
+    VisionTransformer3D
 
 .. autoclasstree:: nidl.volume.backbones
    :strict:
@@ -66,6 +67,9 @@ various utility functions.
    resnet18_trunc
    resnet50
    resnet50_trunc
+   vit_small_patch16_128
+   vit_base_patch16_128
+   vit_large_patch16_128
 
 
 Surface
