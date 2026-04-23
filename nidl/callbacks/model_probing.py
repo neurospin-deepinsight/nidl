@@ -24,14 +24,16 @@ from nidl.utils.validation import _estimator_is
 
 
 class ModelProbingCallback(pl.Callback):
-    """Callback to probe the representation of an embedding estimator on a
-    dataset.
+    """Callback to probe the representation of
+    :class:`~nidl.estimators.base.BaseEstimator` on a dataset.
 
     It has the following logic:
 
     1) Embeds the input data (training+test) through the estimator using
-       `transform_step` method (handles distributed multi-gpu forward pass).
-    2) Train the probe on the training embedding (handles multi-cpu training).
+       ``transform_step_with_targets`` method (handles distributed multi-gpu
+       forward pass).
+    2) Train a scikit-learn probe on the training embedding (handles multi-cpu
+       training).
     3) Evaluate the probe on the test embedding and log the scores.
 
     The probing can be performed at the end of training epochs, validation
@@ -216,8 +218,8 @@ class ModelProbingCallback(pl.Callback):
         Parameters
         ----------
         pl_module: BaseEstimator
-            The BaseEstimator module that implements the `transform_step`.
-
+            The :class:`~nidl.estimators.base.BaseEstimator` module that
+            implements ``transform_step_with_targets``.
         Raises
         ------
         ValueError: If the pl_module does not inherit from `BaseEstimator` or
@@ -285,8 +287,8 @@ class ModelProbingCallback(pl.Callback):
         trainer: pl.Trainer
             The pytorch-lightning trainer instance.
         pl_module: BaseEstimator
-            The BaseEstimator module that implements
-            :meth:`~nidl.estimators.base.transform_step_with_targets`.
+            The :class:`~nidl.estimators.base.BaseEstimator` module that
+            implements ``transform_step_with_targets``.
         dataloader: torch.utils.data.DataLoader
             The dataloader to extract features from. It should yield batches of
             the form `(X, y)` where `X` is the input data and `y` is the label.
