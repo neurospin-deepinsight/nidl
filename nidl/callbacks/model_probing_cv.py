@@ -21,7 +21,7 @@ from nidl.estimators.base import BaseEstimator
 from nidl.utils.validation import _estimator_is
 
 
-class ModelProbingCV(pl.Callback):
+class ModelProbingCVCallback(pl.Callback):
     """Callback to probe the representation of an embedding estimator on a
     dataset using cross-validation.
 
@@ -292,7 +292,7 @@ class ModelProbingCV(pl.Callback):
             for batch_idx, batch in tqdm(
                 enumerate(dataloader),
                 desc="Extracting features",
-                disable=(not trainer.is_global_zero),
+                disable=(not self.prog_bar or not trainer.is_global_zero),
                 leave=False,
             ):
                 # Move batch the same way Lightning would

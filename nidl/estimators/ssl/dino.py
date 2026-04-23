@@ -15,13 +15,16 @@ from pytorch_lightning.utilities.types import LRSchedulerPLType
 from torch import nn
 from torch.optim import Optimizer
 
-from ...losses import DINOLoss
-from ..base import BaseEstimator, TransformerMixin
-from .utils.data_parsing import parse_multi_crops_batch
-from .utils.encoder import build_encoder
-from .utils.momentum import MomentumUpdater, initialize_momentum_params
-from .utils.optimizer import configure_ssl_optimizers
-from .utils.projection_heads import DINOProjectionHead
+from nidl.estimators.base import BaseEstimator, TransformerMixin
+from nidl.estimators.ssl.utils.encoder import build_encoder
+from nidl.estimators.ssl.utils.momentum import (
+    MomentumUpdater,
+    initialize_momentum_params,
+)
+from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
+from nidl.estimators.ssl.utils.projection_heads import DINOProjectionHead
+from nidl.losses import DINOLoss
+from nidl.utils.data_parsing import parse_multi_crops_batch
 
 
 class DINO(TransformerMixin, BaseEstimator):

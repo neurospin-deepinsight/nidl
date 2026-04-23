@@ -19,36 +19,22 @@ from nidl.estimators.base import BaseEstimator, TransformerMixin
 from nidl.estimators.ssl.utils.encoder import build_encoder
 from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
 from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
-from nidl.losses import InfoNCE
+from nidl.losses import DCLLoss
 from nidl.utils.data_parsing import (
     gather_two_views,
     parse_two_views_batch,
 )
 
 
-class SimCLR(TransformerMixin, BaseEstimator):
-    r"""SimCLR [1]_.
+class DCL(TransformerMixin, BaseEstimator):
+    r"""Decoupled Contrastive Learning [1]_.
 
-    SimCLR is a contrastive learning framework for self-supervised
-    representation learning. The key idea is to learn useful features
-    without labels by making different augmented views of the same image close
-    in a representation space, while pushing apart representations of different
-    images. Once trained, the encoder can be reused for downstream tasks such
-    as classification or regression.
-
-    The model consists of:
-
-    - A base encoder (e.g., a CNN), which extracts representation vectors.
-    - A projection head, which maps representations into a space where the
-      contrastive objective is applied.
-
-    During training, two augmented versions of each input are encoded into
-    two latent vectors. The objective is to maximize their similarity
-    while minimizing the similarity to all other samples in the batch. This is
-    achieved with the InfoNCE loss [2]_, [3]_.
-
-    After training, the projection head is discarded, and the encoder serves
-    as a pretrained feature extractor.
+    Decoupled Contrastive Learning (DCL) is a contrastive learning framework
+    for self-supervised representation learning. It builds upon SimCLR [2]_
+    but removes the positive-negative coupling in InfoNCE loss that biases
+    training in small batch sizes.
+    See :py:class:`~nidl.estimators.ssl.simclr.SimCLR`. for an introduction on
+    contrastive learning.
 
     Parameters
     ----------
@@ -68,7 +54,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
     proj_output_dim : int, default=128
         Projector output dimension.
     temperature : float, default=0.1
-        The InfoNCE loss temperature parameter.
+        The DCL loss temperature parameter.
     optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
         default="adamW"
         Optimizer for training the model. If a string is given, it can be:
@@ -108,8 +94,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         Projector that maps encoder output to latent space for loss
         optimization.
 
-    loss : InfoNCE
-        The InfoNCE loss function used for training.
+    loss : DCLLoss
+        The DCL loss function used for training.
 
     optimizer : torch.optim.Optimizer
         Optimizer used for training.
@@ -119,13 +105,13 @@ class SimCLR(TransformerMixin, BaseEstimator):
 
     References
     ----------
-    .. [1] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
+    .. [1] Yeh, Chun-Hsiao, et al. "Decoupled contrastive learning."
+           European conference on computer vision.
+           Cham: Springer Nature Switzerland,
+           https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136860653.pdf
+    .. [2] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
            "A Simple Framework for Contrastive Learning of Visual
            Representations", ICML 2020.
-    .. [2] Aaron van den Oord, Yazhe Li, Oriol Vinyals, "Representation
-           Learning with Contrastive Predictive Coding", arXiv 2018.
-    .. [3] Sohn Kihyuk, "Improved Deep Metric Learning with Multi-class N-pair
-           Loss Objective", NIPS 2016.
 
     """
 
@@ -178,7 +164,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         self.lr_scheduler_kwargs = lr_scheduler_kwargs
         self._fill_default_lr_scheduler_kwargs()
 
-        self.loss = InfoNCE(self.temperature)
+        self.loss = DCLLoss(self.temperature)
 
     def _shared_step(self, batch: Sequence[Any], is_train: bool = True):
         """Shared code for training and validation steps."""
@@ -220,7 +206,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         -------
         outputs : dict
             Dictionary containing:
-                - "loss": the InfoNCE loss computed on this batch (scalar);
+                - "loss": the DCL loss computed on this batch (scalar);
                 - "z1": tensor of shape `(batch_size, n_features)`;
                 - "z2": tensor of shape `(batch_size, n_features)`;
                 - "y": eventual targets (returned as is).
@@ -252,7 +238,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         -------
         outputs : dict
             Dictionary containing:
-                - "loss": the InfoNCE loss computed on this batch (scalar);
+                - "loss": the DCL loss computed on this batch (scalar);
                 - "z1": tensor of shape `(batch_size, n_features)`;
                 - "z2": tensor of shape `(batch_size, n_features)`;
                 - "y": eventual targets (returned as is).
@@ -296,7 +282,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
         return self.encoder(batch)
 
     def configure_optimizers(self):
-        """Initialize the optimizer and learning rate scheduler in SimCLR."""
+        """Initialize the optimizer and learning rate scheduler in DCL."""
         params = [
             {"name": "backbone", "params": self.encoder.parameters()},
             {"name": "head", "params": self.projection_head.parameters()},

@@ -11,7 +11,7 @@ authors = [
     {name = "Benoit Dufumier", email="benoit.dufumier@cea.fr"},
     {name = "Joël Chavas", email="joel.chavas@cea.fr"}
 ]
-license = "CECILL-B"
+license = {text = "CECILL-B"}
 classifiers = [
     "Development Status :: 1 - Planning",
     "Environment :: Console",
@@ -20,14 +20,16 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "torch >=2.1.0, <2.8.0",
+    "torch >=2.1.0",
     "pytorch-lightning",
     "torchvision",
     "toml",
     "pandas",
     "scikit-learn <= 1.7.0",
     "simpleitk",
-    "nibabel"
+    "nibabel",
+    "einops",
+    "timm",
 ]
 dynamic = ["version"]
 

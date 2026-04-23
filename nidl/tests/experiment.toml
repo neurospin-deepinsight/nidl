@@ -31,7 +31,7 @@ heads = 12
 mlp_dim = 3072
 
 [weights]
-interface = "nidl.utils.Weights"
+interface = "nidl.utils.weights.Weights"
 data_dir = "/tmp/weights"
 filepath = "pytorch_model.bin"
 

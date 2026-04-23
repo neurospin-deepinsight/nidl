@@ -13,7 +13,7 @@ import pytorch_lightning as pl
 from sklearn.linear_model import LogisticRegression
 
 from nidl.estimators.base import BaseEstimator, TransformerMixin
-from nidl.callbacks.model_probing_cv import ModelProbingCV
+from nidl.callbacks.model_probing_cv import ModelProbingCVCallback
 
 
 def make_linearly_separable_dataset(n_per_class: int = 16, dim: int = 2):
@@ -83,7 +83,7 @@ class TestModelProbingCVIntegration(unittest.TestCase):
         prefix_score="",
     ):
         probe = LogisticRegression(solver="liblinear")
-        cb = ModelProbingCV(
+        cb = ModelProbingCVCallback(
             dataloader=self.dataloader,
             probe=probe,
             scoring=scoring,
@@ -224,7 +224,7 @@ class TestModelProbingCVIntegration(unittest.TestCase):
     # ------------------------------------------------------------------
     def test_adapt_dataloader_for_ddp_single_process_returns_same(self):
         trainer = type("T", (), {"world_size": 1, "global_rank": 0})()
-        adapted = ModelProbingCV.adapt_dataloader_for_ddp(self.dataloader, trainer)
+        adapted = ModelProbingCVCallback.adapt_dataloader_for_ddp(self.dataloader, trainer)
         self.assertIs(adapted, self.dataloader)
 
     def test_adapt_dataloader_for_ddp_multi_process_uses_distributed_sampler(self):
@@ -239,7 +239,7 @@ class TestModelProbingCVIntegration(unittest.TestCase):
             drop_last=True,
         )
 
-        adapted = ModelProbingCV.adapt_dataloader_for_ddp(dl, trainer)
+        adapted = ModelProbingCVCallback.adapt_dataloader_for_ddp(dl, trainer)
         self.assertIsInstance(adapted.sampler, DistributedSampler)
         self.assertEqual(adapted.sampler.num_replicas, trainer.world_size)
         self.assertEqual(adapted.sampler.rank, trainer.global_rank)

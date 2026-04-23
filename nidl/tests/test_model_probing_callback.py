@@ -7,8 +7,8 @@ import os
 import pytorch_lightning as pl
 from sklearn.linear_model import LogisticRegression
 
-from nidl.estimators import BaseEstimator, TransformerMixin
-from nidl.callbacks.model_probing import ModelProbing
+from nidl.estimators.dummy import DummyEmbeddingEstimator
+from nidl.callbacks import ModelProbingCallback
 
 def make_linearly_separable_dataset(n_per_class: int = 16, dim: int = 2):
     """Simple perfectly linearly separable dataset.
@@ -33,36 +33,6 @@ def find_free_port():
         s.bind(("", 0))  # OS chooses a free port
         return s.getsockname()[1]
 
-class DummyEmbeddingModule(TransformerMixin, BaseEstimator):
-    """Simple LightningModule that exposes transform_step.
-
-    - transform_step returns the raw input features (identity),
-      so the probe sees exactly the original dataset.
-    """
-
-    def __init__(self, dim=2):
-        super().__init__()
-        self.linear = torch.nn.Linear(dim, 2)
-
-    def forward(self, x):
-        return self.linear(x)
-
-    def transform_step(self, x, batch_idx=None):
-        # Identity embedding: features are just the inputs
-        return x
-    
-    def test_step(self, batch, batch_idx):
-        return None
-
-    def training_step(self, batch, batch_idx): # keep PL busy
-        x, y = batch
-        logits = self(x)
-        loss = F.cross_entropy(logits, y)
-        return loss
-
-    def configure_optimizers(self):
-        return torch.optim.SGD(self.parameters(), lr=0.1)
-
 
 class TestModelProbingIntegration(unittest.TestCase):
     @classmethod
@@ -84,7 +54,7 @@ class TestModelProbingIntegration(unittest.TestCase):
         prog_bar=False,
     ):
         probe = LogisticRegression(solver="liblinear")
-        cb = ModelProbing(
+        cb = ModelProbingCallback(
             train_dataloader=self.train_loader,
             test_dataloader=self.test_loader,
             probe=probe,
@@ -93,7 +63,6 @@ class TestModelProbingIntegration(unittest.TestCase):
             every_n_val_epochs=every_n_val_epochs,
             on_test_epoch_start=on_test_epoch_start,
             on_test_epoch_end=on_test_epoch_end,
-            prog_bar=prog_bar,
             prefix_score=prefix_score,
         )
         return cb
@@ -127,16 +96,22 @@ class TestModelProbingIntegration(unittest.TestCase):
             every_n_val_epochs=None,
             prefix_score="",  # default
         )
-        model = DummyEmbeddingModule()
-        trainer = self._build_trainer(
-            accelerator="cpu", devices=1, callbacks=[callback]
-        )
+        model = DummyEmbeddingEstimator(
+            strategy="identity", 
+            accelerator="cpu", 
+            devices=1, 
+            callbacks=[callback],
+            limit_train_batches=2,  # keep tests fast
+            max_epochs=1,
+            enable_checkpointing=False,
+            enable_model_summary=False,
+            logger=False)
 
-        trainer.fit(model, train_dataloaders=self.train_loader)
+        model.fit(train_dataloader=self.train_loader)
 
         # ModelProbing.log_metrics uses "<prefix>test_score" for single score
-        self.assertIn("test_score", trainer.callback_metrics)
-        acc = trainer.callback_metrics["test_score"].item()
+        self.assertIn("test_score", model.trainer.callback_metrics)
+        acc = model.trainer.callback_metrics["test_score"].item()
         # On a perfectly separable dataset, logistic regression should reach 1.0
         self.assertGreaterEqual(acc, 0.95)
 
@@ -148,7 +123,7 @@ class TestModelProbingIntegration(unittest.TestCase):
             on_test_epoch_end=True,
             prefix_score="logreg_",
         )
-        model = DummyEmbeddingModule()
+        model = DummyEmbeddingEstimator(strategy="identity")
         trainer = self._build_trainer(
             accelerator="cpu", devices=1, callbacks=[callback]
         )
@@ -183,7 +158,8 @@ class TestModelProbingIntegration(unittest.TestCase):
             scoring="accuracy",
             every_n_train_epochs=1,
         )
-        model = DummyEmbeddingModule()
+        model = DummyEmbeddingEstimator(strategy="identity")
+        model.net = torch.nn.Linear(2, 2)  # dummy net to satisfy DDP requirements
 
         trainer = self._build_trainer(
             accelerator="cpu",
@@ -208,7 +184,7 @@ class TestModelProbingIntegration(unittest.TestCase):
             prefix_score="custom_",
             prog_bar=True,
         )
-        model = DummyEmbeddingModule()
+        model = DummyEmbeddingEstimator(strategy="identity")
         trainer = self._build_trainer(
             accelerator="cpu", devices=1, callbacks=[callback]
         )

@@ -49,5 +49,6 @@ jobs:
     - name: Coveralls
       uses: coverallsapp/github-action@v2
       with:
+        parallel: true
         debug: true
         fail-on-error: true

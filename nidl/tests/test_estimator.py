@@ -26,8 +26,11 @@ from nidl.estimators.ssl import (
     BarlowTwins,
     SimCLR,
     YAwareContrastiveLearning,
-    DINO
+    DINO,
+    DCL,
+    IJEPA
 )
+from timm.models.vision_transformer import VisionTransformer
 from nidl.estimators.autoencoders import VAE
 from nidl.estimators.linear import LogisticRegression
 from nidl.losses.yaware_infonce import KernelMetric
@@ -62,9 +65,14 @@ class TestEstimators(unittest.TestCase):
     """ Test estimators: simple checks.
     """
     def setUp(self):
-        self._encoder = nn.Linear(5 * 5, 10)
-        self._encoder.latent_size = 10
-        self._fc = nn.Linear(self._encoder.latent_size, 2)
+        self.latent_size = 10
+        self._encoder = nn.Linear(5 * 5, self.latent_size)
+        self._encoder_vit = VisionTransformer(
+            img_size=5, patch_size=1, in_chans=1, 
+            embed_dim=self.latent_size, depth=1, 
+            num_heads=2
+        )
+        self._fc = nn.Linear(self.latent_size, 2)
         self._model = nn.Sequential(
             OrderedDict([("encoder", self._encoder), ("fc", self._fc)])
         )
@@ -75,19 +83,25 @@ class TestEstimators(unittest.TestCase):
         ssl_dataset = CustomTensorDataset(
             self.fake_data, transform=MultiViewsTransform(ssl_transforms, n_views=2)
         )
+        ssl_2d_dataset = CustomTensorDataset(
+            self.fake_data.view(self.n_images, 1, 5, 5),
+        )
         multicrop_ssl_dataset = CustomTensorDataset(
             self.fake_data, transform=MultiViewsTransform(ssl_transforms, n_views=6)
         )
         x_dataset = CustomTensorDataset(self.fake_data)
+        x_2d_dataset = CustomTensorDataset(self.fake_data.view(self.n_images, 1, 5, 5))
         xy_dataset = CustomTensorDataset(self.fake_data, labels=self.fake_labels)
         xxy_dataset = CustomTensorDataset(
             self.fake_data, labels=self.fake_labels, 
             transform=MultiViewsTransform(ssl_transforms, n_views=2)
         )
         self.ssl_loader = DataLoader(ssl_dataset, batch_size=2, shuffle=False)
+        self.ssl_2d_loader = DataLoader(ssl_2d_dataset, batch_size=2, shuffle=False)
         self.multicrop_ssl_loader = DataLoader(multicrop_ssl_dataset, batch_size=2, shuffle=False)
         self.weakly_sup_loader = DataLoader(xxy_dataset, batch_size=2, shuffle=False)
         self.x_loader = DataLoader(x_dataset, batch_size=2, shuffle=False)
+        self.x_2d_loader = DataLoader(x_2d_dataset, batch_size=2, shuffle=False)
         self.xy_loader = DataLoader(xy_dataset, batch_size=2, shuffle=False)
 
     def ssl_config(self):
@@ -96,7 +110,7 @@ class TestEstimators(unittest.TestCase):
                 SimCLR,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 3,
                     "proj_output_dim": 3,
                     "learning_rate": 5e-4,
@@ -111,7 +125,7 @@ class TestEstimators(unittest.TestCase):
                 BarlowTwins,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 3,
                     "proj_output_dim": 3,
                     "learning_rate": 5e-4,
@@ -126,7 +140,7 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 3,
                     "proj_output_dim": 3,
                     "temperature": 0.07,
@@ -139,7 +153,7 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 3,
                     "proj_output_dim": 3,
                     "lr_scheduler": "none",
@@ -150,6 +164,34 @@ class TestEstimators(unittest.TestCase):
                     "limit_train_batches": 3
                 },
             ),
+            (
+                DCL,
+                {
+                    "encoder": self._encoder,
+                    "proj_input_dim": self.latent_size,
+                    "proj_hidden_dim": 3,
+                    "proj_output_dim": 3,
+                    "learning_rate": 5e-4,
+                    "temperature": 0.07,
+                    "weight_decay": 1e-4,
+                    "max_epochs": 2,
+                    "random_state": 42,
+                    "limit_train_batches": 3,
+                },
+            ),
+            (
+                IJEPA,
+                {
+                    "encoder": self._encoder_vit,
+                    "dim": 2,
+                    "min_keep": 0,
+                    "learning_rate": 5e-4,
+                    "weight_decay": 1e-4,
+                    "max_epochs": 2,
+                    "random_state": 42,
+                    "limit_train_batches": 3,
+                },
+            )
         )
 
     def multicrop_ssl_config(self):
@@ -157,7 +199,7 @@ class TestEstimators(unittest.TestCase):
             DINO,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 3,
                     "proj_output_dim": 3,
                     "warmup_teacher_temp": 0.04,
@@ -172,7 +214,7 @@ class TestEstimators(unittest.TestCase):
             DINO,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 3,
                     "proj_output_dim": 3,
                     "warmup_teacher_temp": 0.07,
@@ -194,7 +236,7 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 10,
                     "proj_output_dim": 10,
                     "bandwidth": 2,
@@ -208,7 +250,7 @@ class TestEstimators(unittest.TestCase):
                 YAwareContrastiveLearning,
                 {
                     "encoder": self._encoder,
-                    "proj_input_dim": self._encoder.latent_size,
+                    "proj_input_dim": self.latent_size,
                     "proj_hidden_dim": 10,
                     "proj_output_dim": 10,
                     "bandwidth": kernel_metric,
@@ -281,12 +323,18 @@ class TestEstimators(unittest.TestCase):
         for klass, params in self.ssl_config():
             print(f"[{print_multicolor(klass.__name__, display=False)}]...")
             model = klass(**params)
-            model.fit(self.ssl_loader)
-            z = model.transform(self.x_loader)
+            if isinstance(model, IJEPA): # IJEPA is designed for 2D/3D inputs only
+                ssl_loader = self.ssl_2d_loader
+                x_loader = self.x_2d_loader
+            else:
+                ssl_loader = self.ssl_loader
+                x_loader = self.x_loader
+            model.fit(ssl_loader)
+            z = model.transform(x_loader)
             self.assertTrue(
-                z.shape == (self.n_images, self._encoder.latent_size),
+                z.shape == (self.n_images, self.latent_size),
                 msg="Shape mismatch for transformed data: "
-                    f"{z.shape} != {(self.n_images, self._encoder.latent_size)}",
+                    f"{z.shape} != {(self.n_images, self.latent_size)}",
             )
 
     def test_multicrop_ssl(self):
@@ -297,9 +345,9 @@ class TestEstimators(unittest.TestCase):
             model.fit(self.multicrop_ssl_loader)
             z = model.transform(self.x_loader)
             self.assertTrue(
-                z.shape == (self.n_images, self._encoder.latent_size),
+                z.shape == (self.n_images, self.latent_size),
                 msg="Shape mismatch for transformed data: "
-                    f"{z.shape} != {(self.n_images, self._encoder.latent_size)}",
+                    f"{z.shape} != {(self.n_images, self.latent_size)}",
             )
     
     def test_vae(self):
@@ -326,9 +374,9 @@ class TestEstimators(unittest.TestCase):
             model.fit(self.weakly_sup_loader)
             z = model.transform(self.x_loader)
             self.assertTrue(
-                z.shape == (self.n_images, self._encoder.latent_size),
+                z.shape == (self.n_images, self.latent_size),
                 msg="Shape mismatch for transformed data: "
-                    f"{z.shape} != {(self.n_images, self._encoder.latent_size)}",
+                    f"{z.shape} != {(self.n_images, self.latent_size)}",
             )
 
     def test_predictor(self):
