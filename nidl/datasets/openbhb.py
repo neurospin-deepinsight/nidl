@@ -94,8 +94,8 @@ class OpenBHB(Dataset):
         (too many requests). We recommend keeping this value low.
 
     mmap_mode : {None, 'r+', 'r', 'w+', 'c'}, default='r'
-        If not None, then memory-map the NumPy arrays, using the given mode (see
-        `numpy.memmap` for a detailed description of the modes).  A
+        If not None, then memory-map the NumPy arrays, using the given mode
+        (see `numpy.memmap` for a detailed description of the modes).  A
         memory-mapped array is kept on disk. However, it can be accessed
         and sliced like any ndarray.  Memory mapping is especially useful
         for accessing small fragments of large files without reading the
@@ -726,7 +726,8 @@ class OpenBHB(Dataset):
             row = row.drop(columns=["participant_id", "session"]).to_numpy()
             return row.reshape(shape).astype(np.float32)
         else:
-            return np.load(path, mmap_mode=self.mmap_mode)[0].astype(np.float32)
+            return np.load(
+                path, mmap_mode=self.mmap_mode)[0].astype(np.float32)
 
     def _parse_root(self, path):
         # eventually parse "~" or $HOME
