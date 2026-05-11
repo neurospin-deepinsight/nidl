@@ -93,6 +93,14 @@ class OpenBHB(Dataset):
         Warning: setting `max_workers` > 1 can raise Hugging Face 429 errors
         (too many requests). We recommend keeping this value low.
 
+    mmap_mode : {None, 'r+', 'r', 'w+', 'c'}, default='r'
+        If not None, then memory-map the NumPy arrays, using the given mode (see
+        `numpy.memmap` for a detailed description of the modes).  A
+        memory-mapped array is kept on disk. However, it can be accessed
+        and sliced like any ndarray.  Memory mapping is especially useful
+        for accessing small fragments of large files without reading the
+        entire file into memory.
+
     transforms : callable or None, default=None
         A function/transform that takes in a brain image and returns a
         transformed version. Input depends on `modality` and can be a 3D image,
@@ -161,6 +169,7 @@ class OpenBHB(Dataset):
         split: str = "train",
         streaming: bool = True,
         max_workers: int = 1,
+        mmap_mode: Optional[str] = "r",
         transforms: Optional[Callable] = None,
         target_transforms: Optional[Callable] = None,
     ):
@@ -171,7 +180,7 @@ class OpenBHB(Dataset):
         self.streaming = streaming
         self.transforms = transforms
         self.target_transforms = target_transforms
-
+        self.mmap_mode = mmap_mode
         self.samples = self.make_dataset(self.split)
         if not self.streaming:  # fetch all data split if not there
             self.download_dataset_split(
@@ -717,7 +726,7 @@ class OpenBHB(Dataset):
             row = row.drop(columns=["participant_id", "session"]).to_numpy()
             return row.reshape(shape).astype(np.float32)
         else:
-            return np.load(path)[0].astype(np.float32)
+            return np.load(path, mmap_mode=self.mmap_mode)[0].astype(np.float32)
 
     def _parse_root(self, path):
         # eventually parse "~" or $HOME
