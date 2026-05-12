@@ -440,6 +440,6 @@ class VolumeTransform(Transform):
         if len(data.shape) not in [3, 4]:
             raise ValueError(
                 "Input data must be 3d or 4d (channel+spatial dimensions), "
-                f"got {len(data.shape)}"
+                f"got {data.shape}"
             )
         return data

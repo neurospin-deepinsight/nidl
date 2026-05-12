@@ -186,9 +186,9 @@ class VisionTransformer3D(nn.Module):
     Parameters
     ----------
     img_size : int or sequence of int
-        Input size in ``(D, H, W)``.
+        Input size in ``(H, W, D)``.
     patch_size : int or sequence of int
-        Patch size in ``(D, H, W)``.
+        Patch size in ``(H, W, D)``.
     in_chans : int, default=1
         Number of input channels.
     num_classes : int, default=0

@@ -409,7 +409,7 @@ def procrustes_similarity(X, Y) -> float:
     if torch.isclose(
         nx * ny, torch.Tensor([0.0]).to(dtype=X.dtype, device=X.device)
     ):
-        sim = torch.Tensor(0.0).to(dtype=X.dtype, device=X.device)
+        sim = torch.tensor(0.0).to(dtype=X.dtype, device=X.device)
     else:
         # Cross-covariance-like matrix
         M = Xc.T @ Yc  # shape (d1, d2)
@@ -498,7 +498,7 @@ def procrustes_r2(X, Y) -> float:
     if torch.isclose(
         torch.norm(Yc, p="fro"), torch.tensor(0.0, dtype=X.dtype)
     ):
-        sim = torch.Tensor(0.0).to(dtype=X.dtype, device=X.device)
+        sim = torch.tensor(0.0).to(dtype=X.dtype, device=X.device)
     else:
         # SVD-based orthogonal Procrustes
         M = Xc.T @ Yc
