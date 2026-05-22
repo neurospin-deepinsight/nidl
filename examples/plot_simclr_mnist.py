@@ -45,7 +45,7 @@ from torchvision import transforms
 from torchvision.datasets import MNIST
 
 from nidl.estimators.ssl import SimCLR
-from nidl.transforms import MultiViewsTransform
+from nidl.transforms.transforms import MultiViewsTransform
 from nidl.utils.weights import Weights
 
 # %%

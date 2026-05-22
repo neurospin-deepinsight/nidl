@@ -12,7 +12,7 @@ from typing import Callable, Optional
 import numpy as np
 import torch
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class ZNormalization(VolumeTransform):

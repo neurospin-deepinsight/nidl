@@ -14,7 +14,7 @@ import numpy as np
 import torch
 from scipy.ndimage import gaussian_filter
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomGaussianBlur(VolumeTransform):

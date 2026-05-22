@@ -35,7 +35,7 @@ from nidl.estimators.autoencoders import VAE
 from nidl.estimators.linear import LogisticRegression
 from nidl.losses.yaware_infonce import KernelMetric
 from nidl.losses.beta_vae import BetaVAELoss
-from nidl.transforms import MultiViewsTransform
+from nidl.transforms.transforms import MultiViewsTransform
 from nidl.utils import print_multicolor
 
 

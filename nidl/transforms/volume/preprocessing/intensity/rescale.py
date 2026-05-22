@@ -12,7 +12,7 @@ from typing import Callable, Optional
 import numpy as np
 import torch
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RobustRescaling(VolumeTransform):
@@ -78,7 +78,7 @@ class RobustRescaling(VolumeTransform):
     Examples
     --------
     >>> import numpy as np
-    >>> from nidl.volume.transforms import RobustRescaling
+    >>> from nidl.transforms.volume import RobustRescaling
     >>> # Create a random 3d volume with shape (64, 64, 64)
     >>> volume = np.random.normal(loc=100, scale=20, size=(64, 64, 64))
     >>> # Define the transform

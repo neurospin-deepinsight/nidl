@@ -60,7 +60,7 @@ from nidl.estimators.probes import ModelProbing
 from nidl.datasets import OpenBHB
 from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
 from nidl.metrics import pearson_r
-from nidl.transforms import MultiViewsTransform
+from nidl.transforms.transforms import MultiViewsTransform
 
 # %%
 # We define some global parameters that will be used throughout the notebook:

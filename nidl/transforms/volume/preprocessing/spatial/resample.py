@@ -17,7 +17,7 @@ import torch
 from nibabel.orientations import aff2axcodes
 from sklearn.utils.validation import check_array
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class Resample(VolumeTransform):
@@ -82,7 +82,7 @@ class Resample(VolumeTransform):
     Examples
     --------
     >>> import numpy as np
-    >>> from nidl.volume.transforms.preprocessing.spatial import Resample
+    >>> from nidl.transforms.volume.preprocessing.spatial import Resample
     >>> # Create a dummy 3D image (e.g., shape: (128, 128, 128))
     >>> image = np.random.rand(128, 128, 128).astype(np.float32)
     >>> # Assume identity affine (voxel size 1mm in RAS)

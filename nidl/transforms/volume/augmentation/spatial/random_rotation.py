@@ -14,7 +14,7 @@ import numpy as np
 import torch
 from nibabel.orientations import aff2axcodes
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomRotation(VolumeTransform):
@@ -37,7 +37,7 @@ class RandomRotation(VolumeTransform):
     Examples
     --------
     >>> import torch
-    >>> from nidl.volume.transforms.augmentation.spatial import RandomRotation
+    >>> from nidl.transforms.volume.augmentation.spatial import RandomRotation
     >>> volume = torch.randn(1, 64, 64, 64)  # shape: (C, H, W, D)
     >>> transform = RandomRotation(axes=("LR", "AP"), rotation_probability=0.5)
     >>> rotated = transform(volume) # shape (1, 64, 64, 64)

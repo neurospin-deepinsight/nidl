@@ -13,7 +13,7 @@ from typing import Union
 import numpy as np
 import torch
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomErasing(VolumeTransform):

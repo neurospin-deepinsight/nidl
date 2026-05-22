@@ -61,7 +61,7 @@ class BarlowTwins(TransformerMixin, BaseEstimator):
         - encoder=torchvision.ops.MLP, encoder_kwargs={"in_channels": 10,
           "hidden_channels": [4, 3, 2]} builds an MLP with 3 hidden layers,
           input dim 10, output dim 2.
-        - encoder=nidl.volume.backbones.resnet3d.resnet18,
+        - encoder=nidl.backbones.volume.resnet3d.resnet18,
           encoder_kwargs={"n_embedding": 10} builds a ResNet-18 model with
           10 output dimension.
 

@@ -10,7 +10,7 @@ import unittest
 
 import torch
 
-from nidl.volume.backbones import (
+from nidl.backbones.volume import (
     AlexNet,
     densenet121,
     resnet18,

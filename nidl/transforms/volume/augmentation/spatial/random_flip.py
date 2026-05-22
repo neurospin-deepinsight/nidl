@@ -14,7 +14,7 @@ import numpy as np
 import torch
 from nibabel.orientations import aff2axcodes
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomFlip(VolumeTransform):
