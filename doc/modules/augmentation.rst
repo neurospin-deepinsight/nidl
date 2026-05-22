@@ -48,7 +48,7 @@ Base Classes
 
 Base classes for all augmentations and various utility functions.
 
-.. currentmodule:: nidl.transforms
+.. currentmodule:: nidl.transforms.transforms
 
 .. autosummary::
    :toctree: generated/
@@ -69,7 +69,7 @@ Preprocessing
 Classes that implement useful spatial and intensity pre-processing
 transformations on brain 3D volumes.
 
-.. currentmodule:: nidl.volume.transforms.preprocessing
+.. currentmodule:: nidl.transforms.volume.preprocessing
 
 .. autosummary::
    :toctree: generated/
@@ -81,7 +81,7 @@ transformations on brain 3D volumes.
     Resample
     Resize
 
-.. autoclasstree:: nidl.volume.transforms.preprocessing
+.. autoclasstree:: nidl.transforms.volume.preprocessing
    :strict:
    :align: center
 
@@ -93,7 +93,7 @@ Augmentations
 Classes that implement augmentations on brain 3D volumes and various utility
 functions.
 
-.. currentmodule:: nidl.volume.transforms.augmentation
+.. currentmodule:: nidl.transforms.volume.augmentation
 
 .. autosummary::
    :toctree: generated/
@@ -106,7 +106,7 @@ functions.
     RandomResizedCrop
     RandomRotation
 
-.. autoclasstree:: nidl.volume.transforms.augmentation
+.. autoclasstree:: nidl.transforms.volume.augmentation
    :strict:
    :align: center
 
