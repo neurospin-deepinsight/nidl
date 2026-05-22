@@ -59,7 +59,8 @@ class RobustRescaling(VolumeTransform):
         None, the whole volume is taken to compute the cutoff.
 
     kwargs: dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     Notes
     -----

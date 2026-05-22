@@ -1,7 +1,7 @@
-:mod:`nidl.transforms`: Available transformations
-=================================================
+:mod:`nidl.transforms.transforms`: Available transformations
+============================================================
 
-.. automodule:: nidl.transforms
+.. automodule:: nidl.transforms.transforms
    :no-members:
    :no-inherited-members:
 

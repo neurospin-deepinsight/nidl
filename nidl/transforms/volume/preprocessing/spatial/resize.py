@@ -60,7 +60,8 @@ class Resize(Resample):
             - `blackman`: Blackman-windowed sinc kernel.
 
     **kwargs : dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     References
     ----------
