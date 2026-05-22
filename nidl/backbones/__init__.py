@@ -6,5 +6,6 @@
 # for details.
 ##########################################################################
 
-""" Definition of common architectures.
+"""This modules details the public API you should use and implement for a
+nidl compatible backbone for different input types.
 """
