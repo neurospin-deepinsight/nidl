@@ -13,6 +13,7 @@ Icosahedron structure.
 import functools
 import inspect
 from concurrent.futures import ProcessPoolExecutor
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, ClassVar
 
@@ -30,7 +31,7 @@ class Ico:
     or neighbors and to significantly speed up repeated calls with the same
     parameters.
     """
-    _cache: ClassVar[dict[str, Any]] = {}
+    _cache: ClassVar[dict[str, np.ndarray]] = {}
 
     # ------------------------------------------------------------------
     # Caching methods
@@ -101,6 +102,12 @@ class Ico:
         Callable
             A wrapped version of the method that returns cached results
             when called with the same arguments.
+
+        Raises
+        ------
+        ValueError
+            If objects other than NumPy ``ndarray`` instances are returned for
+            the cache.
         """
 
         @functools.wraps(method)
@@ -121,6 +128,12 @@ class Ico:
                 return Ico._cache[key]
 
             result = method(*args, **kwargs)
+
+            if not isinstance(result, np.ndarray):
+                raise TypeError(
+                    "Cache expects to store NumPy ndarrays only."
+                )
+
             Ico._cache[key] = result
 
             return result
@@ -133,6 +146,42 @@ class Ico:
         Clear the cache content.
         """
         cls._cache = {}
+
+
+    @classmethod
+    @contextmanager
+    def cachemanager(
+            cls,
+            cache_file
+        ) -> None:
+        """
+        Context manager that restores the class-level cache before use and
+        saves it afterward.
+
+        Parameters
+        ----------
+        cache_file : str | Path | None
+            Path to a ``.npz``  file used to save and restore precomputed
+            Ico data. If ``None``, no caching initilization is performed.
+        """
+        # No caching: simply run the block
+        if cache_file is None:
+            yield
+            return
+
+        cache_file = Path(cache_file)
+
+        # Restore cache if file exists
+        if cache_file.exists():
+            with np.load(cache_file, allow_pickle=True) as data:
+                cls._cache = {key: data[key] for key in data.files}
+        # Run the block
+        try:
+            yield
+        # Save cache back to disk
+        finally:
+            with open(cache_file, "wb") as of:
+                np.savez(of, **cls._cache)
 
     # ------------------------------------------------------------------
     # API
@@ -175,8 +224,10 @@ class Ico:
         (1280, 3)
         """
         if standard_ico:
-            return cls._generate_standard(order)
-        return cls._load_freesurfer(order)
+            vertices, triangles = cls._generate_standard(order)
+        else:
+            vertices, triangles = cls._load_freesurfer(order)
+        return np.array((vertices, triangles), dtype=object)
 
     @classmethod
     @cached
