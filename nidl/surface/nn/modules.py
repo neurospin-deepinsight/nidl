@@ -42,6 +42,9 @@ class IcoConv(nn.Module):
     bias : bool
         If True, adds a learnable bias term.
         Default True.
+    n_jobs : int
+        Number of parallel workers.
+        Default 1.
 
     Examples
     --------
@@ -67,6 +70,7 @@ class IcoConv(nn.Module):
             depth: int,
             standard_ico: bool = False,
             bias: bool = True,
+            n_jobs: int = 1,
         ) -> None:
         super().__init__()
 
@@ -76,6 +80,7 @@ class IcoConv(nn.Module):
             standard_ico=standard_ico,
             depth=depth,
             direct_neighbor=True,
+            n_jobs=n_jobs,
         )
         self.n_vertices, self.n_neighbors = self.neighbors.shape
 
@@ -133,6 +138,17 @@ class IcoConv(nn.Module):
 
         return out
 
+    def extra_repr(self) -> str:
+        """
+        Add class instance parameters in representation.
+        """
+        return (
+            f"in_feats={self.in_feats},\n"
+            f"out_feats={self.out_feats},\n"
+            f"n_vertices={self.n_vertices},\n"
+            f"n_neighbors={self.n_neighbors}"
+        )
+
 
 class IcoPool(nn.Module):
     """
@@ -150,6 +166,9 @@ class IcoPool(nn.Module):
     pooling_type : str
         Pooling operation to apply. Supported options are 'mean' and 'max'.
         Default 'mean'.
+    n_jobs : int
+        Number of parallel workers.
+        Default 1.
 
     Raises
     ------
@@ -175,6 +194,7 @@ class IcoPool(nn.Module):
             order: int,
             standard_ico: bool = False,
             pooling_type: str = "mean",
+            n_jobs: int = 1,
         ) -> None:
         super().__init__()
 
@@ -190,6 +210,7 @@ class IcoPool(nn.Module):
             standard_ico=standard_ico,
             depth=1,
             direct_neighbor=True,
+            n_jobs=n_jobs,
         )
 
         # Select only the neighbors corresponding to downsampled vertices
@@ -236,6 +257,16 @@ class IcoPool(nn.Module):
         else:
             return torch.max(x, dim=-1).values
 
+    def extra_repr(self) -> str:
+        """
+        Add class instance parameters in representation.
+        """
+        return (
+            f"pooling_type='{self.pooling_type}',\n"
+            f"n_vertices={self.n_vertices},\n"
+            f"n_neighbors={self.n_neighbors}"
+        )
+
 
 class IcoUpConv(nn.Module):
     """
@@ -254,6 +285,9 @@ class IcoUpConv(nn.Module):
         If True, recursively subdivides a standard icosahedron.
         If False, loads precomputed FreeSurfer icosahedral meshes.
         Default False.
+    n_jobs : int
+        Number of parallel workers.
+        Default 1.
 
     Examples
     --------
@@ -276,6 +310,7 @@ class IcoUpConv(nn.Module):
             out_feats: int,
             order: int,
             standard_ico: bool = False,
+            n_jobs: int = 1,
         ) -> None:
         super().__init__()
 
@@ -292,6 +327,7 @@ class IcoUpConv(nn.Module):
             standard_ico=standard_ico,
             depth=1,
             direct_neighbor=True,
+            n_jobs=n_jobs,
         )
         self.n_up_vertices, self.n_up_neighbors = up_neighbors.shape
 
