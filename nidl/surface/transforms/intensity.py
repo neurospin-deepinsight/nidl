@@ -60,7 +60,7 @@ class RandomGaussianBlur:
     >>> x_blured.shape
     (642,)
     """
-    bounds: ClassVar[dict[str, tuple[float, None, type]]] = {
+    bounds: ClassVar[dict[str, tuple[float | None, float | None, type]]] = {
         "sigma": (0, None, float),     # sigma must be >= 0
     }
 
@@ -163,7 +163,7 @@ class RandomGaussianNoise:
     >>> x_noised.shape
     (642,)
     """
-    bounds: ClassVar[dict[str, tuple[float, None, type]]] = {
+    bounds: ClassVar[dict[str, tuple[float | None, float | None, type]]] = {
         "mean": (None, None, float),   # no constraint
         "sigma": (0, None, float),     # sigma must be >= 0
     }

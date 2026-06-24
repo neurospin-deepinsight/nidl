@@ -64,7 +64,7 @@ class RandomCutOut:
     >>> x_cutout.shape
     (642,)
     """
-    bounds: ClassVar[dict[str, tuple[int, None, type]]] = {
+    bounds: ClassVar[dict[str, tuple[int | None, int | None, type]]] = {
         "cuts": (0, None, int),         # number of cuts must be >= 0
         "size": (0, None, int),         # number of rings must be >= 0
     }
@@ -167,7 +167,7 @@ class RandomRotation:
     >>> x_rotated.shape
     (642,)
     """
-    bounds: ClassVar[dict[str, tuple[int, int, type]]] = {
+    bounds: ClassVar[dict[str, tuple[int | None, int | None, type]]] = {
         "phi": (0, 360, float),        # angle must be in [0, 360]
         "theta": (0, 360, float),      # angle must be in [0, 360]
         "psi": (0, 360, float),        # angle must be in [0, 360]
