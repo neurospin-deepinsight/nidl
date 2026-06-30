@@ -79,7 +79,7 @@ importing our standard libraries below:
 
     from nidl.datasets import OpenBHB
     from nidl.estimators.ssl import BarlowTwins
-    from nidl.transforms import MultiViewsTransform
+    from nidl.transforms.transforms import MultiViewsTransform
 
 
 
@@ -455,9 +455,9 @@ We train both models on their respective dataloaders.
  .. code-block:: none
 
     /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
-    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:430: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
       self.check_worker_number_rationality()
-    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py:317: The number of training batches (26) is smaller than the logging interval Trainer(log_every_n_steps=50). Set a lower value for log_every_n_steps if you want to see logs for the training epoch.
+    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py:321: The number of training batches (26) is smaller than the logging interval Trainer(log_every_n_steps=50). Set a lower value for log_every_n_steps if you want to see logs for the training epoch.
     ┏━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
     ┃   ┃ Name            ┃ Type                      ┃ Params ┃ Mode  ┃ FLOPs ┃
     ┡━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
@@ -468,11 +468,11 @@ We train both models on their respective dataloaders.
     Trainable params: 28.8 K                                                        
     Non-trainable params: 0                                                         
     Total params: 28.8 K                                                            
-    Total estimated model params size (MB): 0                                       
+    Total estimated model params size (MB): 0.115                                   
     Modules in train mode: 16                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 3.62it/s v_num: 4.000      
+    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:10 • 0:00:00 3.77it/s v_num: 4.000      
                                                                   loss/train: 34.056
                                                                   loss/val: 31.501  
     ┏━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
@@ -485,11 +485,11 @@ We train both models on their respective dataloaders.
     Trainable params: 28.0 K                                                        
     Non-trainable params: 0                                                         
     Total params: 28.0 K                                                            
-    Total estimated model params size (MB): 0                                       
+    Total estimated model params size (MB): 0.112                                   
     Modules in train mode: 16                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:17 • 0:00:00 2.58it/s v_num: 5.000      
+    Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:19 • 0:00:00 2.00it/s v_num: 5.000      
                                                                   loss/train: 33.475
                                                                   loss/val: 30.364  
 
@@ -504,10 +504,10 @@ We train both models on their respective dataloaders.
       (projection_head): BarlowTwinsProjectionHead(
         (layers): Sequential(
           (0): Linear(in_features=32, out_features=64, bias=False)
-          (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
           (2): ReLU()
           (3): Linear(in_features=64, out_features=64, bias=False)
-          (4): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (4): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, bias=True, track_running_stats=True)
           (5): ReLU()
           (6): Linear(in_features=64, out_features=32, bias=True)
         )
@@ -551,10 +551,10 @@ and SBM data.
 
  .. code-block:: none
 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.70it/s 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 12.60it/s 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 2.15it/s 
-    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 1925.27it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:07 • 0:00:00 3.55it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 14.00it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:12 • 0:00:00 2.04it/s 
+    Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 1494.68it/s 
 
 
 
@@ -754,9 +754,9 @@ working with the original 3d brain scans instead of the ROI-averaged data.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (7 minutes 7.224 seconds)
+   **Total running time of the script:** (7 minutes 53.282 seconds)
 
-**Estimated memory usage:**  120 MB
+**Estimated memory usage:**  122 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_barlowtwins_openbhb.py:

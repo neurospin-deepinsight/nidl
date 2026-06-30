@@ -61,7 +61,7 @@ from torchvision.ops import MLP
 
 from nidl.datasets import OpenBHB
 from nidl.estimators.ssl import YAwareContrastiveLearning
-from nidl.transforms import MultiViewsTransform
+from nidl.transforms.transforms import MultiViewsTransform
 
 # %%
 # We define some global parameters that will be used throughout the notebook:

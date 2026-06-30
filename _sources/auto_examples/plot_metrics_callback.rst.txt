@@ -64,7 +64,7 @@ importing our standard libraries below:
         contrastive_accuracy_score,
         uniformity_score,
     )
-    from nidl.transforms import MultiViewsTransform
+    from nidl.transforms.transforms import MultiViewsTransform
 
 
 
@@ -214,7 +214,7 @@ examples of the dataset.
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:430: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
       self.check_worker_number_rationality()
 
 
@@ -414,14 +414,14 @@ Finally, we fit the model:
     Trainable params: 61.7 K                                                        
     Non-trainable params: 0                                                         
     Total params: 61.7 K                                                            
-    Total estimated model params size (MB): 0                                       
+    Total estimated model params size (MB): 0.247                                   
     Modules in train mode: 8                                                        
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
     /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
-    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1095: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
       super().__init__(loader)
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:08 •        29.68it/s v_num: 12.000    
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:09 •        28.22it/s v_num: 12.000    
                                         0:00:00                    acc1/train: 0.990
                                                                    f1/train: 0.990  
                                                                    precision/train: 
@@ -677,11 +677,11 @@ computation as the model's weights are changing over iterations.
     Trainable params: 65.7 K                                                        
     Non-trainable params: 0                                                         
     Total params: 65.7 K                                                            
-    Total estimated model params size (MB): 0                                       
+    Total estimated model params size (MB): 0.263                                   
     Modules in train mode: 14                                                       
     Modules in eval mode: 0                                                         
     Total FLOPs: 0                                                                  
-    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:39 • 0:00:00 6.38it/s v_num: 13.000    
+    Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:42 • 0:00:00 5.90it/s v_num: 13.000    
                                                                    loss/train: 0.328
                                                                    loss/val: 1.127  
                                                                    alignment/val:   
@@ -789,9 +789,9 @@ increases:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (9 minutes 25.698 seconds)
+   **Total running time of the script:** (10 minutes 13.711 seconds)
 
-**Estimated memory usage:**  2408 MB
+**Estimated memory usage:**  2308 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_metrics_callback.py:
