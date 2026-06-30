@@ -462,7 +462,7 @@ importing our standard libraries below:</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.datasets.OpenBHB.html#nidl.datasets.OpenBHB" title="nidl.datasets.OpenBHB" class="sphx-glr-backref-module-nidl-datasets sphx-glr-backref-type-py-class"><span class="n">OpenBHB</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.ssl</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html#nidl.estimators.ssl.BarlowTwins" title="nidl.estimators.ssl.BarlowTwins" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class"><span class="n">BarlowTwins</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.transforms.transforms</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.transforms.transforms.MultiViewsTransform.html#nidl.transforms.transforms.MultiViewsTransform" title="nidl.transforms.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.transforms.transforms</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a>
 </pre></div>
 </div>
 <p>We define some global parameters that will be used throughout the notebook:</p>
@@ -502,7 +502,7 @@ We use the previous contrastive transforms for data augmentation.</p>
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span>
         <span class="n">modality</span><span class="o">=</span><span class="s2">&quot;vbm_roi&quot;</span><span class="p">,</span>
         <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">transforms</span><span class="o">=</span><a href="../modules/generated/nidl.transforms.transforms.MultiViewsTransform.html#nidl.transforms.transforms.MultiViewsTransform" title="nidl.transforms.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">transforms</span><span class="o">=</span><a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
         <span class="n">streaming</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">),</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
@@ -515,7 +515,7 @@ We use the previous contrastive transforms for data augmentation.</p>
         <span class="n">modality</span><span class="o">=</span><span class="s2">&quot;vbm_roi&quot;</span><span class="p">,</span>
         <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
-        <span class="n">transforms</span><span class="o">=</span><a href="../modules/generated/nidl.transforms.transforms.MultiViewsTransform.html#nidl.transforms.transforms.MultiViewsTransform" title="nidl.transforms.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">transforms</span><span class="o">=</span><a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
         <span class="n">streaming</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">),</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
@@ -551,7 +551,7 @@ the same contrastive transforms as for VBM.</p>
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span>
         <span class="n">modality</span><span class="o">=</span><span class="s2">&quot;fs_desikan_roi&quot;</span><span class="p">,</span>
         <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">transforms</span><span class="o">=</span><a href="../modules/generated/nidl.transforms.transforms.MultiViewsTransform.html#nidl.transforms.transforms.MultiViewsTransform" title="nidl.transforms.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span>
+        <span class="n">transforms</span><span class="o">=</span><a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span>
             <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span></a><span class="p">([</span><span class="n">sbm_transform</span><span class="p">,</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">]),</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span>
         <span class="p">),</span>
         <span class="n">streaming</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -566,7 +566,7 @@ the same contrastive transforms as for VBM.</p>
         <span class="n">modality</span><span class="o">=</span><span class="s2">&quot;fs_desikan_roi&quot;</span><span class="p">,</span>
         <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
-        <span class="n">transforms</span><span class="o">=</span><a href="../modules/generated/nidl.transforms.transforms.MultiViewsTransform.html#nidl.transforms.transforms.MultiViewsTransform" title="nidl.transforms.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span>
+        <span class="n">transforms</span><span class="o">=</span><a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span>
             <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span></a><span class="p">([</span><span class="n">sbm_transform</span><span class="p">,</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">]),</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span>
         <span class="p">),</span>
         <span class="n">streaming</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -726,7 +726,7 @@ Total estimated model params size (MB): 0.115
 Modules in train mode: 16
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:10 • 0:00:00 3.77it/s v_num: 4.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 4.48it/s v_num: 4.000
                                                               loss/train: 34.056
                                                               loss/val: 31.501
 ┏━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
@@ -743,7 +743,7 @@ Total estimated model params size (MB): 0.112
 Modules in train mode: 16
 Modules in eval mode: 0
 Total FLOPs: 0
-Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:19 • 0:00:00 2.00it/s v_num: 5.000
+Epoch 9/9  ━━━━━━━━━━━━━━━━━ 26/26 0:00:18 • 0:00:00 2.61it/s v_num: 5.000
                                                               loss/train: 33.475
                                                               loss/val: 30.364
 
@@ -787,10 +787,10 @@ and SBM data.</p>
 <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_test_sbm</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.transform" title="nidl.estimators.BaseEstimator.transform" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">sbm_model</span><span class="o">.</span><span class="n">transform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataloader_sbm_test</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:07 • 0:00:00 3.55it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 14.00it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:12 • 0:00:00 2.04it/s
-Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 1494.68it/s
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:05 • 0:00:00 4.74it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 20.43it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26/26 0:00:11 • 0:00:00 2.28it/s
+Predicting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6/6 0:00:00 • 0:00:00 5.72it/s
 </pre></div>
 </div>
 <p>We also extract the ages of the subjects for coloring the points in the
@@ -928,7 +928,7 @@ more effectively than SBM in this context. This is confirmed when looking at
 the age prediction results, where VBM outperforms SBM for both linear
 regression and KNN regression. However, the results can be improved by
 working with the original 3d brain scans instead of the ROI-averaged data.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 53.282 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 50.573 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  122 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-barlowtwins-openbhb-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
