@@ -11,12 +11,12 @@ from unittest.mock import patch, MagicMock
 import numpy as np
 import torch
 
-from nidl.transforms import MultiViewsTransform, Identity
-from nidl.volume.transforms.augmentation import (
+from nidl.transforms.transforms import MultiViewsTransform, Identity
+from nidl.transforms.volume.augmentation import (
     RandomRotation, RandomFlip, RandomResizedCrop, RandomErasing,
     RandomGaussianBlur, RandomGaussianNoise
 )
-from nidl.volume.transforms.preprocessing import (
+from nidl.transforms.volume.preprocessing import (
     ZNormalization, RobustRescaling, CropOrPad, Resize, Resample   
 )
 
@@ -384,7 +384,7 @@ class TestRandomErasing(unittest.TestCase):
         self.assertEqual(out.shape, (2, 3, 4))
         self.assertEqual(out.dtype, np.float32)
 
-    @patch("nidl.volume.transforms.augmentation.spatial.RandomErasing._sample_3d_box", 
+    @patch("nidl.transforms.volume.augmentation.spatial.RandomErasing._sample_3d_box", 
            return_value=[slice(0, 3), slice(0, 3), slice(0, 3)])
     def test_mocked_box_numpy(self, mock_sample):
         data = np.ones((1, 10, 10, 10))
@@ -392,7 +392,7 @@ class TestRandomErasing(unittest.TestCase):
         out = transform(data)
         self.assertTrue(np.all(out[0, 0:3, 0:3, 0:3] == 2.0))
 
-    @patch("nidl.volume.transforms.augmentation.spatial.RandomErasing._sample_3d_box", 
+    @patch("nidl.transforms.volume.augmentation.spatial.RandomErasing._sample_3d_box", 
            return_value=[slice(0, 3), slice(0, 3), slice(0, 3)])
     def test_mocked_box_tensor(self, mock_sample):
         data = torch.ones((1, 10, 10, 10))

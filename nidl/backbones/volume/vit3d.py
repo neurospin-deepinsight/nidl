@@ -16,7 +16,7 @@ from timm.layers import trunc_normal_
 from timm.models.vision_transformer import Attention, Block, Mlp
 from torch import Tensor, nn
 
-from .utils.pos_embed import build_3d_sincos_posemb
+from ...backbones.volume.utils.pos_embed import build_3d_sincos_posemb
 
 
 def _to_3tuple(x: int | Sequence[int]) -> tuple[int, int, int]:

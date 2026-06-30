@@ -12,7 +12,7 @@ from typing import Callable, Optional
 import numpy as np
 import torch
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class ZNormalization(VolumeTransform):
@@ -46,7 +46,8 @@ class ZNormalization(VolumeTransform):
         errors.
 
     kwargs: dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     Notes
     -----

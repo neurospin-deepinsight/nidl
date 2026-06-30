@@ -62,11 +62,11 @@ from sklearn.metrics import accuracy_score
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
+from nidl.backbones.volume import VisionTransformer3D
 from nidl.estimators.ssl import IJEPA
+from nidl.transforms.volume.augmentation import RandomResizedCrop
+from nidl.transforms.volume.preprocessing import ZNormalization
 from nidl.utils.weights import Weights
-from nidl.volume.backbones import VisionTransformer3D
-from nidl.volume.transforms.augmentation import RandomResizedCrop
-from nidl.volume.transforms.preprocessing import ZNormalization
 
 # %%
 # We define some global parameters that will be used throughout the example.

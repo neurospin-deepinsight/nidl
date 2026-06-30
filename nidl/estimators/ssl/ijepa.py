@@ -19,6 +19,10 @@ from timm.models.vision_transformer import Block
 from torch import nn
 from torch.optim import Optimizer
 
+from nidl.backbones.volume.utils.pos_embed import (
+    build_2d_sincos_posemb,
+    build_3d_sincos_posemb,
+)
 from nidl.estimators.base import BaseEstimator, TransformerMixin
 from nidl.estimators.ssl.utils.encoder import build_encoder
 from nidl.estimators.ssl.utils.momentum import (
@@ -27,10 +31,6 @@ from nidl.estimators.ssl.utils.momentum import (
 )
 from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
 from nidl.utils.data_parsing import parse_x_or_xy_batch
-from nidl.volume.backbones.utils.pos_embed import (
-    build_2d_sincos_posemb,
-    build_3d_sincos_posemb,
-)
 
 
 class IJEPA(TransformerMixin, BaseEstimator):

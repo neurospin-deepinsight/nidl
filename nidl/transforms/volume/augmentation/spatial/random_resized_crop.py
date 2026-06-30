@@ -11,7 +11,7 @@ from typing import Union
 
 import numpy as np
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 from ...preprocessing.spatial.resize import Resize
 
 

@@ -43,7 +43,7 @@ from nidl.metrics.ssl import (
     contrastive_accuracy_score,
     uniformity_score,
 )
-from nidl.transforms import MultiViewsTransform
+from nidl.transforms.transforms import MultiViewsTransform
 
 # %%
 # We define some global parameters that will be used throughout the notebook:

@@ -12,7 +12,7 @@ from typing import Union
 import numpy as np
 import torch
 
-from .....transforms import TypeTransformInput, VolumeTransform
+from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class CropOrPad(VolumeTransform):
@@ -37,7 +37,8 @@ class CropOrPad(VolumeTransform):
         axis if the padding mode is 'constant'.
 
     kwargs: dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     """
 

@@ -51,7 +51,7 @@ from torchvision.datasets import CIFAR10
 from torchvision.models import resnet18
 
 from nidl.estimators.ssl import DCL, SimCLR
-from nidl.transforms import MultiViewsTransform
+from nidl.transforms.transforms import MultiViewsTransform
 from nidl.utils.weights import Weights
 
 # %%
