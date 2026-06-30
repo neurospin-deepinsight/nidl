@@ -114,6 +114,7 @@ ignore = [
     "RET504",  # Unnecessary assignment before `return` statement
     "EXE002",  # File is executable but does not contain a shebang
     "FURB140", # Use itertools.starmap instead of a generator inside all
+    "FA102",   # future-required-type-annotation
 ]
 
 [tool.ruff]
