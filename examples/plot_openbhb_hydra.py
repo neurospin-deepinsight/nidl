@@ -1,27 +1,96 @@
 """
-Presentation of the OpenBHB dataset with Hydra
-==============================================
+How to use NIDL with Hydra
+==========================
 
-This example revisits the :ref:`sphx_glr_auto_examples_plot_openbhb.py`
-example, but this time the full experiment is driven by a
-**Hydra configuration**.
+This tutorial shows how to build a full NIDL experiment using **Hydra
+configurations**. Hydra allows you to describe datasets, transforms,
+dataloaders, and models directly in YAML and instantiate them at runtime.
 
-Hydra is a configuration framework that lets you:
+The goal is to understand:
 
-- compose hierarchical configs (dataset, model, transforms…)
-- override any parameter from the command line
-- keep experiments reproducible and organized
-- instantiate Python objects directly from YAML
+- how Hydra instantiates Python objects using ``_target_``.
+- how ``${...}`` references work inside configs.
+- how YAML anchors (``&name``), aliases (``*name``) and merges (``<<: *name``)
+  help avoid duplication.
+- how NIDL datasets, transforms, and models can be composed declaratively.
 
-In the current example, Hydra is especially useful for:
 
-- managing complex dataloaders and model parameters
-- switching between SSL and supervised settings
-- enabling large‑scale hyperparameter sweeps
-- keeping experiments traceable and structured
+Hydra Concepts Explained
+------------------------
 
-Below we show how OpenBHB dataloaders and models can be instantiated
-entirely from a Hydra config, and how embeddings are computed.
+**1. ``_target_`` - instantiate Python objects from YAML**
+
+Hydra can instantiate Python objects directly from configuration files.
+Any dictionary containing a ``_target_`` key is interpreted as a
+description of a Python class or function to be constructed at runtime.
+
+For example::
+
+    encoder:
+      _target_: torchvision.ops.MLP
+      in_channels: 100
+      hidden_channels: [64, 32]
+
+This means: "create an instance of ``torchvision.ops.MLP`` and pass it the
+arguments ``in_channels=100`` and ``hidden_channels=[64, 32]``."
+
+During execution, Hydra resolves this block using
+``hydra.utils.instantiate``::
+
+    from hydra.utils import instantiate
+    encoder = instantiate(cfg.encoder)
+
+This mechanism allows entire components—datasets, transforms,
+dataloaders, models—to be declared declaratively in YAML and built
+automatically when the experiment runs.
+
+**2. ``${...}`` - reference previously defined config values**
+
+Hydra allows you to reuse values defined elsewhere in the configuration
+using the ``${...}`` syntax.
+
+For example::
+
+    argument:
+        noise_std: 0.5
+    transform:
+      _target_: RandomGaussianNoise
+      noise_std: ${augment.noise_std}
+
+Here, ``${augment.noise_std}`` is replaced with ``0.5`` during
+configuration resolution. The instantiated ``RandomGaussianNoise`` object
+therefore receives ``noise_std=0.5`` automatically.
+
+This mechanism ensures that shared parameters (such as augmentation
+strengths, dataset paths, or model dimensions) remain synchronized across
+the entire Hydra configuration.
+
+**3. YAML anchors ``&name`` and aliases ``*name`` or merges ``<<: *name``**
+
+YAML anchors let you define reusable configuration blocks that can be
+referenced later. This keeps Hydra configs concise.
+
+You create an anchor using ``&name``::
+
+    _base_dataset: &base_ds
+      _target_: nidl.datasets.TabularDataset
+      root: ${data.root}
+
+You can then reuse this block in two different ways.
+Using ``*name`` simply inserts the anchored block as a value::
+
+    dataset:
+      train: *_base_dataset
+
+Using ``<<: *name`` merges the anchored dictionary into the current one
+and allows overriding or adding fields::
+
+    dataset:
+      <<: *base_ds
+      split: "train"
+
+This means: "start from the contents of ``base_ds`` and then override
+the ``split`` field."
 """
 
 # %%
@@ -35,9 +104,9 @@ import numpy as np
 
 
 # %%
-# Custom transforms
-# -----------------
-# These are simple NumPy‑based transforms used in the OpenBHB config.
+# Transforms
+# ----------
+# These are simple NumPy‑based transforms used in the Hydra config.
 
 class Flatten:
     def __call__(self, x):
@@ -73,10 +142,9 @@ class SBMTransform:
 
 
 # %%
-# Display the Hydra config file
-# -----------------------------
-# This prints the content of ``openbhb_config.yaml`` so it appears in the
-# rendered example.
+# Generate Hydra Config
+# ---------------------
+# We generate a YAML config so that Sphinx-Gallery can display it.
 
 config_text = r"""
 data:
@@ -268,18 +336,18 @@ model:
     learning_rate: 1e-5
     enable_checkpointing: false
 """
-print(config_text)
+
 tmpdir = Path("/tmp")
 config_path = tmpdir / "openbhb_config.yaml"
 config_path.write_text(config_text)
 
+print(config_text)
+
 
 # %%
-# Main experiment
+# Main Experiment
 # ---------------
-# Hydra loads the configuration file ``openbhb_config.yaml`` located in the
-# same directory. All dataloaders, models, and transforms are instantiated
-# directly from the config.
+# Hydra loads the configuration file and instantiates all objects.
 
 @hydra.main(
     config_path="/tmp",
@@ -308,12 +376,12 @@ def main(cfg: DictConfig):
     z_vbm_test = vbm_model.transform(vbm_test)
     z_sbm_test = sbm_model.transform(sbm_test)
 
-    print(f"Z shapes — VBM: {z_vbm_test.shape}, SBM: {z_sbm_test.shape}")
+    print(f"Z shapes - VBM: {z_vbm_test.shape}, SBM: {z_sbm_test.shape}")
 
 
 # %%
-# Run the example
-# ---------------
+# Run Example
+# -----------
 
 main()
 
