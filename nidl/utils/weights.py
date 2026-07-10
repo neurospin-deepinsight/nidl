@@ -33,29 +33,37 @@ class Weights:
         `hf-hub:path/architecture_name@revision` if available in Hugging Face
         hub or `ns-hub:path/architecture_name` if available in the NeuroSpin
         hub or a path if available in your local machine.
-    data_dir: pathlib.Path or str
-        path where data should be downloaded.
     filepath: str
         the path of the file in the repo. If path has '.ckpt' extension, it
         assumes it is a pytorch_lightning checkpoint.
+    data_dir: pathlib.Path or str, optional
+        path where data should be downloaded. Optional if name points toward a
+        local path.
     """
 
     HF_URL = "https://huggingface.co"
     NS_URL = "http://nsap.intra.cea.fr/neurospin-hub/"
 
-    def __init__(self, name: str, data_dir: Union[str, Path], filepath: str):
+    def __init__(self,
+                 name: str,
+                 filepath: str,
+                 data_dir: Optional(Union[str, Path])):
         self.name = name
-        self.data_dir = Path(data_dir)
+        self.data_dir = Path(data_dir) if data_dir else None
         self.filepath = filepath
         self.dtype = name.split(":", maxsplit=1)[0] if ":" in name else "local"
         # Whether the file is a lightning checkpoint file
         self.is_lightning_ckpt = filepath.endswith(".ckpt")
         if self.dtype == "hf-hub":
+            assert data_dir is not None, '`data_dir` is required for'
+            'downloading weights from HuggingFace hub.'
             hf_id, hf_revision = self.hub_split(name)
             self.weight_file = self.hf_download(
                 data_dir, hf_id, filepath, hf_revision
             )
         elif self.dtype == "ns-hub":
+            assert data_dir is not None, '`data_dir` is required for'
+            'downloading weights from Neurospin hub.'
             ns_id, _ = self.hub_split(name)
             self.weight_file = self.ns_download(data_dir, ns_id, filepath)
         else:
@@ -118,7 +126,11 @@ class Weights:
         )
 
     def load_pretrained(
-        self, model: torch.nn.Module, weights_only: bool = True
+        self,
+        model: torch.nn.Module,
+        submodule_prefix: Optional[str] = None,
+        weights_only: bool = True,
+        map_location: Union[str, dict, torch.device] = "cpu",
     ):
         """Load the model weights.
 
@@ -126,6 +138,16 @@ class Weights:
         ----------
         model: torch.nn.Module
             an input model with a `load_pretrained` method decalred.
+        submodule_prefix: str, optional
+            Load only the weights starting with this prefix.
+            For example if the weights contain encoder and decoder weights,
+            you would load with:
+            ```weights = Weights(name, path)
+            encoder = YourEncoder()
+            decoder = YourDecoder()
+            # Load weights
+            weights.load_pretrained(encoder, submodule_prefix='encoder.')
+            weights.load_pretrained(decoder, submodule_prefix='decoder.')```
         weights_only: bool, default=False
             Indicates whether unpickler should be restricted to
             loading only tensors, primitive types, dictionaries
@@ -136,17 +158,40 @@ class Weights:
         if self.weight_file is None:
             warnings.warn("Define weight file location first!", stacklevel=2)
             return
-        if self.is_lightning_ckpt:
+        # Warn that not full checkpoint is loaded. Suppose that the user
+        # passing submodule_prefix knows they are only loading weights
+        if self.is_lightning_ckpt and not submodule_prefix:
             warnings.warn(
                 (
-                    "For pytorch_lightning checkpoints, use the method "
-                    "`load_checkpoint` instead."
+                    "You are only loading the state_dict from a Lightning or"
+                    "nidl checkpoint. For loading whole checkpoint use the "
+                    "method ``load_checkpoint`` instead."
                 ),
                 stacklevel=2,
             )
-            return
+        if submodule_prefix and not submodule_prefix.endswith('.'):
+            submodule_prefix += '.'
+        state_dict = torch.load(
+            self.weight_file,
+            weights_only=weights_only,
+            map_location=map_location)
+        # If checkpoint extract state_dict
+        if 'state_dict' in state_dict:
+            state_dict = state_dict['state_dict']
+        # If loading submodule, filter weights and strip prefix from keys
+        if submodule_prefix:
+            # Filter weights keys and strip prefix from keys
+            state_dict_filtered = {k.replace(submodule_prefix, ''): v
+                          for k, v in state_dict.items()
+                          if k.startswith(submodule_prefix)}
+            if len(state_dict_filtered) == 0:
+                raise ValueError(
+                    f'No weights found for prefix {submodule_prefix}. Prefixes'
+                    'in state_dict are '
+                    f'{ {k.split(".")[0] for k in state_dict} }')
+            state_dict = state_dict_filtered
         model.load_state_dict(
-            torch.load(self.weight_file, weights_only=weights_only)
+            state_dict, assign=False
         )
 
     @classmethod
