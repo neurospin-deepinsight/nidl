@@ -165,7 +165,7 @@ def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
 
     if isinstance(z, torch.Tensor):
         if normalize:
-            z = torch.nn.functional.normalize(z, dim=1, eps=eps)
+            z = torch.nn.functional.normalize(z.float(), dim=1, eps=eps)
 
         # Compute pairwise distances via pdist
         pdist = torch.nn.functional.pdist(z, p=2)  # shape: [n*(n-1)/2]
