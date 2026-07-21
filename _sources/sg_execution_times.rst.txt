@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**77:47.506** total execution time for 8 files **from all galleries**:
+**136:32.883** total execution time for 8 files **from all galleries**:
 
 .. container::
 
@@ -33,26 +33,26 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_examples_plot_dcl_vs_simclr.py` (``../examples/plot_dcl_vs_simclr.py``)
-     - 38:22.823
-     - 1223.0
+     - 94:21.064
+     - 1233.0
    * - :ref:`sphx_glr_auto_examples_plot_metrics_callback.py` (``../examples/plot_metrics_callback.py``)
-     - 09:13.365
-     - 2357.2
+     - 10:16.703
+     - 2363.5
    * - :ref:`sphx_glr_auto_examples_plot_model_probing.py` (``../examples/plot_model_probing.py``)
-     - 07:26.526
-     - 263.4
+     - 07:45.680
+     - 286.8
    * - :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py` (``../examples/plot_yaware_openbhb.py``)
-     - 06:57.671
-     - 119.3
+     - 07:26.299
+     - 117.7
    * - :ref:`sphx_glr_auto_examples_plot_barlowtwins_openbhb.py` (``../examples/plot_barlowtwins_openbhb.py``)
-     - 06:50.573
-     - 122.2
-   * - :ref:`sphx_glr_auto_examples_plot_openbhb.py` (``../examples/plot_openbhb.py``)
-     - 04:28.040
-     - 1355.2
+     - 07:14.197
+     - 120.6
    * - :ref:`sphx_glr_auto_examples_plot_ijepa_medmnist.py` (``../examples/plot_ijepa_medmnist.py``)
-     - 03:24.986
-     - 656.3
+     - 04:25.968
+     - 812.8
+   * - :ref:`sphx_glr_auto_examples_plot_openbhb.py` (``../examples/plot_openbhb.py``)
+     - 03:58.637
+     - 1345.0
    * - :ref:`sphx_glr_auto_examples_plot_simclr_mnist.py` (``../examples/plot_simclr_mnist.py``)
-     - 01:03.521
-     - 151.0
+     - 01:04.334
+     - 149.5

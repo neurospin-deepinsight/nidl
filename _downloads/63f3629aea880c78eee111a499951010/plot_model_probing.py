@@ -3,11 +3,11 @@ Model probing of embedding estimators
 =====================================
 
 This notebook will show you how to investigate the **data representation given
-by an embedding estimator** (such as SimCLR, y-Aware Contrastive Learning or Barlow 
+by an embedding estimator** (such as SimCLR, y-Aware Contrastive Learning or Barlow
 Twins) **during training and inference** using the notion of "probing".
 A standard machine learning model (e.g. linear or SVM) is trained and evaluated
-on the data embedding for a given task as the model is being fitted (for training 
-monitoring) or at inference. It allows the user to understand what concepts are learned 
+on the data embedding for a given task as the model is being fitted (for training
+monitoring) or at inference. It allows the user to understand what concepts are learned
 by the model.
 
 This has been first introduced by Guillaume Alain and Yoshua Bengio in 2017
@@ -212,8 +212,8 @@ plt.show()
 # metrics (accuracy and f1-weighted) are logged to TensorBoard by default.
 
 callback = ModelProbingCallback(
-    train_xy_loader,
-    test_xy_loader,
+    train_dataloader=train_xy_loader,
+    test_dataloader=test_xy_loader,
     probe=LogisticRegression(max_iter=200),
     scoring=["accuracy", "f1_weighted"],
     every_n_train_epochs=3,
@@ -324,7 +324,7 @@ plt.show()
 # reaches more than 80% after 10 epochs, which is quite good for such a simple
 # model trained *without supervision* and a small number of epochs.
 
-# %% 
+# %%
 # Classification metrics at inference
 # -----------------------------------
 #
@@ -338,8 +338,8 @@ probing = ModelProbing(
 )
 probing.fit(train_xy_loader)
 
-# %% 
-# We can now evaluate the probe on the test set and print the classification 
+# %%
+# We can now evaluate the probe on the test set and print the classification
 # metrics:
 scores = probing.score(test_xy_loader)
 print("Classification metrics at inference:")
@@ -414,12 +414,17 @@ noise_std = 0.5
 contrast_transforms = transforms.Compose(
     [
         lambda x: x.flatten(),
-        lambda x: (np.random.rand(*x.shape) > mask_prob).astype(np.float32)
-        * x,  # random masking
-        lambda x: x
-        + (
-            (np.random.rand() > 0.5) * np.random.randn(*x.shape) * noise_std
-        ).astype(np.float32),  # random Gaussian noise
+        lambda x: (
+            (np.random.rand(*x.shape) > mask_prob).astype(np.float32) * x
+        ),  # random masking
+        lambda x: (
+            x
+            + (
+                (np.random.rand() > 0.5)
+                * np.random.randn(*x.shape)
+                * noise_std
+            ).astype(np.float32)
+        ),  # random Gaussian noise
     ]
 )
 
@@ -541,8 +546,8 @@ def make_task_scorer(metric_fn, task_index, **kwargs):
 # estimators and scorers for age and sex.
 
 callback = ModelProbingCallback(
-    train_xy_loader,
-    test_xy_loader,
+    train_dataloader=train_xy_loader,
+    test_dataloader=test_xy_loader,
     probe=MultiTaskEstimator([Ridge(), LogisticRegression(max_iter=200)]),
     scoring={
         "age/r2": make_task_scorer(r2_score, task_index=0),
