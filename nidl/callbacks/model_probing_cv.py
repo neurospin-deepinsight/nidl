@@ -7,6 +7,7 @@
 ##########################################################################
 from __future__ import annotations
 
+import gc
 from typing import Union
 
 import pytorch_lightning as pl
@@ -116,6 +117,9 @@ class ModelProbingCVCallback(pl.Callback):
     on_test_epoch_end: bool, default=False
         Whether to run the linear probing at the end of the test epoch.
 
+    on_train_start: bool, default=False
+        Whether to run the linear probing at the start of the training.
+
     prog_bar: bool, default=True
         Whether to display the metrics in the progress bar.
 
@@ -135,6 +139,7 @@ class ModelProbingCVCallback(pl.Callback):
         every_n_val_epochs: Union[int, None] = None,
         on_test_epoch_start: bool = False,
         on_test_epoch_end: bool = False,
+        on_train_start: bool = False,
         prog_bar: bool = True,
         prefix_score: str = "",
     ):
@@ -148,6 +153,7 @@ class ModelProbingCVCallback(pl.Callback):
         self.every_n_val_epochs = every_n_val_epochs
         self._on_test_epoch_start = on_test_epoch_start
         self._on_test_epoch_end = on_test_epoch_end
+        self._on_train_start = on_train_start
         self.prog_bar = prog_bar
         self.prefix_score = prefix_score
         self.counter_val_epochs = 0
@@ -283,47 +289,55 @@ class ModelProbingCVCallback(pl.Callback):
             and y are the corresponding labels.
 
         """
-        is_training = pl_module.training  # Save state
+        was_training = pl_module.training  # Save state
 
         dataloader = self.adapt_dataloader_for_ddp(dataloader, trainer)
 
         pl_module.eval()
         X, y = [], []
+        pbar = tqdm(
+            dataloader,
+            total=len(dataloader),
+            desc="Extracting features",
+            disable=(not self.prog_bar or not trainer.is_global_zero),
+            leave=False,
+            dynamic_ncols=True,
+        )
+        try:
+            with torch.no_grad():
+                for batch_idx, batch in enumerate(tqdm(pbar)):
+                    # Move batch the same way Lightning would
+                    batch = trainer.strategy.batch_to_device(
+                        batch, pl_module.device, dataloader_idx=0
+                    )
+                    out = pl_module.transform_step_with_targets(
+                        batch, batch_idx=batch_idx
+                    )
+                    X.append(out["features"].detach())
+                    y.append(out["targets"].detach())
 
-        with torch.no_grad():
-            for batch_idx, batch in tqdm(
-                enumerate(dataloader),
-                desc="Extracting features",
-                disable=(not self.prog_bar or not trainer.is_global_zero),
-                leave=False,
-            ):
-                # Move batch the same way Lightning would
-                batch = trainer.strategy.batch_to_device(
-                    batch, pl_module.device, dataloader_idx=0
-                )
-                out = pl_module.transform_step_with_targets(
-                    batch, batch_idx=batch_idx
-                )
-                X.append(out["features"].detach())
-                y.append(out["targets"].detach())
+            # Concatenate the embeddings
+            X = torch.cat(X)
+            y = torch.cat(y)
 
-        # Concatenate the embeddings
-        X = torch.cat(X)
-        y = torch.cat(y)
+            # Gather across GPUs
+            X = pl_module.all_gather(X).cpu().numpy()
+            y = pl_module.all_gather(y).cpu().numpy()
 
-        # Gather across GPUs
-        X = pl_module.all_gather(X).cpu().numpy()
-        y = pl_module.all_gather(y).cpu().numpy()
+            # Reduce (world_size, batch, ...) to (world_size * batch, ...)
+            if pl_module.trainer.world_size > 1:
+                X = X.reshape(X.shape[0] * X.shape[1], *X.shape[2:])
+                y = y.reshape(y.shape[0] * y.shape[1], *y.shape[2:])
 
-        # Reduce (world_size, batch, ...) to (world_size * batch, ...)
-        if pl_module.trainer.world_size > 1:
-            X = X.reshape(X.shape[0] * X.shape[1], *X.shape[2:])
-            y = y.reshape(y.shape[0] * y.shape[1], *y.shape[2:])
-
-        if is_training:
-            pl_module.train()
-
-        return X, y
+            return X, y
+        finally:
+            if was_training:
+                pl_module.train()
+            pbar.close()
+            # Free pytorch cache
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
     def check_array(self, X, y):
         """Check the input arrays for cross-validation.
@@ -369,4 +383,8 @@ class ModelProbingCVCallback(pl.Callback):
 
     def on_test_epoch_end(self, trainer, pl_module):
         if self._on_test_epoch_end:
+            self.probing(trainer, pl_module)
+
+    def on_train_start(self, trainer, pl_module):
+        if self._on_train_start:
             self.probing(trainer, pl_module)

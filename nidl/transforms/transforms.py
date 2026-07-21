@@ -286,18 +286,21 @@ class Transform(ABC):
             if length is not None:
                 return length * (shape,)
             return (shape,)
-        elif isinstance(shape, (tuple, list)):
+
+        try:
             shape = tuple(shape)
-            if length is not None and len(shape) != length:
-                raise ValueError(
-                    f"`shape` must have {length} dimensions, got {len(shape)}"
-                )
-            for s in shape:
-                check_shape(s)
-            return shape
-        raise ValueError(
-            f"`shape` must be int, list or tuple of int, got {shape}"
-        )
+        except TypeError as e:
+            raise ValueError(
+                "`shape` must be int or an iterable of ints, got "
+                f"{shape!r} for type {type(shape)}."
+            ) from e
+        if length is not None and len(shape) != length:
+            raise ValueError(
+                f"`shape` must have {length} dimensions, got {len(shape)}"
+            )
+        for s in shape:
+            check_shape(s)
+        return shape
 
 
 class Identity(Transform):
