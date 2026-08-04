@@ -99,7 +99,7 @@ If no error is raised, you have installed nidl correctly.
 Where to start
 ==============
 
-Examples are available in the `gallery <https://neurospin-deepinsight.github.io/nidl/auto_gallery/index.html>`_.
+Examples are available in the `gallery <https://neurospin-deepinsight.github.io/nidl/auto_examples/index.html>`_.
 
 
 Dependencies
