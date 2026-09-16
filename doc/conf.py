@@ -348,8 +348,8 @@ intersphinx_mapping = {
     "sklearn": ("https://scikit-learn.org/stable/", None),
     "nibabel": ("https://nipy.org/nibabel/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-    "torch": ("https://pytorch.org/docs/main/", None),
-    "torchvision": ("https://pytorch.org/vision/main/", None),
+    "torch": ("https://docs.pytorch.org/docs/main/", None),
+    "torchvision": ("https://docs.pytorch.org/vision/main/", None),
     "torchmetrics": ("https://lightning.ai/docs/torchmetrics/stable/", None),
     "lighnting": ("https://lightning.ai/docs/pytorch/stable/", None),
     "lightning.fabric": ("https://lightning.ai/docs/fabric/stable/", None),
@@ -384,6 +384,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     # Ignore the function signature leftover by joblib
     "ignore_pattern": r"func_code\.py",
+    "filename_pattern": "plot_nothing.*",
     "show_memory": not sys.platform.startswith("win"),
     "remove_config_comments": True,
     "nested_sections": True,
