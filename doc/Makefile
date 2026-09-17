@@ -33,6 +33,7 @@ help:
 	@echo "  html      to make standalone HTML files"
 	@echo "  html-noplot to make standalone HTML files, without plotting anything"
 	@echo "  ci-html-noplot to run html-noplot with warnings as errors"
+	@echo "  html-strict-noplot to run html-strict without plotting anything"
 	@echo "  check     to do a sanity check of the documentation"
 	@echo "  dirhtml   to make HTML files named index.html in directories"
 	@echo "  pickle    to make pickle files"
@@ -75,6 +76,15 @@ html-strict: ci.rst
 	rm -rf _build/doctrees
 	rm -rf $(BUILDDIR)/html/_images
 	BUILD_DEV_HTML=1 $(SPHINXBUILD) -W --keep-going -T -n -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@echo
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+html-strict-noplot: ci.rst
+	# Build html documentation using a strict mode (warnings are
+	# considered as errors) without executing the gallery examples.
+	rm -rf _build/doctrees
+	rm -rf $(BUILDDIR)/html/_images
+	BUILD_DEV_HTML=1 $(SPHINXBUILD) -W --keep-going -T -n -D plot_gallery=0 -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

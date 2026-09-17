@@ -11,6 +11,8 @@ the :ref:`user guide <user_guide>` for more information and usage examples.
    :maxdepth: 1
 
    estimators.rst
+   losses.rst
+   projection_heads.rst
    architectures.rst
    augmentation.rst
    datasets.rst
