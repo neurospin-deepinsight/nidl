@@ -384,7 +384,6 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     # Ignore the function signature leftover by joblib
     "ignore_pattern": r"func_code\.py",
-    "filename_pattern": "plot_nothing.*",
     "show_memory": not sys.platform.startswith("win"),
     "remove_config_comments": True,
     "nested_sections": True,
