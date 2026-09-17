@@ -545,13 +545,15 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         ``use_moe=True`` to that constructor and set ``use_moe=True`` here
         too so the MoE bias update runs during training).
 
-    mask_scale_configs : sequence of MaskScaleConfig,
-        default=3-scale paper config
+    mask_scale_configs : sequence of MaskScaleConfig, \
+        default=3-scale config from [1]_
         One entry per masking "scale": each draws `num_blocks` blocks with
         sizes controlled by `spatial_scale`/`depth_scale`/`aspect_ratio`,
         unions them, and adjusts to hit exactly `total_mask_ratio` of all
-        patches. Concretely: small-block, medium-block, and large-block
-        maskings are all trained on for every volume, at every step.
+        patches. By default, a small-block (32 blocks, 0-20% spatial
+        scale), a medium-block (16 blocks, 20-50% spatial scale), and a
+        large-block (4 blocks, 50-70% spatial scale) masking are all drawn
+        for every volume, at every step, each targeting a 75% mask ratio.
 
     foreground_aware : bool, default=True
         Whether to compute a per-patch foreground map (voxel-intensity based)
@@ -559,8 +561,15 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         background patches first, and (b) down-weight background patches in
         the loss (see `bg_weight`).
 
-    foreground_threshold, min_foreground_fraction : float
-        Passed to `compute_foreground_patches`.
+    foreground_threshold : float, default=0.0
+        Fallback per-sample voxel-intensity threshold used by
+        `compute_foreground_patches` when the sample's data-driven
+        (2nd/98th percentile based) threshold cannot be estimated.
+
+    min_foreground_fraction : float, default=0.1
+        Minimum fraction of foreground voxels a patch must contain to be
+        itself counted as a foreground patch (see
+        `compute_foreground_patches`).
 
     loss_exp : float, default=1.0
         Exponent of the per-token L1-style loss (`|pred - target|^p / p`).
@@ -576,22 +585,66 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         `vision_transformer_3d.moe_bias_update`). Set to match however you
         built `encoder`.
 
-    moe_bias_update_rate, moe_bias_clip : float
-        Hyperparameters of that update (ignored if `use_moe=False`).
+    moe_bias_update_rate : float, default=1e-4
+        Step size of the MoE router bias update (ignored if `use_moe=False`).
 
-    predictor_embed_dim, predictor_depth, predictor_num_heads : int
-        Predictor size, analogous to nidl's `predictor_embed_dim` /
-        `predictor_depth_pred`.
+    moe_bias_clip : float, default=0.3
+        Maximum absolute value of the MoE router bias after each update
+        (ignored if `use_moe=False`).
 
-    ema_start, ema_end : float
-        Passed straight to nidl's own `MomentumUpdater`.
+    predictor_embed_dim : int, default=384
+        Dimension of the predictor hidden layers. It can be different from
+        the encoder output dimension.
 
-    optimizer, learning_rate, weight_decay, exclude_bias_and_norm_wd,
-    optimizer_kwargs, lr_scheduler, lr_scheduler_kwargs : same as `IJEPA`.
+    predictor_depth : int, default=6
+        Number of Transformer blocks in the predictor.
 
-    **kwargs : dict
-        Extra named arguments for `BaseEstimator` (given to the PL
-        `Trainer`), such as `max_epochs`, `max_steps`, `callbacks`, etc.
+    predictor_num_heads : int, default=12
+        Number of attention heads in the predictor.
+
+    optimizer : {'sgd', 'adam', 'adamW'} or Optimizer, default='adamW'
+        Optimizer for training the model. If a string is given, it can be:
+
+            - 'sgd': Stochastic Gradient Descent (with optional momentum).
+            - 'adam': First-order gradient-based optimizer.
+            - 'adamW' (default): Adam with decoupled weight decay
+              regularization (see "Decoupled Weight Decay Regularization",
+              Loshchilov and Hutter, ICLR 2019).
+
+    learning_rate : float, default=6e-4
+        Initial learning rate.
+
+    weight_decay : float, default=0.04
+        Weight decay in the optimizer.
+
+    exclude_bias_and_norm_wd : bool, default=True
+        Whether the bias terms and normalization layers get weight decay
+        during optimization or not.
+
+    ema_start : float, default=0.99925
+        Base value for the weighting coefficient in the target encoder
+        momentum update with exponential moving average. A cosine
+        annealing scheme is used.
+
+    ema_end : float, default=1.0
+        Final value for the weighting coefficient in the target encoder
+        momentum update.
+
+    optimizer_kwargs : dict or None, default=None
+        Extra named arguments for the optimizer.
+
+    lr_scheduler : {"none", "warmup_cosine"}, LRSchedulerPLType or None, \
+        default="warmup_cosine"
+        Learning rate scheduler to use.
+
+    lr_scheduler_kwargs : dict or None, default=None
+        Extra named arguments for the scheduler. By default, it is set to
+        {"warmup_epochs": 10, "warmup_start_lr": 1e-6, "min_lr": 0.0,
+        "interval": "step"}.
+
+    **kwargs : dict, optional
+        Extra named arguments for the `BaseEstimator` class (given to the
+        PL `Trainer`), such as `max_epochs`, `max_steps`, `callbacks`, etc.
 
     Attributes
     ----------
