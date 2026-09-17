@@ -26,15 +26,15 @@ class RandomGaussianBlur(VolumeTransform):
 
     Parameters
     ----------
-    sigma: (float, float) or (float, float, float, float, float, float),\
+    sigma : (float, float) or (float, float, float, float, float, float), \
         default=(0, 2)
-        Range of the standard deviation :math:`\\sigma` of the Gaussian kernel
+        Range of the standard deviation :math:`\sigma` of the Gaussian kernel
         applied to blur the volume.
         If two values :math:`(a,b)` are provided, then
-        :math:`\\sigma \\sim \\mathcal{U}(a, b)`.
+        :math:`\sigma \sim \mathcal{U}(a, b)`.
         If six values :math:`(a_1, b_1, a_2, b_2, a_3, b_3)` are provided, then
         one standard deviation per spatial dimension is sampled
-        :math:`\\sigma_i \\sim \\mathcal{U}(a_i, b_i)` for :math:`i=1,2,3`.
+        :math:`\sigma_i \sim \mathcal{U}(a_i, b_i)` for :math:`i=1,2,3`.
     kwargs: dict
            Keyword arguments.
     """

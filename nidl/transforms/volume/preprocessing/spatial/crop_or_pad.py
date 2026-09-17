@@ -27,7 +27,7 @@ class CropOrPad(VolumeTransform):
         Expected output shape. If int, apply the same size across all
         dimensions.
 
-    padding_mode: str in {'edge', 'maximum', 'constant', 'mean', 'median',\
+    padding_mode : str in {'edge', 'maximum', 'constant', 'mean', 'median', \
         'minimum', 'reflect', 'symmetric'}
         Possible modes for padding. See more infos in the `Numpy documentation
         <https://numpy.org/doc/stable/reference/generated/numpy.pad.html>`_.

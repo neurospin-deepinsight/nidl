@@ -35,7 +35,7 @@ class RandomResizedCrop(VolumeTransform):
         original image.
     ratio: tuple of (float, float), default=(1.0, 1.33)
         Range of the aspect ratio of the crop, before resizing.
-    interpolation: str in {'nearest', 'linear', 'bspline', 'cubic', \
+    interpolation : str in {'nearest', 'linear', 'bspline', 'cubic', \
         'gaussian', 'label_gaussian', 'hamming', 'cosine', 'welch', \
         'lanczos', 'blackman'}, default='linear'
         Interpolation techniques available in ITK. `linear`, the default in

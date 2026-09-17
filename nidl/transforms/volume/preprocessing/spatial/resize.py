@@ -31,7 +31,7 @@ class Resize(Resample):
         Output shape :math:`(H', W', D')`. If int is given, it sets
         :math:`H'=W'=D'`.
 
-    interpolation: str in {'nearest', 'linear', 'bspline', 'cubic', \
+    interpolation : str in {'nearest', 'linear', 'bspline', 'cubic', \
         'gaussian', 'label_gaussian', 'hamming', 'cosine', 'welch', \
         'lanczos', 'blackman'}, default='linear'
 
@@ -50,9 +50,9 @@ class Resize(Resample):
             - `linear`: Linear interpolation.
             - `bspline`: B-spline of order 3 (cubic).
             - `cubic`: Alias for `bspline`.
-            - `gaussian`: Gaussian interpolation :math:`\\sigma=0.8,\\alpha=4`.
+            - `gaussian`: Gaussian interpolation :math:`\sigma=0.8,\alpha=4`.
             - `label_gaussian`: Gaussian interpolation for label maps
-              (:math:`\\sigma=1, \\alpha=1`).
+              (:math:`\sigma=1, \alpha=1`).
             - `hamming`: Hamming-windowed sinc kernel.
             - `cosine`: Cosine-windowed sinc kernel.
             - `welch`: Welch-windowed sinc kernel.

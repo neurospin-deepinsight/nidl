@@ -24,15 +24,15 @@ class RobustRescaling(VolumeTransform):
 
     .. math::
 
-        x_i' = \\frac{\\min\\left(\\max\\left(x_i, p_l\\right), p_u\\right) -
+        x_i' = \frac{\min\left(\max\left(x_i, p_l\right), p_u\right) -
         p_l}{p_u - p_l} (o_{max} - o_{min}) + o_{min}
 
     .. math::
 
-        p_{l} = \\text{percentile}(x, p_{min}), \\quad
-        p_{u} = \\text{percentile}(x, p_{max})
+        p_{l} = \text{percentile}(x, p_{min}), \quad
+        p_{u} = \text{percentile}(x, p_{max})
 
-    where :math:x_i is the original voxel intensity, :math:`(p_{\text{min}},
+    where :math:`x_i` is the original voxel intensity, :math:`(p_{\text{min}},
     p_{\text{max}})` defines the input quantile range used for clipping, and
     :math:`(o_{\text{min}}, o_{\text{max}})` defines the target output
     intensity range.

@@ -228,10 +228,10 @@ class BaseEstimator(pl.LightningModule):
         ----------
         train_dataloader: torch DataLoader, default=None
             The training data loader. If ``datamodule`` is passed, the
-            ``train_dataloader``hook is used instead, ignoring this loader.
+            ``train_dataloader`` hook is used instead, ignoring this loader.
         val_dataloader: torch DataLoader, default=None
             The validation data loader. If ``datamodule`` is passed, the
-            ``val_dataloader``hook is used instead, ignoring this loader.
+            ``val_dataloader`` hook is used instead, ignoring this loader.
         datamodule: pl.LightningDataModule, default=None
             An instance of `LightningDataModule`, alternative to passing
             `train_dataloader`/`val_dataloader`.

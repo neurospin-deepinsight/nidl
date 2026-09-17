@@ -42,7 +42,7 @@ class Resample(VolumeTransform):
         Output spacing :math:`(s_w, s_h, s_d)` in mm. If only one value
         :math:`s` is specified, then :math:`s_w = s_h = s_d = s`.
 
-    interpolation: str in {'nearest', 'linear', 'bspline', 'cubic', \
+    interpolation : str in {'nearest', 'linear', 'bspline', 'cubic', \
         'gaussian', 'label_gaussian', 'hamming', 'cosine', 'welch', \
         'lanczos', 'blackman'}, default='linear'
 
@@ -62,9 +62,9 @@ class Resample(VolumeTransform):
             - `bspline`: B-spline of order 3 (cubic).
             - `cubic`: Alias for `bspline`.
             - `gaussian`: Gaussian interpolation
-              (:math:`\\sigma=0.8,\\alpha=4`).
+              (:math:`\sigma=0.8,\alpha=4`).
             - `label_gaussian`: Gaussian interpolation for label maps
-              (:math:`\\sigma = 1, \\alpha = 1`).
+              (:math:`\sigma = 1, \alpha = 1`).
             - `hamming`: Hamming-windowed sinc kernel.
             - `cosine`: Cosine-windowed sinc kernel.
             - `welch`: Welch-windowed sinc kernel.
@@ -133,8 +133,8 @@ class Resample(VolumeTransform):
         data: np.ndarray or torch.Tensor
             Resampled data with shape :math:`(H', W', D')`  or
             :math:`(C, H', W', D')` and same type as input with
-            :math:`H' = \\frac{s_h'}{s_h} H, W' = \\frac{s_w'}{s_w} W,
-            D' = \\frac{s_d'}{s_d} D` where :math:`(s_h', s_w', s_d')`
+            :math:`H' = \frac{s_h'}{s_h} H, W' = \frac{s_w'}{s_w} W,
+            D' = \frac{s_d'}{s_d} D` where :math:`(s_h', s_w', s_d')`
             and :math:`(s_h, s_w, s_d)` are input and output spacing (in mm)
             respectively.
 

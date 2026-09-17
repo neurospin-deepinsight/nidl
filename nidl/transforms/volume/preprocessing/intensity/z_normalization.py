@@ -23,11 +23,11 @@ class ZNormalization(VolumeTransform):
 
     .. math::
 
-        x_i' = \\frac{x_i - \\mu(x)}{\\sigma(x)+\\epsilon}
+        x_i' = \frac{x_i - \mu(x)}{\sigma(x)+\epsilon}
 
-    where :math:`x_i` is the original voxel intensity, :math:`\\mu(x)`
-    is the data mean, :math:`\\sigma(x)` is the data std, and
-    :math:`\\epsilon` is a small constant added for numerical stability.
+    where :math:`x_i` is the original voxel intensity, :math:`\mu(x)`
+    is the data mean, :math:`\sigma(x)` is the data std, and
+    :math:`\epsilon` is a small constant added for numerical stability.
 
     It can handle a :class:`numpy.ndarray` or :class:`torch.Tensor` as input
     and it returns a consistent output (same type and shape). Input shape must
