@@ -36,8 +36,8 @@ class NeuroJEPAEncoderWrapper(nn.Module):
         Must expose ``embed_dim`` (int), ``patch_size`` (3-tuple),
         ``grid_shape`` (3-tuple), ``blocks`` (nn.ModuleList), and
         ``forward(x, masks=None) -> (tokens, moe_scores)``.
-        `vision_transformer_3d.VisionTransformer3D` is a reference
-        implementation satisfying this contract.
+        :class:`~nidl.backbones.volume.VisionTransformer3DMoE` is a
+        reference implementation satisfying this contract.
 
     Raises
     ------
@@ -540,10 +540,10 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
     encoder : nn.Module
         3D ViT-like encoder. Must expose ``embed_dim``, ``patch_size``,
         ``grid_shape``, ``blocks``, and ``forward(x, masks=None)``. See
-        `nidl.backbones.volume.vit3d_moe.VisionTransformer3D` for a reference
-        implementation (with or without a sparse MoE backbone -- pass
-        ``use_moe=True`` to that constructor and set ``use_moe=True`` here
-        too so the MoE bias update runs during training).
+        :class:`~nidl.backbones.volume.VisionTransformer3DMoE` for a
+        reference implementation (with or without a sparse MoE backbone --
+        pass ``use_moe=True`` to that constructor and set ``use_moe=True``
+        here too so the MoE bias update runs during training).
 
     mask_scale_configs : sequence of MaskScaleConfig, \
         default=3-scale config from [1]_

@@ -54,6 +54,8 @@ various utility functions.
     ResNet
     ResNetTruncated
     VisionTransformer3D
+    VisionTransformer3DMoE
+    MoEParams
 
 .. autoclasstree:: nidl.backbones.volume
    :strict:

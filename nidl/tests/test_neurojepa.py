@@ -17,7 +17,7 @@ from nidl.backbones.volume.vit3d_moe import (
     Block,
     MoE,
     MoEParams,
-    VisionTransformer3D,
+    VisionTransformer3DMoE,
     moe_bias_update,
 )
 from nidl.estimators.ssl.neurojepa import (
@@ -41,8 +41,8 @@ NUM_PATCHES = 8
 VOLUME_SHAPE = tuple(g * p for g, p in zip(GRID_SHAPE, PATCH_SIZE))
 
 
-def _tiny_vit(use_moe: bool = False) -> VisionTransformer3D:
-    """A minimal VisionTransformer3D satisfying NeuroJEPA's encoder
+def _tiny_vit(use_moe: bool = False) -> VisionTransformer3DMoE:
+    """A minimal VisionTransformer3DMoE satisfying NeuroJEPA's encoder
     interface, small enough to run instantly on CPU."""
     moe_params = None
     if use_moe:
@@ -54,7 +54,7 @@ def _tiny_vit(use_moe: bool = False) -> VisionTransformer3D:
             moe_inter_dim=4,
             moe_layer_indices=(0,),
         )
-    return VisionTransformer3D(
+    return VisionTransformer3DMoE(
         img_size=VOLUME_SHAPE,
         patch_size=PATCH_SIZE,
         in_chans=1,

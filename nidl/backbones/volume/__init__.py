@@ -30,3 +30,7 @@ from .vit3d import (
     vit_large_patch16_128,
     vit_small_patch16_128,
 )
+from .vit3d_moe import (
+    MoEParams,
+    VisionTransformer3DMoE,
+)
