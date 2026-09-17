@@ -54,7 +54,7 @@ def default_image_loader(path: str) -> Any:
 
 
 class ImageDataFrameDataset(Dataset):
-    """Dataset for loading images from a pandas DataFrame.
+    r"""Dataset for loading images from a pandas DataFrame.
 
     This dataset assumes that the DataFrame contains:
 

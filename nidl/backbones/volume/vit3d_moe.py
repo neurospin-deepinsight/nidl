@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 import torch
-import torch.nn.functional as F  # noqa: N812
+import torch.nn.functional as F  # ruff: ignore[lowercase-imported-as-non-lowercase]
 from torch import distributed as dist
 from torch import nn
 

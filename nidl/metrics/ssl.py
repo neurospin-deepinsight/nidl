@@ -13,7 +13,7 @@ import torch
 def alignment_score(
     z1, z2, normalize: bool = True, alpha: int = 2, eps: float = 1e-12
 ):
-    """
+    r"""
     Compute the alignment score between two embeddings [1]_.
 
     This metric measures how closely aligned two embeddings :math:`z1` and
@@ -91,7 +91,7 @@ def alignment_score(
 
 
 def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
-    """
+    r"""
     Compute the uniformity score of an embedding [1]_
 
     This metric measures how uniform the embedding vectors are distributed
@@ -180,7 +180,7 @@ def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
 def contrastive_accuracy_score(
     z1, z2, normalize: bool = True, topk: int = 1, eps: float = 1e-12
 ):
-    """
+    r"""
     Compute the top-k contrastive accuracy between two embeddings.
 
     This metric measures how often the true positive pair is among the

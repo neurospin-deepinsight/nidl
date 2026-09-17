@@ -16,7 +16,8 @@ from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class ZNormalization(VolumeTransform):
-    """Normalize a 3d volume by removing the mean and scaling to unit variance.
+    r"""Normalize a 3d volume by removing the mean and scaling to unit
+    variance.
 
     Applies the following normalization to each channel separately:
 

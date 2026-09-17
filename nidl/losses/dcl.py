@@ -16,7 +16,7 @@ from torch import Tensor, nn
 
 
 class DCLLoss(nn.Module):
-    """Implementation of the Decoupled Contrastive Learning loss [1]_
+    r"""Implementation of the Decoupled Contrastive Learning loss [1]_
 
     This loss function implements the decoupled contrastive learning loss as
     described in [1]_. It builds upon the classic InfoNCE loss but removes the
@@ -150,7 +150,7 @@ class DCLLoss(nn.Module):
 
 
 class DCLWLoss(DCLLoss):
-    """Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.
+    r"""Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.
 
     It implements the DCL with vMF weighting as described in [1]_.
     See the documentation for :class:`~nidl.losses.dcl.DCLLoss` for more

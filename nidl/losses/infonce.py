@@ -12,7 +12,7 @@ from torch import nn
 
 
 class InfoNCE(nn.Module):
-    """Implementation of the InfoNCE loss [1]_, [2]_.
+    r"""Implementation of the InfoNCE loss [1]_, [2]_.
 
     This loss function encourages the model to maximize the similarity
     between positive pairs while minimizing the similarity between

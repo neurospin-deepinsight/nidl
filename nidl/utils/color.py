@@ -1,4 +1,3 @@
-
 ##########################################################################
 # NSAp - Copyright (C) CEA, 2025
 # Distributed under the terms of the CeCILL-B license, as published by
@@ -20,9 +19,8 @@ import numpy as np
 IS_WINDOWS = platform.system() == "Windows"
 COLOR_TERMS = ["xterm-256color", "cygwin", "xterm-color"]
 IS_COLOR_TERM = "TERM" in os.environ and (
-    os.environ["TERM"] in COLOR_TERMS or (
-        os.environ["TERM"] == "xterm" and not IS_WINDOWS
-    )
+    os.environ["TERM"] in COLOR_TERMS
+    or (os.environ["TERM"] == "xterm" and not IS_WINDOWS)
 )
 
 # Dictionary of term colors used for printing to terminal
@@ -30,7 +28,8 @@ fg_colors = {
     "title": "gold_3b",
     "subtitle": "steel_blue",
     "warning": "orange_3",
-    "result": "magenta"}
+    "result": "magenta",
+}
 
 
 def hex(color):
@@ -291,7 +290,7 @@ def hex(color):
         "252": "#d0d0d0",
         "253": "#dadada",
         "254": "#e4e4e4",
-        "255": "#eeeeee"
+        "255": "#eeeeee",
     }
 
     # swap keys for values
@@ -300,7 +299,6 @@ def hex(color):
 
 
 class Colored:
-
     def __init__(self, color):
 
         self.ESC = "\x1b["
@@ -634,32 +632,33 @@ class Colored:
 
 
 def stylize(text, styles, reset=True):
-    """ Conveniently styles your text as and resets ANSI codes at its end.
-    """
+    """Conveniently styles your text as and resets ANSI codes at its end."""
     terminator = attr("reset") if reset else ""
     return "{}{}{}".format("".join(styles), text, terminator)
 
 
 def random_stylize(text, reset=True):
-    """ Conveniently styles your text as and resets ANSI codes at its end.
-    """
+    """Conveniently styles your text as and resets ANSI codes at its end."""
     colors = list(Colored("white").paint.keys())
-    text = [stylize(char,
-                    fg(colors[np.random.choice(len(colors))]) + attr("bold"),
-                    reset=reset)
-            for char in text]
+    text = [
+        stylize(
+            char,
+            fg(colors[np.random.default_rng().choice(len(colors))])
+            + attr("bold"),
+            reset=reset,
+        )
+        for char in text
+    ]
     return "".join(text)
 
 
 def fg(color):
-    """ Alias for Colored().foreground().
-    """
+    """Alias for Colored().foreground()."""
     return Colored(color).foreground()
 
 
 def attr(color):
-    """ Alias for colored().attribute().
-    """
+    """Alias for colored().attribute()."""
     return Colored(color).attribute()
 
 

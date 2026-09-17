@@ -18,7 +18,7 @@ from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomGaussianBlur(VolumeTransform):
-    """Blur a 3d volume using a Gaussian filter with random kernel size.
+    r"""Blur a 3d volume using a Gaussian filter with random kernel size.
 
     It handles a :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type and shape). Input shape must be

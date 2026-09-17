@@ -21,7 +21,7 @@ from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class Resample(VolumeTransform):
-    """Resample a 3d volume to a different physical space.
+    r"""Resample a 3d volume to a different physical space.
 
     This transformation resamples a 3d (or 4d with channels) volume to
     a new spacing, effectively changing its shape. It uses a provided
@@ -114,7 +114,7 @@ class Resample(VolumeTransform):
     def apply_transform(
         self, data: TypeTransformInput, affine: Optional[np.ndarray] = None
     ) -> TypeTransformInput:
-        """Resample the input data.
+        r"""Resample the input data.
 
         Parameters
         ----------

@@ -98,7 +98,7 @@ class ProjectionHead(nn.Module):
 
 
 class SimCLRProjectionHead(ProjectionHead):
-    """Projection head used for SimCLR.
+    r"""Projection head used for SimCLR.
 
     This module implements the projection head as described in SimCLR [1]_.
     The projection head is a multilayer perceptron (MLP) with one hidden layer
@@ -130,7 +130,7 @@ class SimCLRProjectionHead(ProjectionHead):
 
 
 class YAwareProjectionHead(ProjectionHead):
-    """Projection head used for yAware contrastive learning.
+    r"""Projection head used for yAware contrastive learning.
 
     This module implements the projection head :math:`z_{\\theta_2}` as
     described in yAware [1]_, which is a simple multilayer perceptron (MLP)

@@ -47,7 +47,7 @@ class Weights:
         self.name = name
         self.data_dir = Path(data_dir)
         self.filepath = filepath
-        self.dtype = name.split(":")[0] if ":" in name else "local"
+        self.dtype = name.split(":", maxsplit=1)[0] if ":" in name else "local"
         # Whether the file is a lightning checkpoint file
         self.is_lightning_ckpt = filepath.endswith(".ckpt")
         if self.dtype == "hf-hub":

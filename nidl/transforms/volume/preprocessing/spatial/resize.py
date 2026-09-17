@@ -17,7 +17,7 @@ from .resample import Resample, TypeTransformInput
 
 
 class Resize(Resample):
-    """Resize a 3d volume to match a target shape.
+    r"""Resize a 3d volume to match a target shape.
 
     This transformation resizes a 3d volume to a new target shape,
     implicitely modifying the physical spacing. Internally, it uses SimpleITK

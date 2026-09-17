@@ -16,7 +16,7 @@ from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RobustRescaling(VolumeTransform):
-    """Rescale intensities in a 3d volume to a given range.
+    r"""Rescale intensities in a 3d volume to a given range.
 
     It is robust to outliers since the volume is clipped according to
     a given inter-quantile range. It applies the following percentile-based

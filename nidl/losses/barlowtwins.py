@@ -11,7 +11,7 @@ from torch import nn
 
 
 class BarlowTwinsLoss(nn.Module):
-    """Implementation of the Barlow Twins loss [1]_.
+    r"""Implementation of the Barlow Twins loss [1]_.
 
     Compute the Barlow Twins loss, which reduces redundancy
     between the components of the outputs.

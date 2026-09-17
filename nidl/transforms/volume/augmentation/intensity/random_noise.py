@@ -18,7 +18,7 @@ from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class RandomGaussianNoise(VolumeTransform):
-    """Add Gaussian noise to input data with random parameters.
+    r"""Add Gaussian noise to input data with random parameters.
 
     The input data can have any shape with type :class:`numpy.ndarray` or
     :class:`torch.Tensor`. The output has consistent type and shape with
@@ -71,7 +71,8 @@ class RandomGaussianNoise(VolumeTransform):
             dtype, device = data.dtype, data.device
             data = data.detach().cpu().numpy()
 
-        noise = np.random.normal(mean, std, size=data.shape).astype(data.dtype)
+        rng = np.random.default_rng()
+        noise = rng.normal(mean, std, size=data.shape).astype(data.dtype)
         noised_data = data + noise
 
         if data_is_tensor:

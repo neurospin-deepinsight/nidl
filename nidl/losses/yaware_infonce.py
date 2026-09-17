@@ -20,7 +20,7 @@ from torch import nn
 
 
 class KernelMetric(BaseEstimator):
-    """Interface for fast weighting matrix computation.
+    r"""Interface for fast weighting matrix computation.
     
     It computes a weighting matrix :math:`W` between input samples based on
     Kernel Density Estimation (KDE) [1]_, [2]_. Concretely, it computes the
@@ -324,7 +324,7 @@ class KernelMetric(BaseEstimator):
 
 
 class YAwareInfoNCE(nn.Module):
-    """
+    r"""
     Implementation of the y-Aware InfoNCE loss [1]_.
 
     Compute the y-Aware InfoNCE loss, which integrates auxiliary
