@@ -9,7 +9,7 @@
 <meta property="og:site_name" content="Nidl" />
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
-<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.backbones.volume: Available backbones" href="../architectures.html"><link rel="prev" title="nidl.losses.BetaVAELoss" href="nidl.losses.BetaVAELoss.html">
+<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.losses: Available losses" href="../losses.html"><link rel="prev" title="nidl.estimators.autoencoders.VAE" href="nidl.estimators.autoencoders.VAE.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
@@ -17,7 +17,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=2da93098" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -271,30 +271,39 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.NeuroJEPA.html">nidl.estimators.ssl.NeuroJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../losses.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.losses</span></code>: Available losses</a><input aria-label="Toggle navigation of nidl.losses: Available losses" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../projection_heads.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.estimators.ssl.utils</span></code>: Available projection heads</a><input aria-label="Toggle navigation of nidl.estimators.ssl.utils: Available projection heads" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.backbones.volume: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.backbones.volume: Available backbones" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.utils.weights.Weights.html">nidl.utils.weights.Weights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.AlexNet.html">nidl.backbones.volume.AlexNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.DenseNet.html">nidl.backbones.volume.DenseNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.ResNet.html">nidl.backbones.volume.ResNet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.ResNetTruncated.html">nidl.backbones.volume.ResNetTruncated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.VisionTransformer3D.html">nidl.backbones.volume.VisionTransformer3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.VisionTransformer3DMoE.html">nidl.backbones.volume.VisionTransformer3DMoE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.MoEParams.html">nidl.backbones.volume.MoEParams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.densenet121.html">nidl.backbones.volume.densenet121</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.resnet18_trunc.html">nidl.backbones.volume.resnet18_trunc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.resnet50.html">nidl.backbones.volume.resnet50</a></li>
@@ -304,7 +313,7 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_large_patch16_128.html">nidl.backbones.volume.vit_large_patch16_128</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.transforms.Transform.html">nidl.transforms.transforms.Transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.transforms.Identity.html">nidl.transforms.transforms.Identity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.transforms.MultiViewsTransform.html">nidl.transforms.transforms.MultiViewsTransform</a></li>
@@ -322,21 +331,21 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomRotation.html">nidl.transforms.volume.augmentation.RandomRotation</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../datasets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.datasets</span></code>: Available datasets</a><input aria-label="Toggle navigation of nidl.datasets: Available datasets" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../datasets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.datasets</span></code>: Available datasets</a><input aria-label="Toggle navigation of nidl.datasets: Available datasets" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.datasets.BaseImageDataset.html">nidl.datasets.BaseImageDataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.datasets.BaseNumpyDataset.html">nidl.datasets.BaseNumpyDataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.datasets.ImageDataFrameDataset.html">nidl.datasets.ImageDataFrameDataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.datasets.OpenBHB.html">nidl.datasets.OpenBHB</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.callbacks.ModelProbingCallback.html">nidl.callbacks.ModelProbingCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.callbacks.ModelProbingCVCallback.html">nidl.callbacks.ModelProbingCVCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../metrics.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.metrics</span></code>: Available metrics</a><input aria-label="Toggle navigation of nidl.metrics: Available metrics" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../metrics.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.metrics</span></code>: Available metrics</a><input aria-label="Toggle navigation of nidl.metrics: Available metrics" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="nidl.metrics.pearson_r.html">nidl.metrics.pearson_r</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.metrics.alignment_score.html">nidl.metrics.alignment_score</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.metrics.uniformity_score.html">nidl.metrics.uniformity_score</a></li>
@@ -411,7 +420,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.dummy.DummyEmbeddingEstimator<a class="headerlink" href="#nidl-estimators-dummy-dummyembeddingestimator" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.dummy.DummyEmbeddingEstimator">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.dummy.</span></span><span class="sig-name descname"><span class="pre">DummyEmbeddingEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/bd18e82/nidl/estimators/dummy.py#L17"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.dummy.</span></span><span class="sig-name descname"><span class="pre">DummyEmbeddingEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/6b787b0/nidl/estimators/dummy.py#L17"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.TransformerMixin.html#nidl.estimators.TransformerMixin" title="nidl.estimators.base.TransformerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
 <p>A dummy embedding estimator returning an embedding independent of the
 input data.</p>
@@ -439,30 +448,30 @@ input data.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.dummy.DummyEmbeddingEstimator.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/bd18e82/nidl/estimators/dummy.py#L43"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/6b787b0/nidl/estimators/dummy.py#L43"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.dummy.DummyEmbeddingEstimator.configure_optimizers">
-<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/bd18e82/nidl/estimators/dummy.py#L67"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.configure_optimizers" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/6b787b0/nidl/estimators/dummy.py#L67"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.configure_optimizers" title="Link to this definition">¶</a></dt>
 <dd><p>No optimizers needed for this dummy estimator.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.dummy.DummyEmbeddingEstimator.test_step">
-<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/bd18e82/nidl/estimators/dummy.py#L63"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.test_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/6b787b0/nidl/estimators/dummy.py#L63"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.test_step" title="Link to this definition">¶</a></dt>
 <dd><p>No testing needed for this dummy estimator.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.dummy.DummyEmbeddingEstimator.training_step">
-<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/bd18e82/nidl/estimators/dummy.py#L59"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.training_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/6b787b0/nidl/estimators/dummy.py#L59"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.training_step" title="Link to this definition">¶</a></dt>
 <dd><p>No training needed for this dummy estimator.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.dummy.DummyEmbeddingEstimator.transform_step">
-<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/bd18e82/nidl/estimators/dummy.py#L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.transform_step" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transform_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/6b787b0/nidl/estimators/dummy.py#L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.dummy.DummyEmbeddingEstimator.transform_step" title="Link to this definition">¶</a></dt>
 <dd><p>Generates a dummy embedding with the same length as the input
 batch.</p>
 </dd></dl>
@@ -476,23 +485,23 @@ batch.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../architectures.html">
+          <a class="next-page" href="../losses.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</div>
+                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.losses</span></code>: Available losses</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="nidl.losses.BetaVAELoss.html">
+          <a class="prev-page" href="nidl.estimators.autoencoders.VAE.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">nidl.losses.BetaVAELoss</div>
+                <div class="title">nidl.estimators.autoencoders.VAE</div>
                 
               </div>
             </a>

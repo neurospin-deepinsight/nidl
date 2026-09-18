@@ -173,7 +173,7 @@ different modalities:
 
     (121, 145, 121)
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fe9e705fef0>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fe7ad6080b0>
 
 
 
@@ -250,7 +250,7 @@ a brain template using the Neuromorphometrics atlas**:
  .. code-block:: none
 
 
-    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fe9e6f564e0>
+    <nilearn.plotting.displays._slicers.OrthoSlicer object at 0x7fe7ad52ad20>
 
 
 
@@ -450,8 +450,8 @@ the left hemisphere using the higher-resolution fsaverage7 template:
 
     [fetch_surf_fsaverage] Dataset created in /home/runner/nilearn_data/fsaverage
     [fetch_surf_fsaverage] Downloading data from https://osf.io/svf8k/download ...
-    [fetch_surf_fsaverage]     Downloaded 17448960 of 34242788 bytes (51.0%%, 00 HR 00 MIN 01 SEC remaining)
-    [fetch_surf_fsaverage]  ...done. (4 seconds, 0 min)
+    [fetch_surf_fsaverage]     Downloaded 5029888 of 34242788 bytes (14.7%%, 00 HR 00 MIN 06 SEC remaining)
+    [fetch_surf_fsaverage]  ...done. (25 seconds, 0 min)
 
     [fetch_surf_fsaverage] Extracting data from /home/runner/nilearn_data/fsaverage/735bf0f211246c83396b5f21f706c224/download...
     [fetch_surf_fsaverage] .. done.
@@ -669,11 +669,11 @@ baseline for sex classification. We will evaluate the model using accuracy.
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:456: OptimizeWarning: Unknown solver options: iprint
+    /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:456: OptimizeWarning: Unknown solver options: iprint
       opt_res = optimize.minimize(
-    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:456: OptimizeWarning: Unknown solver options: iprint
+    /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:456: OptimizeWarning: Unknown solver options: iprint
       opt_res = optimize.minimize(
-    /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:456: OptimizeWarning: Unknown solver options: iprint
+    /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:456: OptimizeWarning: Unknown solver options: iprint
       opt_res = optimize.minimize(
     /home/runner/work/nidl/nidl/examples/plot_openbhb.py:439: FutureWarning: 
 
@@ -905,9 +905,9 @@ References
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 56.066 seconds)
+   **Total running time of the script:** (4 minutes 40.204 seconds)
 
-**Estimated memory usage:**  1365 MB
+**Estimated memory usage:**  1376 MB
 
 
 .. _sphx_glr_download_auto_examples_plot_openbhb.py:
