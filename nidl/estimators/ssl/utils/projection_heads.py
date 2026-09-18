@@ -98,16 +98,16 @@ class ProjectionHead(nn.Module):
 
 
 class SimCLRProjectionHead(ProjectionHead):
-    """Projection head used for SimCLR.
+    r"""Projection head used for SimCLR.
 
     This module implements the projection head as described in SimCLR [1]_.
     The projection head is a multilayer perceptron (MLP) with one hidden layer
     and a ReLU non-linearity, defined as:
 
     .. math::
-        \\mathbf{z} = g(\\mathbf{h}) = W_2 \\cdot \\sigma(W_1\\cdot\\mathbf{h})
+        \mathbf{z} = g(\mathbf{h}) = W_2 \cdot \sigma(W_1\cdot\mathbf{h})
 
-    where :math:`\\sigma` is the ReLU activation function.
+    where :math:`\sigma` is the ReLU activation function.
 
     References
     ----------
@@ -130,9 +130,9 @@ class SimCLRProjectionHead(ProjectionHead):
 
 
 class YAwareProjectionHead(ProjectionHead):
-    """Projection head used for yAware contrastive learning.
+    r"""Projection head used for yAware contrastive learning.
 
-    This module implements the projection head :math:`z_{\\theta_2}` as
+    This module implements the projection head :math:`z_{\theta_2}` as
     described in yAware [1]_, which is a simple multilayer perceptron (MLP)
     similar to that used in SimCLR [2]_. It maps feature representations into
     a space where contrastive loss can be applied.

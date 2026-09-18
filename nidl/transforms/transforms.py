@@ -191,12 +191,12 @@ class Transform(ABC):
 
     @staticmethod
     def _parse_range(interval, check_min=None, check_max=None):
-        """Checks if the input interval is correct.
+        r"""Checks if the input interval is correct.
 
         In details, it checks whether it contains two values :math:`(l, u)`
         such that :math:`l` and :math:`u` are scalar (int or float) and
-        :math:`l \\le u`. Optionally, it also checks that
-        :math:`l \\ge \\text{check_min}` and :math:`u \\le \\text{check_max}`.
+        :math:`l \le u`. Optionally, it also checks that
+        :math:`l \ge \text{check_min}` and :math:`u \le \text{check_max}`.
 
         Parameters
         ----------

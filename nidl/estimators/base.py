@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import abc
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 from typing import Any, Callable, Optional, Union
 
 import pytorch_lightning as pl
@@ -208,8 +209,11 @@ class BaseEstimator(pl.LightningModule):
 
     def fit(
         self,
-        train_dataloader: data.DataLoader,
+        train_dataloader: Optional[data.DataLoader] = None,
         val_dataloader: Optional[data.DataLoader] = None,
+        datamodule: Optional[pl.LightningDataModule] = None,
+        ckpt_path: Union[str, Path, None] = None,
+        weights_only: Optional[bool] = None,
     ):
         """The `fit` method.
 
@@ -222,10 +226,22 @@ class BaseEstimator(pl.LightningModule):
 
         Parameters
         ----------
-        train_dataloader: torch DataLoader
-            training samples.
-        val_dataloader: torch DataLoader, default None
-            validation samples.
+        train_dataloader: torch DataLoader, default=None
+            The training data loader. If ``datamodule`` is passed, the
+            ``train_dataloader`` hook is used instead, ignoring this loader.
+        val_dataloader: torch DataLoader, default=None
+            The validation data loader. If ``datamodule`` is passed, the
+            ``val_dataloader`` hook is used instead, ignoring this loader.
+        datamodule: pl.LightningDataModule, default=None
+            An instance of `LightningDataModule`, alternative to passing
+            `train_dataloader`/`val_dataloader`.
+        ckpt_path: str, Path, default=None
+            Path to a checkpoint from which training is resumed.
+        weights_only: bool, default=None
+            If True, restricts `torch.load` (used to load the checkpoint)
+            to loading only tensors, primitive types and dictionaries,
+            without executing arbitrary code. Passed to
+            `torch.load(weights_only=...)`.
 
         Returns
         -------
@@ -236,7 +252,14 @@ class BaseEstimator(pl.LightningModule):
         if trainer.logger is not None:
             trainer.logger._default_hp_metric = None
         pl.seed_everything(self.hparams.random_state)
-        trainer.fit(self, train_dataloader, val_dataloader)
+        trainer.fit(
+            self,
+            train_dataloader,
+            val_dataloader,
+            datamodule=datamodule,
+            ckpt_path=ckpt_path,
+            weights_only=weights_only,
+        )
         self.fitted_ = True
         return self
 

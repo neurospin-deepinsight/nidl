@@ -113,7 +113,7 @@ Base classes for all nidl estimators.
 Self-Supervised Learning
 ------------------------
 
-Self-supervised learning embedding estimators, losses and associated tools.
+Self-supervised learning embedding estimators.
 
 
 Embedding estimators
@@ -131,43 +131,15 @@ Embedding estimators
     BarlowTwins
     DINO
     IJEPA
+    NeuroJEPA
 
 .. autoclasstree:: nidl.estimators.ssl
    :strict:
    :align: center
 
+See :doc:`losses` and :doc:`projection_heads` for the losses and projection
+heads used by these estimators.
 
-Losses
-......
-
-.. currentmodule:: nidl.losses
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    InfoNCE
-    DCLLoss
-    DCLWLoss
-    YAwareInfoNCE
-    BarlowTwinsLoss
-    DINOLoss
-
-
-Projection heads
-................
-
-.. currentmodule:: nidl.estimators.ssl.utils
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    ProjectionHead
-    SimCLRProjectionHead
-    YAwareProjectionHead
-    BarlowTwinsProjectionHead
-    DINOProjectionHead
 
 Probing estimators
 ------------------
@@ -203,17 +175,7 @@ Embedding estimators
    :strict:
    :align: center
 
-
-Losses
-......
-
-.. currentmodule:: nidl.losses
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    BetaVAELoss
+See :doc:`losses` for the losses used by these estimators.
 
 
 Dummy estimator

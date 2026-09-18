@@ -15,7 +15,7 @@ from torch import nn
 
 
 class DenseNet(nn.Module):
-    """ 3D Densenet architecture adapted from Huang et al. 2018. See
+    """3D Densenet architecture adapted from Huang et al. 2018. See
     https://doi.org/10.48550/arXiv.1608.06993 for details.
 
     Parameters
@@ -37,24 +37,42 @@ class DenseNet(nn.Module):
         if True, uses checkpointing. Much more memory efficient,
         but slower. See <https://arxiv.org/pdf/1707.06990.pdf>.
     """
+
     def __init__(
-            self,
-            growth_rate: int = 32,
-            block_config: tuple[int, int, int, int] = (3, 12, 24, 16),
-            num_init_features: int = 64,
-            bn_size: int = 4,
-            in_channels: int = 1,
-            n_embedding: int = 512,
-            memory_efficient: bool = False):
+        self,
+        growth_rate: int = 32,
+        block_config: tuple[int, int, int, int] = (3, 12, 24, 16),
+        num_init_features: int = 64,
+        bn_size: int = 4,
+        in_channels: int = 1,
+        n_embedding: int = 512,
+        memory_efficient: bool = False,
+    ):
         super().__init__()
         # First convolution
-        self.features = nn.Sequential(OrderedDict([
-            ('conv0', nn.Conv3d(in_channels, num_init_features, kernel_size=7,
-                                stride=2, padding=3, bias=False)),
-            ('norm0', nn.BatchNorm3d(num_init_features)),
-            ('relu0', nn.ReLU(inplace=True)),
-            ('pool0', nn.MaxPool3d(kernel_size=3, stride=2, padding=1)),
-        ]))
+        self.features = nn.Sequential(
+            OrderedDict(
+                [
+                    (
+                        "conv0",
+                        nn.Conv3d(
+                            in_channels,
+                            num_init_features,
+                            kernel_size=7,
+                            stride=2,
+                            padding=3,
+                            bias=False,
+                        ),
+                    ),
+                    ("norm0", nn.BatchNorm3d(num_init_features)),
+                    ("relu0", nn.ReLU(inplace=True)),
+                    (
+                        "pool0",
+                        nn.MaxPool3d(kernel_size=3, stride=2, padding=1),
+                    ),
+                ]
+            )
+        )
         # Each denseblock
         num_features = num_init_features
         for i, num_layers in enumerate(block_config):
@@ -63,14 +81,16 @@ class DenseNet(nn.Module):
                 num_input_features=num_features,
                 bn_size=bn_size,
                 growth_rate=growth_rate,
-                memory_efficient=memory_efficient
+                memory_efficient=memory_efficient,
             )
-            self.features.add_module(f'denseblock{i + 1}', block)
+            self.features.add_module(f"denseblock{i + 1}", block)
             num_features = num_features + num_layers * growth_rate
             if i != len(block_config) - 1:
-                trans = _Transition(num_input_features=num_features,
-                                    num_output_features=num_features // 2)
-                self.features.add_module(f'transition{i + 1}', trans)
+                trans = _Transition(
+                    num_input_features=num_features,
+                    num_output_features=num_features // 2,
+                )
+                self.features.add_module(f"transition{i + 1}", trans)
                 num_features = num_features // 2
 
         self.embedding = nn.Linear(num_features, n_embedding)
@@ -103,25 +123,42 @@ def _bn_function_factory(norm, relu, conv):
 
 
 class _DenseLayer(nn.Sequential):
-    def __init__(self, num_input_features, growth_rate, bn_size,
-                 memory_efficient=False):
+    def __init__(
+        self, num_input_features, growth_rate, bn_size, memory_efficient=False
+    ):
         super().__init__()
-        self.add_module('norm1', nn.BatchNorm3d(num_input_features))
-        self.add_module('relu1', nn.ReLU(inplace=True)),
-        self.add_module('conv1', nn.Conv3d(num_input_features, bn_size *
-                                           growth_rate, kernel_size=1,
-                                           stride=1, bias=False))
-        self.add_module('norm2', nn.BatchNorm3d(bn_size * growth_rate))
-        self.add_module('relu2', nn.ReLU(inplace=True))
-        self.add_module('conv2', nn.Conv3d(bn_size * growth_rate, growth_rate,
-                                           kernel_size=3, stride=1, padding=1,
-                                           bias=False))
+        self.add_module("norm1", nn.BatchNorm3d(num_input_features))
+        (self.add_module("relu1", nn.ReLU(inplace=True)),)
+        self.add_module(
+            "conv1",
+            nn.Conv3d(
+                num_input_features,
+                bn_size * growth_rate,
+                kernel_size=1,
+                stride=1,
+                bias=False,
+            ),
+        )
+        self.add_module("norm2", nn.BatchNorm3d(bn_size * growth_rate))
+        self.add_module("relu2", nn.ReLU(inplace=True))
+        self.add_module(
+            "conv2",
+            nn.Conv3d(
+                bn_size * growth_rate,
+                growth_rate,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+                bias=False,
+            ),
+        )
         self.memory_efficient = memory_efficient
 
     def forward(self, *prev_features):
         bn_function = _bn_function_factory(self.norm1, self.relu1, self.conv1)
-        if (self.memory_efficient and any(prev_feature.requires_grad
-                                          for prev_feature in prev_features)):
+        if self.memory_efficient and any(
+            prev_feature.requires_grad for prev_feature in prev_features
+        ):
             bottleneck_output = cp.checkpoint(bn_function, *prev_features)
         else:
             bottleneck_output = bn_function(*prev_features)
@@ -130,8 +167,14 @@ class _DenseLayer(nn.Sequential):
 
 
 class _DenseBlock(nn.Module):
-    def __init__(self, num_layers, num_input_features, bn_size, growth_rate,
-                 memory_efficient=False):
+    def __init__(
+        self,
+        num_layers,
+        num_input_features,
+        bn_size,
+        growth_rate,
+        memory_efficient=False,
+    ):
         super().__init__()
         for i in range(num_layers):
             layer = _DenseLayer(
@@ -139,8 +182,8 @@ class _DenseBlock(nn.Module):
                 growth_rate=growth_rate,
                 bn_size=bn_size,
                 memory_efficient=memory_efficient,
-                )
-            self.add_module(f'denselayer{i + 1}', layer)
+            )
+            self.add_module(f"denselayer{i + 1}", layer)
 
     def forward(self, init_features):
         features = [init_features]
@@ -153,12 +196,19 @@ class _DenseBlock(nn.Module):
 class _Transition(nn.Sequential):
     def __init__(self, num_input_features, num_output_features):
         super().__init__()
-        self.add_module('norm', nn.BatchNorm3d(num_input_features))
-        self.add_module('relu', nn.ReLU(inplace=True))
-        self.add_module('conv', nn.Conv3d(
-            num_input_features, num_output_features, kernel_size=1, stride=1,
-            bias=False))
-        self.add_module('pool', nn.AvgPool3d(kernel_size=2, stride=2))
+        self.add_module("norm", nn.BatchNorm3d(num_input_features))
+        self.add_module("relu", nn.ReLU(inplace=True))
+        self.add_module(
+            "conv",
+            nn.Conv3d(
+                num_input_features,
+                num_output_features,
+                kernel_size=1,
+                stride=1,
+                bias=False,
+            ),
+        )
+        self.add_module("pool", nn.AvgPool3d(kernel_size=2, stride=2))
 
 
 def _densenet(arch, growth_rate, block_config, num_init_features, **kwargs):
@@ -167,7 +217,7 @@ def _densenet(arch, growth_rate, block_config, num_init_features, **kwargs):
 
 
 def densenet121(**kwargs):
-    """ 3D Densenet-121 model adapted from Huang et al. 2018. See
+    """3D Densenet-121 model adapted from Huang et al. 2018. See
     https://doi.org/10.48550/arXiv.1608.06993 for details.
     """
-    return _densenet('densenet121', 32, (6, 12, 24, 16), 64, **kwargs)
+    return _densenet("densenet121", 32, (6, 12, 24, 16), 64, **kwargs)

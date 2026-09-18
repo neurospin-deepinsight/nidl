@@ -12,7 +12,7 @@ from torch import nn
 
 
 class InfoNCE(nn.Module):
-    """Implementation of the InfoNCE loss [1]_, [2]_.
+    r"""Implementation of the InfoNCE loss [1]_, [2]_.
 
     This loss function encourages the model to maximize the similarity
     between positive pairs while minimizing the similarity between
@@ -24,19 +24,19 @@ class InfoNCE(nn.Module):
     is defined as:
 
     .. math::
-        \\mathcal{L}_i
-        = -\\log
-        \\frac{
-            \\exp\\!\\big(\\operatorname{sim}(z_i, z_j)/\\tau\\big)
+        \mathcal{L}_i
+        = -\log
+        \frac{
+            \exp\!\big(\operatorname{sim}(z_i, z_j)/\tau\big)
         }{
-            \\sum\\limits_{k=1}^{2N}
-            \\mathbf{1}_{[k \\ne i]}\\,
-            \\exp\\!\\big(\\operatorname{sim}(z_i, z_k)/\\tau\\big)
+            \sum\limits_{k=1}^{2N}
+            \mathbf{1}_{[k \ne i]}\,
+            \exp\!\big(\operatorname{sim}(z_i, z_k)/\tau\big)
         }
 
-    where :math:`\\operatorname{sim}(z_i, z_j)` denotes the cosine similarity
+    where :math:`\operatorname{sim}(z_i, z_j)` denotes the cosine similarity
     between the normalized embeddings :math:`z_i` and :math:`z_j`, and
-    :math:`\\tau > 0` is a temperature parameter controlling the concentration
+    :math:`\tau > 0` is a temperature parameter controlling the concentration
     of the distribution.
 
     Parameters

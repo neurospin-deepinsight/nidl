@@ -7,8 +7,7 @@
 ##########################################################################
 
 
-""" Base class to generate datasets.
-"""
+"""Base class to generate datasets."""
 
 import abc
 import errno
@@ -23,7 +22,7 @@ from torch.utils.data import Dataset
 
 
 class BaseDataset(Dataset):
-    """ Base neuroimaging dataset.
+    """Base neuroimaging dataset.
 
     Notes
     -----
@@ -64,11 +63,21 @@ class BaseDataset(Dataset):
     UserWarning
         If missing data are found.
     """
+
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, root, patterns, channels, split="train", targets=None,
-                 target_mapping=None, transforms=None, mask=None,
-                 withdraw_subjects=None):
+    def __init__(
+        self,
+        root,
+        patterns,
+        channels,
+        split="train",
+        targets=None,
+        target_mapping=None,
+        transforms=None,
+        mask=None,
+        withdraw_subjects=None,
+    ):
 
         # Sanity
         if not isinstance(patterns, (list, tuple)):
@@ -82,7 +91,8 @@ class BaseDataset(Dataset):
         for path in (participant_file, split_file):
             if not os.path.isfile(path):
                 raise FileNotFoundError(
-                    errno.ENOENT, os.strerror(errno.ENOENT), path)
+                    errno.ENOENT, os.strerror(errno.ENOENT), path
+                )
 
         # Parameters
         self.root = root
@@ -93,24 +103,27 @@ class BaseDataset(Dataset):
         self.target_mapping = target_mapping or {}
         self.split = split
         self.transforms = transforms
-        self.mask = (np.load(mask) if mask is not None else None)
+        self.mask = np.load(mask) if mask is not None else None
 
         # Load subjects
         self.info_df = pd.read_csv(participant_file, sep="\t")
         if "participant_id" not in self.info_df:
             raise KeyError(
-                "A 'participant_id' is mandatory in the participants file.")
+                "A 'participant_id' is mandatory in the participants file."
+            )
         self.info_df = self.info_df.astype({"participant_id": "str"})
         self.split_df = pd.read_csv(split_file, sep="\t")
         if "participant_id" not in self.split_df:
             raise KeyError(
-                "A 'participant_id' is mandatory in the split file.")
+                "A 'participant_id' is mandatory in the split file."
+            )
         self.split_df = self.split_df[["participant_id"]]
         self.split_df = self.split_df.astype({"participant_id": "str"})
         if withdraw_subjects is not None:
             self.split_df = self.split_df[
-                ~self.split_df["participant_id"].isin(withdraw_subjects)]
-        self._df = pd.merge(self.split_df, self.info_df, on="participant_id")
+                ~self.split_df["participant_id"].isin(withdraw_subjects)
+            ]
+        self._df = self.split_df.merge(self.info_df, on="participant_id")
 
         # Keep only useful information / sanitize
         if targets is not None:
@@ -118,26 +131,31 @@ class BaseDataset(Dataset):
                 if key not in self._df:
                     raise KeyError(
                         f"A '{key}' column is mandatory in the participant "
-                        "file.")
+                        "file."
+                    )
         self._df = self._df[["participant_id"] + (targets or [])]
-        _missing_data = self._df[self._df.isnull().any(axis=1)]
+        _missing_data = self._df[self._df.isna().any(axis=1)]
         if len(_missing_data) > 0:
-            warnings.warn(f"Missing data in {split}!", UserWarning,
-                          stacklevel=2)
+            warnings.warn(
+                f"Missing data in {split}!", UserWarning, stacklevel=2
+            )
         self._df.replace(self.target_mapping, inplace=True)
         self._targets = (
-            self._df[targets].values if targets is not None else None)
+            self._df[targets].values if targets is not None else None
+        )
 
     def __repr__(self):
-        return (f"{self.__class__.__name__}<split='{self.split}',"
-                f"modalities={self.n_modalities},targets={self.targets}>")
+        return (
+            f"{self.__class__.__name__}<split='{self.split}',"
+            f"modalities={self.n_modalities},targets={self.targets}>"
+        )
 
     def __len__(self):
         return len(self._df)
 
 
 class BaseNumpyDataset(BaseDataset):
-    """ Neuroimaging dataset that uses numpy arrays and memory mapping.
+    """Neuroimaging dataset that uses numpy arrays and memory mapping.
 
     Notes
     -----
@@ -179,35 +197,55 @@ class BaseNumpyDataset(BaseDataset):
     UserWarning
         If missing data are found.
     """
-    def __init__(self, root, patterns, channels, split="train", targets=None,
-                 target_mapping=None, transforms=None, mask=None,
-                 withdraw_subjects=None):
+
+    def __init__(
+        self,
+        root,
+        patterns,
+        channels,
+        split="train",
+        targets=None,
+        target_mapping=None,
+        transforms=None,
+        mask=None,
+        withdraw_subjects=None,
+    ):
         super().__init__(
-            root, patterns, channels, split=split, targets=targets,
-            target_mapping=target_mapping, transforms=transforms, mask=mask,
-            withdraw_subjects=withdraw_subjects)
-        self._data = [np.load(os.path.join(root, name), mmap_mode="r")
-                      for name in patterns]
+            root,
+            patterns,
+            channels,
+            split=split,
+            targets=targets,
+            target_mapping=target_mapping,
+            transforms=transforms,
+            mask=mask,
+            withdraw_subjects=withdraw_subjects,
+        )
+        self._data = [
+            np.load(os.path.join(root, name), mmap_mode="r")
+            for name in patterns
+        ]
 
     def get_data(self, idx):
-        """ Proper data indexing.
-        """
+        """Proper data indexing."""
         subject = self._df.iloc[idx].participant_id
         data_idx = self.info_df.loc[
-            self.info_df.participant_id == subject].index.item()
-        return ([arr[data_idx] for arr in self._data],
-                (self._targets[idx]
-                 if self._targets is not None else None))
+            self.info_df.participant_id == subject
+        ].index.item()
+        return (
+            [arr[data_idx] for arr in self._data],
+            (self._targets[idx] if self._targets is not None else None),
+        )
 
     @abc.abstractmethod
     def __getitem__(self, idx):
-        """ Get an item of the dataset: this method must be implemented in
+        """Get an item of the dataset: this method must be implemented in
         derived class.
         """
 
 
 class BaseImageDataset(BaseDataset):
-    """ Scalable neuroimaging dataset that uses files.
+    """Scalable neuroimaging dataset that uses files.
 
     Notes
     -----
@@ -254,13 +292,31 @@ class BaseImageDataset(BaseDataset):
     UserWarning
         If missing data are found.
     """
-    def __init__(self, root, patterns, channels, subject_in_patterns,
-                 split="train", targets=None, target_mapping=None,
-                 transforms=None, mask=None, withdraw_subjects=None):
+
+    def __init__(
+        self,
+        root,
+        patterns,
+        channels,
+        subject_in_patterns,
+        split="train",
+        targets=None,
+        target_mapping=None,
+        transforms=None,
+        mask=None,
+        withdraw_subjects=None,
+    ):
         super().__init__(
-            root, patterns, channels, split=split, targets=targets,
-            target_mapping=target_mapping, transforms=transforms, mask=mask,
-            withdraw_subjects=withdraw_subjects)
+            root,
+            patterns,
+            channels,
+            split=split,
+            targets=targets,
+            target_mapping=target_mapping,
+            transforms=transforms,
+            mask=mask,
+            withdraw_subjects=withdraw_subjects,
+        )
 
         if not isinstance(subject_in_patterns, (list, tuple)):
             subject_in_patterns = [subject_in_patterns] * len(patterns)
@@ -274,34 +330,36 @@ class BaseImageDataset(BaseDataset):
             _sidx = subject_in_patterns[idx]
             _files = {
                 self.sanitize_subject(path.split(os.sep)[_sidx]): path
-                for path in glob.glob(_regex)}
+                for path in glob.glob(_regex)
+            }
             self._data[f"{self.channels[idx]}"] = [
-                _files.get(subject) for subject in self._df["participant_id"]]
+                _files.get(subject) for subject in self._df["participant_id"]
+            ]
         self._data = pd.DataFrame.from_dict(self._data)
-        _missing_data = self._data[self._data.isnull().any(axis=1)]
+        _missing_data = self._data[self._data.isna().any(axis=1)]
         if len(_missing_data) > 0:
-            warnings.warn(f"Missing file data in {split}!", UserWarning,
-                          stacklevel=2)
+            warnings.warn(
+                f"Missing file data in {split}!", UserWarning, stacklevel=2
+            )
         self._data = self._data.values
 
     def sanitize_subject(self, subject):
         return subject.replace("sub-", "").split("_")[0]
 
     def get_checksum(self, path):
-        """ Hashing file.
-        """
+        """Hashing file."""
         with open(path) as of:
             checksum = hashlib.sha1(of.read()).hexdigest()
         return checksum
 
     def get_data(self, idx):
-        """ Proper data indexing.
-        """
-        return self._data[idx], (self._targets[idx]
-                                 if self._targets is not None else None)
+        """Proper data indexing."""
+        return self._data[idx], (
+            self._targets[idx] if self._targets is not None else None
+        )
 
     @abc.abstractmethod
     def __getitem__(self, idx):
-        """ Get an item of the dataset: this method must be implemented in
+        """Get an item of the dataset: this method must be implemented in
         derived class.
         """

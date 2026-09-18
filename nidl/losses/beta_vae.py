@@ -26,7 +26,7 @@ class BetaVAELoss:
             \underset{x \sim D}{\mathbb{E}}\left[
                 \underset{z \sim q_\phi(z | x)}{\mathbb{E}}
                     log \ p_\theta(x|z)
-            \right] \\
+            \right] \
         \text{subject to} D_{KL}(q_\phi(z|x) | p_\theta(z)) < \delta
 
     We can rewrite this equation as a Lagrangian with a Lagrangian multiplier

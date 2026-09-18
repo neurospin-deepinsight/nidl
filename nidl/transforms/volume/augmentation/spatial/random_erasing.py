@@ -83,14 +83,15 @@ class RandomErasing(VolumeTransform):
     @staticmethod
     def _sample_3d_box(in_shape, scale, ratio) -> list[slice]:
         """Randomly sample a 3d box to erase from input."""
+        rng = np.random.default_rng()
 
         def try_sample_box(ratio):
             volume = np.prod(in_shape)
             # Sample a target volume
-            target_volume = np.random.uniform(*scale) * volume
+            target_volume = rng.uniform(*scale) * volume
             # Sample one aspect ratio per dimension
             log_ratio = np.log(np.array(ratio))
-            sampled_ar = np.exp(np.random.uniform(*log_ratio, size=3))
+            sampled_ar = np.exp(rng.uniform(*log_ratio, size=3))
             # Normalize aspect ratios to keep geometric mean = 1
             sampled_ar /= np.cbrt(np.prod(sampled_ar))
 
@@ -100,7 +101,7 @@ class RandomErasing(VolumeTransform):
                 box_size = round(cbrt_volume * ar)
                 if box_size > size:
                     return None
-                i = np.random.randint(0, size - box_size + 1)
+                i = rng.integers(0, size - box_size + 1)
                 box.append(slice(i, i + box_size))
             return box
 
@@ -156,7 +157,9 @@ class RandomErasing(VolumeTransform):
                 if isinstance(data, torch.Tensor):
                     data[slicer] = torch.randn_like(region)
                 else:
-                    data[slicer] = np.random.randn(*region.shape)
+                    data[slicer] = np.random.default_rng().standard_normal(
+                        region.shape, dtype=region.dtype
+                    )
             else:
                 raise ValueError(
                     f"`value` must be scalar (int or float), 'mean' or"

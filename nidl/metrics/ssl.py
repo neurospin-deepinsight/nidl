@@ -13,7 +13,7 @@ import torch
 def alignment_score(
     z1, z2, normalize: bool = True, alpha: int = 2, eps: float = 1e-12
 ):
-    """
+    r"""
     Compute the alignment score between two embeddings [1]_.
 
     This metric measures how closely aligned two embeddings :math:`z1` and
@@ -24,9 +24,9 @@ def alignment_score(
 
     .. math::
 
-        \\text{Alignment}(z_1, z_2)
-        = \\frac{1}{n}\\sum_{i=1}^n
-        \\lVert z_1^{(i)} - z_2^{(i)} \\rVert_2^{\\alpha}
+        \text{Alignment}(z_1, z_2)
+        = \frac{1}{n}\sum_{i=1}^n
+        \lVert z_1^{(i)} - z_2^{(i)} \rVert_2^{\alpha}
 
     with :math:`z_1=(z_1^{(1)}, ..., z_1^{(n)})` and
     :math:`z_2=(z_2^{(1)}, ..., z_2^{(n)})`
@@ -91,7 +91,7 @@ def alignment_score(
 
 
 def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
-    """
+    r"""
     Compute the uniformity score of an embedding [1]_
 
     This metric measures how uniform the embedding vectors are distributed
@@ -102,8 +102,8 @@ def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
 
     .. math::
 
-        U(z) = \\log \\frac{1}{n(n-1)}\\sum_{i \\ne j}
-               \\exp\\left(-t \\, \\lVert z_i - z_j \\rVert_2^2 \\right)
+        U(z) = \log \frac{1}{n(n-1)}\sum_{i \ne j}
+               \exp\left(-t \, \lVert z_i - z_j \rVert_2^2 \right)
 
     where all vectors are first normalized to lie on the unit hypersphere.
 
@@ -180,7 +180,7 @@ def uniformity_score(z, normalize: bool = True, t: float = 2.0, eps=1e-12):
 def contrastive_accuracy_score(
     z1, z2, normalize: bool = True, topk: int = 1, eps: float = 1e-12
 ):
-    """
+    r"""
     Compute the top-k contrastive accuracy between two embeddings.
 
     This metric measures how often the true positive pair is among the
@@ -196,11 +196,11 @@ def contrastive_accuracy_score(
 
     .. math::
 
-        \\text{Acc}_{k}(z_1, z_2)
-        = \\tfrac{1}{2} \\left(
-            \\text{Acc}_{k}(z_1 \\to z_2)
-          + \\text{Acc}_{k}(z_2 \\to z_1)
-        \\right),
+        \text{Acc}_{k}(z_1, z_2)
+        = \tfrac{1}{2} \left(
+            \text{Acc}_{k}(z_1 \to z_2)
+          + \text{Acc}_{k}(z_2 \to z_1)
+        \right),
 
     where each directional accuracy is the fraction of queries whose true
     pair is in the top-k most similar candidates.

@@ -16,7 +16,7 @@ from torch import Tensor, nn
 
 
 class DCLLoss(nn.Module):
-    """Implementation of the Decoupled Contrastive Learning loss [1]_
+    r"""Implementation of the Decoupled Contrastive Learning loss [1]_
 
     This loss function implements the decoupled contrastive learning loss as
     described in [1]_. It builds upon the classic InfoNCE loss but removes the
@@ -27,18 +27,18 @@ class DCLLoss(nn.Module):
     augmented views of the same sample. The **DCL** loss is defined as:
 
     .. math::
-        \\mathcal{L}_i^{(k)}
-        = - \\big(\\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\\tau\\big)
-        + \\log
-        \\sum\\limits_{l \\in \\{1,2\\}, j \\in \\![1,N\\!]}
-        \\mathbf{1}_{[j \\ne i]},
-        \\exp\\!\\big(\\operatorname{sim}(z_i^{(k)}, z_j^{(l)})/\\tau\\big)
+        \mathcal{L}_i^{(k)}
+        = - \big(\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\tau\big)
+        + \log
+        \sum\limits_{l \in \{1,2\}, j \in \![1,N\!]}
+        \mathbf{1}_{[j \ne i]},
+        \exp\!\big(\operatorname{sim}(z_i^{(k)}, z_j^{(l)})/\tau\big)
 
-    where :math:`\\operatorname{sim}(z_i^(k), z_j^(l))` denotes the cosine
+    where :math:`\operatorname{sim}(z_i^(k), z_j^(l))` denotes the cosine
     similarity between the normalized embeddings :math:`z_i^(k)` and
-    :math:`z_j^(l)`, and :math:`\\tau > 0` is a temperature parameter
+    :math:`z_j^(l)`, and :math:`\tau > 0` is a temperature parameter
     controlling the concentration of the distribution.
-    :math:`\\mathbf{1}_{[j \\ne i]}` ensures decoupling.
+    :math:`\mathbf{1}_{[j \ne i]}` ensures decoupling.
 
     Additionnaly, a weighting function :math:`w` can be added to modulate the
     contribution of the positive pairs' similarity to the loss. The intuition
@@ -47,13 +47,13 @@ class DCLLoss(nn.Module):
     when the two embeddings are less similar. The weighted loss is:
 
     .. math::
-        \\mathcal{L}_i^{(k)}
+        \mathcal{L}_i^{(k)}
         = - w(z_i^{(1)}, z_i^{(2)})
-        \\big(\\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\\tau\\big)
-        + \\log
-        \\sum\\limits_{l \\in \\{1,2\\}, j \\in \\![1,N\\!]}
-        \\mathbf{1}_{[j \\ne i]},
-        \\exp\\!\\big(\\operatorname{sim}(z_i^{(k)}, z_j^{(l)})/\\tau\\big)
+        \big(\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\tau\big)
+        + \log
+        \sum\limits_{l \in \{1,2\}, j \in \![1,N\!]}
+        \mathbf{1}_{[j \ne i]},
+        \exp\!\big(\operatorname{sim}(z_i^{(k)}, z_j^{(l)})/\tau\big)
 
     See the class :class:`~nidl.losses.dcl.DCLWLoss` for an implementation with
     a negative von Mises-Fisher weighting function such as proposed in [1]_.
@@ -150,7 +150,7 @@ class DCLLoss(nn.Module):
 
 
 class DCLWLoss(DCLLoss):
-    """Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.
+    r"""Decoupled Contrastive Loss (DCL) with von Mises-Fisher (vMF) weighting.
 
     It implements the DCL with vMF weighting as described in [1]_.
     See the documentation for :class:`~nidl.losses.dcl.DCLLoss` for more
@@ -161,17 +161,17 @@ class DCLWLoss(DCLLoss):
     .. math::
         w(z_i^{(1)}, z_i^{(2)})
         = 2 -
-        \\frac{
-        \\exp\\!\\big(\\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\\sigma\\big)
+        \frac{
+        \exp\!\big(\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\sigma\big)
         }{
-        \\frac{1}{N}\\sum\\limits_{j=1}{N}
-        \\exp\\!\\big(\\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\\sigma\\big)
+        \frac{1}{N}\sum\limits_{j=1}{N}
+        \exp\!\big(\operatorname{sim}(z_i^{(1)}, z_i^{(2)})/\sigma\big)
         }
 
     where :math:`N` is the batch size,
-    :math:`\\operatorname{sim}(z_i^(1), z_i^(2))`
+    :math:`\operatorname{sim}(z_i^(1), z_i^(2))`
     denotes the cosine similarity between the normalized embeddings
-    :math:`z_i^(1)` and :math:`z_i^(2)`, and :math:`\\sigma > 0` is a
+    :math:`z_i^(1)` and :math:`z_i^(2)`, and :math:`\sigma > 0` is a
     temperature parameter controlling the concentration of the distribution.
 
     Parameters

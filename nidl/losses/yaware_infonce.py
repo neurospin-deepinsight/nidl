@@ -20,23 +20,23 @@ from torch import nn
 
 
 class KernelMetric(BaseEstimator):
-    """Interface for fast weighting matrix computation.
+    r"""Interface for fast weighting matrix computation.
     
     It computes a weighting matrix :math:`W` between input samples based on
     Kernel Density Estimation (KDE) [1]_, [2]_. Concretely, it computes the
     following weighting matrix between multivariate samples
-    :math:`x_1, ..., x_n \\in \\mathbb{R}^{d}`:
+    :math:`x_1, ..., x_n \in \mathbb{R}^{d}`:
     
     .. math::
-        W_{i,j} = K\\left( H^{-\\frac{1}{2}} (x_i-x_j) \\right)
+        W_{i,j} = K\left( H^{-\frac{1}{2}} (x_i-x_j) \right)
 
     with :math:`K` a kernel (or "weighting function") such that:
 
-    - :math:`K(x) \\ge 0` (positive)
-    - :math:`\\int K(x) dx = 1` (normalized)
+    - :math:`K(x) \ge 0` (positive)
+    - :math:`\int K(x) dx = 1` (normalized)
     - :math:`K(x) = K(-x)` (symmetric)
 
-    and :math:`H\\in \\mathbb{R}^{d\\times d}` is the bandwidth in the KDE
+    and :math:`H\in \mathbb{R}^{d\times d}` is the bandwidth in the KDE
     estimation of `p(X)`.
 
     :math:`H` is a symmetric definite-positive and it can be automatically
@@ -45,14 +45,14 @@ class KernelMetric(BaseEstimator):
     diagonal terms in the data covariance matrix:
     
     .. math::
-        H \\propto \\mathrm{diag}(\\hat{\\Sigma})
+        H \propto \mathrm{diag}(\hat{\Sigma})
 
     Parameters
     ----------
-    kernel: {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'},\
+    kernel : {'gaussian', 'epanechnikov', 'exponential', 'linear', 'cosine'}, \
         default='gaussian'
         The kernel applied to the distance between samples.
-    bandwidth: {'scott', 'silverman'} or float or list of float,\
+    bandwidth : {'scott', 'silverman'} or float or list of float, \
         default="scott"
         The method used to calculate the estimator bandwidth:
 
@@ -60,10 +60,10 @@ class KernelMetric(BaseEstimator):
           version of the diagonal terms in the data covariance matrix.
         - If `bandwidth` is scalar (float or int), :math:`H` is set to a
           diagonal matrix:
-          :math:`H = \\mathrm{diag}([bandwidth,\\ldots, bandwidth])`.
+          :math:`H = \mathrm{diag}([bandwidth,\ldots, bandwidth])`.
         - If `bandwidth` is a list of floats, :math:`H` is a diagonal matrix
           with the list values on the diagonal:
-          :math:`H = \\mathrm{diag}(\\text{bandwidth})`.
+          :math:`H = \mathrm{diag}(\text{bandwidth})`.
         - If `bandwidth` is a 2d array, it must be of shape
           `(n_features, n_features)`
     
@@ -72,9 +72,9 @@ class KernelMetric(BaseEstimator):
     Scott's Rule [1]_ estimates the bandwidth as:
 
     .. math::
-        H = \\hat{\\Sigma} \\cdot n^{-\\frac{2}{d+4}}
+        H = \hat{\Sigma} \cdot n^{-\frac{2}{d+4}}
 
-    where :math:`\\hat{\\Sigma}` is the covariance matrix of the data,
+    where :math:`\hat{\Sigma}` is the covariance matrix of the data,
     :math:`n` is the number of samples, and :math:`d` is the number of
     features (:math:`d=1` for univariate data). Here, we only consider
     the diagonal terms (assuming features decorrelation) for numerical
@@ -83,8 +83,8 @@ class KernelMetric(BaseEstimator):
     Silverman's rule of thumb [2]_ for multivariate data is:
 
     .. math::
-        H = \\hat{\\Sigma} \\cdot \\left(\\frac{n(d+2)}{4}\\right)^
-        {-\\frac{2}{d+4}}
+        H = \hat{\Sigma} \cdot \left(\frac{n(d+2)}{4}\right)^
+        {-\frac{2}{d+4}}
 
         
     References
@@ -324,40 +324,40 @@ class KernelMetric(BaseEstimator):
 
 
 class YAwareInfoNCE(nn.Module):
-    """
+    r"""
     Implementation of the y-Aware InfoNCE loss [1]_.
 
     Compute the y-Aware InfoNCE loss, which integrates auxiliary
     information into contrastive learning by weighting sample pairs.
 
     Given a mini-batch of size :math:`n`, two embeddings
-    :math:`z_1=(z_1^i)_{i\\in [1..n]}` and :math:`z_2=(z_2^i)_{i\\in [1..n]}`
+    :math:`z_1=(z_1^i)_{i\in [1..n]}` and :math:`z_2=(z_2^i)_{i\in [1..n]}`
     representing two views of the same samples and a weighting
-    matrix :math:`W=(w_{i,j})_{i,j\\in [1..n]}` computed using auxiliary
+    matrix :math:`W=(w_{i,j})_{i,j\in [1..n]}` computed using auxiliary
     variables :math:`y`, the loss is:
 
     .. math::
-        \\mathcal{L}_{NCE}^y = -\\frac{1}{n} \\sum_{i,j} \\frac{w_{i,j}} \
-        {\\sum_{k=1}^{n} w_{i, k}} \\log \\frac{\\exp(\\text{sim}(z_1^{i}, \
-        z_2^{j}) / \\tau)}{\\sum_{k=1}^{n} \\exp(\\text{sim}(z_1^{i}, z_2^{k})\
-        / \\tau)}
+        \mathcal{L}_{NCE}^y = -\frac{1}{n} \sum_{i,j} \frac{w_{i,j}}
+        {\sum_{k=1}^{n} w_{i, k}} \log \frac{\exp(\text{sim}(z_1^{i},
+        z_2^{j}) / \tau)}{\sum_{k=1}^{n} \exp(\text{sim}(z_1^{i}, z_2^{k})
+        / \tau)}
 
-    where :math:`sim` is the cosine similarity,  :math:`\\tau` is the
+    where :math:`sim` is the cosine similarity,  :math:`\tau` is the
     temperature and :math:`w_{i,j}` is computed with a kernel :math:`K`
     (e.g. Gaussian) and bandwidth :math:`H` as:
 
     .. math::
-        w_{i,j} = K\\left( H^{-\\frac{1}{2}} (y_i-y_j) \\right)
+        w_{i,j} = K\left( H^{-\frac{1}{2}} (y_i-y_j) \right)
 
     
     Parameters
     ----------
-    kernel: str in {'gaussian', 'epanechnikov', 'exponential', 'linear', \
+    kernel : str in {'gaussian', 'epanechnikov', 'exponential', 'linear', \
         'cosine'}, default='gaussian'
         Kernel to compute the weighting matrix between auxiliary variables.
         See PhD thesis, Dufumier 2022 page 94-95.
     bandwidth: Union[float, int, List[float], array, KernelMetric], default=1.0
-        The method used to calculate the bandwidth (:math:`\\sigma^2` in [1]_)
+        The method used to calculate the bandwidth (:math:`\sigma^2` in [1]_)
         between auxiliary variables:
 
         - If `bandwidth` is a scalar (int or float), it sets the bandwidth to
