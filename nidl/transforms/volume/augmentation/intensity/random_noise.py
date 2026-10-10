@@ -68,16 +68,15 @@ class RandomGaussianNoise(VolumeTransform):
         std = random.uniform(*self.std)
         data_is_tensor = isinstance(data, torch.Tensor)
         if data_is_tensor:
-            dtype, device = data.dtype, data.device
-            data = data.detach().cpu().numpy()
+            dtype = data.dtype if data.is_floating_point() else torch.float32
+            noise = (
+                torch.randn(data.shape, dtype=dtype, device=data.device)
+                .mul_(std)
+                .add_(mean)
+            )
+            return data + noise.to(data.dtype)
 
         rng = np.random.default_rng()
         noise = rng.normal(mean, std, size=data.shape).astype(data.dtype)
-        noised_data = data + noise
 
-        if data_is_tensor:
-            noised_data = torch.as_tensor(
-                noised_data, dtype=dtype, device=device
-            )
-
-        return noised_data
+        return data + noise
