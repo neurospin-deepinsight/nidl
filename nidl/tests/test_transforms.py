@@ -11,13 +11,16 @@ from unittest.mock import patch, MagicMock
 import numpy as np
 import torch
 
-from nidl.transforms.transforms import MultiViewsTransform, Identity
+from nidl.transforms.transforms import MultiViewsTransform, Identity, DinoTransform
 from nidl.transforms.volume.augmentation import (
     RandomRotation, RandomFlip, RandomResizedCrop, RandomErasing,
     RandomGaussianBlur, RandomGaussianNoise
 )
 from nidl.transforms.volume.preprocessing import (
     ZNormalization, RobustRescaling, CropOrPad, Resize, Resample   
+)
+from nidl.transforms.volume.preprocessing import (
+    Letterbox, InverseLetterbox
 )
 
 
@@ -971,6 +974,260 @@ class TestResample(unittest.TestCase):
             self.assertIsInstance(out, torch.Tensor)
             self.assertEqual(out.dtype, dtype)
             self.assertEqual(out.shape, (1, 8, 3, 4))
+
+class TestDinoTransform(unittest.TestCase):
+    def setUp(self):
+        self.shape = (2, 20, 20, 20)
+        self.input = np.random.rand(*self.shape)
+        self.global_crops_count = 4
+        self.local_crops_count = 8
+
+    def test_invalid_not_int_global_crop_count(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(Identity(), Identity(), "test", 2)
+    
+    def test_invalid_negative_global_crop_count(self):
+        with self.assertRaises(ValueError):
+            _ = DinoTransform(Identity(), Identity(), -1, 2)
+    
+    def test_invalid_not_int_local_crop_count(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(Identity(), Identity(), 2, "test")
+
+    def test_invalid_negative_local_crop_count(self):
+        with self.assertRaises(ValueError):
+            _ = DinoTransform(Identity(), Identity(), 2, -1)
+    
+    def test_global_transform_callable(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(None, Identity(), 2, 2)
+    
+    def test_local_transform_callable(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(Identity(), None, 2, 2)
+    
+    def test_output_shape_and_content(self):
+        dino_transform = DinoTransform(
+            lambda x: x * 2, lambda x: x + 3, 
+            self.global_crops_count, self.local_crops_count
+        )
+        output = dino_transform(self.input)
+        self.assertEqual(
+            len(output), 
+            self.global_crops_count + self.local_crops_count
+        )
+        np.testing.assert_array_equal(
+            output, 
+            [self.input * 2 for _ in range(self.global_crops_count)] + 
+            [self.input + 3 for _ in range(self.local_crops_count)]
+        )
+    
+class TestLetterbox(unittest.TestCase):
+    def setUp(self):
+        self.target_shape = 16
+        self.constant_value = 0.0
+        self.fill_value = 1.0
+        self.input_shape = (32, 16, 8)
+        self.intermediate_shape = (16, 8, 4)
+        # Region of the output occupied by the resized volume
+        # (i.e. everything out of it its padding)
+        self.content_slice = (slice(0, 16), slice(4, 12), slice(6, 10))
+        self.input_3d = torch.full(
+            self.input_shape, self.fill_value, dtype=torch.float32
+        )
+        self.input_4d = torch.full(
+            (2, *self.input_shape), self.fill_value, dtype=torch.float32
+        )
+
+    def test_invalid_non_isotropic_target_shape(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape=(16, 16, 8))
+
+    def test_invalid_target_shape_length(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape=(16, 16))
+
+    def test_invalid_negative_target_shape(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape=-16)
+
+    def test_invalid_target_shape_type(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape="16")
+
+    def test_invalid_input_type(self):
+        with self.assertRaises(TypeError):
+            Letterbox(self.target_shape)([[[1, 2], [3, 4]]])
+
+    def test_invalid_input_dimension(self):
+        with self.assertRaises(ValueError):
+            Letterbox(self.target_shape)(torch.rand(16, 16))
+
+    def test_intermediate_shape_preserves_aspect_ratio(self):
+        letterbox = Letterbox(self.target_shape)
+        resized_shape = letterbox.compute_intermediate_shape(self.input_shape)
+        self.assertEqual(resized_shape, self.intermediate_shape)
+        self.assertEqual(max(resized_shape), self.target_shape)
+
+    def test_output_shape_and_content_3d(self):
+        # Check that output volume is made of
+        # 1. The initial volume, resized to fit into the desired shape
+        # 2. Padding values surrouding it
+        # Check also the shape of the output tensor
+        letterbox = Letterbox(
+            self.target_shape, constant_values=self.constant_value
+        )
+        output = letterbox(self.input_3d)
+        self.assertIsInstance(output, torch.Tensor)
+        self.assertEqual(output.dtype, self.input_3d.dtype)
+        self.assertEqual(tuple(output.shape), 3 * (self.target_shape,))
+        # Resized volume is centered, the rest is padding
+        mask = torch.zeros_like(output, dtype=torch.bool)
+        mask[self.content_slice] = True
+        self.assertTrue(torch.allclose(output[mask],
+                                       torch.tensor(self.fill_value)))
+        self.assertTrue(torch.allclose(output[~mask],
+                                       torch.tensor(self.constant_value)))
+
+    def test_transform_across_channels(self):
+        # Check that the transform is independently applied to all channels
+        letterbox = Letterbox(
+            self.target_shape, constant_values=self.constant_value
+        )
+        output = letterbox(self.input_4d)
+        self.assertEqual(
+            tuple(output.shape),
+            (self.input_4d.shape[0], *(3 * (self.target_shape,)))
+        )
+        for channel in output:
+            self.assertTrue(torch.allclose(channel[self.content_slice],
+                                           torch.tensor(self.fill_value)))
+
+
+    def test_output_shape_and_content_numpy(self):
+        letterbox = Letterbox(
+            self.target_shape, constant_values=self.constant_value
+        )
+        for input_data in [self.input_3d.numpy(), self.input_4d.numpy()]:
+            output = letterbox(input_data)
+            self.assertIsInstance(output, np.ndarray)
+            self.assertEqual(output.dtype, input_data.dtype)
+            self.assertEqual(
+                output.shape,
+                (*input_data.shape[:-3], *(3 * (self.target_shape,)))
+            )
+            mask = np.zeros(output.shape[-3:], dtype=bool)
+            mask[self.content_slice] = True
+            self.assertTrue(np.allclose(output[..., mask], self.fill_value))
+            self.assertTrue(np.allclose(output[..., ~mask],
+                                        self.constant_value))
+
+class TestInverseLetterbox(unittest.TestCase):
+    def setUp(self):
+        self.standard_shape = 16
+        self.fill_value = 1.0
+        self.original_shape = (32, 16, 8)
+        self.intermediate_shape = (16, 8, 4)
+        self.input_3d = Letterbox(self.standard_shape)(
+            torch.full(self.original_shape, self.fill_value)
+        )
+        self.input_4d = torch.stack([self.input_3d, 2 * self.input_3d])
+
+    def test_invalid_non_isotropic_standard_shape(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=(16, 8, 16))
+
+    def test_invalid_standard_shape_length(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=(16, 16, 16, 16))
+
+    def test_invalid_negative_standard_shape(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=-16)
+
+    def test_invalid_standard_shape_type(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=16.0)
+
+    def test_invalid_input_type(self):
+        with self.assertRaises(TypeError):
+            InverseLetterbox(self.standard_shape)(
+                [[[1, 2], [3, 4]]], self.original_shape
+            )
+
+    def test_invalid_input_dimension(self):
+        with self.assertRaises(ValueError):
+            InverseLetterbox(self.standard_shape)(
+                torch.rand(16, 16), self.original_shape
+            )
+
+    def test_missing_original_shape(self):
+        with self.assertRaises(TypeError):
+            InverseLetterbox(self.standard_shape)(self.input_3d)
+
+    def test_intermediate_shape(self):
+        # Check shape of the intermediate output by testing agreement
+        # with letterbox's output
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        letterbox = Letterbox(self.standard_shape)
+        self.assertEqual(
+            inverse_letterbox.compute_intermediate_shape(self.original_shape),
+            self.intermediate_shape
+        )
+        self.assertEqual(
+            inverse_letterbox.compute_intermediate_shape(self.original_shape),
+            letterbox.compute_intermediate_shape(self.original_shape)
+        )
+
+    def test_output_shape_and_content_3d(self):
+        # Check that padding pixels are removed and output shape value
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        output = inverse_letterbox(self.input_3d, self.original_shape)
+        self.assertIsInstance(output, torch.Tensor)
+        self.assertEqual(output.dtype, self.input_3d.dtype)
+        self.assertEqual(tuple(output.shape), self.original_shape)
+        # Padding is cropped away: only the resized volume is left
+        self.assertTrue(torch.allclose(output, torch.tensor(self.fill_value)))
+
+    def test_output_shape_and_content_4d(self):
+        # Check that the transform is independently applied to all channels
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        output = inverse_letterbox(self.input_4d, self.original_shape)
+        self.assertEqual(
+            tuple(output.shape),
+            (self.input_4d.shape[0], *self.original_shape)
+        )
+        self.assertTrue(torch.allclose(output[0],
+                                       torch.tensor(self.fill_value)))
+        self.assertTrue(torch.allclose(output[1],
+                                       torch.tensor(2 * self.fill_value)))
+
+    def test_output_shape_and_content_numpy(self):
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        for input_data in [self.input_3d.numpy(), self.input_4d.numpy()]:
+            output = inverse_letterbox(input_data, self.original_shape)
+            self.assertIsInstance(output, np.ndarray)
+            self.assertEqual(output.dtype, input_data.dtype)
+            self.assertEqual(
+                output.shape, (*input_data.shape[:-3], *self.original_shape)
+            )
+        self.assertTrue(np.allclose(output[0], self.fill_value))
+        self.assertTrue(np.allclose(output[1], 2 * self.fill_value))
+
+    def test_letterbox_and_inverse(self):
+        # Test content and shape agreement between letterbox and inverse
+        volume = torch.zeros(self.original_shape)
+        volume[:16] = 1.0
+        volume[16:] = 2.0
+        letterboxed = Letterbox(
+            self.standard_shape, interpolation="nearest"
+        )(volume)
+        recovered = InverseLetterbox(
+            self.standard_shape, interpolation="nearest"
+        )(letterboxed, self.original_shape)
+        self.assertEqual(tuple(recovered.shape), self.original_shape)
+        self.assertTrue(torch.equal(recovered, volume))
+
 
 if __name__ == "__main__":
     unittest.main()
