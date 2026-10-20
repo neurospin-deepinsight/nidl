@@ -41,7 +41,7 @@ print(f"Texture: {texture.shape}")
 # Cutout improves robustness to missing data, local corruption and prevents the
 # model for over‑relying on specific high‑frequency regions of the sphere.
 
-from nidl.surface.transforms import RandomCutOut
+from nidl.transfroms.surface import RandomCutOut
 
 max_size = Ico.min_rings(np.ceil(len(verts) // 16))
 print(f"- max estimated size: {max_size}")
@@ -64,7 +64,7 @@ print(f"Cutout textures: {[text.shape for text in cutout_data]}")
 # Rotation augmentation teaches the model to be invariant to small
 # misalignments.
 
-from nidl.surface.transforms import RandomRotation
+from nidl.transfroms.surface import RandomRotation
 
 neighs = Ico.neighbors(depth=1, **kwargs)
 transform = RandomRotation(
@@ -89,7 +89,7 @@ print(f"Rotation textures: {[text.shape for text in rotation_data]}")
 # We adds small random fluctuations drawn from a normal distribution.
 # This augmentation is suseful for simulating natural variability.
 
-from nidl.surface.transforms import RandomGaussianNoise
+from nidl.transfroms.surface import RandomGaussianNoise
 
 transform = RandomGaussianNoise(mean=0, sigma=(0.01, 0.1))
 noisy_data = [
@@ -171,7 +171,7 @@ print(f"Augmented textures: {[text.shape for text in blured_data]}")
 # We visualize the generated augmentations.
 
 import matplotlib.pyplot as plt
-from nidl.surface.plotting import IcoRenderer
+from nidl.transfroms.surface import IcoRenderer
 
 for data in (
         cutout_data,
