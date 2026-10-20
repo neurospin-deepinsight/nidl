@@ -24,7 +24,7 @@ from .. import Ico
 
 class SiT(nn.Module):
     """
-    Surface Vision Transformer (SiT) [1]_.
+    Surface Vision Transformer (SiT) [1]_ [2]_.
 
     This module implements a Vision Transformer adapted to cortical surface
     data. Each surface patch (n_channels x n_vertices) is flattened and
@@ -106,6 +106,8 @@ class SiT(nn.Module):
     ----------
     .. [1] Dahan, Simon et al., Surface Vision Transformers: Attention-Based
     Modelling applied to Cortical Analysis, MIDL, 2022.
+    .. [2] Dahan, Simon et al., Surface Vision Transformers: Flexible
+    Attention-Based Modelling of Biomedical Surfaces, TMI, 2022.
     """
     def __init__(
             self,
@@ -138,7 +140,7 @@ class SiT(nn.Module):
             "Pool type must be either cls (cls token) or mean (mean pooling).")
 
         # Build blocks
-        self.printer(
+        self.print(
             "SiT initialization may take some time if no caching "
             "initialization is used or the cache is empty."
         )
@@ -158,7 +160,7 @@ class SiT(nn.Module):
             torch.randn(1, self.n_patches + 1, dim)
         )
         self.dropout = nn.Dropout(emb_dropout)
-        self.transformer = Transformer(
+        self.transformer = SurfaceTransformer(
             dim, depth, heads, dim_head, mlp_dim, dropout,
         )
         self.pool = pool
@@ -216,6 +218,26 @@ class SiT(nn.Module):
         x = self.mlp_head(x)
 
         return x
+
+    def print(
+            self,
+            message: str
+        ) -> None:
+        """
+        Print a message using the configured printer.
+
+        Parameters
+        ----------
+        message : str
+            The text message to output. If a printer function is set on the
+            instance, the message is forwarded to that function.
+
+        Notes
+        -----
+        This method does nothing when ``self.printer`` is ``None``.
+        """
+        if self.printer is not None:
+            self.printer(message)
 
     @classmethod
     def from_pretrained(
@@ -336,7 +358,7 @@ class SiT(nn.Module):
             )
         else:
             raise ValueError(
-                f"Uknown pretrainevit_tiny_patch16_224d model: {name}"
+                f"Uknown pretrained VIT model: {name}"
             )
         if weights_file is None:
             short_name = f"{name}_patch16_224"
@@ -705,9 +727,9 @@ class Attention(nn.Module):
         return self.to_out(out)
 
 
-class Transformer(nn.Module):
+class SurfaceTransformer(nn.Module):
     """
-    Transformer encoder composed of multiple layers.
+    Surface transformer encoder composed of multiple layers.
 
     Each layer contains:
     - a multi-head self-attention block,

@@ -10,12 +10,14 @@
 Spherical convolutional neural networks.
 """
 
+import tempfile
 from pathlib import Path
 from typing import Callable, Self
 
 import torch
 from torch import nn
 
+from ...utils import Weights
 from .. import Ico
 from ..nn import IcoConv, IcoPool
 
@@ -125,7 +127,7 @@ class HemiSCNN(nn.Module):
         self.fused_conv = nn.Sequential()
 
         # Build blocks
-        self.printer(
+        self.print(
             "HemiSCNN initialization may take some time if no caching "
             "initialization is used or the cache is empty."
         )
@@ -133,7 +135,7 @@ class HemiSCNN(nn.Module):
             in_ch = input_channels
             for level, out_ch in enumerate(convs):
                 level += 1
-                self.printer(
+                self.print(
                     f"- [HemiSCNN] initilization step: {level} / {len(convs)}"
                 )
                 block_order = order - level + 1
@@ -230,7 +232,6 @@ class HemiSCNN(nn.Module):
             convolution layer.
         n_jobs : int
             Number of parallel workers.
-            Default 1.
         """
         seq.add_module(
             f"conv_{level}",
@@ -365,10 +366,8 @@ class HemiSCNN(nn.Module):
         Raises
         ------
         ValueError
-            If the pretrained model in not recognize.
+            If the pretrained model or model weights in not recognize.
         """
-        if weights_file is None:
-            raise NotImplementedError
         if name == "openbhb_simclr_v1":
             model = cls(
                 order=5,
@@ -388,6 +387,21 @@ class HemiSCNN(nn.Module):
             raise ValueError(
                 f"Uknown pretrained model: {name}"
             )
-        state = torch.load(weights_file, map_location="cpu")
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_dir = Path(tmp_dir)
+            if weights_file is None and name == "openbhb_simclr_v1":
+                weights_file = Weights.hf_download(
+                    hf_id="neurospin/hemiscnn-simclr-openbhb",
+                    hf_revision="6bbfa32ed998b044ec5bfabd3180ed95ba7b8eac",
+                    data_dir=tmp_dir,
+                    filepath="weights-hemiscnn-simclr-openbhb.pt",
+                )
+            else:
+                raise ValueError(
+                    f"Uknown pretrained model weights: {name}"
+                )
+            state = torch.load(
+                weights_file, map_location="cpu", weights_only=True
+            )
         model.load_state_dict(state)
         return model
