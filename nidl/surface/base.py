@@ -24,12 +24,41 @@ from sklearn.neighbors import NearestNeighbors
 
 class Ico:
     """
-    Generate an icosahedral mesh of arbitrary subdivision order.
+    Icosahedron structure.
 
-    This class includes an in-memory caching mechanism that stores the results
-    of its public API methods to avoid recomputing identical meshes, patches,
-    or neighbors and to significantly speed up repeated calls with the same
-    parameters.
+    Cortical surface data lacks a regular neighbor structure, making it
+    incompatible with the convolution, pooling, and patching operations
+    used in Euclidean deep learning (CNNs). To address this, the standard
+    approach in surface-based deep learning is to resample each subject's
+    cortical data onto an icosahedron with regular geometry.
+
+    An icosahedral mesh can be generated for any arbitrary subdivision order,
+    where nearly all vertices have exactly six neighbors, except for the
+    twelve original vertices of the icosahedron, which retain five neighbors.
+
+    Given the consistent icosahedral structure across all subjects, it is
+    possible to precompute fixed index arrays that act as the "kernel windows"
+    in a CNN. The class features an in-memory caching mechanism that stores
+    the outcomes of its public API methods, eliminating the need to recompute
+    identical meshes, patches, or neighbors, and thereby substantially
+    speeding up repeated calls with the same parameters (see `Ico.cached`).
+
+    This class does not perform any learning itself. It only builds and caches
+    the index arrays that model layers use to gather vertex features before
+    a learnable combination (linear layer, weighted sum, attention) is applied:
+
+    Methods
+    -------
+    mesh()
+        Base icosahedron geometry.
+    patches()
+        ViT-style tokens.
+    neighbors()
+        CNN-style convolution kernel.
+    downsample()
+        CNN-style pooling indices.
+    interpolate()
+        CNN-style unpooling indices.
     """
     _cache: ClassVar[dict[str, np.ndarray]] = {}
 
