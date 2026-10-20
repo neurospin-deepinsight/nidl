@@ -10,8 +10,13 @@
 Surfacic backbones.
 """
 
-from .scnn import HemiSCNN
+from .scnn import (
+    HemiSCNN,
+)
 from .sit import (
     SiT,
     SiTAttentionMaps,
+)
+from .unet import (
+    SphericalUNet,
 )

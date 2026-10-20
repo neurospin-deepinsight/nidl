@@ -33,6 +33,7 @@ from nidl.surface.backbones import (
     HemiSCNN,
     SiT,
     SiTAttentionMaps,
+    SphericalUNet,
 )
 from nidl.datasets import OpenBHB
 
@@ -47,9 +48,9 @@ from nidl.datasets import OpenBHB
 
 scnn_model = HemiSCNN.from_pretrained(
     name="openbhb_simclr_v1",
-    weights_file=Path(__file__).parent / "weights-openbhb.pt",
+    # weights_file=Path(__file__).parent / "weights-openbhb.pt",
     printer=print,
-    cache_file="/tmp/cache.npz",
+    cache_file="/tmp/cache_hemiscnn.npz",
     n_jobs=30,
 )
 print(scnn_model)
@@ -75,6 +76,28 @@ sit_model = SiT.from_pretrained(
     n_jobs=30,
 )
 print(sit_model)
+
+
+# %%
+# Load a SpericalUNet model
+# -------------------------
+#
+# No weights are available for this model, so in this tutorial we create a
+# model with random weights.
+
+sunet_model = SphericalUNet(
+    order=5,
+    depth=1,
+    in_channels=3,
+    out_channels=3,
+    start_filts=8,
+    n_layers=3,
+    up_mode="mean",
+    standard_ico=False,
+    printer=print,
+    n_jobs=30,
+)
+print(sunet_model)
 
 
 # %%
@@ -165,6 +188,11 @@ print("Z(SiT):", z.shape)
 # - similarity analysis
 # - clustering
 # - regression/classification
+#
+# Input data are also reconstructed with the spherical UNet architecture.
+
+xhat = sunet_model(data5["lh"][None, ...])
+print("Xhat(SphericalUNet):", xhat.shape)
 
 
 # %%
