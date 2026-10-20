@@ -449,6 +449,19 @@ class IcoUpConv(nn.Module):
         # Final shape (S, out_feats, M)
         return x.permute(0, 2, 1)
 
+    def extra_repr(self) -> str:
+        """
+        Add class instance parameters in representation.
+        """
+        return (
+            f"in_feats={self.in_feats},\n"
+            f"out_feats={self.out_feats},\n"
+            f"n_vertices={self.n_vertices},\n"
+            f"n_neighbors={self.n_neighbors},\n"
+            f"n_up_vertices={self.n_up_vertices},\n"
+            f"n_up_neighbors={self.n_up_neighbors}"
+        )
+
 
 class IcoUpSample(nn.Module):
     """
@@ -584,3 +597,14 @@ class IcoUpSample(nn.Module):
         # Back to (S, out_feats, M)
         x = x.view(S, self.n_vertices, self.out_feats)
         return x.permute(0, 2, 1)
+
+    def extra_repr(self) -> str:
+        """
+        Add class instance parameters in representation.
+        """
+        return (
+            f"in_feats={self.in_feats},\n"
+            f"out_feats={self.out_feats},\n"
+            f"n_vertices={self.n_vertices},\n"
+            f"n_neighbors={self.n_neighbors}"
+        )
