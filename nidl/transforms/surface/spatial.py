@@ -18,10 +18,10 @@ from scipy.spatial import (
     transform,
 )
 
-from ..base import (
+from ...surface.base import (
     Ico,
 )
-from .utils import (
+from ..utils import (
     Interval,
     validate_data,
 )

@@ -16,13 +16,13 @@ from typing import ClassVar
 import numpy as np
 import torch
 
-from ..base import (
+from ...surface.base import (
     Ico,
 )
-from ..nn import (
+from ...surface.nn import (
     IcoConv,
 )
-from .utils import (
+from ..utils import (
     Interval,
     validate_data,
 )
