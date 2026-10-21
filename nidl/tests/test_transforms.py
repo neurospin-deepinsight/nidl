@@ -18,10 +18,8 @@ from nidl.transforms.volume.augmentation import (
     RandomContrastAdjust, RandomAffine
 )
 from nidl.transforms.volume.preprocessing import (
-    ZNormalization, RobustRescaling, CropOrPad, Resize, Resample   
-)
-from nidl.transforms.volume.preprocessing import (
-    Letterbox, InverseLetterbox
+    ZNormalization, RobustRescaling, CropOrPad, Resize, Resample,
+    Letterbox, InverseLetterbox   
 )
 
 
