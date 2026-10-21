@@ -6,5 +6,7 @@
 # for details.
 ##########################################################################
 
+from .random_bias_field import RandomBiasField
 from .random_blur import RandomGaussianBlur
+from .random_contrast_adjust import RandomContrastAdjust
 from .random_noise import RandomGaussianNoise
