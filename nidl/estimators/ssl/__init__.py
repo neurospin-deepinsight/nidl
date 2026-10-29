@@ -12,6 +12,7 @@ from .barlowtwins import BarlowTwins
 from .comm import CoMM
 from .dcl import DCL
 from .dino import DINO
+from .dinov2 import DINOv2
 from .ijepa import IJEPA
 from .neurojepa import NeuroJEPA
 from .simclr import SimCLR
