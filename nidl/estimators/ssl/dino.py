@@ -7,6 +7,7 @@
 ##########################################################################
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 from typing import Any, Optional, Union
 
@@ -114,6 +115,19 @@ class DINO(TransformerMixin, BaseEstimator):
         Extra named arguments for the scheduler. By default, it is set to
         {"warmup_epochs": 10, "warmup_start_lr": 1e-6, "min_lr": 0.0,
         "interval": "step"}
+    centering : {"centering", "sinkhorn_knopp"}, default="centering"
+        Teacher centering: moving-average center or Sinkhorn-Knopp
+        (DINOv2 [2]_).
+    final_weight_decay : float or None, default=None
+        If set, cosine schedule from `weight_decay` to this value
+        (DINOv2: 0.4).
+    layerwise_lr_decay : float, default=1.0
+        ViT layer-wise lr decay (DINOv2: 0.9): block i of L gets
+        ``decay**(L - i)``, the embeddings ``decay**(L + 1)``.
+    patch_embed_lr_mult : float, default=1.0
+        Patch embedding lr multiplier (DINOv2: 0.2).
+    clip_grad_heads : bool, default=False
+        Also clip each head separately with `clip_grad` (as DINOv2).
     **kwargs : dict, optional
         Extra named arguments for the BaseEstimator class (given to
         PL Trainer), such as `max_epochs`, `max_steps`, `num_sanity_val_steps`,
@@ -150,6 +164,8 @@ class DINO(TransformerMixin, BaseEstimator):
     ----------
     .. [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
            Transformers" ICCV, 2021. https://arxiv.org/abs/2104.14294
+    .. [2] Oquab, M., et al., "DINOv2: Learning Robust Visual Features
+           without Supervision." TMLR, 2024. https://arxiv.org/abs/2304.07193
     """
 
     def __init__(
@@ -180,6 +196,11 @@ class DINO(TransformerMixin, BaseEstimator):
             Union[str, LRSchedulerPLType]
         ] = "warmup_cosine",
         lr_scheduler_kwargs: Optional[dict[str, Any]] = None,
+        centering: str = "centering",
+        final_weight_decay: Optional[float] = None,
+        layerwise_lr_decay: float = 1.0,
+        patch_embed_lr_mult: float = 1.0,
+        clip_grad_heads: bool = False,
         **kwargs: Any,
     ):
         ignore = kwargs.pop("ignore", ["callbacks"])
@@ -227,7 +248,13 @@ class DINO(TransformerMixin, BaseEstimator):
             teacher_temp=teacher_temperature,
             warmup_teacher_temp_epochs=warmup_teacher_temp_epochs,
             student_temp=student_temperature,
+            centering=centering,
         )
+
+        if final_weight_decay is not None and weight_decay <= 0:
+            raise ValueError("`final_weight_decay` needs `weight_decay` > 0.")
+        if layerwise_lr_decay != 1 and not hasattr(self.student, "blocks"):
+            raise ValueError("`layerwise_lr_decay` needs a ViT encoder.")
 
         self.num_local_crops = num_local_crops
         self.num_large_crops = 2  # it is never changed in DINO
@@ -240,6 +267,10 @@ class DINO(TransformerMixin, BaseEstimator):
         self.lr_scheduler = lr_scheduler
         self.lr_scheduler_kwargs = lr_scheduler_kwargs
         self.optimizer_kwargs = optimizer_kwargs
+        self.final_weight_decay = final_weight_decay
+        self.layerwise_lr_decay = layerwise_lr_decay
+        self.patch_embed_lr_mult = patch_embed_lr_mult
+        self.clip_grad_heads = clip_grad_heads
 
         self._fill_default_lr_scheduler_kwargs()
 
@@ -317,6 +348,21 @@ class DINO(TransformerMixin, BaseEstimator):
             self.num_large_crops, -1, global_views.size(-1)
         )
 
+    def on_train_batch_start(self, batch: Sequence[Any], batch_idx: int):
+        """Cosine weight decay schedule, if `final_weight_decay` is set."""
+        if self.final_weight_decay is None:
+            return
+        progress = self.trainer.global_step / max(
+            1, self.trainer.estimated_stepping_batches
+        )
+        wd = self.final_weight_decay + 0.5 * (
+            self.weight_decay - self.final_weight_decay
+        ) * (1 + math.cos(math.pi * progress))
+        for group in self.trainer.optimizers[0].param_groups:
+            if group["weight_decay"] > 0:
+                group["weight_decay"] = wd
+        self.log("weight_decay", wd)
+
     def on_train_batch_end(
         self, outputs: dict[str, Any], batch: Sequence[Any], batch_idx: int
     ):
@@ -347,13 +393,19 @@ class DINO(TransformerMixin, BaseEstimator):
         """Performs gradient clipping and last layer freeze if required."""
         # clip gradients
         if self.clip_grad and self.clip_grad > 0:
-            torch.nn.utils.clip_grad_norm_(
-                self.student.parameters(), self.clip_grad
-            )
+            for module in self._clipped_modules():
+                torch.nn.utils.clip_grad_norm_(
+                    module.parameters(), self.clip_grad
+                )
         # zero gradients on last layer
         if self.current_epoch < self.freeze_last_layer:
             for p in self.student_head.last_layer.parameters():
                 p.grad = None
+
+    def _clipped_modules(self) -> list[nn.Module]:
+        """Modules clipped separately: backbone (+ heads)."""
+        heads = [self.student_head] if self.clip_grad_heads else []
+        return [self.student, *heads]
 
     def validation_step(
         self,
@@ -443,13 +495,9 @@ class DINO(TransformerMixin, BaseEstimator):
 
     def configure_optimizers(self):
         """Initialize the optimizer and learning rate scheduler in DINO."""
-        params = [
-            {"name": "backbone", "params": self.student.parameters()},
-            {"name": "head", "params": self.student_head.parameters()},
-        ]
         return configure_ssl_optimizers(
             trainer=self.trainer,
-            optim_params=params,
+            optim_params=self._optim_params(),
             optimizer=self.optimizer,
             optimizer_kwargs=self.optimizer_kwargs,
             learning_rate=self.learning_rate,
@@ -458,6 +506,40 @@ class DINO(TransformerMixin, BaseEstimator):
             lr_scheduler=self.lr_scheduler,
             lr_scheduler_kwargs=self.lr_scheduler_kwargs,
         )
+
+    def _optim_params(self) -> list[dict[str, Any]]:
+        """Parameter groups trained by the optimizer."""
+        head = {"name": "head", "params": self.student_head.parameters()}
+        if self.layerwise_lr_decay == 1 and self.patch_embed_lr_mult == 1:
+            backbone = [
+                {"name": "backbone", "params": self.student.parameters()}
+            ]
+        else:
+            backbone = self._backbone_lr_groups()
+        return [*backbone, head]
+
+    def _backbone_lr_groups(self) -> list[dict[str, Any]]:
+        """Backbone groups with lr multipliers (see `layerwise_lr_decay`)."""
+        depth = len(getattr(self.student, "blocks", []))
+        embed = ("patch_embed", "pos_embed", "cls_token", "reg_token",
+                 "mask_token")
+        groups: dict[float, list[nn.Parameter]] = {}
+        for name, param in self.student.named_parameters():
+            if name.startswith(embed):
+                layer = 0
+            elif name.startswith("blocks."):
+                layer = int(name.split(".")[1]) + 1
+            else:
+                layer = depth + 1
+            mult = self.layerwise_lr_decay ** (depth + 1 - layer)
+            if name.startswith("patch_embed"):
+                mult *= self.patch_embed_lr_mult
+            groups.setdefault(mult, []).append(param)
+        return [
+            {"name": f"backbone_lr_x{mult:.3g}", "params": params,
+             "lr": self.learning_rate * mult}
+            for mult, params in groups.items()
+        ]
 
     def _fill_default_lr_scheduler_kwargs(self):
         if self.lr_scheduler_kwargs is None:
