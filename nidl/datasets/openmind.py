@@ -179,15 +179,6 @@ class OpenMind(Dataset):
         A function/transform that takes in an image (or a dict of images) and
         returns a transformed version.
 
-    drop_cache : bool, default=False
-        If True, ask the kernel to drop the page cache of each image right
-        after reading it from a local shard
-        (``posix_fadvise(POSIX_FADV_DONTNEED)``). An epoch streams through the
-        whole dataset once, so caching it brings nothing but memory pressure:
-        on shared filesystems such as Lustre, a page cache filling the job
-        memory limit makes its reclaim, and hence the dataloader workers, very
-        slow.
-
     Examples
     --------
     One quasi-raw T1w image per item:
@@ -270,7 +261,6 @@ class OpenMind(Dataset):
         max_workers: int = 1,
         shards: str = "*/*.tar",
         transforms: Optional[Callable] = None,
-        drop_cache: bool = False,
     ):
         self.root = self._parse_root(root)
         self.preprocessing = self._parse_preprocessing(preprocessing)
@@ -294,7 +284,6 @@ class OpenMind(Dataset):
         self.return_morphometry = return_morphometry
         self.streaming = streaming
         self.transforms = transforms
-        self.drop_cache = drop_cache and hasattr(os, "posix_fadvise")
         # A dict per item only makes sense when regrouping several modalities
         self._as_dict = group_by is not None and not isinstance(modality, str)
 
@@ -608,7 +597,9 @@ class OpenMind(Dataset):
                 )
             chunks.append(chunk)
             n_read += len(chunk)
-        if self.drop_cache:
+        # Drop the pages from the page cache: an epoch streams through the
+        # whole dataset once, so they would only fill the job memory limit
+        if hasattr(os, "posix_fadvise"):
             os.posix_fadvise(fd, offset, size, os.POSIX_FADV_DONTNEED)
         return chunks[0] if len(chunks) == 1 else b"".join(chunks)
 
