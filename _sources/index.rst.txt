@@ -45,125 +45,176 @@ Nidl
 
         Learn about neuroimaging analysis
 
-Featured works
---------------
+Key features
+------------
 
-.. grid::
+.. grid:: 1 1 2 2
+    :gutter: 3
 
-  .. grid-item-card::
-    :link: auto_examples/plot_openbhb.html
-    :link-type: url
-    :columns: 12 12 12 12
-    :class-card: sd-shadow-sm
-    :margin: 2 2 auto auto
+    .. grid-item-card:: :fas:`database` Datasets
+        :class-card: sd-shadow-sm
+        :class-title: sd-text-primary
 
-    .. grid::
-      :gutter: 3
-      :margin: 0
-      :padding: 0
+        Large-scale open neuroimaging datasets ready for PyTorch, fetched on
+        demand from Hugging Face and streamed during training:
+        :class:`~nidl.datasets.OpenBHB` (~4k quality-checked brain T1w MRI 
+        uniformly preprocessed) and :class:`~nidl.datasets.OpenMind` (114k brain MRIs). 
+        Bring your own data with :class:`~nidl.datasets.ImageDataFrameDataset`.
 
-      .. grid-item::
-        :columns: 12 4 4 4
+        +++
+        :ref:`Learn more <open_datasets>` :fas:`arrow-right`
 
-        .. image:: _images/sphx_glr_simclr_stl10_thumb.png
+    .. grid-item-card:: :fas:`brain` Models
+        :class-card: sd-shadow-sm
+        :class-title: sd-text-primary
 
-      .. grid-item::
-        :columns: 12 8 8 8
+        Self-supervised (:class:`~nidl.estimators.ssl.SimCLR`,
+        :class:`~nidl.estimators.ssl.BarlowTwins`,
+        :class:`~nidl.estimators.ssl.DCL`, :class:`~nidl.estimators.ssl.DINO`,
+        :class:`~nidl.estimators.ssl.NeuroJEPA`,), weakly supervised
+        (:class:`~nidl.estimators.ssl.YAwareContrastiveLearning`) and
+        generative (:class:`~nidl.estimators.autoencoders.VAE`) models, all
+        exposing the scikit-learn ``fit`` / ``transform`` API.
 
-        .. div:: sd-font-weight-bold
+        +++
+        :ref:`Learn more <self_supervised_learning>` :fas:`arrow-right`
 
-          OpenBHB dataset
+    .. grid-item-card:: :fas:`dice` Augmentations
+        :class-card: sd-shadow-sm
+        :class-title: sd-text-primary
 
-        B Dufumier et al.: `OpenBHB - a Large-Scale Multi-Site Brain MRI
-        Dataset for Age Prediction and Debiasing
-        <https://doi.org/10.1016/j.neuroimage.2022.119637>`_, NeuroImage
-        2022.
+        3D-native preprocessing and data augmentation:
+        :class:`~nidl.transforms.volume.augmentation.RandomResizedCrop`,
+        :class:`~nidl.transforms.volume.augmentation.RandomFlip`,
+        :class:`~nidl.transforms.volume.augmentation.RandomRotation`,
+        :class:`~nidl.transforms.volume.augmentation.RandomGaussianNoise`, ...
+        Generate multiple views per sample with
+        :class:`~nidl.transforms.transforms.MultiViewsTransform`.
 
-  .. grid-item-card::
-    :link: auto_examples/simclr_stl10.html
-    :link-type: url
-    :columns: 12 12 12 12
-    :class-card: sd-shadow-sm
-    :margin: 2 2 auto auto
+        +++
+        :ref:`Learn more <data_augmentation>` :fas:`arrow-right`
 
-    .. grid::
-      :gutter: 3
-      :margin: 0
-      :padding: 0
+    .. grid-item-card:: :fas:`chart-line` Evaluation
+        :class-card: sd-shadow-sm
+        :class-title: sd-text-primary
 
-      .. grid-item::
-        :columns: 12 4 4 4
+        Assess learned representations with any scikit-learn probe using
+        :class:`~nidl.estimators.probes.ModelProbing`, or monitor them while
+        training with :class:`~nidl.callbacks.ModelProbingCallback` and
+        :class:`~nidl.callbacks.MetricsCallback`.
 
-        .. image:: _images/sphx_glr_simclr_stl10_thumb.png
+        +++
+        :ref:`Learn more <model_probing>` :fas:`arrow-right`
 
-      .. grid-item::
-        :columns: 12 8 8 8
+Fit a model in a few lines
+--------------------------
 
-        .. div:: sd-font-weight-bold
+Models are configured like scikit-learn estimators and trained like
+`Lightning <https://lightning.ai>`_ modules: any ``Trainer`` argument
+(``accelerator``, ``devices``, ``strategy``, ``max_epochs``, ...) can be
+given to the estimator, so going from one GPU to a multi-node cluster
+requires no code change.
 
-          SimCLR
+.. tab-set::
 
-        T Chen et al.: `A Simple Framework for Contrastive Learning of Visual 
-        Representations
-        <https://proceedings.mlr.press/v119/chen20j/chen20j.pdf>`_, 
-        ICML 2020.
+    .. tab-item:: Self-supervised
 
-  .. grid-item-card::
-    :link: auto_examples/plot_barlowtwins_openbhb.html
-    :link-type: url
-    :columns: 12 12 12 12
-    :class-card: sd-shadow-sm
-    :margin: 2 2 auto auto
+        .. code-block:: python
 
-    .. grid::
-      :gutter: 3
-      :margin: 0
-      :padding: 0
+            from torch.utils.data import DataLoader
+            from torchvision.transforms import Compose
 
-      .. grid-item::
-        :columns: 12 4 4 4
+            from nidl.backbones.volume import resnet18
+            from nidl.datasets import OpenBHB
+            from nidl.estimators.ssl import SimCLR
+            from nidl.transforms import MultiViewsTransform
+            from nidl.transforms.volume.augmentation import (
+                RandomFlip,
+                RandomResizedCrop,
+            )
 
-        .. image:: _images/sphx_glr_simclr_stl10_thumb.png
+            # Two augmented views of each brain volume
+            augment = Compose([
+                RandomResizedCrop(target_shape=128, scale=(0.5, 1.0)),
+                RandomFlip(axes=0, flip_probability=0.5),
+            ])
+            dataset = OpenBHB(
+                "/data/openbhb",
+                modality="vbm",
+                target=None,
+                transforms=MultiViewsTransform(augment, n_views=2),
+            )
+            loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
-      .. grid-item::
-        :columns: 12 8 8 8
+            # Contrastive pre-training of a 3D ResNet-18 on 4 GPUs
+            model = SimCLR(
+                encoder=resnet18(n_embedding=512),
+                proj_input_dim=512,
+                max_epochs=100,
+                accelerator="gpu",
+                devices=4,
+            )
+            model.fit(loader)
+            embeddings = model.transform(test_loader)
 
-        .. div:: sd-font-weight-bold
+        See :ref:`sphx_glr_auto_examples_plot_dcl_vs_simclr.py` for a full
+        example.
 
-          Barlow Twins
+    .. tab-item:: Weakly supervised
 
-        Zbonta et al.: `Barlow Twins, Self-Supervised Learning via Redundancy Reduction
-        <http://proceedings.mlr.press/v139/zbontar21a/zbontar21a.pdf>`_, 
-        PMLR 2021.
-        
-  .. grid-item-card::
-    :link: auto_examples/plot_yaware_openbhb.html
-    :link-type: url
-    :columns: 12 12 12 12
-    :class-card: sd-shadow-sm
-    :margin: 2 2 auto auto
+        .. code-block:: python
 
-    .. grid::
-      :gutter: 3
-      :margin: 0
-      :padding: 0
+            from nidl.estimators.ssl import YAwareContrastiveLearning
 
-      .. grid-item::
-        :columns: 12 4 4 4
+            # The dataset now returns (views, age): age guides the
+            # contrastive objective through a Gaussian kernel
+            dataset = OpenBHB(
+                "/data/openbhb",
+                modality="vbm",
+                target="age",
+                transforms=MultiViewsTransform(augment, n_views=2),
+            )
+            loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
-        .. image:: _images/sphx_glr_simclr_stl10_thumb.png
+            model = YAwareContrastiveLearning(
+                encoder=resnet18(n_embedding=512),
+                proj_input_dim=512,
+                bandwidth=4**2,
+                max_epochs=100,
+            )
+            model.fit(loader)
 
-      .. grid-item::
-        :columns: 12 8 8 8
+        See :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py` for a full
+        example.
 
-        .. div:: sd-font-weight-bold
+    .. tab-item:: Probing
 
-          y-Aware weakly supervised learning
+        .. code-block:: python
 
-        B Dufumier et al.: `Exploring the potential of representation and
-        transfer learning for anatomical neuroimaging - Application to
-        psychiatry <https://doi.org/10.1016/j.neuroimage.2024.120665>`_,
-        NeuroImage 2024.
+            from sklearn.linear_model import Ridge
+
+            from nidl.estimators.probes import ModelProbing
+
+            # Fit a linear probe on top of the frozen embeddings
+            probing = ModelProbing(
+                embedding_estimator=model,
+                probe=Ridge(),
+                scoring=["neg_mean_absolute_error", "r2"],
+            )
+            probing.fit(train_loader)
+            probing.score(test_loader)
+            # {'neg_mean_absolute_error': -5.1, 'r2': 0.78}
+
+        See :ref:`sphx_glr_auto_examples_plot_model_probing.py` for a full
+        example.
+
+Backbones
+---------
+
+3D architectures are available in :mod:`nidl.backbones.volume`: ResNet,
+DenseNet, AlexNet and Vision Transformers (including Mixture-of-Experts),
+with :ref:`pre-trained weights <pretrained_models>` on large neuroimaging
+cohorts. See the :ref:`architectures <architectures>` guide.
 
 .. toctree::
    :hidden:

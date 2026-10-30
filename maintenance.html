@@ -25,7 +25,7 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=749372d1" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=58997610" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/solid.min.css" />
@@ -40,8 +40,6 @@
   --color-code-foreground: black;
   --admonition-font-size: 100%;
   --admonition-title-font-size: 100%;
-  --color-announcement-background: #FBB360;
-  --color-announcement-text: #111418;
   --color-admonition-title--note: #448aff;
   --color-admonition-title-background--note: #448aff10;
   
@@ -50,16 +48,12 @@
     body[data-theme="dark"] {
       --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
-  --color-announcement-background: #935610;
-  --color-announcement-text: #FFFFFF;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
         --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
-  --color-announcement-background: #935610;
-  --color-announcement-text: #FFFFFF;
   
       }
     }
@@ -181,11 +175,7 @@
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
-<div class="announcement">
-  <aside class="announcement-content">
-     <p>This is the development documentation of nidl (0.0.1)  
-  </aside>
-</div>
+
 
 <div class="page">
   <header class="mobile-header">
@@ -221,7 +211,34 @@
   
   <span class="sidebar-brand-text">Nidl</span>
   
-</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+</a>
+<div class="version-selector">
+  <label for="version-select">Choose version</label>
+  <select id="version-select" data-root=""
+          data-current="dev"
+          onchange="window.location.href = this.value">
+    <option selected>0.0.3.dev0</option>
+  </select>
+</div>
+<script>
+  // The list is read from the site root, so that releases already online
+  // show new versions without being rebuilt.
+  (function () {
+    const select = document.getElementById("version-select");
+    const root = select.dataset.root;
+    fetch(root + "versions.json")
+      .then((response) => response.json())
+      .then((versions) => {
+        select.replaceChildren(...versions.map((version) => new Option(
+          version.label,
+          root + version.path + "index.html",
+          false,
+          version.version === select.dataset.current,
+        )));
+      })
+      .catch(() => {});
+  })();
+</script><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -561,13 +578,13 @@ but care should be taken that at least the following have not been affected:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">.rst</span></code> files containing the string <code class="docutils literal notranslate"><span class="pre">image::</span> <span class="pre">../auto_examples</span></code>,</p></li>
 <li><p>…</p></li>
 </ul>
-<p>Update the links for the new version of the documentation in <code class="docutils literal notranslate"><span class="pre">doc/versions.rst</span></code>.
+<p>Add the new version to <code class="docutils literal notranslate"><span class="pre">doc/versions.json</span></code> and move the <code class="docutils literal notranslate"><span class="pre">(stable)</span></code> label to
+it. This file feeds the version selector of every published documentation.
 For example:</p>
-<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>Web-based documentation is available for versions listed below:
-
-<span class="m">*</span> <span class="s">`Nidl latest - dev documentation </span><span class="si">&lt;http://neurospin-deepinsight.github.io/nidl/dev/&gt;</span><span class="s">`_</span>
-<span class="m">*</span> <span class="s">`Nidl latest - stable documentation </span><span class="si">&lt;http://neurospin-deepinsight.github.io/nidl/stable/&gt;</span><span class="s">`_</span>
-<span class="m">*</span> <span class="s">`Nidl x.y.z documentation </span><span class="si">&lt;http://neurospin-deepinsight.github.io/nidl/x.y.z/&gt;</span><span class="s">`_</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dev"</span><span class="p">,</span><span class="w"> </span><span class="nt">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"x.y.z.dev0 (dev)"</span><span class="p">,</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"x.y.z"</span><span class="p">,</span><span class="w"> </span><span class="nt">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"x.y.z (stable)"</span><span class="p">,</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"x.y.z/"</span><span class="p">}</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 </section>
@@ -676,13 +693,16 @@ and upload the distributions we just created (you can just drag and drop the fil
 </section>
 <section id="build-of-stable-docs">
 <h3>Build of stable docs<a class="headerlink" href="#build-of-stable-docs" title="Link to this heading">¶</a></h3>
-<p>Once the new tagged github release is made following the step above,
-the Github Actions workflow <code class="docutils literal notranslate"><span class="pre">release-docs.yml</span></code> can be triggered manually
-from the Actions tab.</p>
+<p>Pushing the tag <code class="docutils literal notranslate"><span class="pre">x.y.z</span></code> triggers the Github Actions workflow
+<code class="docutils literal notranslate"><span class="pre">documentation-release.yml</span></code>. It checks that the tag matches the version in
+<code class="docutils literal notranslate"><span class="pre">nidl/info.py</span></code> and publishes the documentation in the <code class="docutils literal notranslate"><span class="pre">x.y.z</span></code> subfolder of
+the website.</p>
 </section>
 <section id="post-release">
 <h3>Post-release<a class="headerlink" href="#post-release" title="Link to this heading">¶</a></h3>
 <p>At this point, the release has been made.</p>
+<p>Set the next development version in <code class="docutils literal notranslate"><span class="pre">nidl/info.py</span></code> and in the <code class="docutils literal notranslate"><span class="pre">dev</span></code> entry
+of <code class="docutils literal notranslate"><span class="pre">doc/versions.json</span></code>.</p>
 <p>We also need to create a new entry in the <code class="docutils literal notranslate"><span class="pre">Ghangelog.rst</span></code> with a title
 and the usual <code class="docutils literal notranslate"><span class="pre">New</span></code>, <code class="docutils literal notranslate"><span class="pre">Enhancements</span></code>, <code class="docutils literal notranslate"><span class="pre">Bug</span> <span class="pre">Fixes</span></code>, and <code class="docutils literal notranslate"><span class="pre">Changes</span></code>
 sections for the version currently under development:</p>

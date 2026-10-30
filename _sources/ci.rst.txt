@@ -29,6 +29,15 @@ GitHub Actions Specification
 
 
 
+documentation-release.yml
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Workflow file: `documentation-release.yml <https://github.com/nilearn/nilearn/blob/main/.github/workflows/documentation-release.yml>`_
+
+Workflow to publish the documentation of a release in a subfolder of the
+website, named after the pushed tag.
+
+
 documentation.yml
 ^^^^^^^^^^^^^^^^^
 

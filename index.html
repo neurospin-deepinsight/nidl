@@ -8,7 +8,7 @@
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/index.html" />
 <meta property="og:site_name" content="Nidl" />
 <meta property="og:description" content="Nidl is a Python library to perform distributed training and evaluation of deep learning models on large-scale neuroimaging data (anatomical volumes and surfaces, fMRI). It follows the PyTorch desi..." />
-<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_simclr_stl10_thumb.png" />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
 <meta property="og:image:alt" content="Nidl" />
 <meta name="description" content="Nidl is a Python library to perform distributed training and evaluation of deep learning models on large-scale neuroimaging data (anatomical volumes and surfaces, fMRI). It follows the PyTorch desi..." />
 <link rel="search" title="Search" href="search.html"><link rel="next" title="Quickstart" href="quickstart.html">
@@ -25,7 +25,7 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=749372d1" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=58997610" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/solid.min.css" />
@@ -40,8 +40,6 @@
   --color-code-foreground: black;
   --admonition-font-size: 100%;
   --admonition-title-font-size: 100%;
-  --color-announcement-background: #FBB360;
-  --color-announcement-text: #111418;
   --color-admonition-title--note: #448aff;
   --color-admonition-title-background--note: #448aff10;
   
@@ -50,16 +48,12 @@
     body[data-theme="dark"] {
       --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
-  --color-announcement-background: #935610;
-  --color-announcement-text: #FFFFFF;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
         --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
-  --color-announcement-background: #935610;
-  --color-announcement-text: #FFFFFF;
   
       }
     }
@@ -181,11 +175,7 @@
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
-<div class="announcement">
-  <aside class="announcement-content">
-     <p>This is the development documentation of nidl (0.0.1)  
-  </aside>
-</div>
+
 
 <div class="page">
   <header class="mobile-header">
@@ -221,7 +211,34 @@
   
   <span class="sidebar-brand-text">Nidl</span>
   
-</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+</a>
+<div class="version-selector">
+  <label for="version-select">Choose version</label>
+  <select id="version-select" data-root=""
+          data-current="dev"
+          onchange="window.location.href = this.value">
+    <option selected>0.0.3.dev0</option>
+  </select>
+</div>
+<script>
+  // The list is read from the site root, so that releases already online
+  // show new versions without being rebuilt.
+  (function () {
+    const select = document.getElementById("version-select");
+    const root = select.dataset.root;
+    fetch(root + "versions.json")
+      .then((response) => response.json())
+      .then((versions) => {
+        select.replaceChildren(...versions.map((version) => new Option(
+          version.label,
+          root + version.path + "index.html",
+          false,
+          version.version === select.dataset.current,
+        )));
+      })
+      .catch(() => {});
+  })();
+</script><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -455,96 +472,187 @@ pre-trained weights) along with open datasets.</p>
 </div>
 </div>
 </div>
-<section id="featured-works">
-<h2>Featured works<a class="headerlink" href="#featured-works" title="Link to this heading">¶</a></h2>
+<section id="key-features">
+<h2>Key features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row docutils">
-<div class="sd-col sd-d-flex-row sd-col-12 sd-col-xs-12 sd-col-sm-12 sd-col-md-12 sd-col-lg-12 sd-mt-2 sd-mb-2 sd-ml-auto sd-mr-auto docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
-<div class="sd-container-fluid sd-sphinx-override sd-m-0 sd-p-0 docutils">
-<div class="sd-row sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-4 sd-col-md-4 sd-col-lg-4 docutils">
-<img alt="_images/sphx_glr_simclr_stl10_thumb.png" src="_images/sphx_glr_simclr_stl10_thumb.png" />
+<div class="sd-card-title sd-font-weight-bold sd-text-primary docutils">
+<span class="fas fa-database"></span> Datasets</div>
+<p class="sd-card-text">Large-scale open neuroimaging datasets ready for PyTorch, fetched on
+demand from Hugging Face and streamed during training:
+<a class="reference internal" href="modules/generated/nidl.datasets.OpenBHB.html#nidl.datasets.OpenBHB" title="nidl.datasets.OpenBHB"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenBHB</span></code></a> (~4k quality-checked brain T1w MRI
+uniformly preprocessed) and <a class="reference internal" href="modules/generated/nidl.datasets.OpenMind.html#nidl.datasets.OpenMind" title="nidl.datasets.OpenMind"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenMind</span></code></a> (114k brain MRIs).
+Bring your own data with <a class="reference internal" href="modules/generated/nidl.datasets.ImageDataFrameDataset.html#nidl.datasets.ImageDataFrameDataset" title="nidl.datasets.ImageDataFrameDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageDataFrameDataset</span></code></a>.</p>
 </div>
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-8 sd-col-md-8 sd-col-lg-8 docutils">
-<div class="sd-font-weight-bold docutils">
-<p class="sd-card-text">OpenBHB dataset</p>
-</div>
-<p class="sd-card-text">B Dufumier et al.: <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2022.119637">OpenBHB - a Large-Scale Multi-Site Brain MRI
-Dataset for Age Prediction and Debiasing</a>, NeuroImage
-2022.</p>
+<div class="sd-card-footer docutils">
+<p class="sd-card-text"><a class="reference internal" href="open_datasets.html#open-datasets"><span class="std std-ref">Learn more</span></a> <span class="fas fa-arrow-right"></span></p>
 </div>
 </div>
 </div>
-</div>
-<a class="sd-stretched-link sd-hide-link-text reference external" href="auto_examples/plot_openbhb.html"><span>auto_examples/plot_openbhb.html</span></a></div>
-</div>
-<div class="sd-col sd-d-flex-row sd-col-12 sd-col-xs-12 sd-col-sm-12 sd-col-md-12 sd-col-lg-12 sd-mt-2 sd-mb-2 sd-ml-auto sd-mr-auto docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
-<div class="sd-container-fluid sd-sphinx-override sd-m-0 sd-p-0 docutils">
-<div class="sd-row sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-4 sd-col-md-4 sd-col-lg-4 docutils">
-<img alt="_images/sphx_glr_simclr_stl10_thumb.png" src="_images/sphx_glr_simclr_stl10_thumb.png" />
+<div class="sd-card-title sd-font-weight-bold sd-text-primary docutils">
+<span class="fas fa-brain"></span> Models</div>
+<p class="sd-card-text">Self-supervised (<a class="reference internal" href="modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimCLR</span></code></a>,
+<a class="reference internal" href="modules/generated/nidl.estimators.ssl.BarlowTwins.html#nidl.estimators.ssl.BarlowTwins" title="nidl.estimators.ssl.BarlowTwins"><code class="xref py py-class docutils literal notranslate"><span class="pre">BarlowTwins</span></code></a>,
+<a class="reference internal" href="modules/generated/nidl.estimators.ssl.DCL.html#nidl.estimators.ssl.DCL" title="nidl.estimators.ssl.DCL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DCL</span></code></a>, <a class="reference internal" href="modules/generated/nidl.estimators.ssl.DINO.html#nidl.estimators.ssl.DINO" title="nidl.estimators.ssl.DINO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DINO</span></code></a>,
+<a class="reference internal" href="modules/generated/nidl.estimators.ssl.NeuroJEPA.html#nidl.estimators.ssl.NeuroJEPA" title="nidl.estimators.ssl.NeuroJEPA"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuroJEPA</span></code></a>,), weakly supervised
+(<a class="reference internal" href="modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html#nidl.estimators.ssl.YAwareContrastiveLearning" title="nidl.estimators.ssl.YAwareContrastiveLearning"><code class="xref py py-class docutils literal notranslate"><span class="pre">YAwareContrastiveLearning</span></code></a>) and
+generative (<a class="reference internal" href="modules/generated/nidl.estimators.autoencoders.VAE.html#nidl.estimators.autoencoders.VAE" title="nidl.estimators.autoencoders.VAE"><code class="xref py py-class docutils literal notranslate"><span class="pre">VAE</span></code></a>) models, all
+exposing the scikit-learn <code class="docutils literal notranslate"><span class="pre">fit</span></code> / <code class="docutils literal notranslate"><span class="pre">transform</span></code> API.</p>
 </div>
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-8 sd-col-md-8 sd-col-lg-8 docutils">
-<div class="sd-font-weight-bold docutils">
-<p class="sd-card-text">SimCLR</p>
-</div>
-<p class="sd-card-text">T Chen et al.: <a class="reference external" href="https://proceedings.mlr.press/v119/chen20j/chen20j.pdf">A Simple Framework for Contrastive Learning of Visual
-Representations</a>,
-ICML 2020.</p>
-</div>
-</div>
+<div class="sd-card-footer docutils">
+<p class="sd-card-text"><a class="reference internal" href="self_supervised_learning/index.html#self-supervised-learning"><span class="std std-ref">Learn more</span></a> <span class="fas fa-arrow-right"></span></p>
 </div>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference external" href="auto_examples/simclr_stl10.html"><span>auto_examples/simclr_stl10.html</span></a></div>
 </div>
-<div class="sd-col sd-d-flex-row sd-col-12 sd-col-xs-12 sd-col-sm-12 sd-col-md-12 sd-col-lg-12 sd-mt-2 sd-mb-2 sd-ml-auto sd-mr-auto docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
-<div class="sd-container-fluid sd-sphinx-override sd-m-0 sd-p-0 docutils">
-<div class="sd-row sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-4 sd-col-md-4 sd-col-lg-4 docutils">
-<img alt="_images/sphx_glr_simclr_stl10_thumb.png" src="_images/sphx_glr_simclr_stl10_thumb.png" />
+<div class="sd-card-title sd-font-weight-bold sd-text-primary docutils">
+<span class="fas fa-dice"></span> Augmentations</div>
+<p class="sd-card-text">3D-native preprocessing and data augmentation:
+<a class="reference internal" href="modules/generated/nidl.transforms.volume.augmentation.RandomResizedCrop.html#nidl.transforms.volume.augmentation.RandomResizedCrop" title="nidl.transforms.volume.augmentation.RandomResizedCrop"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomResizedCrop</span></code></a>,
+<a class="reference internal" href="modules/generated/nidl.transforms.volume.augmentation.RandomFlip.html#nidl.transforms.volume.augmentation.RandomFlip" title="nidl.transforms.volume.augmentation.RandomFlip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomFlip</span></code></a>,
+<a class="reference internal" href="modules/generated/nidl.transforms.volume.augmentation.RandomRotation.html#nidl.transforms.volume.augmentation.RandomRotation" title="nidl.transforms.volume.augmentation.RandomRotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomRotation</span></code></a>,
+<a class="reference internal" href="modules/generated/nidl.transforms.volume.augmentation.RandomGaussianNoise.html#nidl.transforms.volume.augmentation.RandomGaussianNoise" title="nidl.transforms.volume.augmentation.RandomGaussianNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGaussianNoise</span></code></a>, …
+Generate multiple views per sample with
+<a class="reference internal" href="modules/generated/nidl.transforms.transforms.MultiViewsTransform.html#nidl.transforms.transforms.MultiViewsTransform" title="nidl.transforms.transforms.MultiViewsTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiViewsTransform</span></code></a>.</p>
 </div>
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-8 sd-col-md-8 sd-col-lg-8 docutils">
-<div class="sd-font-weight-bold docutils">
-<p class="sd-card-text">Barlow Twins</p>
-</div>
-<p class="sd-card-text">Zbonta et al.: <a class="reference external" href="http://proceedings.mlr.press/v139/zbontar21a/zbontar21a.pdf">Barlow Twins, Self-Supervised Learning via Redundancy Reduction</a>,
-PMLR 2021.</p>
+<div class="sd-card-footer docutils">
+<p class="sd-card-text"><a class="reference internal" href="data_augmentation/index.html#data-augmentation"><span class="std std-ref">Learn more</span></a> <span class="fas fa-arrow-right"></span></p>
 </div>
 </div>
 </div>
-</div>
-<a class="sd-stretched-link sd-hide-link-text reference external" href="auto_examples/plot_barlowtwins_openbhb.html"><span>auto_examples/plot_barlowtwins_openbhb.html</span></a></div>
-</div>
-<div class="sd-col sd-d-flex-row sd-col-12 sd-col-xs-12 sd-col-sm-12 sd-col-md-12 sd-col-lg-12 sd-mt-2 sd-mb-2 sd-ml-auto sd-mr-auto docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
-<div class="sd-container-fluid sd-sphinx-override sd-m-0 sd-p-0 docutils">
-<div class="sd-row sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-4 sd-col-md-4 sd-col-lg-4 docutils">
-<img alt="_images/sphx_glr_simclr_stl10_thumb.png" src="_images/sphx_glr_simclr_stl10_thumb.png" />
+<div class="sd-card-title sd-font-weight-bold sd-text-primary docutils">
+<span class="fas fa-chart-line"></span> Evaluation</div>
+<p class="sd-card-text">Assess learned representations with any scikit-learn probe using
+<a class="reference internal" href="modules/generated/nidl.estimators.probes.ModelProbing.html#nidl.estimators.probes.ModelProbing" title="nidl.estimators.probes.ModelProbing"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelProbing</span></code></a>, or monitor them while
+training with <a class="reference internal" href="modules/generated/nidl.callbacks.ModelProbingCallback.html#nidl.callbacks.ModelProbingCallback" title="nidl.callbacks.ModelProbingCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelProbingCallback</span></code></a> and
+<a class="reference internal" href="modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetricsCallback</span></code></a>.</p>
 </div>
-<div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-8 sd-col-md-8 sd-col-lg-8 docutils">
-<div class="sd-font-weight-bold docutils">
-<p class="sd-card-text">y-Aware weakly supervised learning</p>
-</div>
-<p class="sd-card-text">B Dufumier et al.: <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2024.120665">Exploring the potential of representation and
-transfer learning for anatomical neuroimaging - Application to
-psychiatry</a>,
-NeuroImage 2024.</p>
+<div class="sd-card-footer docutils">
+<p class="sd-card-text"><a class="reference internal" href="model_probing.html#model-probing"><span class="std std-ref">Learn more</span></a> <span class="fas fa-arrow-right"></span></p>
 </div>
 </div>
 </div>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference external" href="auto_examples/plot_yaware_openbhb.html"><span>auto_examples/plot_yaware_openbhb.html</span></a></div>
+</div>
+</section>
+<section id="fit-a-model-in-a-few-lines">
+<h2>Fit a model in a few lines<a class="headerlink" href="#fit-a-model-in-a-few-lines" title="Link to this heading">¶</a></h2>
+<p>Models are configured like scikit-learn estimators and trained like
+<a class="reference external" href="https://lightning.ai">Lightning</a> modules: any <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> argument
+(<code class="docutils literal notranslate"><span class="pre">accelerator</span></code>, <code class="docutils literal notranslate"><span class="pre">devices</span></code>, <code class="docutils literal notranslate"><span class="pre">strategy</span></code>, <code class="docutils literal notranslate"><span class="pre">max_epochs</span></code>, …) can be
+given to the estimator, so going from one GPU to a multi-node cluster
+requires no code change.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Self-supervised</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Compose</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.backbones.volume</span><span class="w"> </span><span class="kn">import</span> <span class="n">resnet18</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenBHB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.ssl</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimCLR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiViewsTransform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.transforms.volume.augmentation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RandomFlip</span><span class="p">,</span>
+    <span class="n">RandomResizedCrop</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Two augmented views of each brain volume</span>
+<span class="n">augment</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">([</span>
+    <span class="n">RandomResizedCrop</span><span class="p">(</span><span class="n">target_shape</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="n">RandomFlip</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flip_probability</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+<span class="p">])</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">OpenBHB</span><span class="p">(</span>
+    <span class="s2">"/data/openbhb"</span><span class="p">,</span>
+    <span class="n">modality</span><span class="o">=</span><span class="s2">"vbm"</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">transforms</span><span class="o">=</span><span class="n">MultiViewsTransform</span><span class="p">(</span><span class="n">augment</span><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Contrastive pre-training of a 3D ResNet-18 on 4 GPUs</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">SimCLR</span><span class="p">(</span>
+    <span class="n">encoder</span><span class="o">=</span><span class="n">resnet18</span><span class="p">(</span><span class="n">n_embedding</span><span class="o">=</span><span class="mi">512</span><span class="p">),</span>
+    <span class="n">proj_input_dim</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="o">=</span><span class="s2">"gpu"</span><span class="p">,</span>
+    <span class="n">devices</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span>
+<span class="n">embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="auto_examples/plot_dcl_vs_simclr.html#sphx-glr-auto-examples-plot-dcl-vs-simclr-py"><span class="std std-ref">Decoupled Contrastive Learning</span></a> for a full
+example.</p>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Weakly supervised</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.ssl</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAwareContrastiveLearning</span>
+
+<span class="c1"># The dataset now returns (views, age): age guides the</span>
+<span class="c1"># contrastive objective through a Gaussian kernel</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">OpenBHB</span><span class="p">(</span>
+    <span class="s2">"/data/openbhb"</span><span class="p">,</span>
+    <span class="n">modality</span><span class="o">=</span><span class="s2">"vbm"</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="s2">"age"</span><span class="p">,</span>
+    <span class="n">transforms</span><span class="o">=</span><span class="n">MultiViewsTransform</span><span class="p">(</span><span class="n">augment</span><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">YAwareContrastiveLearning</span><span class="p">(</span>
+    <span class="n">encoder</span><span class="o">=</span><span class="n">resnet18</span><span class="p">(</span><span class="n">n_embedding</span><span class="o">=</span><span class="mi">512</span><span class="p">),</span>
+    <span class="n">proj_input_dim</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">4</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="auto_examples/plot_yaware_openbhb.html#sphx-glr-auto-examples-plot-yaware-openbhb-py"><span class="std std-ref">Weakly Supervised Contrastive Learning with y-Aware</span></a> for a full
+example.</p>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Probing</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ridge</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.probes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelProbing</span>
+
+<span class="c1"># Fit a linear probe on top of the frozen embeddings</span>
+<span class="n">probing</span> <span class="o">=</span> <span class="n">ModelProbing</span><span class="p">(</span>
+    <span class="n">embedding_estimator</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">probe</span><span class="o">=</span><span class="n">Ridge</span><span class="p">(),</span>
+    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">"neg_mean_absolute_error"</span><span class="p">,</span> <span class="s2">"r2"</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">probing</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
+<span class="n">probing</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span>
+<span class="c1"># {'neg_mean_absolute_error': -5.1, 'r2': 0.78}</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="auto_examples/plot_model_probing.html#sphx-glr-auto-examples-plot-model-probing-py"><span class="std std-ref">Model probing of embedding estimators</span></a> for a full
+example.</p>
 </div>
 </div>
-</div>
+</section>
+<section id="backbones">
+<h2>Backbones<a class="headerlink" href="#backbones" title="Link to this heading">¶</a></h2>
+<p>3D architectures are available in <a class="reference internal" href="modules/architectures.html#module-nidl.backbones.volume" title="nidl.backbones.volume"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code></a>: ResNet,
+DenseNet, AlexNet and Vision Transformers (including Mixture-of-Experts),
+with <a class="reference internal" href="pretrained_models.html#pretrained-models"><span class="std std-ref">pre-trained weights</span></a> on large neuroimaging
+cohorts. See the <a class="reference internal" href="architectures/index.html#architectures"><span class="std std-ref">architectures</span></a> guide.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -602,7 +710,9 @@ NeuroImage 2024.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Nidl</a><ul>
-<li><a class="reference internal" href="#featured-works">Featured works</a><ul>
+<li><a class="reference internal" href="#key-features">Key features</a></li>
+<li><a class="reference internal" href="#fit-a-model-in-a-few-lines">Fit a model in a few lines</a></li>
+<li><a class="reference internal" href="#backbones">Backbones</a><ul>
 </ul>
 </li>
 </ul>
