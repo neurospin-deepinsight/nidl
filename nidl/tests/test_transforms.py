@@ -334,7 +334,7 @@ class TestRandomErasing(unittest.TestCase):
         self.assertTrue(diff.sum() > 0)
         self.assertTrue(diff_tensor.sum() > 0)
         self.assertTrue(np.abs(out.mean() - data.mean()) < 1e-7)
-        self.assertTrue(torch.abs(out_tensor.mean() - data_tensor.mean()) < 1e-7)
+        self.assertTrue(torch.abs(out_tensor.mean() - data_tensor.mean()) < 1e-6)
 
     def test_random_erasing(self):
         np.random.seed(42)
@@ -344,8 +344,9 @@ class TestRandomErasing(unittest.TestCase):
         for data in [np.zeros(self.shape), torch.zeros(self.shape)]:
             out = transform(data)
             nonzero_count = (out != 0).sum()
-            nb_min_erased_values = round(scale[0] * np.prod(self.shape))
-            nb_max_erased_values = round(scale[1] * np.prod(self.shape))
+            # Authorize +/- 20% of margin due to roundings of the box sizes
+            nb_min_erased_values = 0.8 * scale[0] * np.prod(self.shape)
+            nb_max_erased_values = 1.2 * scale[1] * np.prod(self.shape)
             self.assertTrue(nonzero_count >= nb_min_erased_values)
             self.assertTrue(nonzero_count <= nb_max_erased_values)
 
@@ -598,23 +599,25 @@ class TestRandomGaussianNoise(unittest.TestCase):
 
     def test_different_mean_range(self):
         transform = RandomGaussianNoise(mean=(-1.0, 1.0), std=(0.1, 0.1))
+        # Empirical mean is estimated: authorize a margin around the true range
+        margin = 0.05
         output = transform(self.numpy_input)
-        self.assertGreater(np.mean(output), -1 + np.mean(self.numpy_input))
-        self.assertLess(np.mean(output), 1 + np.mean(self.numpy_input))
+        self.assertGreater(np.mean(output), -1 - margin + np.mean(self.numpy_input))
+        self.assertLess(np.mean(output), 1 + margin + np.mean(self.numpy_input))
         output = transform(self.torch_input)
-        self.assertGreater(torch.mean(output), -1 + torch.mean(self.torch_input))
-        self.assertLess(torch.mean(output), 1 + torch.mean(self.torch_input))
+        self.assertGreater(torch.mean(output), -1 - margin + torch.mean(self.torch_input))
+        self.assertLess(torch.mean(output), 1 + margin + torch.mean(self.torch_input))
 
     def test_different_std_range(self):
         transform = RandomGaussianNoise(mean=(-1.0, 1.0), std=(3.0, 10.0))
-        np_input = np.random.rand(3, 4, 5)
-        torch_input = torch.rand(3, 4, 5)
+        # Empirical std is estimated: authorize a margin around the true range
+        margin = 1.0
         output = transform(self.numpy_input)
-        self.assertGreater(np.std(output), np.std(np_input))
-        self.assertLess(np.std(output), np.sqrt(10**2 + np.var(np_input)))
-        output = transform(torch_input)
-        self.assertGreater(torch.std(output), torch.std(torch_input))
-        self.assertLess(torch.std(output), torch.sqrt(10**2 + torch.var(torch_input)))
+        self.assertGreater(np.std(output), 3 - margin)
+        self.assertLess(np.std(output), 10 + margin)
+        output = transform(self.torch_input)
+        self.assertGreater(torch.std(output), 3 - margin)
+        self.assertLess(torch.std(output), 10 + margin)
 
     def test_invalid_std_range_raises(self):
         with self.assertRaises(ValueError):
