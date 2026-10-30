@@ -172,8 +172,8 @@ class OpenMind(Dataset):
 
     shards : str, default="*/*.tar"
         Glob pattern selecting the shards, relative to the preprocessing
-        folder (e.g. ``"ds0000*/*.tar"``). A warning is raised if the same image
-        appears in several of them.
+        folder (e.g. ``"ds0000*/*.tar"``). A warning is raised if the same
+        image appears in several of them.
 
     transforms : callable or None, default=None
         A function/transform that takes in an image (or a dict of images) and
