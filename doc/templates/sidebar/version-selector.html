@@ -1,0 +1,28 @@
+{%- set site_root = pathto(master_doc)|replace('index.html', '')|replace('#', '') ~ doc_site_root %}
+<div class="version-selector">
+  <label for="version-select">Choose version</label>
+  <select id="version-select" data-root="{{ site_root }}"
+          data-current="{{ 'dev' if '.dev' in doc_current_version else doc_current_version }}"
+          onchange="window.location.href = this.value">
+    <option selected>{{ doc_current_version }}</option>
+  </select>
+</div>
+<script>
+  // The list is read from the site root, so that releases already online
+  // show new versions without being rebuilt.
+  (function () {
+    const select = document.getElementById("version-select");
+    const root = select.dataset.root;
+    fetch(root + "versions.json")
+      .then((response) => response.json())
+      .then((versions) => {
+        select.replaceChildren(...versions.map((version) => new Option(
+          version.label,
+          root + version.path + "index.html",
+          false,
+          version.version === select.dataset.current,
+        )));
+      })
+      .catch(() => {});
+  })();
+</script>
