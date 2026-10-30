@@ -1,0 +1,21 @@
+﻿:orphan:
+
+.. note::
+
+   This page is a reference documentation. It only explains the
+   function signature, and not how to use it. Please refer to the
+   :ref:`user guide <user_guide>` for the big picture.
+
+
+nidl.metrics.alignment_score
+============================
+
+.. currentmodule:: nidl.metrics
+
+.. autofunction:: alignment_score
+
+.. include:: nidl.metrics.alignment_score.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

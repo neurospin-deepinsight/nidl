@@ -1,0 +1,1045 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Visualization of metrics during training of PyTorch-Lightning models" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neurospin-deepinsight.github.io/auto_examples/plot_metrics_callback.html" />
+<meta property="og:site_name" content="Nidl" />
+<meta property="og:description" content="The current logic in nidl is to separate the implementation of the actual model (i.e. everything required to fit the model on data) from everything else, such as metrics computation and logging. Th..." />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
+<meta property="og:image:alt" content="Nidl" />
+<meta name="description" content="The current logic in nidl is to separate the implementation of the actual model (i.e. everything required to fit the model on data) from everything else, such as metrics computation and logging. Th..." />
+<link rel="search" title="Search" href="../search.html"><link rel="next" title="Weakly Supervised Contrastive Learning with y-Aware" href="plot_yaware_openbhb.html"><link rel="prev" title="Self-Supervised Learning with I-JEPA on MedMNIST3D" href="plot_ijepa_medmnist.html">
+        <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 8.1.3 and Furo 2025.09.25 -->
+        <title>Visualization of metrics during training of PyTorch-Lightning models - Nidl</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=2da93098" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2dbe88e0" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/solid.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/brands.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  --admonition-font-size: 100%;
+  --admonition-title-font-size: 100%;
+  --color-announcement-background: #FBB360;
+  --color-announcement-text: #111418;
+  --color-admonition-title--note: #448aff;
+  --color-admonition-title-background--note: #448aff10;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  --color-announcement-background: #935610;
+  --color-announcement-text: #FFFFFF;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  --color-announcement-background: #935610;
+  --color-announcement-text: #FFFFFF;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Nidl</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/nidl-transparent.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Nidl</span>
+  
+</a>
+<div class="version-selector">
+  <label for="version-select">Choose version</label>
+  <select id="version-select" data-root="../../"
+          data-current="0.0.2"
+          onchange="window.location.href = this.value">
+    <option selected>0.0.2</option>
+  </select>
+</div>
+<script>
+  // The list is read from the site root, so that releases already online
+  // show new versions without being rebuilt.
+  (function () {
+    const select = document.getElementById("version-select");
+    const root = select.dataset.root;
+    fetch(root + "versions.json")
+      .then((response) => response.json())
+      .then((versions) => {
+        select.replaceChildren(...versions.map((version) => new Option(
+          version.label,
+          root + version.path + "index.html",
+          false,
+          version.version === select.dataset.current,
+        )));
+      })
+      .catch(() => {});
+  })();
+</script><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Examples</a><input aria-label="Toggle navigation of Examples" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ijepa_medmnist.html">Self-Supervised Learning with I-JEPA on MedMNIST3D</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Visualization of metrics during training of PyTorch-Lightning models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_yaware_openbhb.html">Weakly Supervised Contrastive Learning with y-Aware</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../user_guide.html">User guide</a><input aria-label="Toggle navigation of User guide" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html#what-is-nidl">2. What is <code class="docutils literal notranslate"><span class="pre">nidl</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html#using-nidl-for-the-first-time">3. Using <code class="docutils literal notranslate"><span class="pre">nidl</span></code> for the first time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction.html#applications-to-neuroimaging">4. Applications to Neuroimaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supervised_learning/index.html">5. Supervised Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self_supervised_learning/index.html">6. Self Supervised Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autoencoders/index.html">7. Auto Encoders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model_probing.html">8. Model Probing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_augmentation/index.html">9. Data Augmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pretrained_models.html">10. Pretrained Models</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../architectures/index.html">11. Architectures</a><input aria-label="Toggle navigation of 11. Architectures" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../architectures/volume.html">11.1. Volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architectures/surface.html">11.2. Surface</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../open_datasets.html">12. Open Datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../modules/index.html">API References</a><input aria-label="Toggle navigation of API References" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/estimators.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.estimators</span></code>: Available estimators</a><input aria-label="Toggle navigation of nidl.estimators: Available estimators" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.BaseEstimator.html">nidl.estimators.BaseEstimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ClassifierMixin.html">nidl.estimators.ClassifierMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ClusterMixin.html">nidl.estimators.ClusterMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.RegressorMixin.html">nidl.estimators.RegressorMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.TransformerMixin.html">nidl.estimators.TransformerMixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.SimCLR.html">nidl.estimators.ssl.SimCLR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DCL.html">nidl.estimators.ssl.DCL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.YAwareContrastiveLearning.html">nidl.estimators.ssl.YAwareContrastiveLearning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.BarlowTwins.html">nidl.estimators.ssl.BarlowTwins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.InfoNCE.html">nidl.losses.InfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLLoss.html">nidl.losses.DCLLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DCLWLoss.html">nidl.losses.DCLWLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.ProjectionHead.html">nidl.estimators.ssl.utils.ProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.SimCLRProjectionHead.html">nidl.estimators.ssl.utils.SimCLRProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.volume.backbones</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.volume.backbones: Available backbones" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.utils.weights.Weights.html">nidl.utils.weights.Weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.AlexNet.html">nidl.volume.backbones.AlexNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.DenseNet.html">nidl.volume.backbones.DenseNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNet.html">nidl.volume.backbones.ResNet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.ResNetTruncated.html">nidl.volume.backbones.ResNetTruncated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.VisionTransformer3D.html">nidl.volume.backbones.VisionTransformer3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.densenet121.html">nidl.volume.backbones.densenet121</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet18_trunc.html">nidl.volume.backbones.resnet18_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50.html">nidl.volume.backbones.resnet50</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.resnet50_trunc.html">nidl.volume.backbones.resnet50_trunc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_small_patch16_128.html">nidl.volume.backbones.vit_small_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_base_patch16_128.html">nidl.volume.backbones.vit_base_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.backbones.vit_large_patch16_128.html">nidl.volume.backbones.vit_large_patch16_128</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.Transform.html">nidl.transforms.Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.Identity.html">nidl.transforms.Identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.MultiViewsTransform.html">nidl.transforms.MultiViewsTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.transforms.VolumeTransform.html">nidl.transforms.VolumeTransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.RobustRescaling.html">nidl.volume.transforms.preprocessing.RobustRescaling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.ZNormalization.html">nidl.volume.transforms.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.CropOrPad.html">nidl.volume.transforms.preprocessing.CropOrPad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.Resample.html">nidl.volume.transforms.preprocessing.Resample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.preprocessing.Resize.html">nidl.volume.transforms.preprocessing.Resize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomGaussianBlur.html">nidl.volume.transforms.augmentation.RandomGaussianBlur</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomGaussianNoise.html">nidl.volume.transforms.augmentation.RandomGaussianNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomErasing.html">nidl.volume.transforms.augmentation.RandomErasing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomFlip.html">nidl.volume.transforms.augmentation.RandomFlip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomResizedCrop.html">nidl.volume.transforms.augmentation.RandomResizedCrop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.volume.transforms.augmentation.RandomRotation.html">nidl.volume.transforms.augmentation.RandomRotation</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/datasets.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.datasets</span></code>: Available datasets</a><input aria-label="Toggle navigation of nidl.datasets: Available datasets" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.BaseImageDataset.html">nidl.datasets.BaseImageDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.BaseNumpyDataset.html">nidl.datasets.BaseNumpyDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.ImageDataFrameDataset.html">nidl.datasets.ImageDataFrameDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.datasets.OpenBHB.html">nidl.datasets.OpenBHB</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbingCallback.html">nidl.callbacks.ModelProbingCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.ModelProbingCVCallback.html">nidl.callbacks.ModelProbingCVCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.MetricsCallback.html">nidl.callbacks.MetricsCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.callbacks.BatchTypingCallback.html">nidl.callbacks.BatchTypingCallback</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/metrics.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.metrics</span></code>: Available metrics</a><input aria-label="Toggle navigation of nidl.metrics: Available metrics" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.pearson_r.html">nidl.metrics.pearson_r</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.alignment_score.html">nidl.metrics.alignment_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.uniformity_score.html">nidl.metrics.uniformity_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.contrastive_accuracy_score.html">nidl.metrics.contrastive_accuracy_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.procrustes_similarity.html">nidl.metrics.procrustes_similarity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.procrustes_r2.html">nidl.metrics.procrustes_r2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.metrics.kruskal_similarity.html">nidl.metrics.kruskal_similarity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maintenance.html">Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Versions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl">GitHub Repository</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/blob/main/doc/auto_examples/plot_metrics_callback.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/neurospin-deepinsight/nidl/edit/main/doc/auto_examples/plot_metrics_callback.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-metrics-callback-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="visualization-of-metrics-during-training-of-pytorch-lightning-models">
+<span id="sphx-glr-auto-examples-plot-metrics-callback-py"></span><h1>Visualization of metrics during training of PyTorch-Lightning models<a class="headerlink" href="#visualization-of-metrics-during-training-of-pytorch-lightning-models" title="Link to this heading">¶</a></h1>
+<p>The current logic in nidl is to separate the implementation of the actual model
+(i.e. everything required to fit the model on data) from everything else, such
+as metrics computation and logging. This is usually performed to check the
+behavior of a model during training or validation but it is not essential for
+fitting.</p>
+<p>This notebook will show you how to visualize some metrics (either given by
+<code class="docutils literal notranslate"><span class="pre">torchmetrics</span></code>, <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> or a custom function score) during the
+training of a Pytorch Lightning model, using the
+<a class="reference internal" href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetricsCallback</span></code></a> callback.</p>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
+<p>This notebook requires some packages besides nidl. Let’s first start with
+importing our standard libraries below:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">func</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorboard.backend.event_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">event_accumulator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.concat.html#torch.concat" title="torch.concat" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">concat</span></a><span class="p">,</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.optim.SGD.html#torch.optim.SGD" title="torch.optim.SGD" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">SGD</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics</span><span class="w"> </span><span class="kn">import</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/accuracy.html#torchmetrics.Accuracy" title="torchmetrics.Accuracy" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">Accuracy</span></a><span class="p">,</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/f1_score.html#torchmetrics.F1Score" title="torchmetrics.F1Score" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">F1Score</span></a><span class="p">,</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/precision.html#torchmetrics.Precision" title="torchmetrics.Precision" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">Precision</span></a><span class="p">,</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/recall.html#torchmetrics.Recall" title="torchmetrics.Recall" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">Recall</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">transforms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class"><span class="n">MNIST</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.utils</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.utils.make_grid.html#torchvision.utils.make_grid" title="torchvision.utils.make_grid" class="sphx-glr-backref-module-torchvision-utils sphx-glr-backref-type-py-function"><span class="n">make_grid</span></a>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.callbacks</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback" class="sphx-glr-backref-module-nidl-callbacks sphx-glr-backref-type-py-class"><span class="n">MetricsCallback</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.BaseEstimator" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-class"><span class="n">BaseEstimator</span></a><span class="p">,</span> <a href="../modules/generated/nidl.estimators.ClassifierMixin.html#nidl.estimators.ClassifierMixin" title="nidl.estimators.ClassifierMixin" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-class"><span class="n">ClassifierMixin</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.estimators.ssl</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class"><span class="n">SimCLR</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.metrics.ssl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <a href="../modules/generated/nidl.metrics.alignment_score.html#nidl.metrics.alignment_score" title="nidl.metrics.alignment_score" class="sphx-glr-backref-module-nidl-metrics sphx-glr-backref-type-py-function"><span class="n">alignment_score</span></a><span class="p">,</span>
+    <a href="../modules/generated/nidl.metrics.contrastive_accuracy_score.html#nidl.metrics.contrastive_accuracy_score" title="nidl.metrics.contrastive_accuracy_score" class="sphx-glr-backref-module-nidl-metrics sphx-glr-backref-type-py-function"><span class="n">contrastive_accuracy_score</span></a><span class="p">,</span>
+    <a href="../modules/generated/nidl.metrics.uniformity_score.html#nidl.metrics.uniformity_score" title="nidl.metrics.uniformity_score" class="sphx-glr-backref-module-nidl-metrics sphx-glr-backref-type-py-function"><span class="n">uniformity_score</span></a><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nidl.transforms</span><span class="w"> </span><span class="kn">import</span> <a href="../modules/generated/nidl.transforms.MultiViewsTransform.html#nidl.transforms.MultiViewsTransform" title="nidl.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a>
+</pre></div>
+</div>
+<p>We define some global parameters that will be used throughout the notebook:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <span class="s2">&quot;/tmp/mnist&quot;</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a> <span class="o">=</span> <span class="mi">256</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a> <span class="o">=</span> <span class="mi">10</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">latent_size</span></a> <span class="o">=</span> <span class="mi">32</span>
+</pre></div>
+</div>
+</section>
+<section id="classification-metrics-in-supervised-learning">
+<h2>Classification metrics in supervised learning<a class="headerlink" href="#classification-metrics-in-supervised-learning" title="Link to this heading">¶</a></h2>
+<p>For illustration purposes on how to use the metrics callback, we will focus
+on the popular MNIST dataset. It contains 60k training images and
+10k test images of size 28x28 pixels. Each image contains a digit from 0 to
+9. We will train a simple classification model on these data and log standard
+classification metrics (accuracy, F1-score, precision, recall) to understand
+how the <a class="reference internal" href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetricsCallback</span></code></a> works.</p>
+<p>We start by loading the MNIST dataset dataset with standard scaling
+transforms.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_transforms</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span></a><span class="p">(</span>
+    <span class="p">[</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.ToTensor.html#torchvision.transforms.ToTensor" title="torchvision.transforms.ToTensor" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span></a><span class="p">(),</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Normalize.html#torchvision.transforms.Normalize" title="torchvision.transforms.Normalize" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span></a><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))]</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_dataset</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class"><span class="n">MNIST</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_transforms</span></a><span class="p">)</span>
+<a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_dataset</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class"><span class="n">MNIST</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_transforms</span></a>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, we create the data loaders for training and testing the models.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_dataset</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_dataset</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:424: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+</pre></div>
+</div>
+<p>Before starting training classifiers, let’s visualize some
+examples of the dataset.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">show_images</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">images</span></a><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nrow</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="n">grid</span> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.utils.make_grid.html#torchvision.utils.make_grid" title="torchvision.utils.make_grid" class="sphx-glr-backref-module-torchvision-utils sphx-glr-backref-type-py-function"><span class="n">make_grid</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">images</span></a><span class="p">,</span> <span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pad_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.imshow.html#matplotlib.pyplot.imshow" title="matplotlib.pyplot.imshow" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span></a><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.title.html#matplotlib.pyplot.title" title="matplotlib.pyplot.title" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">title</span></a><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axis.html#matplotlib.pyplot.axis" title="matplotlib.pyplot.axis" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">axis</span></a><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+
+
+<a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">images</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a><span class="p">))</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">images</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Label=</span><span class="si">{</span><a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_metrics_callback_001.png" srcset="../_images/sphx_glr_plot_metrics_callback_001.png" alt="Label=7, Label=2, Label=1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 10 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+</pre></div>
+</div>
+<section id="supervised-training-with-metrics-callback">
+<h3>Supervised training with metrics callback<a class="headerlink" href="#supervised-training-with-metrics-callback" title="Link to this heading">¶</a></h3>
+<p>Since MNIST images are small, we can use a simple LeNet-like architecture
+as encoder, with few parameters. The output dimension of the
+encoder is set to 32, which is approximately 30 times smaller that the input,
+but larger than the number of input classes (10).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">LeNet</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Module</span></a><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">latent_size</span></a> <span class="o">=</span> <span class="n">num_classes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="torch.nn.Conv2d" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool1</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d" title="torch.nn.AvgPool2d" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Conv2d.html#torch.nn.Conv2d" title="torch.nn.Conv2d" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span></a><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool2</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d" title="torch.nn.AvgPool2d" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Linear.html#torch.nn.Linear" title="torch.nn.Linear" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span></a><span class="p">(</span><span class="mi">16</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Linear.html#torch.nn.Linear" title="torch.nn.Linear" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span></a><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mi">84</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Linear.html#torch.nn.Linear" title="torch.nn.Linear" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span></a><span class="p">(</span><span class="mi">84</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.functional.relu.html#torch.nn.functional.relu" title="torch.nn.functional.relu" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">func</span><span class="o">.</span><span class="n">relu</span></a><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.functional.relu.html#torch.nn.functional.relu" title="torch.nn.functional.relu" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">func</span><span class="o">.</span><span class="n">relu</span></a><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.functional.relu.html#torch.nn.functional.relu" title="torch.nn.functional.relu" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">func</span><span class="o">.</span><span class="n">relu</span></a><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.functional.relu.html#torch.nn.functional.relu" title="torch.nn.functional.relu" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">func</span><span class="o">.</span><span class="n">relu</span></a><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now fit a supervised model with cross-entopy loss (PL-compatible).
+We limit the training to 10 epochs for the sake of time and because it is
+enough for checking the evolution of the metrics across training.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SupervisedCrossEntropy</span><span class="p">(</span><a href="../modules/generated/nidl.estimators.ClassifierMixin.html#nidl.estimators.ClassifierMixin" title="nidl.estimators.ClassifierMixin" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-class"><span class="n">ClassifierMixin</span></a><span class="p">,</span> <a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.BaseEstimator" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-class"><span class="n">BaseEstimator</span></a><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Self-contained Pytorch-Lightning model.</span>
+
+<span class="sd">    Metrics are not computed here since it is not essential to model&#39;s</span>
+<span class="sd">    training.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">backbone</span><span class="p">:</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">nn</span><span class="o">.</span><span class="n">Module</span></a><span class="p">,</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">,</span>
+        <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">weight_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5e-4</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;callbacks&quot;</span><span class="p">,</span> <span class="s2">&quot;backbone&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span> <span class="o">=</span> <span class="n">backbone</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">=</span> <span class="n">momentum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_decay</span> <span class="o">=</span> <span class="n">weight_decay</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.optim.SGD.html#torch.optim.SGD" title="torch.optim.SGD" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">SGD</span></a><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+            <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">momentum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">momentum</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">optimizer</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imgs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">,</span>
+        <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dataloader_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">imgs</span><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a> <span class="o">=</span> <span class="n">batch</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.functional.cross_entropy.html#torch.nn.functional.cross_entropy" title="torch.nn.functional.cross_entropy" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">cross_entropy</span></a><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/train&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">on_step</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
+            <span class="s2">&quot;preds&quot;</span><span class="p">:</span> <span class="n">preds</span><span class="p">,</span>
+            <span class="s2">&quot;target&quot;</span><span class="p">:</span> <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">,</span>
+        <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">dataloader_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">imgs</span><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a> <span class="o">=</span> <span class="n">batch</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.nn.functional.cross_entropy.html#torch.nn.functional.cross_entropy" title="torch.nn.functional.cross_entropy" class="sphx-glr-backref-module-torch-nn-functional sphx-glr-backref-type-py-function"><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">cross_entropy</span></a><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;loss/val&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;val_loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
+            <span class="s2">&quot;preds&quot;</span><span class="p">:</span> <span class="n">preds</span><span class="p">,</span>
+            <span class="s2">&quot;target&quot;</span><span class="p">:</span> <a href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+<p>We create the metrics callback that will log the classification metrics
+during training every training step and every validation epoch (default):</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback" class="sphx-glr-backref-module-nidl-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">callback</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback" class="sphx-glr-backref-module-nidl-callbacks sphx-glr-backref-type-py-class"><span class="n">MetricsCallback</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metrics</span></a><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;acc1&quot;</span><span class="p">:</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/accuracy.html#torchmetrics.Accuracy" title="torchmetrics.Accuracy" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">Accuracy</span></a><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s2">&quot;multiclass&quot;</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s2">&quot;f1&quot;</span><span class="p">:</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/f1_score.html#torchmetrics.F1Score" title="torchmetrics.F1Score" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">F1Score</span></a><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s2">&quot;multiclass&quot;</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/precision.html#torchmetrics.Precision" title="torchmetrics.Precision" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">Precision</span></a><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s2">&quot;multiclass&quot;</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s2">&quot;recall&quot;</span><span class="p">:</span> <a href="https://lightning.ai/docs/torchmetrics/stable/classification/recall.html#torchmetrics.Recall" title="torchmetrics.Recall" class="sphx-glr-backref-module-torchmetrics sphx-glr-backref-type-py-class"><span class="n">Recall</span></a><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s2">&quot;multiclass&quot;</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we fit the model:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.ClassifierMixin.html#nidl.estimators.ClassifierMixin" title="nidl.estimators.ClassifierMixin" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-class"><span class="n">SupervisedCrossEntropy</span></a><span class="p">(</span>
+    <span class="n">backbone</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">LeNet</span></a><span class="p">(),</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
+    <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">check_val_every_n_epoch</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">enable_checkpointing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><a href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback" class="sphx-glr-backref-module-nidl-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">callback</span></a><span class="p">,</span>  <span class="c1"># &lt;-- key part for metrics computation</span>
+<span class="p">)</span>
+<a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.fit" title="nidl.estimators.BaseEstimator.fit" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_xy_loader</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_xy_loader</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>┏━━━┳━━━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃   ┃ Name     ┃ Type  ┃ Params ┃ Mode  ┃ FLOPs ┃
+┡━━━╇━━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 0 │ backbone │ LeNet │ 61.7 K │ train │     0 │
+└───┴──────────┴───────┴────────┴───────┴───────┘
+Trainable params: 61.7 K
+Non-trainable params: 0
+Total params: 61.7 K
+Total estimated model params size (MB): 0
+Modules in train mode: 8
+Modules in eval mode: 0
+Total FLOPs: 0
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/pytorch_lightning/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/torch/utils/data/dataloader.py:1118: UserWarning: &#39;pin_memory&#39; argument is set as true but no accelerator is found, then device pinned memory won&#39;t be used.
+  super().__init__(loader)
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:08 •        29.68it/s v_num: 12.000
+                                    0:00:00                    acc1/train: 0.990
+                                                               f1/train: 0.990
+                                                               precision/train:
+                                                               0.990
+                                                               recall/train:
+                                                               0.990 acc1/val:
+                                                               0.976 f1/val:
+                                                               0.976
+                                                               precision/val:
+                                                               0.976 recall/val:
+                                                               0.976
+
+SupervisedCrossEntropy(
+  (backbone): LeNet(
+    (conv1): Conv2d(1, 6, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+    (pool1): AvgPool2d(kernel_size=2, stride=2, padding=0)
+    (conv2): Conv2d(6, 16, kernel_size=(5, 5), stride=(1, 1))
+    (pool2): AvgPool2d(kernel_size=2, stride=2, padding=0)
+    (fc1): Linear(in_features=400, out_features=120, bias=True)
+    (fc2): Linear(in_features=120, out_features=84, bias=True)
+    (fc3): Linear(in_features=84, out_features=10, bias=True)
+  )
+)
+</pre></div>
+</div>
+</section>
+<section id="visualization-of-the-classification-metrics-during-training">
+<h3>Visualization of the classification metrics during training<a class="headerlink" href="#visualization-of-the-classification-metrics-during-training" title="Link to this heading">¶</a></h3>
+<p>During training, we can visualize the classification metrics logged
+by the <a class="reference internal" href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetricsCallback</span></code></a> using TensorBoard.
+The logged metrics are stored in the <cite>lightning_logs</cite> folder by default.
+They contain the accuracy, F1-score, precision (macro) and recall (macro).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_last_log_version</span><span class="p">(</span><span class="n">logs_dir</span><span class="o">=</span><span class="s2">&quot;lightning_logs&quot;</span><span class="p">):</span>
+    <span class="n">versions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/os.html#os.listdir" title="os.listdir" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">listdir</span></a><span class="p">(</span><span class="n">logs_dir</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/re.html#re.match" title="re.match" class="sphx-glr-backref-module-re sphx-glr-backref-type-py-function"><span class="n">re</span><span class="o">.</span><span class="n">match</span></a><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;version_(\d+)&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">versions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span> <span class="k">if</span> <span class="n">versions</span> <span class="k">else</span> <span class="kc">None</span>
+
+
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">log_dir</span></a> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;lightning_logs/version_</span><span class="si">{</span><span class="n">get_last_log_version</span><span class="p">()</span><span class="si">}</span><span class="s2">/&quot;</span>
+<span class="n">ea</span> <span class="o">=</span> <span class="n">event_accumulator</span><span class="o">.</span><span class="n">EventAccumulator</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">log_dir</span></a><span class="p">)</span>
+<span class="n">ea</span><span class="o">.</span><span class="n">Reload</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metrics</span></a> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;acc1/val&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;f1/val&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;precision/val&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;recall/val&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scalars</span></a> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="n">ea</span><span class="o">.</span><span class="n">Scalars</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metrics</span></a><span class="p">}</span>
+</pre></div>
+</div>
+<p>Once all the metrics are loaded, we plot them as the number of training steps
+increases:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_metrics</span></a> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scalars</span></a><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_metrics</span></a><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_metrics</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="k">for</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span> <span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metric_name</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scalars</span></a><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">steps</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">step</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">]</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">values</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">]</span>
+
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">steps</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">values</span></a><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metric_name</span></a><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Steps (batch size=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metric_name</span></a><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.grid.html#matplotlib.axes.Axes.grid" title="matplotlib.axes.Axes.grid" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.suptitle.html#matplotlib.pyplot.suptitle" title="matplotlib.pyplot.suptitle" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Supervised metrics during training&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;x-large&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_metrics_callback_002.png" srcset="../_images/sphx_glr_plot_metrics_callback_002.png" alt="Supervised metrics during training, Acc1, F1, Precision, Recall" class = "sphx-glr-single-img"/></section>
+</section>
+<section id="unsupervised-contrastive-learning-with-metrics-callback">
+<h2>Unsupervised contrastive learning with metrics callback<a class="headerlink" href="#unsupervised-contrastive-learning-with-metrics-callback" title="Link to this heading">¶</a></h2>
+<p>We now demonstrate how to plot self-supervised metrics (alignment and
+uniformity scores) during the training of a SimCLR model (implementation from
+NIDL). The logic is the same as before.</p>
+<section id="dataset-and-data-augmentations-for-contrastive-learning">
+<h3>Dataset and data augmentations for contrastive learning<a class="headerlink" href="#dataset-and-data-augmentations-for-contrastive-learning" title="Link to this heading">¶</a></h3>
+<p>To perform self-supervisde contrastive learning, we need to define a set of
+data augmentations to create multiple views of the same image. Since we work
+with grayscale images, we will use random resized crop and Gaussian blur. We
+reduce the size of the Gaussian kernel to 3x3 since MNIST images are only
+28x28 pixels.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span></a><span class="p">(</span>
+    <span class="p">[</span>
+        <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.RandomResizedCrop.html#torchvision.transforms.RandomResizedCrop" title="torchvision.transforms.RandomResizedCrop" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">RandomResizedCrop</span></a><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+        <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.GaussianBlur.html#torchvision.transforms.GaussianBlur" title="torchvision.transforms.GaussianBlur" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">GaussianBlur</span></a><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+        <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.ToTensor.html#torchvision.transforms.ToTensor" title="torchvision.transforms.ToTensor" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span></a><span class="p">(),</span>
+        <a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Normalize.html#torchvision.transforms.Normalize" title="torchvision.transforms.Normalize" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class"><span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span></a><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,)),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We create a MNIST dataset that returns multiple views of the same image.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ssl_dataset</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class"><span class="n">MNIST</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><a href="../modules/generated/nidl.transforms.MultiViewsTransform.html#nidl.transforms.MultiViewsTransform" title="nidl.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_ssl_dataset</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class"><span class="n">MNIST</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">,</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><a href="../modules/generated/nidl.transforms.MultiViewsTransform.html#nidl.transforms.MultiViewsTransform" title="nidl.transforms.MultiViewsTransform" class="sphx-glr-backref-module-nidl-transforms sphx-glr-backref-type-py-class"><span class="n">MultiViewsTransform</span></a><span class="p">(</span><a href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Compose.html#torchvision.transforms.Compose" title="torchvision.transforms.Compose" class="sphx-glr-backref-module-torchvision-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">contrast_transforms</span></a><span class="p">,</span> <span class="n">n_views</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="p">)</span>
+
+<a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_ssl_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ssl_dataset</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_ssl_loader</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class"><span class="n">DataLoader</span></a><span class="p">(</span>
+    <a href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.MNIST.html#torchvision.datasets.MNIST" title="torchvision.datasets.MNIST" class="sphx-glr-backref-module-torchvision-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_ssl_dataset</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_workers</span></a><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we create the callback that will compute and log the self-supervised
+metrics during training and validation.</p>
+<p><strong>Important remark</strong>: uniformity score cannot be aggregated with a simple
+average over batch as the alignment score. Here, we perform an exact
+computation of the uniformity score on the <em>validation set</em> only. The score
+on the training set is just an approximation but we don’t require exact
+computation as the model’s weights are changing over iterations.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback" class="sphx-glr-backref-module-nidl-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">callback</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback" class="sphx-glr-backref-module-nidl-callbacks sphx-glr-backref-type-py-class"><span class="n">MetricsCallback</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metrics</span></a><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;alignment&quot;</span><span class="p">:</span> <a href="../modules/generated/nidl.metrics.alignment_score.html#nidl.metrics.alignment_score" title="nidl.metrics.alignment_score" class="sphx-glr-backref-module-nidl-metrics sphx-glr-backref-type-py-function"><span class="n">alignment_score</span></a><span class="p">,</span>
+        <span class="s2">&quot;uniformity&quot;</span><span class="p">:</span> <a href="../modules/generated/nidl.metrics.uniformity_score.html#nidl.metrics.uniformity_score" title="nidl.metrics.uniformity_score" class="sphx-glr-backref-module-nidl-metrics sphx-glr-backref-type-py-function"><span class="n">uniformity_score</span></a><span class="p">,</span>
+        <span class="s2">&quot;contrastive_acc&quot;</span><span class="p">:</span> <a href="../modules/generated/nidl.metrics.contrastive_accuracy_score.html#nidl.metrics.contrastive_accuracy_score" title="nidl.metrics.contrastive_accuracy_score" class="sphx-glr-backref-module-nidl-metrics sphx-glr-backref-type-py-function"><span class="n">contrastive_accuracy_score</span></a><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">needs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;alignment&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;z1&quot;</span><span class="p">,</span> <span class="s2">&quot;z2&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;uniformity&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">out</span><span class="p">:</span> <a href="https://docs.pytorch.org/docs/main/generated/torch.concat.html#torch.concat" title="torch.concat" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">concat</span></a><span class="p">((</span><span class="n">out</span><span class="p">[</span><span class="s2">&quot;z1&quot;</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;z2&quot;</span><span class="p">]))},</span>
+        <span class="s2">&quot;contrastive_acc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;z1&quot;</span><span class="p">,</span> <span class="s2">&quot;z2&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">every_n_train_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">every_n_val_epochs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+
+<a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../modules/generated/nidl.estimators.ssl.SimCLR.html#nidl.estimators.ssl.SimCLR" title="nidl.estimators.ssl.SimCLR" class="sphx-glr-backref-module-nidl-estimators-ssl sphx-glr-backref-type-py-class"><span class="n">SimCLR</span></a><span class="p">(</span>
+    <span class="n">encoder</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">LeNet</span></a><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">latent_size</span></a><span class="p">),</span>
+    <span class="n">proj_input_dim</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">latent_size</span></a><span class="p">,</span>
+    <span class="n">proj_hidden_dim</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">latent_size</span></a><span class="p">,</span>
+    <span class="n">proj_output_dim</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">3e-4</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">weight_decay</span><span class="o">=</span><span class="mf">5e-5</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">enable_checkpointing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><a href="../modules/generated/nidl.callbacks.MetricsCallback.html#nidl.callbacks.MetricsCallback" title="nidl.callbacks.MetricsCallback" class="sphx-glr-backref-module-nidl-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">callback</span></a><span class="p">,</span>  <span class="c1"># &lt;-- key part for metrics computation</span>
+<span class="p">)</span>
+
+<a href="../modules/generated/nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator.fit" title="nidl.estimators.BaseEstimator.fit" class="sphx-glr-backref-module-nidl-estimators sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_ssl_loader</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/main/data.html#torch.utils.data.DataLoader" title="torch.utils.data.DataLoader" class="sphx-glr-backref-module-torch-utils-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_ssl_loader</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>┏━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃   ┃ Name            ┃ Type                 ┃ Params ┃ Mode  ┃ FLOPs ┃
+┡━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 0 │ encoder         │ LeNet                │ 63.6 K │ train │     0 │
+│ 1 │ projection_head │ SimCLRProjectionHead │  2.1 K │ train │     0 │
+│ 2 │ loss            │ InfoNCE              │      0 │ train │     0 │
+└───┴─────────────────┴──────────────────────┴────────┴───────┴───────┘
+Trainable params: 65.7 K
+Non-trainable params: 0
+Total params: 65.7 K
+Total estimated model params size (MB): 0
+Modules in train mode: 14
+Modules in eval mode: 0
+Total FLOPs: 0
+Epoch 9/9  ━━━━━━━━━━━━━━━━ 235/235 0:00:39 • 0:00:00 6.38it/s v_num: 13.000
+                                                               loss/train: 0.328
+                                                               loss/val: 1.127
+                                                               alignment/val:
+                                                               0.119
+                                                               uniformity/val:
+                                                               -3.441
+                                                               contrastive_acc/…
+                                                               0.750
+
+SimCLR(
+  (encoder): LeNet(
+    (conv1): Conv2d(1, 6, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+    (pool1): AvgPool2d(kernel_size=2, stride=2, padding=0)
+    (conv2): Conv2d(6, 16, kernel_size=(5, 5), stride=(1, 1))
+    (pool2): AvgPool2d(kernel_size=2, stride=2, padding=0)
+    (fc1): Linear(in_features=400, out_features=120, bias=True)
+    (fc2): Linear(in_features=120, out_features=84, bias=True)
+    (fc3): Linear(in_features=84, out_features=32, bias=True)
+  )
+  (projection_head): SimCLRProjectionHead(
+    (layers): Sequential(
+      (0): Linear(in_features=32, out_features=32, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=32, out_features=32, bias=True)
+    )
+  )
+  (loss): InfoNCE(temperature=0.1)
+)
+</pre></div>
+</div>
+</section>
+<section id="visualization-of-the-self-supervised-metrics-during-training">
+<h3>Visualization of the self-supervised metrics during training<a class="headerlink" href="#visualization-of-the-self-supervised-metrics-during-training" title="Link to this heading">¶</a></h3>
+<p>As before, we visualize the logged metrics using tensorboard.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_last_log_version</span><span class="p">(</span><span class="n">logs_dir</span><span class="o">=</span><span class="s2">&quot;lightning_logs&quot;</span><span class="p">):</span>
+    <span class="n">versions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/os.html#os.listdir" title="os.listdir" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">listdir</span></a><span class="p">(</span><span class="n">logs_dir</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/re.html#re.match" title="re.match" class="sphx-glr-backref-module-re sphx-glr-backref-type-py-function"><span class="n">re</span><span class="o">.</span><span class="n">match</span></a><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;version_(\d+)&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">versions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span> <span class="k">if</span> <span class="n">versions</span> <span class="k">else</span> <span class="kc">None</span>
+
+
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">log_dir</span></a> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;lightning_logs/version_</span><span class="si">{</span><span class="n">get_last_log_version</span><span class="p">()</span><span class="si">}</span><span class="s2">/&quot;</span>
+<span class="n">ea</span> <span class="o">=</span> <span class="n">event_accumulator</span><span class="o">.</span><span class="n">EventAccumulator</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">log_dir</span></a><span class="p">)</span>
+<span class="n">ea</span><span class="o">.</span><span class="n">Reload</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metrics</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;alignment/val&quot;</span><span class="p">,</span> <span class="s2">&quot;uniformity/val&quot;</span><span class="p">,</span> <span class="s2">&quot;contrastive_acc/val&quot;</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scalars</span></a> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="n">ea</span><span class="o">.</span><span class="n">Scalars</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metrics</span></a><span class="p">}</span>
+</pre></div>
+</div>
+<p>Once all the metrics are loaded, we plot them as the number of training steps
+increases:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_metrics</span></a> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scalars</span></a><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_metrics</span></a><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_metrics</span></a><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="k">for</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span> <span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metric_name</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scalars</span></a><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">steps</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">step</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">]</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">values</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">]</span>
+
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">steps</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">values</span></a><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metric_name</span></a><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Steps (batch size=</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">batch_size</span></a><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">metric_name</span></a><span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.grid.html#matplotlib.axes.Axes.grid" title="matplotlib.axes.Axes.grid" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.suptitle.html#matplotlib.pyplot.suptitle" title="matplotlib.pyplot.suptitle" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Self-supervised metrics during training&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;x-large&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_metrics_callback_003.png" srcset="../_images/sphx_glr_plot_metrics_callback_003.png" alt="Self-supervised metrics during training, Alignment, Uniformity, Contrastive_acc" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (9 minutes 25.698 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2408 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-metrics-callback-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/dfa4ecd93e1a6b50d625160b65e18c28/plot_metrics_callback.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_metrics_callback.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/328a331af57c363afcaa186c1bef1656/plot_metrics_callback.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_metrics_callback.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c56e9321990c1d47da8e1f94b9f68586/plot_metrics_callback.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_metrics_callback.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="plot_yaware_openbhb.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Weakly Supervised Contrastive Learning with y-Aware</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="plot_ijepa_medmnist.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Self-Supervised Learning with I-JEPA on MedMNIST3D</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; The nidl developers
+- Code and documentation distributed under CeCILL-B license.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fa-brands fa-solid fa-github fa-2x" href="https://github.com/neurospin-deepinsight/nidl" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Visualization of metrics during training of PyTorch-Lightning models</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#classification-metrics-in-supervised-learning">Classification metrics in supervised learning</a><ul>
+<li><a class="reference internal" href="#supervised-training-with-metrics-callback">Supervised training with metrics callback</a></li>
+<li><a class="reference internal" href="#visualization-of-the-classification-metrics-during-training">Visualization of the classification metrics during training</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#unsupervised-contrastive-learning-with-metrics-callback">Unsupervised contrastive learning with metrics callback</a><ul>
+<li><a class="reference internal" href="#dataset-and-data-augmentations-for-contrastive-learning">Dataset and data augmentations for contrastive learning</a></li>
+<li><a class="reference internal" href="#visualization-of-the-self-supervised-metrics-during-training">Visualization of the self-supervised metrics during training</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=4ea706d9"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

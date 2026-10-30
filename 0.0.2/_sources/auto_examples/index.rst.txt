@@ -1,0 +1,189 @@
+:orphan:
+
+.. _examples:
+
+Examples
+--------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial illustrates the use of Decoupled Contrastive Learning (DCL) [1]_ which introduces a reformulation of the InfoNCE loss used in SimCLR [2]_ that removes the negative-positive coupling in the loss. This modification stabilizes optimization and improves performance, especially when training with small batch sizes.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_dcl_vs_simclr_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_dcl_vs_simclr.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Decoupled Contrastive Learning</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This notebook will show you how to investigate the data representation given by an embedding estimator (such as SimCLR, y-Aware Contrastive Learning or Barlow  Twins) during training and inference using the notion of &quot;probing&quot;. A standard machine learning model (e.g. linear or SVM) is trained and evaluated on the data embedding for a given task as the model is being fitted (for training  monitoring) or at inference. It allows the user to understand what concepts are learned  by the model.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_model_probing_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_model_probing.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model probing of embedding estimators</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This notebook introduces the OpenBHB dataset [1]_, a large-scale, multi-site brain MRI dataset. It is designed to perform benchmarking of machine learning and deep learning models on neuroimaging data.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_openbhb_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_openbhb.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Presentation of the OpenBHB dataset</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to implement and evaluate a SimCLR model [1]_ for self-supervised contrastive learning on the MNIST dataset using the nidl library.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_simclr_mnist_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_simclr_mnist.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Self-Supervised Contrastive Learning with SimCLR on MNIST</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a Barlow Twins model [1]_ on the OpenBHB dataset using NIDL.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_barlowtwins_openbhb_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_barlowtwins_openbhb.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Self-Supervised Learning with Barlow Twins</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to pretrain a 3D vision transformer with I-JEPA [1]_ on a MedMNIST3D dataset [2]_ using the nidl library. It will also show you how to evaluate the learned representations with a simple linear probe.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_ijepa_medmnist_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_ijepa_medmnist.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Self-Supervised Learning with I-JEPA on MedMNIST3D</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The current logic in nidl is to separate the implementation of the actual model (i.e. everything required to fit the model on data) from everything else, such as metrics computation and logging. This is usually performed to check the behavior of a model during training or validation but it is not essential for fitting.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_metrics_callback_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_metrics_callback.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Visualization of metrics during training of PyTorch-Lightning models</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial will show you how to fit and evaluate a y-Aware Contrastive Learning model on the OpenBHB dataset using NIDL. As in the original paper [1]_, we will use age as a weak label to guide the contrastive learning process. The model will be trained to bring representations of samples with similar ages closer together in the feature space, while pushing apart samples with dissimilar ages. This approach leverages the age information to enhance the quality of the learned representations, making them more relevant for downstream tasks such as age prediction or disease classification.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_yaware_openbhb_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Weakly Supervised Contrastive Learning with y-Aware</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_dcl_vs_simclr
+   /auto_examples/plot_model_probing
+   /auto_examples/plot_openbhb
+   /auto_examples/plot_simclr_mnist
+   /auto_examples/plot_barlowtwins_openbhb
+   /auto_examples/plot_ijepa_medmnist
+   /auto_examples/plot_metrics_callback
+   /auto_examples/plot_yaware_openbhb
+
+
+.. only:: html
+
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
+
+    .. container:: sphx-glr-download sphx-glr-download-python
+
+      :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
+
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+      :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
