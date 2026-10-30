@@ -14,7 +14,7 @@
 <link rel="search" title="Search" href="../search.html"><link rel="next" title="nidl.estimators.ssl.utils.ProjectionHead" href="generated/nidl.estimators.ssl.utils.ProjectionHead.html"><link rel="prev" title="nidl.losses.BetaVAELoss" href="generated/nidl.losses.BetaVAELoss.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+    <link rel="shortcut icon" href="../_static/favicon.ico"><!-- Generated with Sphinx 9.1.1 and Furo 2025.12.19 -->
         <title>nidl.estimators.ssl.utils: Available projection heads - Nidl</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=2da93098" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -338,6 +338,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.datasets.BaseNumpyDataset.html">nidl.datasets.BaseNumpyDataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.datasets.ImageDataFrameDataset.html">nidl.datasets.ImageDataFrameDataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.datasets.OpenBHB.html">nidl.datasets.OpenBHB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.datasets.OpenMind.html">nidl.datasets.OpenMind</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="callbacks.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.callbacks</span></code>: Available callbacks</a><input aria-label="Toggle navigation of nidl.callbacks: Available callbacks" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -416,7 +417,7 @@
 <span id="nidl-estimators-ssl-utils-available-projection-heads"></span><h1><a class="reference internal" href="#module-nidl.estimators.ssl.utils" title="nidl.estimators.ssl.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.estimators.ssl.utils</span></code></a>: Available projection heads<a class="headerlink" href="#module-nidl.estimators.ssl.utils" title="Link to this heading">¶</a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
-<p>A projection head is a small <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.16.0a0+git1b51ed6 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> mapping the
+<p>A projection head is a small <a class="reference external" href="https://docs.pytorch.org/docs/main/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch main (2.16.0a0+giteeafed4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> mapping the
 representations produced by an encoder into the space where a
 self-supervised loss (see <a class="reference internal" href="losses.html"><span class="doc">nidl.losses: Available losses</span></a>) is applied. It is typically
 discarded after pre-training, once the encoder is used for downstream tasks.</p>
