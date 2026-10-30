@@ -7,4 +7,4 @@
 ##########################################################################
 
 from .intensity import RobustRescaling, ZNormalization
-from .spatial import CropOrPad, Resample, Resize
+from .spatial import CropOrPad, InverseLetterbox, Letterbox, Resample, Resize

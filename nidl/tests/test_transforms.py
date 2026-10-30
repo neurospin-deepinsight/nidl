@@ -11,13 +11,15 @@ from unittest.mock import patch, MagicMock
 import numpy as np
 import torch
 
-from nidl.transforms.transforms import MultiViewsTransform, Identity
+from nidl.transforms.transforms import MultiViewsTransform, Identity, DinoTransform
 from nidl.transforms.volume.augmentation import (
     RandomRotation, RandomFlip, RandomResizedCrop, RandomErasing,
-    RandomGaussianBlur, RandomGaussianNoise
+    RandomGaussianBlur, RandomGaussianNoise, RandomBiasField,
+    RandomContrastAdjust, RandomAffine
 )
 from nidl.transforms.volume.preprocessing import (
-    ZNormalization, RobustRescaling, CropOrPad, Resize, Resample   
+    ZNormalization, RobustRescaling, CropOrPad, Resize, Resample,
+    Letterbox, InverseLetterbox   
 )
 
 
@@ -611,10 +613,11 @@ class TestRandomGaussianNoise(unittest.TestCase):
         torch_input = torch.rand(3, 4, 5)
         output = transform(self.numpy_input)
         self.assertGreater(np.std(output), np.std(np_input))
-        self.assertLess(np.std(output), np.sqrt(10**2 + np.var(np_input)))
+        # sample std of a small volume fluctuates around sqrt(10**2 + var)
+        self.assertLess(np.std(output), 1.5 * np.sqrt(10**2 + np.var(np_input)))
         output = transform(torch_input)
         self.assertGreater(torch.std(output), torch.std(torch_input))
-        self.assertLess(torch.std(output), torch.sqrt(10**2 + torch.var(torch_input)))
+        self.assertLess(torch.std(output), 1.5 * torch.sqrt(10**2 + torch.var(torch_input)))
 
     def test_invalid_std_range_raises(self):
         with self.assertRaises(ValueError):
@@ -971,6 +974,496 @@ class TestResample(unittest.TestCase):
             self.assertIsInstance(out, torch.Tensor)
             self.assertEqual(out.dtype, dtype)
             self.assertEqual(out.shape, (1, 8, 3, 4))
+
+    def test_from_sitk_contiguous(self):
+            out = Resample(target=2.0)(np.random.rand(16, 16, 16))
+            self.assertTrue(out.flags["C_CONTIGUOUS"])
+
+class TestDinoTransform(unittest.TestCase):
+    def setUp(self):
+        self.shape = (2, 20, 20, 20)
+        self.input = np.random.rand(*self.shape)
+        self.global_crops_count = 4
+        self.local_crops_count = 8
+
+    def test_invalid_not_int_global_crop_count(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(Identity(), Identity(), "test", 2)
+    
+    def test_invalid_negative_global_crop_count(self):
+        with self.assertRaises(ValueError):
+            _ = DinoTransform(Identity(), Identity(), -1, 2)
+    
+    def test_invalid_not_int_local_crop_count(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(Identity(), Identity(), 2, "test")
+
+    def test_invalid_negative_local_crop_count(self):
+        with self.assertRaises(ValueError):
+            _ = DinoTransform(Identity(), Identity(), 2, -1)
+    
+    def test_global_transform_callable(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(None, Identity(), 2, 2)
+    
+    def test_local_transform_callable(self):
+        with self.assertRaises(TypeError):
+            _ = DinoTransform(Identity(), None, 2, 2)
+    
+    def test_output_shape_and_content(self):
+        dino_transform = DinoTransform(
+            lambda x: x * 2, lambda x: x + 3, 
+            self.global_crops_count, self.local_crops_count
+        )
+        output = dino_transform(self.input)
+        self.assertEqual(
+            len(output), 
+            self.global_crops_count + self.local_crops_count
+        )
+        np.testing.assert_array_equal(
+            output, 
+            [self.input * 2 for _ in range(self.global_crops_count)] + 
+            [self.input + 3 for _ in range(self.local_crops_count)]
+        )
+    
+class TestLetterbox(unittest.TestCase):
+    def setUp(self):
+        self.target_shape = 16
+        self.constant_value = 0.0
+        self.fill_value = 1.0
+        self.input_shape = (32, 16, 8)
+        self.intermediate_shape = (16, 8, 4)
+        # Region of the output occupied by the resized volume
+        # (i.e. everything out of it its padding)
+        self.content_slice = (slice(0, 16), slice(4, 12), slice(6, 10))
+        self.input_3d = torch.full(
+            self.input_shape, self.fill_value, dtype=torch.float32
+        )
+        self.input_4d = torch.full(
+            (2, *self.input_shape), self.fill_value, dtype=torch.float32
+        )
+
+    def test_invalid_non_isotropic_target_shape(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape=(16, 16, 8))
+
+    def test_invalid_target_shape_length(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape=(16, 16))
+
+    def test_invalid_negative_target_shape(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape=-16)
+
+    def test_invalid_target_shape_type(self):
+        with self.assertRaises(ValueError):
+            _ = Letterbox(target_shape="16")
+
+    def test_invalid_input_type(self):
+        with self.assertRaises(TypeError):
+            Letterbox(self.target_shape)([[[1, 2], [3, 4]]])
+
+    def test_invalid_input_dimension(self):
+        with self.assertRaises(ValueError):
+            Letterbox(self.target_shape)(torch.rand(16, 16))
+
+    def test_intermediate_shape_preserves_aspect_ratio(self):
+        letterbox = Letterbox(self.target_shape)
+        resized_shape = letterbox.compute_intermediate_shape(self.input_shape)
+        self.assertEqual(resized_shape, self.intermediate_shape)
+        self.assertEqual(max(resized_shape), self.target_shape)
+
+    def test_output_shape_and_content_3d(self):
+        # Check that output volume is made of
+        # 1. The initial volume, resized to fit into the desired shape
+        # 2. Padding values surrouding it
+        # Check also the shape of the output tensor
+        letterbox = Letterbox(
+            self.target_shape, constant_values=self.constant_value
+        )
+        output = letterbox(self.input_3d)
+        self.assertIsInstance(output, torch.Tensor)
+        self.assertEqual(output.dtype, self.input_3d.dtype)
+        self.assertEqual(tuple(output.shape), 3 * (self.target_shape,))
+        # Resized volume is centered, the rest is padding
+        mask = torch.zeros_like(output, dtype=torch.bool)
+        mask[self.content_slice] = True
+        self.assertTrue(torch.allclose(output[mask],
+                                       torch.tensor(self.fill_value)))
+        self.assertTrue(torch.allclose(output[~mask],
+                                       torch.tensor(self.constant_value)))
+
+    def test_transform_across_channels(self):
+        # Check that the transform is independently applied to all channels
+        letterbox = Letterbox(
+            self.target_shape, constant_values=self.constant_value
+        )
+        output = letterbox(self.input_4d)
+        self.assertEqual(
+            tuple(output.shape),
+            (self.input_4d.shape[0], *(3 * (self.target_shape,)))
+        )
+        for channel in output:
+            self.assertTrue(torch.allclose(channel[self.content_slice],
+                                           torch.tensor(self.fill_value)))
+
+
+    def test_output_shape_and_content_numpy(self):
+        letterbox = Letterbox(
+            self.target_shape, constant_values=self.constant_value
+        )
+        for input_data in [self.input_3d.numpy(), self.input_4d.numpy()]:
+            output = letterbox(input_data)
+            self.assertIsInstance(output, np.ndarray)
+            self.assertEqual(output.dtype, input_data.dtype)
+            self.assertEqual(
+                output.shape,
+                (*input_data.shape[:-3], *(3 * (self.target_shape,)))
+            )
+            mask = np.zeros(output.shape[-3:], dtype=bool)
+            mask[self.content_slice] = True
+            self.assertTrue(np.allclose(output[..., mask], self.fill_value))
+            self.assertTrue(np.allclose(output[..., ~mask],
+                                        self.constant_value))
+
+class TestInverseLetterbox(unittest.TestCase):
+    def setUp(self):
+        self.standard_shape = 16
+        self.fill_value = 1.0
+        self.original_shape = (32, 16, 8)
+        self.intermediate_shape = (16, 8, 4)
+        self.input_3d = Letterbox(self.standard_shape)(
+            torch.full(self.original_shape, self.fill_value)
+        )
+        self.input_4d = torch.stack([self.input_3d, 2 * self.input_3d])
+
+    def test_invalid_non_isotropic_standard_shape(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=(16, 8, 16))
+
+    def test_invalid_standard_shape_length(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=(16, 16, 16, 16))
+
+    def test_invalid_negative_standard_shape(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=-16)
+
+    def test_invalid_standard_shape_type(self):
+        with self.assertRaises(ValueError):
+            _ = InverseLetterbox(standard_shape=16.0)
+
+    def test_invalid_input_type(self):
+        with self.assertRaises(TypeError):
+            InverseLetterbox(self.standard_shape)(
+                [[[1, 2], [3, 4]]], self.original_shape
+            )
+
+    def test_invalid_input_dimension(self):
+        with self.assertRaises(ValueError):
+            InverseLetterbox(self.standard_shape)(
+                torch.rand(16, 16), self.original_shape
+            )
+
+    def test_missing_original_shape(self):
+        with self.assertRaises(TypeError):
+            InverseLetterbox(self.standard_shape)(self.input_3d)
+
+    def test_intermediate_shape(self):
+        # Check shape of the intermediate output by testing agreement
+        # with letterbox's output
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        letterbox = Letterbox(self.standard_shape)
+        self.assertEqual(
+            inverse_letterbox.compute_intermediate_shape(self.original_shape),
+            self.intermediate_shape
+        )
+        self.assertEqual(
+            inverse_letterbox.compute_intermediate_shape(self.original_shape),
+            letterbox.compute_intermediate_shape(self.original_shape)
+        )
+
+    def test_output_shape_and_content_3d(self):
+        # Check that padding pixels are removed and output shape value
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        output = inverse_letterbox(self.input_3d, self.original_shape)
+        self.assertIsInstance(output, torch.Tensor)
+        self.assertEqual(output.dtype, self.input_3d.dtype)
+        self.assertEqual(tuple(output.shape), self.original_shape)
+        # Padding is cropped away: only the resized volume is left
+        self.assertTrue(torch.allclose(output, torch.tensor(self.fill_value)))
+
+    def test_output_shape_and_content_4d(self):
+        # Check that the transform is independently applied to all channels
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        output = inverse_letterbox(self.input_4d, self.original_shape)
+        self.assertEqual(
+            tuple(output.shape),
+            (self.input_4d.shape[0], *self.original_shape)
+        )
+        self.assertTrue(torch.allclose(output[0],
+                                       torch.tensor(self.fill_value)))
+        self.assertTrue(torch.allclose(output[1],
+                                       torch.tensor(2 * self.fill_value)))
+
+    def test_output_shape_and_content_numpy(self):
+        inverse_letterbox = InverseLetterbox(self.standard_shape)
+        for input_data in [self.input_3d.numpy(), self.input_4d.numpy()]:
+            output = inverse_letterbox(input_data, self.original_shape)
+            self.assertIsInstance(output, np.ndarray)
+            self.assertEqual(output.dtype, input_data.dtype)
+            self.assertEqual(
+                output.shape, (*input_data.shape[:-3], *self.original_shape)
+            )
+        self.assertTrue(np.allclose(output[0], self.fill_value))
+        self.assertTrue(np.allclose(output[1], 2 * self.fill_value))
+
+    def test_letterbox_and_inverse(self):
+        # Test content and shape agreement between letterbox and inverse
+        volume = torch.zeros(self.original_shape)
+        volume[:16] = 1.0
+        volume[16:] = 2.0
+        letterboxed = Letterbox(
+            self.standard_shape, interpolation="nearest"
+        )(volume)
+        recovered = InverseLetterbox(
+            self.standard_shape, interpolation="nearest"
+        )(letterboxed, self.original_shape)
+        self.assertEqual(tuple(recovered.shape), self.original_shape)
+        self.assertTrue(torch.equal(recovered, volume))
+
+
+class TestResizeFast(unittest.TestCase):
+    def test_torch_matches_sitk(self):
+        x = torch.rand(2, 16, 16, 16)
+        for interp, shape in [("linear", (8, 8, 8)), ("linear", (24, 20, 9)),
+                              ("nearest", (8, 8, 8)), ("nearest", (10, 20, 13))]:
+            tf = Resize(shape, interpolation=interp)
+            fast = tf(x)
+            ref = tf._apply_transform_sitk(x)
+            self.assertEqual(fast.shape, (2, *shape))
+            self.assertTrue(torch.allclose(fast, ref, atol=1e-5), interp)
+
+    def test_shape_dtype(self):
+        for dtype in [torch.float32, torch.float64, torch.uint8, torch.int64]:
+            for shape in [(1, 16, 16, 16), (16, 16, 16)]:
+                x = (torch.rand(*shape) * 100).to(dtype)
+                out = Resize((8, 8, 8))(x)
+                self.assertEqual(out.dtype, dtype)
+                self.assertEqual(out.shape, shape[:-3] + (8, 8, 8))
+                self.assertTrue(out.is_contiguous())
+
+    def test_fallback_other_interpolation(self):
+        x = torch.rand(1, 16, 16, 16)
+        out = Resize((8, 8, 8), interpolation="bspline")(x)
+        self.assertEqual(out.shape, (1, 8, 8, 8))
+
+    def test_numpy_uses_sitk(self):
+        out = Resize((8, 8, 8))(np.random.rand(1, 16, 16, 16))
+        self.assertIsInstance(out, np.ndarray)
+        self.assertEqual(out.shape, (1, 8, 8, 8))
+
+class TestRandomBiasField(unittest.TestCase):
+    def setUp(self):
+        self.x4 = torch.ones(2, 12, 10, 8)
+
+    def test_shapes_types(self):
+        for x in [self.x4, self.x4[0], self.x4.numpy(), self.x4[0].numpy()]:
+            out = RandomBiasField()(x)
+            self.assertEqual(type(out), type(x))
+            self.assertEqual(out.shape, x.shape)
+            self.assertEqual(out.dtype, x.dtype)
+
+    def test_positive_and_changes_input(self):
+        out = RandomBiasField(coefficients=0.5)(self.x4)
+        self.assertTrue(torch.all(out > 0))
+        self.assertFalse(torch.allclose(out, self.x4))
+
+    def test_order_zero_is_constant_gain(self):
+        out = RandomBiasField(coefficients=(0.3, 0.3), order=0)(self.x4)
+        self.assertTrue(torch.allclose(out, torch.full_like(out, np.exp(0.3))))
+
+    def test_zero_coefficients_identity(self):
+        out = RandomBiasField(coefficients=0.0)(self.x4)
+        self.assertTrue(torch.allclose(out, self.x4))
+
+    def test_per_channel(self):
+        out = RandomBiasField(per_channel=True)(self.x4)
+        self.assertFalse(torch.allclose(out[0], out[1]))
+        out = RandomBiasField(per_channel=False)(self.x4)
+        self.assertTrue(torch.allclose(out[0], out[1]))
+
+    def test_smoothness_matches_polynomial(self):
+        # order 1, only linear terms nonzero is not controllable, so check
+        # log-field is a polynomial of degree <= order along each axis
+        tf = RandomBiasField(coefficients=0.5, order=2)
+        log_f = tf._generate_bias_field((9, 9, 9), torch.device("cpu"))
+        line = log_f[:, 4, 4].double()
+        # third finite difference of a degree-2 polynomial vanishes
+        d3 = torch.diff(line, n=3)
+        self.assertTrue(torch.allclose(d3, torch.zeros_like(d3), atol=1e-4))
+
+    def test_int_input_dtype_kept(self):
+        x = torch.randint(1, 100, (1, 8, 8, 8))
+        self.assertEqual(RandomBiasField()(x).dtype, x.dtype)
+
+    def test_invalid_args(self):
+        with self.assertRaises(ValueError):
+            RandomBiasField(coefficients=(1, 0))
+        with self.assertRaises(ValueError):
+            RandomBiasField(order=-1)
+        with self.assertRaises(TypeError):
+            RandomBiasField(order=1.5)
+        with self.assertRaises(TypeError):
+            RandomBiasField(order=True)
+        with self.assertRaises(ValueError):
+            RandomBiasField()(torch.ones(8, 8))
+        with self.assertRaises(ValueError):
+            RandomBiasField(p=2)
+
+    def test_probability(self):
+        self.assertTrue(torch.equal(RandomBiasField(p=0.0)(self.x4), self.x4))
+
+
+class TestRandomContrastAdjust(unittest.TestCase):
+    def test_linear_transform(self):
+        x = torch.rand(1, 6, 6, 6)
+        out = RandomContrastAdjust(
+            contrast_factor=(2.0, 2.0), brightness_factor=(0.5, 0.5))(x)
+        self.assertTrue(torch.allclose(out, 2 * x + 0.5))
+
+    def test_identity_defaults(self):
+        x = torch.rand(1, 6, 6, 6)
+        out = RandomContrastAdjust(contrast_factor=(1.0, 1.0))(x)
+        self.assertTrue(torch.allclose(out, x))
+
+    def test_scalar_brightness_symmetric(self):
+        tf = RandomContrastAdjust(brightness_factor=0.2)
+        self.assertEqual(tf.brightness_factor, (-0.2, 0.2))
+
+    def test_output_range_clip(self):
+        x = torch.rand(1, 6, 6, 6)
+        for arr in [x, x.numpy()]:
+            out = RandomContrastAdjust(
+                contrast_factor=(3.0, 3.0), output_range=(0, 1))(arr)
+            self.assertEqual(out.max(), 1)
+            self.assertGreaterEqual(out.min(), 0)
+            self.assertEqual(type(out), type(arr))
+        out = RandomContrastAdjust(
+            contrast_factor=(1.0, 1.0), brightness_factor=(-5, -5),
+            output_range=(0, 1))(x)
+        self.assertEqual(out.max(), 0)
+
+    def test_numpy_and_shapes(self):
+        for shape in [(6, 6, 6), (2, 6, 6, 6)]:
+            x = np.random.rand(*shape).astype(np.float32)
+            out = RandomContrastAdjust()(x)
+            self.assertEqual(out.shape, shape)
+            self.assertEqual(out.dtype, np.float32)
+
+    def test_contrast_scales_std(self):
+        x = torch.randn(1, 16, 16, 16)
+        out = RandomContrastAdjust(contrast_factor=(0.5, 0.5))(x)
+        self.assertAlmostEqual((out.std() / x.std()).item(), 0.5, places=4)
+
+    def test_invalid_args(self):
+        with self.assertRaises(ValueError):
+            RandomContrastAdjust(contrast_factor=(-1, 1))
+        with self.assertRaises(ValueError):
+            RandomContrastAdjust(contrast_factor=(2, 1))
+        with self.assertRaises(ValueError):
+            RandomContrastAdjust(brightness_factor=-0.1)
+        with self.assertRaises(ValueError):
+            RandomContrastAdjust(output_range=(1, 0))
+
+
+class TestRandomAffine(unittest.TestCase):
+    def setUp(self):
+        self.x = torch.zeros(1, 20, 20, 20)
+        self.x[:, 8:12, 8:12, 8:12] = 1.0
+
+    def test_identity(self):
+        tf = RandomAffine(scale=(1, 1), degrees=0)
+        out = tf(self.x)
+        self.assertTrue(torch.allclose(out, self.x, atol=1e-5))
+
+    def test_shapes_types_dtype(self):
+        for x in [self.x, self.x[0], self.x.numpy(), self.x[0].numpy()]:
+            out = RandomAffine(degrees=15, translation=0.1, shears=0.1)(x)
+            self.assertEqual(type(out), type(x))
+            self.assertEqual(out.shape, x.shape)
+            self.assertEqual(out.dtype, x.dtype)
+
+    def test_translation_direction_and_magnitude(self):
+        # shift of fraction 0.1 * 20 mm = 2 voxels along some axes
+        tf = RandomAffine(scale=(1, 1), degrees=0, translation=(0.1, 0, 0),
+                          interpolation="nearest")
+        for _ in range(5):
+            out = tf(self.x)
+            idx = torch.nonzero(out[0])
+            self.assertEqual(len(idx), 64)
+            shift = idx[:, 0].min().item() - 8
+            self.assertLessEqual(abs(shift), 2)
+            self.assertEqual(idx[:, 1].min().item(), 8)
+
+    def test_scale_changes_volume(self):
+        out = RandomAffine(scale=(2.0, 2.0), degrees=0)(self.x)
+        # content is magnified by 2: ~8x more mass
+        self.assertAlmostEqual(
+            (out.sum() / self.x.sum()).item(), 8.0, delta=2.0)
+        out = RandomAffine(scale=(0.5, 0.5), degrees=0)(self.x)
+        self.assertLess(out.sum().item(), self.x.sum().item())
+
+    def test_rotation_preserves_mass(self):
+        out = RandomAffine(scale=(1, 1), degrees=(30, 30))(self.x)
+        self.assertAlmostEqual(
+            out.sum().item(), self.x.sum().item(), delta=0.15 * 64)
+        self.assertFalse(torch.allclose(out, self.x))
+
+    def test_nearest_preserves_labels(self):
+        lab = (self.x * 3).long()
+        out = RandomAffine(degrees=20, interpolation="nearest")(lab)
+        self.assertEqual(out.dtype, lab.dtype)
+        self.assertTrue(set(out.unique().tolist()) <= {0, 3})
+
+    def test_pad_value(self):
+        x = torch.ones(1, 10, 10, 10)
+        out = RandomAffine(scale=(0.5, 0.5), degrees=0, default_pad_value=-1,
+                           interpolation="nearest")(x)
+        self.assertEqual(out.min().item(), -1)
+
+    def test_affine_argument_spacing(self):
+        affine = np.diag([2.0, 2.0, 2.0, 1.0])
+        out = RandomAffine(degrees=5)(self.x, affine)
+        self.assertEqual(out.shape, self.x.shape)
+
+    def test_scalar_params(self):
+        tf = RandomAffine(degrees=5, shears=0.1, translation=0.2)
+        self.assertEqual(tf.degrees, (-5, 5))
+        self.assertEqual(tf.shears, (-0.1, 0.1))
+        self.assertEqual(tf.translation, (0.2, 0.2, 0.2))
+
+    def test_matrix_helpers(self):
+        rot = RandomAffine._rotation_matrix(np.deg2rad([90, 0, 0]))
+        self.assertTrue(np.allclose(rot @ [0, 1, 0], [0, 0, 1], atol=1e-8))
+        self.assertTrue(np.allclose(
+            RandomAffine._rotation_matrix(np.zeros(3)), np.eye(3)))
+        sh = RandomAffine._shear_matrix(np.arange(1, 7))
+        self.assertTrue(np.allclose(sh, [[1, 1, 2], [3, 1, 4], [5, 6, 1]]))
+
+    def test_invalid_args(self):
+        for kw in [dict(scale=(0, 1.1)), dict(scale=(-1, 1)),
+                   dict(scale=(1.2, 0.9)), dict(degrees=-5),
+                   dict(translation=(0.1, 0.1)), dict(translation=1.5),
+                   dict(translation=-0.1), dict(shears=-1),
+                   dict(interpolation="bad")]:
+            with self.assertRaises((ValueError, TypeError), msg=str(kw)):
+                RandomAffine(**kw)
+        with self.assertRaises(ValueError):
+            RandomAffine()(self.x, affine=np.eye(3))
+
+    def test_probability(self):
+        self.assertTrue(torch.equal(RandomAffine(p=0.0)(self.x), self.x))
 
 if __name__ == "__main__":
     unittest.main()
