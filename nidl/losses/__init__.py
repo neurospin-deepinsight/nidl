@@ -10,6 +10,7 @@
 
 from .barlowtwins import BarlowTwinsLoss
 from .beta_vae import BetaVAELoss
+from .comm import CoMMLoss
 from .dcl import DCLLoss, DCLWLoss
 from .dino import DINOLoss
 from .infonce import InfoNCE

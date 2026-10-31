@@ -141,6 +141,30 @@ See :doc:`losses` and :doc:`projection_heads` for the losses and projection
 heads used by these estimators.
 
 
+Multimodal embedding estimators
+...............................
+
+Self-supervised learning embedding estimators learning a joint representation
+of several modalities, possibly missing for some samples. Their batches are
+built with :func:`~nidl.utils.data_parsing.collate_multimodal`.
+
+.. currentmodule:: nidl.estimators.ssl
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    CoMM
+
+.. currentmodule:: nidl.utils.data_parsing
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+    collate_multimodal
+
+
 Probing estimators
 ------------------
 

@@ -21,6 +21,7 @@ from nidl.losses import (
     BetaVAELoss,
     DCLLoss,
     DCLWLoss,
+    CoMMLoss,
 )
 
 class TestSSLLosses(unittest.TestCase):
@@ -234,6 +235,70 @@ class TestSSLLosses(unittest.TestCase):
             self.assertIsNotNone(z2.grad)
             self.assertEqual(z1.grad.shape, z1.shape)
             self.assertEqual(z2.grad.shape, z2.shape)
+
+    def test_comm(self):
+        """ Test CoMM loss is computed correctly.
+        """
+        n_mod, batch_size, n_embedding = 2, 10, 8
+        aligned = [torch.rand(batch_size, n_embedding)] * (n_mod + 1)
+        z1 = [torch.rand(batch_size, n_embedding) for _ in range(n_mod + 1)]
+        z2 = [torch.rand(batch_size, n_embedding) for _ in range(n_mod + 1)]
+        for temperature in [0.1, 1.0, 5.0]:
+            comm = CoMMLoss(temperature=temperature)
+            # Perfect alignment
+            loss_low = comm(aligned, aligned)["loss"]
+            # random alignment
+            loss_high = comm(z1, z2)["loss"]
+            assert loss_low <= loss_high, (
+                f"CoMM loss should be lower for aligned embeddings, "
+                f"got {loss_low} vs {loss_high}"
+            )
+            assert loss_low >= 0, "CoMM loss should be positive."
+            # With only the multimodal embedding, CoMM is InfoNCE
+            loss = comm([z1[-1]], [z2[-1]])["loss"]
+            infonce = InfoNCE(temperature=temperature)(z1[-1], z2[-1])
+            assert torch.allclose(loss, infonce, atol=1e-5), (
+                f"CoMM loss should equal InfoNCE with a single embedding, "
+                f"got {loss} vs {infonce}"
+            )
+        # The loss is the mean of the weighted terms
+        out = CoMMLoss(weights=[0.0, 0.0, 1.0])(z1, z2)
+        assert torch.allclose(out["loss"], out["ssl_loss_2"] / 3)
+
+    def test_comm_missing_modalities(self):
+        """ Test CoMM loss ignores the missing modalities.
+        """
+        n_mod, batch_size, n_embedding = 2, 10, 8
+        z1 = [torch.rand(batch_size, n_embedding) for _ in range(n_mod + 1)]
+        z2 = [torch.rand(batch_size, n_embedding) for _ in range(n_mod + 1)]
+        present = torch.ones(batch_size, n_mod, dtype=torch.bool)
+        present[:3, 0] = False
+        comm = CoMMLoss()
+        loss = comm(z1, z2, present)["loss"]
+        # The embeddings of the samples missing a modality are ignored
+        z1_changed = [z.clone() for z in z1]
+        z1_changed[0][:3] = torch.rand(3, n_embedding)
+        assert torch.allclose(loss, comm(z1_changed, z2, present)["loss"])
+        # The terms with less than 2 samples are skipped
+        present[:, 0] = False
+        present[0, 0] = True
+        out = comm(z1, z2, present)
+        assert "ssl_loss_0" not in out
+        assert "ssl_loss_1" in out and "ssl_loss_2" in out
+
+    def test_comm_bad_parameters(self):
+        """ Test ValueError is raised when bad values of parameters
+        are used in CoMMLoss
+        """
+        z = [torch.rand(10, 8) for _ in range(3)]
+        with self.assertRaises(ValueError):
+            CoMMLoss(temperature=0)
+        with self.assertRaises(ValueError):
+            CoMMLoss(weights=[1.0, 1.0])(z, z)
+        with self.assertRaises(ValueError):
+            CoMMLoss()(z, z, torch.ones(10, 3, dtype=torch.bool))
+        with self.assertRaises(ValueError):
+            CoMMLoss()([e[:1] for e in z], [e[:1] for e in z])
 
 
 class TestDINOLoss(unittest.TestCase):

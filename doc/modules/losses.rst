@@ -35,6 +35,7 @@ Losses used by the self-supervised learning embedding estimators (see
     YAwareInfoNCE
     BarlowTwinsLoss
     DINOLoss
+    CoMMLoss
 
 
 Autoencoder losses

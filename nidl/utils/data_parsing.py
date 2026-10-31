@@ -12,6 +12,7 @@ from typing import Any, Optional, Union
 
 import numpy as np
 import torch
+from torch.utils.data import default_collate
 
 
 def inspect_batch(x, name="batch", max_items=4) -> str:
@@ -359,6 +360,214 @@ def parse_multi_crops_batch(
         y_tensor = y.to(device, non_blocking=True)
 
     return crops, y_tensor
+
+
+def collate_multimodal(
+    batch: Sequence[Any],
+    modalities: Optional[Sequence[str]] = None,
+) -> Union[dict[str, Any], tuple[dict[str, Any], Any]]:
+    """Collate samples with missing modalities into a multimodal batch.
+
+    Each sample is a dict ``{modality: data or None}``, or a ``(dict, y)``
+    pair, where ``data`` is a scan or a list of augmented views of a scan.
+    The scans of the present modalities are concatenated over the batch,
+    along with their sample index and modality slot.
+
+    Parameters
+    ----------
+    batch : sequence
+        The samples of the batch.
+    modalities : sequence of str or None, default=None
+        The modalities, in the order of their slots. By default, the keys of
+        the first sample.
+
+    Returns
+    -------
+    X : dict
+        Dictionary containing:
+
+        - "views" (list of tensors, one per view) or "x" (tensor): the scans
+          of the present modalities, of shape ``(n_scans, C, *)``;
+        - "sample_idx": the sample index of each scan, of shape
+          ``(n_scans,)``;
+        - "mod_idx": the modality slot of each scan, of shape ``(n_scans,)``;
+        - "n_samples": the number of samples in the batch.
+    y : torch.Tensor, optional
+        The collated targets, only if the samples are ``(dict, y)`` pairs.
+
+    Raises
+    ------
+    TypeError
+        If a sample is not a dict or a ``(dict, y)`` pair.
+    ValueError
+        If a sample has no modality or an unknown one, or if the scans do not
+        hold the same number of views.
+    """
+    with_targets = isinstance(batch[0], (tuple, list))
+    samples = [sample[0] for sample in batch] if with_targets else batch
+    if modalities is None:
+        modalities = list(samples[0])
+    slots = {modality: idx for idx, modality in enumerate(modalities)}
+    views, sample_idx, mod_idx = [], [], []
+    multi_views, n_views = None, None
+    for i, sample in enumerate(samples):
+        if not isinstance(sample, Mapping):
+            raise TypeError(
+                "Each sample should be a dict {modality: data or None} or a "
+                "(dict, y) pair. Got\n" + inspect_batch(sample, name="sample")
+            )
+        unknown = set(sample) - set(slots)
+        if unknown:
+            raise ValueError(
+                f"Unknown modalities {sorted(unknown)} in sample {i}, "
+                f"expected among {list(modalities)}."
+            )
+        n_present = 0
+        for modality in modalities:
+            data = sample.get(modality)
+            if data is None:
+                continue
+            is_multi = isinstance(data, (tuple, list))
+            data = list(data) if is_multi else [data]
+            if multi_views is None:
+                multi_views, n_views = is_multi, len(data)
+            if is_multi != multi_views or len(data) != n_views:
+                raise ValueError(
+                    "All the scans should hold the same number of views "
+                    "(a single scan, or a list of views). Got a different "
+                    f"one for {modality!r} in sample {i}."
+                )
+            views.append([torch.as_tensor(view) for view in data])
+            sample_idx.append(i)
+            mod_idx.append(slots[modality])
+            n_present += 1
+        if n_present == 0:
+            raise ValueError(f"Sample {i} of the batch has no modality.")
+
+    stacked = [torch.stack(scans) for scans in zip(*views)]
+    X = {"views": stacked} if multi_views else {"x": stacked[0]}
+    X["sample_idx"] = torch.tensor(sample_idx, dtype=torch.long)
+    X["mod_idx"] = torch.tensor(mod_idx, dtype=torch.long)
+    X["n_samples"] = len(samples)
+    if with_targets:
+        return X, default_collate([sample[1] for sample in batch])
+    return X
+
+
+def parse_multimodal_batch(
+    batch: Any,
+    device: torch.device,
+    n_views: Optional[int] = None,
+) -> tuple[dict[str, Any], Optional[torch.Tensor]]:
+    """Parse a multimodal batch with missing modalities into a dict and
+    optional labels.
+
+    This is useful for multimodal methods handling missing modalities, such
+    as CoMM. Such batches are built by :func:`collate_multimodal`.
+
+    Parameters
+    ----------
+    batch : dict or tuple of (dict, torch.Tensor)
+        Supported formats:
+
+        - ``X``
+        - ``(X, y)``
+
+        where ``X`` is a dict as returned by :func:`collate_multimodal`.
+    device : torch.device
+        The device to move the tensors to.
+    n_views : int or None, default=None
+        Number of views expected under the "views" key of ``X``. If None, a
+        single tensor is expected under the "x" key.
+
+    Returns
+    -------
+    X : dict
+        Dict with keys "views" (or "x"), "sample_idx", "mod_idx" and
+        "n_samples", with the tensors moved to the correct device.
+    y : torch.Tensor or None
+        Optional labels moved to the correct device.
+
+    Raises
+    ------
+    TypeError
+        If the scans are not tensors.
+    ValueError
+        If the batch format is not recognized.
+    """
+    if isinstance(batch, Mapping):
+        X, y = batch, None
+    elif (
+        isinstance(batch, Sequence)
+        and len(batch) == 2
+        and isinstance(batch[0], Mapping)
+    ):
+        X, y = batch
+    else:
+        raise ValueError(
+            "batch should be `X` or `(X, y)` where `X` is a dict as returned "
+            "by `collate_multimodal`. Got\n" + inspect_batch(batch)
+        )
+
+    key = "x" if n_views is None else "views"
+    missing = {key, "sample_idx", "mod_idx", "n_samples"} - set(X)
+    if missing:
+        hint = ""
+        if key == "x" and "views" in X:
+            hint = " (expected a single scan per modality, not views)"
+        elif key == "views" and "x" in X:
+            hint = f" (expected {n_views} views per modality)"
+        raise ValueError(
+            f"batch misses the key(s) {sorted(missing)}{hint}. Got\n"
+            + inspect_batch(batch)
+        )
+
+    if n_views is None:
+        if not isinstance(X["x"], torch.Tensor):
+            raise TypeError(
+                "`x` should be a torch.Tensor. Got\n" + inspect_batch(batch)
+            )
+        data = X["x"].to(device, non_blocking=True)
+        n_scans = len(data)
+    else:
+        views = X["views"]
+        if (
+            not isinstance(views, Sequence)
+            or len(views) != n_views
+            or not all(isinstance(view, torch.Tensor) for view in views)
+        ):
+            raise TypeError(
+                f"`views` should be a list of {n_views} torch.Tensors. Got\n"
+                + inspect_batch(batch)
+            )
+        if any(view.shape != views[0].shape for view in views):
+            raise ValueError(
+                "All the views should have the same shape. Got\n"
+                + inspect_batch(batch)
+            )
+        data = [view.to(device, non_blocking=True) for view in views]
+        n_scans = len(data[0])
+
+    out = {key: data, "n_samples": int(X["n_samples"])}
+    for name in ("sample_idx", "mod_idx"):
+        idx = X[name]
+        if not isinstance(idx, torch.Tensor) or tuple(idx.shape) != (
+            n_scans,
+        ):
+            raise ValueError(
+                f"`{name}` should be a tensor of shape ({n_scans},). Got\n"
+                + inspect_batch(batch)
+            )
+        out[name] = idx.to(device, non_blocking=True).long()
+
+    if y is not None:
+        if not isinstance(y, torch.Tensor):
+            raise ValueError(
+                "`y` must be a torch.Tensor or None. Got\n"
+                + inspect_batch(batch)
+            )
+        y = y.to(device, non_blocking=True)
+    return out, y
 
 
 def gather_two_views(
