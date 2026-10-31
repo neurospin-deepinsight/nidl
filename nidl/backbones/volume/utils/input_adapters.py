@@ -56,9 +56,6 @@ class Patched3DInputAdapter(nn.Module):
 
     Creates tokens from patches over the volume.
 
-    Volumes are laid out as (B, C, Z, H, W), matching Conv3d and the
-    (b, d, z, h, w) layout of `build_3d_sincos_posemb`.
-
     Adapted from the 2D PatchedInputAdapter of
     https://github.com/Duplums/CoMM.
 
@@ -105,9 +102,9 @@ class Patched3DInputAdapter(nn.Module):
 
         # Actual patch size per axis, taking the stride of the input into
         # account
-        self.P_Z = max(1, self.patch_size_full[0] // stride_level)
-        self.P_H = max(1, self.patch_size_full[1] // stride_level)
-        self.P_W = max(1, self.patch_size_full[2] // stride_level)
+        self.P_H = max(1, self.patch_size_full[0] // stride_level)
+        self.P_W = max(1, self.patch_size_full[1] // stride_level)
+        self.P_D = max(1, self.patch_size_full[2] // stride_level)
 
         if self.dim_tokens is not None:
             self.init(dim_tokens=dim_tokens)
@@ -125,24 +122,24 @@ class Patched3DInputAdapter(nn.Module):
 
         # Fixed-size positional embeddings, interpolated to the actual grid
         # in forward
-        z_posemb = self.volume_size[0] // (self.stride_level * self.P_Z)
-        h_posemb = self.volume_size[1] // (self.stride_level * self.P_H)
-        w_posemb = self.volume_size[2] // (self.stride_level * self.P_W)
+        h_posemb = self.volume_size[0] // (self.stride_level * self.P_H)
+        w_posemb = self.volume_size[1] // (self.stride_level * self.P_W)
+        d_posemb = self.volume_size[2] // (self.stride_level * self.P_D)
         if self.sincos_pos_emb:
             self.pos_emb = build_3d_sincos_posemb(
-                z_posemb, h_posemb, w_posemb, embed_dim=self.dim_tokens)
+                h_posemb, w_posemb, d_posemb, embed_dim=self.dim_tokens)
             self.pos_emb = nn.Parameter(
                 self.pos_emb, requires_grad=self.learnable_pos_emb)
         else:
             self.pos_emb = nn.Parameter(
-                torch.zeros(1, self.dim_tokens, z_posemb, h_posemb, w_posemb))
+                torch.zeros(1, self.dim_tokens, h_posemb, w_posemb, d_posemb))
             nn.init.trunc_normal_(self.pos_emb, std=0.02)
 
         # Volume -> tokens projection
         self.proj = nn.Conv3d(
             in_channels=self.num_channels, out_channels=self.dim_tokens,
-            kernel_size=(self.P_Z, self.P_H, self.P_W),
-            stride=(self.P_Z, self.P_H, self.P_W)
+            kernel_size=(self.P_H, self.P_W, self.P_D),
+            stride=(self.P_H, self.P_W, self.P_D)
         )
 
     @torch.jit.ignore
@@ -156,31 +153,31 @@ class Patched3DInputAdapter(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Input volume tensor of shape (B, C, Z, H, W).
+            Input volume tensor of shape (B, C, H, W, D).
 
         Returns
         -------
         x : torch.Tensor
-            Tokens of shape (B, N_Z * N_H * N_W, dim_tokens).
+            Tokens of shape (B, N_H * N_W * N_D, dim_tokens).
         """
-        _, _, Z, H, W = x.shape
+        _, _, H, W, D = x.shape
         assert self.dim_tokens is not None, (
             'Need to call init(dim_tokens) function first')
         assert (
-            (Z % self.P_Z == 0) and (H % self.P_H == 0) and (W % self.P_W == 0)
+            (H % self.P_H == 0) and (W % self.P_W == 0) and (D % self.P_D == 0)
         ), (
-            f'Volume sizes {Z}x{H}x{W} must be divisible by patch sizes '
-            f'{self.P_Z}x{self.P_H}x{self.P_W}')
+            f'Volume sizes {H}x{W}x{D} must be divisible by patch sizes '
+            f'{self.P_H}x{self.P_W}x{self.P_D}')
         # Number of patches along each axis
-        N_Z, N_H, N_W = Z // self.P_Z, H // self.P_H, W // self.P_W
+        N_H, N_W, N_D = H // self.P_H, W // self.P_W, D // self.P_D
 
-        # Create patches [B, C, Z, H, W] -> [B, (N_Z*N_H*N_W), D]
-        x_patch = rearrange(self.proj(x), 'b d nz nh nw -> b (nz nh nw) d')
+        # Create patches [B, C, H, W, D] -> [B, (N_H*N_W*N_D), dim_tokens]
+        x_patch = rearrange(self.proj(x), 'b c nh nw nd -> b (nh nw nd) c')
 
         # Create positional embedding
-        x_pos_emb = func.interpolate(self.pos_emb, size=(N_Z, N_H, N_W),
+        x_pos_emb = func.interpolate(self.pos_emb, size=(N_H, N_W, N_D),
                                      mode='trilinear', align_corners=False)
-        x_pos_emb = rearrange(x_pos_emb, 'b d nz nh nw -> b (nz nh nw) d')
+        x_pos_emb = rearrange(x_pos_emb, 'b c nh nw nd -> b (nh nw nd) c')
 
         # Add patches and positional embeddings
         x = x_patch + x_pos_emb
