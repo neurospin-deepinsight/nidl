@@ -686,20 +686,94 @@ class VisionTransformer3D(nn.Module):
 class DynamicSizeViT(VisionTransformer3D):
     """
     Extension of the 3D ViT backbone that can handle variable-sized inputs
-    via positional embeddings interpolation as in DINO [1].
+    via positional embeddings interpolation as in DINO [1]_.
+    
     Positional embeddings are first computed for a grid of shape A.
-    When a volume with a grid of shape A' is presented in input pos embeddings
-    of shape A' are interpolated from those of shape A.
+    When a volume with a grid of shape A' is presented in input, positional
+    embeddings of shape A' are computed from those of shape A with trilinear
+    interpolation.
 
-    The code for positional embeddings interpolation is derived from [2]
+    The code for positional embeddings interpolation is derived from [2]_
     with the adaptations to handle 3D volumes.
 
+    Parameters
+    ----------
+    img_size : int or sequence of int
+        Input size in ``(H, W, D)``.
+    patch_size : int or sequence of int
+        Patch size in ``(H, W, D)``.
+    in_chans : int, default=1
+        Number of input channels.
+    num_classes : int, default=0
+        Number of output classes. If non-positive, head is identity.
+    global_pool : {"cls_token", "avg", "max", "avgmax", ""}, default="cls_token"
+        Pooling mode. If "", no pooling is applied and the full token sequence
+        is returned.
+    embed_dim : int, default=768
+        Embedding dimension.
+    depth : int, default=12
+        Number of transformer blocks.
+    num_heads : int, default=12
+        Number of attention heads.
+    mlp_ratio : float, default=4.0
+        MLP expansion ratio.
+    qkv_bias : bool, default=True
+        Whether to use qkv bias.
+    qk_norm : bool, default=False
+        Whether to apply normalization to qk in attention.
+    scale_attn_norm : bool, default=False
+        Whether to scale attention scores before softmax.
+    scale_mlp_norm : bool, default=False
+        Whether to scale MLP outputs.
+    proj_bias : bool, default=True
+        Whether to use bias in projection layers.
+    class_token : bool, default=True
+        Whether to prepend a CLS token.
+    reg_tokens : int, default=0
+        Number of register tokens.
+    no_embed_class : bool, default=False
+        If ``True``, position embeddings are defined only on patch tokens.
+    pre_norm : bool, default=False
+        Whether to apply normalization before the transformer blocks.
+    final_norm : bool, default=True
+        Whether to apply normalization after the transformer blocks.
+    fc_norm : bool or None, default=None
+        Whether to apply normalization after pooling. 
+        If ``None``, defaults to ``global_pool == "avg"``.
+    dynamic_img_size : bool, default=False
+        Present for interface compatibility. Not used here.
+    pos_embed : {"learned", "sincos", "none"}, default="learned"
+        Absolute positional embedding mode.
+    drop_rate : float, default=0.0
+        Head dropout.
+    pos_drop_rate : float, default=0.0
+        Positional dropout.
+    proj_drop_rate : float, default=0.0
+        Projection dropout in each transformer block.
+    attn_drop_rate : float, default=0.0
+        Attention dropout in each transformer block.
+    drop_path_rate : float, default=0.0
+        Maximum stochastic depth rate.
+    embed_layer : callable, default=PatchEmbed3D
+        Patch embedding layer constructor.
+    norm_layer : callable, default=nn.LayerNorm
+        Normalization layer constructor.
+    act_layer : callable, default=nn.GELU
+        Activation layer constructor.
+    block_fn : callable, default=Block
+        Transformer block constructor.
+    mlp_layer : callable, default=Mlp
+        MLP layer constructor.
+    attn_layer : callable, default=Attention
+        Attention layer constructor.
+
     References
-        ----------
+    ----------
     [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
         Transformers" ICCV, 2021. https://arxiv.org/abs/2104.14294
 
-    [2] https://github.com/facebookresearch/dino/blob/main/vision_transformer.py#L134
+    [2] https://github.com/facebookresearch/dino/blob/main/
+        vision_transformer.py#L134
     """
     def __init__(
             self,
@@ -735,7 +809,7 @@ class DynamicSizeViT(VisionTransformer3D):
             act_layer = nn.GELU,
             block_fn = Block,
             mlp_layer = Mlp,
-            attn_layer=Attention
+            attn_layer = Attention
         ):
             super().__init__(
                 img_size, patch_size, in_chans, num_classes,
@@ -772,11 +846,11 @@ class DynamicSizeViT(VisionTransformer3D):
             prefix.append(self.reg_token.expand(B, -1, -1))
 
         if (not self.no_embed_class) and prefix:
-            # prefix tokens must be included in pos embeddings computation
+            # prefix tokens must be included in pos embeddings computation.
             x = torch.cat([*prefix, x], dim=1)
         
-        # If pos embeddings have been computed for a grid of different shape
-        # they are used to interpolate embeddings for new grid shape
+        # If pos embeddings have been computed for a grid of different shape,
+        # they are used to interpolate embeddings for new grid shape.
         if self.pos_embed is not None:
             if x.shape[1] != self.pos_embed.shape[1]:
                 interpolated_embed = self.interpolate_pos_encoding(h, w, d)
@@ -816,10 +890,10 @@ class DynamicSizeViT(VisionTransformer3D):
         h0 = h // self.patch_embed.patch_size[0]
         d0 = d // self.patch_embed.patch_size[2]
         patch_embedding_dim = self.pos_embed.shape[-1]
-        # to avoid floating point error in the interpolation
+        # to avoid floating point error in the interpolation.
         w0, h0, d0 = w0 + 0.1, h0 + 0.1, d0 + 0.1
 
-        # Reconstruct 2D patch grid in (B, W, H, D, C)
+        # Reconstruct 2D patch grid in (B, W, H, D, C).
         patches_grid = patch_pos_embed.reshape(
             1,
             h1, w1, d1,
@@ -827,9 +901,9 @@ class DynamicSizeViT(VisionTransformer3D):
         )
 
         # Interpolate positional embeddings for a grid of shape target size
-        # starting from patches_grid embeddings with trilinear interpolation
+        # starting from patches_grid embeddings with trilinear interpolation.
         patch_pos_embed = nn.functional.interpolate(
-            patches_grid.permute(0, 4, 1, 2, 3),  # convert to (B, C, H, W, D)
+            patches_grid.permute(0, 4, 1, 2, 3),  # convert to (B, C, H, W, D).
             scale_factor=(h0 / h1, w0 / w1, d0 / d1),
             mode='trilinear',
             align_corners = False

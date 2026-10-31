@@ -305,8 +305,33 @@ def moe_bias_update(
 
 @dataclass
 class MoEParams:
-    """Mirrors `model.moe_params` in
-    `configs/pretrain/pretrain_neurojepa_base.yaml`."""
+    """Hyperparameters of the sparse Mixture-of-Experts (MoE) layers used
+    by `VisionTransformer3DMoE` when `use_moe=True`.
+
+    Parameters
+    ----------
+    dim : int, default=768
+        Token embedding dimension (must match the encoder's `embed_dim`).
+    n_shared_experts : int, default=2
+        Number of "shared" experts, always active for every token.
+    n_routed_experts : int, default=16
+        Number of routed experts to choose from.
+    n_activated_experts : int, default=6
+        Number of routed experts activated (top-k) per token.
+    moe_inter_dim : int, default=384
+        Hidden dimension of each expert's MLP.
+    score_func : {"softmax", "sigmoid"}, default="softmax"
+        Function used to turn router logits into routing scores.
+    route_scale : float, default=4.0
+        Scalar applied to the routing weights.
+    bias_clip : float, default=0.3
+        Passed to `moe_bias_update` as `bias_clip`.
+    bias_update_rate : float, default=1e-4
+        Passed to `moe_bias_update` as `update_rate`.
+    moe_layer_indices : tuple of int, default=(1, 3, 5, 7, 9, 11)
+        0-indexed block indices that use a sparse MoE instead of a dense
+        MLP.
+    """
 
     dim: int = 768
     n_shared_experts: int = 2
@@ -525,12 +550,44 @@ class Block(nn.Module):
 
 
 class VisionTransformer3DMoE(nn.Module):
-    """
-    3D ViT backbone with an optional sparse MoE mixed in at configurable layers
-        
+    """3D ViT backbone with an optional sparse Mixture-of-Experts (MoE)
+    mixed in at configurable layers.
+
     num_prefix_tokens and forward_features have been added for compatibility
     with code developed for a standard vit backbone with no MoE
     (as in nidl/backbones/vit3d.py)
+
+    Parameters
+    ----------
+    img_size : (int, int, int), default=(96, 108, 96)
+        Size (in voxels) of the input volume.
+    patch_size : (int, int, int), default=(12, 12, 12)
+        Size (in voxels) of one cubic patch ("tubelet").
+    in_chans : int, default=1
+        Number of input channels.
+    embed_dim : int, default=768
+        Token embedding dimension.
+    depth : int, default=12
+        Number of Transformer blocks.
+    num_heads : int, default=12
+        Number of attention heads.
+    mlp_ratio : float, default=4.0
+        Ratio between the MLP hidden dimension and `embed_dim` (dense
+        blocks only; MoE blocks use `moe_params.moe_inter_dim` instead).
+    drop_path_rate : float, default=0.0
+        Maximum stochastic-depth drop rate, linearly increased across
+        blocks.
+    use_moe : bool, default=False
+        Whether to replace the dense MLP with a sparse MoE (see `MoE`) in
+        the blocks listed in `moe_params.moe_layer_indices`.
+    moe_params : MoEParams or None, default=None
+        Sparse MoE hyperparameters. Required if `use_moe=True`.
+    init_std : float, default=0.02
+        Standard deviation used for truncated-normal weight init.
+    class_token : bool, default=False
+        Whether to prepend a CLS token.
+    reg_tokens : int, default=0
+        Number of register tokens.
     """
 
     def __init__(
