@@ -274,7 +274,7 @@ class TestEstimators(unittest.TestCase):
         params = {
             "num_modalities": 3,
             "embed_dim": self.latent_size,
-            "n_heads": 2,
+            "num_heads": 2,
             "proj_hidden_dim": 3,
             "proj_output_dim": 3,
             "learning_rate": 5e-4,

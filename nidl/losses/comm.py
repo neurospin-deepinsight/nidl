@@ -121,16 +121,16 @@ class CoMMLoss(nn.Module):
         z2 = [func.normalize(z, p=2, dim=-1) for z in z2]
 
         # Apply InfoNCE between the "prototype embedding" and all the others,
-        # over the subjects for which each subset is defined.
+        # over the samples for which each subset is defined.
         loss = []
         acc = []
         kept = []
         for i in range(n_emb):
             if i < n_mod and present is not None:
-                valid = present[:, i]           # subjects having modality i
+                valid = present[:, i]           # samples having modality i
             else:
                 valid = torch.ones(z1[i].shape[0], dtype=torch.bool,
-                                   device=z1[i].device)     # all subjects
+                                   device=z1[i].device)     # all samples
             if int(valid.sum()) < 2:            # InfoNCE needs >= 2 samples
                 continue
             loss1, acc1 = self.infonce(z1[i][valid], z2[prototype][valid])

@@ -42,14 +42,14 @@ class ResidualAttentionBlock(nn.Module):
 
     Adapted from https://github.com/Duplums/CoMM.
     """
-    def __init__(self, d_model: int, n_head: int,
+    def __init__(self, d_model: int, num_heads: int,
                  add_bias_kv: bool = False,
-                 dropout: float = 0.,
+                 attn_drop_rate: float = 0.,
                  batch_first: bool = False):
         super().__init__()
-        self.attn = nn.MultiheadAttention(d_model, n_head,
+        self.attn = nn.MultiheadAttention(d_model, num_heads,
                                           add_bias_kv=add_bias_kv,
-                                          dropout=dropout,
+                                          dropout=attn_drop_rate,
                                           batch_first=batch_first)
         self.ln_1 = nn.LayerNorm(d_model)
         self.mlp = nn.Sequential(OrderedDict([
@@ -85,35 +85,36 @@ class FusionTransformer(nn.Module):
     ----------
     width : int
         Embedding size.
-    n_heads : int
+    num_heads : int
         Number of heads in multi-head attention blocks.
-    n_layers : int
+    depth : int
         Number of attention blocks.
     add_bias_kv : bool, default=False
         If True, adds bias to the key and value sequences at dim=0.
-    dropout : float, default=0.0
+    attn_drop_rate : float, default=0.0
         Dropout probability on `attn_output_weights`.
     batch_first : bool, default=True
         Whether the input tensors are (batch, tokens, features) (True) or
         (tokens, batch, features) (False).
     """
     def __init__(self, width: int,
-                 n_heads: int,
-                 n_layers: int,
+                 num_heads: int,
+                 depth: int,
                  add_bias_kv: bool = False,
-                 dropout: float = 0.,
+                 attn_drop_rate: float = 0.,
                  batch_first: bool = True):
         super().__init__()
 
         self.width = width
-        self.layers = n_layers
+        self.layers = depth
         self.norm = nn.LayerNorm(width)
         self.token_dim = 1 if batch_first else 0
         self.cls_token = nn.Parameter(torch.randn(1, 1, width))
         self.resblocks = nn.Sequential(*[
-            ResidualAttentionBlock(width, n_heads, add_bias_kv=add_bias_kv,
-                                   dropout=dropout, batch_first=batch_first)
-            for _ in range(n_layers)])
+            ResidualAttentionBlock(width, num_heads, add_bias_kv=add_bias_kv,
+                                   attn_drop_rate=attn_drop_rate,
+                                   batch_first=batch_first)
+            for _ in range(depth)])
         self.initialize()
 
     def initialize(self):
@@ -161,9 +162,9 @@ class MissingModMMFusion(nn.Module):
     """MM fusion over a batch, with per-sample missing modalities.
 
     Every present-modality volume is concatenated, plus `sample_idx` /
-    `mod_idx` recording which (subject, modality) each entry belongs to. Each
+    `mod_idx` recording which (sample, modality) each entry belongs to. Each
     backbone is run over its own modality slots in a single forward pass,
-    tokens are scattered back into a (B, M, T, D) grid, and absent (subject,
+    tokens are scattered back into a (B, M, T, D) grid, and absent (sample,
     modality) cells are masked out of the `FusionTransformer`.
 
     Adapted from the MMFusion of https://github.com/Duplums/CoMM.
@@ -190,7 +191,7 @@ class MissingModMMFusion(nn.Module):
     per_modality_adapter : bool, default=False
         Give each modality slot its own copy of `adapter` instead of sharing
         one.
-    n_heads, n_layers, add_bias_kv, dropout
+    num_heads, depth, add_bias_kv, attn_drop_rate
         `FusionTransformer` hyper-parameters.
     """
     def __init__(self,
@@ -201,10 +202,10 @@ class MissingModMMFusion(nn.Module):
                  embed_dim: int = 2048,
                  freeze_encoder: bool = True,
                  per_modality_adapter: bool = False,
-                 n_heads: int = 8,
-                 n_layers: int = 1,
+                 num_heads: int = 8,
+                 depth: int = 1,
                  add_bias_kv: bool = False,
-                 dropout: float = 0.):
+                 attn_drop_rate: float = 0.):
         super().__init__()
         encoders = ([encoder] if isinstance(encoder, nn.Module)
                     else list(encoder))
@@ -222,7 +223,7 @@ class MissingModMMFusion(nn.Module):
                 p.requires_grad = False
             self.encoders.eval()
         self.fusion_transformer = FusionTransformer(
-            embed_dim, n_heads, n_layers, add_bias_kv, dropout,
+            embed_dim, num_heads, depth, add_bias_kv, attn_drop_rate,
             batch_first=True)
 
     @staticmethod
@@ -292,9 +293,9 @@ class MissingModMMFusion(nn.Module):
 
     def encode(self, x: torch.Tensor,
                mod_idx: Optional[torch.Tensor] = None) -> torch.Tensor:
-        """Encode a set of volumes (N, C, H, W, D), pooled over all subjects
-        and modalities in the batch, into tokens (N, T, E). `mod_idx` (N,)
-        is required when several encoders or `per_modality_adapter` are set.
+        """Encode the volumes (N, C, H, W, D) of the batch, one per present
+        (sample, modality) pair, into tokens (N, T, E). `mod_idx` (N,) is
+        required when several encoders or `per_modality_adapter` are set.
         """
         if ((len(self.encoders) > 1 or len(self.adapters) > 1)
                 and mod_idx is None):
@@ -337,7 +338,7 @@ class MissingModMMFusion(nn.Module):
     def fuse(self, grid, absent, keep_col: Optional[int] = None):
         """`keep_col=None` fuses all present modalities (M*T tokens);
         `keep_col=m` fuses only modality m's T tokens (still absent for
-        subjects lacking m).
+        samples lacking m).
         """
         B, M, T, D = grid.shape
         if keep_col is None:
@@ -350,8 +351,8 @@ class MissingModMMFusion(nn.Module):
 
     def forward(self, x, sample_idx, mod_idx, n_samples):
         """Fuse the volumes `x` (N, C, ...) of one augmentation, given the
-        subject `sample_idx` (N,) and modality slot `mod_idx` (N,) of each
-        entry, and the number of subjects `n_samples` (B).
+        sample `sample_idx` (N,) and modality slot `mod_idx` (N,) of each
+        entry, and the number of samples `n_samples` (B).
 
         Returns the M + 1 fused embeddings (B, D), with the prototype (all
         present modalities) last, and the (B, M) modality presence mask.
@@ -415,14 +416,14 @@ class CoMM(TransformerMixin, BaseEstimator):
         one.
     embed_dim : int, default=2048
         Fusion width. Must equal the adapter's token dim.
-    n_heads : int, default=8
+    num_heads : int, default=8
         Number of heads in the fusion transformer.
-    n_layers : int, default=1
+    depth : int, default=1
         Number of attention blocks in the fusion transformer.
     add_bias_kv : bool, default=False
         If True, adds bias to the key and value sequences in the fusion
         transformer.
-    dropout : float, default=0.0
+    attn_drop_rate : float, default=0.0
         Dropout probability on the attention weights of the fusion
         transformer.
     proj_hidden_dim : int, default=512
@@ -488,10 +489,10 @@ class CoMM(TransformerMixin, BaseEstimator):
         freeze_encoder: bool = True,
         per_modality_adapter: bool = False,
         embed_dim: int = 2048,
-        n_heads: int = 8,
-        n_layers: int = 1,
+        num_heads: int = 8,
+        depth: int = 1,
         add_bias_kv: bool = False,
-        dropout: float = 0.0,
+        attn_drop_rate: float = 0.0,
         proj_hidden_dim: int = 512,
         proj_output_dim: int = 256,
         temperature: float = 0.1,
@@ -529,10 +530,10 @@ class CoMM(TransformerMixin, BaseEstimator):
             embed_dim=embed_dim,
             freeze_encoder=freeze_encoder,
             per_modality_adapter=per_modality_adapter,
-            n_heads=n_heads,
-            n_layers=n_layers,
+            num_heads=num_heads,
+            depth=depth,
             add_bias_kv=add_bias_kv,
-            dropout=dropout,
+            attn_drop_rate=attn_drop_rate,
         )
 
         # build a 3-layers projector

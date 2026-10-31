@@ -52,7 +52,7 @@ class IdentityAdapter(nn.Module):
 
 
 class Patched3DInputAdapter(nn.Module):
-    """Adapter for 3D spatial inputs, like volumetric images or feature maps.
+    """Adapter for 3D spatial inputs, like scans or feature maps.
 
     Creates tokens from patches over the volume.
 
