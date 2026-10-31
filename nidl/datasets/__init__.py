@@ -6,10 +6,11 @@
 # for details.
 ##########################################################################
 
-""" This modules details the public API you should use and implement for a
+"""This modules details the public API you should use and implement for a
 nidl compatible dataset, as well as the datasets available in nidl.
 """
 
 from .base import BaseImageDataset, BaseNumpyDataset
 from .openbhb import OpenBHB
+from .openmind import OpenMind
 from .pandas_dataset import ImageDataFrameDataset

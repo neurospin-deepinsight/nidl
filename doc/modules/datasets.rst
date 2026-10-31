@@ -48,3 +48,4 @@ Classes to fetch publicly available neuroimaging datasets.
    :template: class.rst
 
    OpenBHB
+   OpenMind

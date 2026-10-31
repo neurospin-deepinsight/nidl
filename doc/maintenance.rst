@@ -201,16 +201,16 @@ but care should be taken that at least the following have not been affected:
 - ``.rst`` files containing the string ``image:: ../auto_examples``,
 - ...
 
-Update the links for the new version of the documentation in ``doc/versions.rst``.
+Add the new version to ``doc/versions.json`` and move the ``(stable)`` label to
+it. This file feeds the version selector of every published documentation.
 For example:
 
-.. code-block:: rst
+.. code-block:: json
 
-    Web-based documentation is available for versions listed below:
-
-    * `Nidl latest - dev documentation <http://neurospin-deepinsight.github.io/nidl/dev/>`_
-    * `Nidl latest - stable documentation <http://neurospin-deepinsight.github.io/nidl/stable/>`_
-    * `Nidl x.y.z documentation <http://neurospin-deepinsight.github.io/nidl/x.y.z/>`_
+    [
+      {"version": "dev", "label": "x.y.z.dev0 (dev)", "path": ""},
+      {"version": "x.y.z", "label": "x.y.z (stable)", "path": "x.y.z/"}
+    ]
 
 Prepare the release
 -------------------
@@ -356,15 +356,19 @@ and upload the distributions we just created (you can just drag and drop the fil
 Build of stable docs
 --------------------
 
-Once the new tagged github release is made following the step above,
-the Github Actions workflow ``release-docs.yml`` can be triggered manually
-from the Actions tab.
+Pushing the tag ``x.y.z`` triggers the Github Actions workflow
+``documentation-release.yml``. It checks that the tag matches the version in
+``nidl/info.py`` and publishes the documentation in the ``x.y.z`` subfolder of
+the website.
 
 
 Post-release
 ------------
 
 At this point, the release has been made.
+
+Set the next development version in ``nidl/info.py`` and in the ``dev`` entry
+of ``doc/versions.json``.
 
 We also need to create a new entry in the ``Ghangelog.rst`` with a title
 and the usual ``New``, ``Enhancements``, ``Bug Fixes``, and ``Changes``
