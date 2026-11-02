@@ -706,7 +706,8 @@ class DynamicSizeViT(VisionTransformer3D):
         Number of input channels.
     num_classes : int, default=0
         Number of output classes. If non-positive, head is identity.
-    global_pool : {"cls_token", "avg", "max", "avgmax", ""}, default="cls_token"
+    global_pool : {"cls_token", "avg", "max", "avgmax", ""}
+        default="cls_token"
         Pooling mode. If "", no pooling is applied and the full token sequence
         is returned.
     embed_dim : int, default=768
@@ -738,7 +739,7 @@ class DynamicSizeViT(VisionTransformer3D):
     final_norm : bool, default=True
         Whether to apply normalization after the transformer blocks.
     fc_norm : bool or None, default=None
-        Whether to apply normalization after pooling. 
+        Whether to apply normalization after pooling.
         If ``None``, defaults to ``global_pool == "avg"``.
     dynamic_img_size : bool, default=False
         Present for interface compatibility. Not used here.
