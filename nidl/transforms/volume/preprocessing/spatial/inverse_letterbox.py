@@ -9,7 +9,7 @@ from .resize import Resize
 
 class InverseLetterbox(VolumeTransform):
     """
-    Inverse of the letterbox transform introduced in YOLO [1].
+    Inverse of the letterbox transform introduced in YOLO [1]_.
     The input volume is first cropped back to an intermediate shape
     and then resized to the original shape.
 
@@ -33,7 +33,10 @@ class InverseLetterbox(VolumeTransform):
 
     References
     ----------
-    [1] Redmon, J., et al., "You Only Look Once: ..." CVPR, 2016. https://arxiv.org/abs/1506.02640
+    .. [1] J. Redmon, S. Divvala, R. Girshick and A. Farhadi, (2016)
+           "You Only Look Once: Unified, Real-Time Object Detection,"
+           in Proceedings of the IEEE Conference on Computer Vision and
+           Pattern Recognition (CVPR), pp. 779-788, https://arxiv.org/abs/1506.02640
     """
     def __init__(
         self,

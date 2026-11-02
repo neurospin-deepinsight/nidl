@@ -9,7 +9,7 @@ from .resize import Resize
 
 class Letterbox(VolumeTransform):
     """
-    Implementation of the letterbox transform introduced in YOLO [1].
+    Implementation of the letterbox transform introduced in YOLO [1]_.
     It resizes the input volume to an isotropic target shape
     while preserving the aspect ratio. This is done to minimize the
     distortion of volume's objects (e.g. anatomical structures) induced
@@ -45,8 +45,10 @@ class Letterbox(VolumeTransform):
 
     References
     ----------
-    [1] Redmon, J., et al., "You Only Look Once: ..." CVPR, 2016.
-    https://arxiv.org/abs/1506.02640
+    .. [1] J. Redmon, S. Divvala, R. Girshick and A. Farhadi, (2016)
+           "You Only Look Once: Unified, Real-Time Object Detection,"
+           in Proceedings of the IEEE Conference on Computer Vision and
+           Pattern Recognition (CVPR), pp. 779-788, https://arxiv.org/abs/1506.02640
     """
     def __init__(
         self,

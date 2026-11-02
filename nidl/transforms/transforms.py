@@ -50,13 +50,15 @@ class Transform(ABC):
         - RandomResizedCrop (3d)
         - RandomFlip (3d-array)
         - RandomRotation (3d)
+        - RandomAffine (3d)
 
     Intensity augmentations currently implemented (change voxel values):
         - RandomGaussianBlur (3d)
         - RandomGaussianNoise (nd)
+        - RandomBiasField (3d)
+        - RandomContrastAdjust (nd)
         - Gamma (TODO)
         - RandomBrightness (TODO)
-        - Biasfield (TODO)
 
     Intensity preprocessing:
         - ZNormalization (3d)
@@ -66,6 +68,7 @@ class Transform(ABC):
         - Resample (3d)
         - Resize (3d)
         - CropOrPad (3d)
+        - Letterbox (3d)
 
 
     Parameters
@@ -446,41 +449,70 @@ class VolumeTransform(Transform):
 
 class DinoTransform(Transform):
     """
-        Applies the two different sequences of transforms needed to compute
-        the global and local crops used as input of the DINO-family models [1].
-        The output volumes are returned in the order expected by the model
-        with global crops before local crops.
+    Applies the two different sequences of transforms needed to compute
+    the global and local crops used as input of the DINO-family models
+    [1]_. The output volumes are returned in the order expected by the
+    model with global crops before local crops.
 
-        Parameters
-        -----------
-        global_crops_transform : Callable
-            Function that defines the transform used to compute
-            ALL global crops from the input volume
-        
-        local_crops_transform : Callable
-            Function that defines the transform used to compute
-            ALL local crops from the input volume
-        
-        n_global_crops : int
-            Number of global crops to be derived from the input volume
-        
-        n_local_crops : int
-            Number of global crops to be derived from the input volume
+    Parameters
+    ----------
+    global_crops_transform : Callable
+        Function that defines the transform used to compute
+        ALL global crops from the input volume. See Examples.
+    
+    local_crops_transform : Callable
+        Function that defines the transform used to compute
+        ALL local crops from the input volume. See Examples.
+    
+    n_global_crops : int, default = 2
+        Number of global crops to be derived from the input volume
+    
+    n_local_crops : int, default = 8
+        Number of local crops to be derived from the input volume
 
-        References
-        ------------
-        [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
-           Transformers" ICCV, 2021. https://arxiv.org/abs/2104.14294
+        
+    Examples
+    --------
+    >>> from torchvision.transforms import Compose
+    >>> from nidl.transforms import DinoTransform
+    >>> from nidl.transforms.volume.augmentation import (
+    ...     RandomResizedCrop,
+    ...     RandomGaussianBlur,
+    ... )
+    >>> global_transform = Compose(
+    ...     [
+    ...         RandomResizedCrop(target_shape=224, scale=(0.4, 1.0), p=1),
+    ...         RandomGaussianBlur(p=1),
+    ...         ZNormalization(),
+    ...     ]
+    >>> local_transform = Compose(
+    ...     [
+    ...         RandomResizedCrop(target_shape=96, scale=(0.05, 0.4), p=1),
+    ...         RandomGaussianBlur(p=0.5),
+    ...         ZNormalization(),
+    ...     ]
+    >>> dino_transform = DinoTransform(
+    ...     global_crops_transform = global_transform,
+    ...     local_crops_transform = local_transform,
+    ...     n_global_crops = 2,
+    ...     n_local_crops = 2,
+    ... )
+
+    
+    References
+    ----------
+    .. [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
+        Transformers" ICCV, 2021. https://arxiv.org/abs/2104.14294
     """
     def __init__(
         self,
         global_crops_transform: Callable,
         local_crops_transform: Callable,
-        n_global_crops: Optional[int] = None,
-        n_local_crops: Optional[int] = None,
+        n_global_crops: int = 2,
+        n_local_crops: int = 8,
     ):
         # Determinsitic transform
-        super().__init__(1.0)
+        super().__init__(p=1.0)
 
         self.global_crops_transforms = []
         self.local_crops_transforms = []
@@ -515,7 +547,7 @@ class DinoTransform(Transform):
     @staticmethod
     def _parse_crops_count(crops_count, crops_type):
         if crops_count is None:
-            crops_count = 1
+            raise ValueError(f"{crops_type} must be defined")
 
         if not isinstance(crops_count, int):
             raise TypeError(
@@ -528,6 +560,19 @@ class DinoTransform(Transform):
 
     def apply_transform(
             self, data_parsed, **kwargs) -> list[TypeTransformInput]:
+        """
+        Parameters
+        ----------
+        data_parsed: Any
+            Input data with type checked.
+        kwargs: dict
+            Additional arguments passed to global and local transforms.
+
+        Returns
+        -------
+        data: Any
+            Global and local crops, in this order.
+        """
         global_crops = [
             global_transform(data_parsed, **kwargs)
             for global_transform in self.global_crops_transforms
