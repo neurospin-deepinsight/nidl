@@ -193,6 +193,7 @@ class Resample(VolumeTransform):
     def from_sitk(image: Stk.Image, dim: int) -> np.ndarray:
         """Convert the SimpleITK image as numpy array."""
         data = Stk.GetArrayFromImage(image).transpose()
+        data = np.ascontiguousarray(data)  # For performance
         num_components = image.GetNumberOfComponentsPerPixel()
         if dim == 3:
             assert num_components == 1
