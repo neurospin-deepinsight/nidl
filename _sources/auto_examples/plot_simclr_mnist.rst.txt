@@ -576,7 +576,7 @@ for annotated data in downstream tasks.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 4.212 seconds)
+   **Total running time of the script:** (1 minutes 11.170 seconds)
 
 **Estimated memory usage:**  143 MB
 
