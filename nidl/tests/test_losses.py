@@ -15,6 +15,8 @@ from torch.distributions import Normal, Laplace, Bernoulli
 from nidl.losses import (
     BarlowTwinsLoss,
     DINOLoss,
+    IBOTPatchLoss,
+    KoLeoLoss,
     InfoNCE,
     YAwareInfoNCE,
     KernelMetric,
@@ -22,6 +24,7 @@ from nidl.losses import (
     DCLLoss,
     DCLWLoss,
 )
+from nidl.losses.dino import sinkhorn_knopp
 
 class TestSSLLosses(unittest.TestCase):
     """ Test backbones.
@@ -382,6 +385,97 @@ class TestDINOLoss(unittest.TestCase):
         self.assertFalse(loss_fn.center.requires_grad)
         self.assertIsNone(loss_fn.center.grad)
 
+
+class TestIBOTPatchLoss(unittest.TestCase):
+    def setUp(self) -> None:
+        torch.manual_seed(0)
+        # Same teacher and student temperature: CE(t, t) = entropy(t)
+        self.loss_fn = IBOTPatchLoss(
+            output_dim=4, warmup_teacher_temp=0.1, teacher_temp=0.1,
+            warmup_teacher_temp_epochs=1, student_temp=0.1)
+
+    @staticmethod
+    def _ce(t, s, temp=0.1):
+        return -(torch.softmax(t / temp, -1)
+                 * torch.log_softmax(s / temp, -1)).sum(-1)
+
+    def test_each_image_weighs_the_same(self):
+        # image 0: 1 masked patch; image 1: 3 masked patches; image 2: none
+        masks = torch.tensor([[True, False, False, False],
+                              [True, True, True, False],
+                              [False, False, False, False]])
+        t, s = torch.randn(4, 4), torch.randn(4, 4)
+        ce = self._ce(t, s)
+        expected = (ce[0] + ce[1:].mean()) / 3
+        loss = self.loss_fn(t, s, masks, epoch=0)
+        self.assertTrue(torch.allclose(loss, expected, atol=1e-6))
+
+    def test_center_updates(self):
+        masks = torch.tensor([[True, True]])
+        t = torch.randn(2, 4)
+        self.loss_fn(t, torch.randn(2, 4), masks)
+        expected = 0.1 * t.mean(0)
+        self.assertTrue(torch.allclose(self.loss_fn.center[0, 0], expected))
+
+    def test_no_masked_patch(self):
+        masks = torch.zeros(2, 3, dtype=torch.bool)
+        s = torch.zeros(0, 4, requires_grad=True)
+        loss = self.loss_fn(torch.zeros(0, 4), s, masks)
+        self.assertEqual(loss.item(), 0.0)
+        self.assertTrue(torch.equal(self.loss_fn.center, torch.zeros(1, 1, 4)))
+
+
+class TestSinkhornCentering(unittest.TestCase):
+    def setUp(self) -> None:
+        torch.manual_seed(0)
+
+    def test_sinkhorn_knopp(self):
+        """Rows sum to 1, prototypes are balanced, a constant shift of the
+        logits changes nothing."""
+        logits = torch.randn(64, 8) + torch.linspace(0, 2, 8)  # imbalanced
+        temp = torch.tensor(0.5)
+        q = sinkhorn_knopp(logits, temp, n_iter=20)
+        self.assertTrue(torch.allclose(q.sum(1), torch.ones(64), atol=1e-5))
+        self.assertTrue(torch.allclose(q.sum(0), torch.full((8,), 8.0),
+                                       atol=1e-2))
+        self.assertTrue(torch.allclose(
+            sinkhorn_knopp(logits + 100, temp), sinkhorn_knopp(logits, temp),
+            atol=1e-6))
+
+    def test_dino_loss_sinkhorn(self):
+        """Finite loss, no center update; iBOT uses it too."""
+        dino = DINOLoss(output_dim=8, warmup_teacher_temp_epochs=1,
+                        centering="sinkhorn_knopp")
+        loss = dino(torch.randn(2, 4, 8), torch.randn(6, 4, 8))
+        self.assertTrue(torch.isfinite(loss))
+        self.assertTrue(torch.equal(dino.center, torch.zeros(1, 1, 8)))
+        ibot = IBOTPatchLoss(output_dim=8, warmup_teacher_temp_epochs=1,
+                             centering="sinkhorn_knopp")
+        masks = torch.tensor([[True, True, False], [False, True, False]])
+        loss = ibot(torch.randn(3, 8), torch.randn(3, 8), masks)
+        self.assertTrue(torch.isfinite(loss))
+        self.assertTrue(torch.equal(ibot.center, torch.zeros(1, 1, 8)))
+
+    def test_unknown_centering(self):
+        with self.assertRaises(ValueError):
+            DINOLoss(output_dim=8, centering="softmax")
+
+
+class TestKoLeoLoss(unittest.TestCase):
+    def test_square_on_circle(self):
+        # Nearest-neighbor distance on the square: sqrt(2)
+        angles = torch.tensor([0.0, 0.5, 1.0, 1.5]) * torch.pi
+        x = torch.stack([angles.cos(), angles.sin()], dim=1)
+        self.assertAlmostEqual(
+            KoLeoLoss()(x).item(), -np.log(np.sqrt(2)), places=5)
+
+    def test_finite_with_duplicates(self):
+        x = torch.randn(5, 8)
+        x = torch.cat([x, x[:1]]).requires_grad_()  # duplicated feature
+        loss = KoLeoLoss()(x)
+        loss.backward()
+        self.assertTrue(torch.isfinite(loss))
+        self.assertTrue(torch.isfinite(x.grad).all())
 
 class TestBetaVAELoss(unittest.TestCase):
     """ Test the Beta-VAE loss.

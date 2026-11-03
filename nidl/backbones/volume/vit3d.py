@@ -219,7 +219,7 @@ class VisionTransformer3D(nn.Module):
         Whether to apply normalization after pooling. If ``None``, defaults
         to ``global_pool == "avg"``.
     dynamic_img_size : bool, default=False
-        Present for interface compatibility. Not used here.
+        Accept any input size (position embeddings are resized).
     pos_embed : {"learned", "sincos", "none"}, default="learned"
         Absolute positional embedding mode.
     drop_rate : float, default=0.0
@@ -231,11 +231,17 @@ class VisionTransformer3D(nn.Module):
     attn_drop_rate : float, default=0.0
         Attention dropout in each transformer block.
     drop_path_rate : float, default=0.0
-        Maximum stochastic depth rate.
+        Maximum stochastic depth rate (linear from 0 over the blocks).
     norm_layer : callable, default=nn.LayerNorm
         Normalization layer constructor.
     act_layer : callable, default=nn.GELU
         Activation layer constructor.
+    mask_token : bool, default=False
+        Add a learnable mask token (see ``masks`` in `forward_features`).
+    init_values : float or None, default=None
+        LayerScale initial value. If ``None``, no LayerScale.
+    drop_path_uniform : bool, default=False
+        Same stochastic depth rate in every block (as DINOv2).
 
     Notes
     -----
@@ -279,6 +285,9 @@ class VisionTransformer3D(nn.Module):
         block_fn: Callable[..., nn.Module] = Block,
         mlp_layer: Callable[..., nn.Module] = Mlp,
         attn_layer=Attention,
+        mask_token: bool = False,
+        init_values: Optional[float] = None,
+        drop_path_uniform: bool = False,
     ) -> None:
         super().__init__()
 
@@ -314,6 +323,9 @@ class VisionTransformer3D(nn.Module):
             if self.num_reg_tokens > 0
             else None
         )
+        self.mask_token = (
+            nn.Parameter(torch.zeros(1, 1, embed_dim)) if mask_token else None
+        )
 
         if pos_embed == "learned":
             pos_len = (
@@ -340,7 +352,13 @@ class VisionTransformer3D(nn.Module):
         self.patch_drop = nn.Identity()
         self.norm_pre = norm_layer(embed_dim) if pre_norm else nn.Identity()
 
-        dpr = torch.linspace(0, drop_path_rate, depth).tolist()
+        if drop_path_uniform:
+            dpr = [drop_path_rate] * depth
+        else:
+            dpr = torch.linspace(0, drop_path_rate, depth).tolist()
+        block_kwargs = (
+            {} if init_values is None else {"init_values": init_values}
+        )
         self.blocks = nn.Sequential(
             *[
                 block_fn(
@@ -360,6 +378,7 @@ class VisionTransformer3D(nn.Module):
                     mlp_layer=mlp_layer,
                     attn_layer=attn_layer,
                     depth=i,
+                    **block_kwargs,
                 )
                 for i in range(depth)
             ]
@@ -404,7 +423,9 @@ class VisionTransformer3D(nn.Module):
                 nn.init.ones_(module.weight)
                 nn.init.zeros_(module.bias)
 
-    def _pos_embed(self, x: Tensor) -> Tensor:
+    def _pos_embed(
+        self, x: Tensor, grid: Optional[Sequence[int]] = None
+    ) -> Tensor:
         """
         Add prefix tokens and absolute position embeddings.
 
@@ -412,6 +433,8 @@ class VisionTransformer3D(nn.Module):
         ----------
         x : torch.Tensor
             Patch tokens of shape ``(B, N, C)``.
+        grid : sequence of int, optional
+            Input patch grid, used if ``dynamic_img_size=True``.
 
         Returns
         -------
@@ -421,6 +444,10 @@ class VisionTransformer3D(nn.Module):
         if len(x.shape) != 3:
             raise ValueError(f"Expected input shape (B, N, C), got {x.shape}.")
 
+        pos = self.pos_embed
+        if self.dynamic_img_size and grid is not None:
+            pos = self._resize_pos_embed(grid)
+
         B = x.shape[0]
         prefix = []
         if self.cls_token is not None:
@@ -429,27 +456,45 @@ class VisionTransformer3D(nn.Module):
             prefix.append(self.reg_token.expand(B, -1, -1))
 
         if self.no_embed_class:
-            if self.pos_embed is not None:
-                if x.shape[1] != self.pos_embed.shape[1]:
+            if pos is not None:
+                if x.shape[1] != pos.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} patch tokens, got"
+                        f"Expected {pos.shape[1]} patch tokens, got"
                         f" {x.shape[1]}."
                     )
-                x = x + self.pos_embed
+                x = x + pos
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
         else:
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
-            if self.pos_embed is not None:
-                if x.shape[1] != self.pos_embed.shape[1]:
+            if pos is not None:
+                if x.shape[1] != pos.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} tokens, got "
-                        f"{x.shape[1]}."
+                        f"Expected {pos.shape[1]} tokens, got {x.shape[1]}."
                     )
-                x = x + self.pos_embed
+                x = x + pos
 
         return self.pos_drop(x)
+
+    def _patch_grid(self, x: Tensor) -> list[int]:
+        """Patch grid ``[H', W', D']`` of an input ``(B, C, H, W, D)``."""
+        patch_size = self.patch_embed.patch_size
+        return [s // p for s, p in zip(x.shape[-3:], patch_size)]
+
+    def _resize_pos_embed(self, grid: Sequence[int]) -> Optional[Tensor]:
+        """Trilinear resize of the patch position embeddings to ``grid``
+        (prefix rows unchanged)."""
+        grid = tuple(grid)
+        if self.pos_embed is None or grid == tuple(self.grid_size):
+            return self.pos_embed
+        n = 0 if self.no_embed_class else self.num_prefix_tokens
+        prefix, pos = self.pos_embed[:, :n], self.pos_embed[:, n:]
+        pos = pos.reshape(1, *self.grid_size, -1).permute(0, 4, 1, 2, 3)
+        pos = nn.functional.interpolate(
+            pos, size=grid, mode="trilinear", align_corners=False
+        )
+        return torch.cat([prefix, pos.flatten(2).transpose(1, 2)], dim=1)
 
     def _patch_tokens(self, x: Tensor) -> Tensor:
         """
@@ -507,7 +552,9 @@ class VisionTransformer3D(nn.Module):
 
         raise ValueError(f"Unsupported pool_type: {pool_type}.")
 
-    def forward_features(self, x: Tensor) -> Tensor:
+    def forward_features(
+        self, x: Tensor, masks: Optional[Tensor] = None
+    ) -> Tensor:
         """
         Compute token features.
 
@@ -515,14 +562,24 @@ class VisionTransformer3D(nn.Module):
         ----------
         x : torch.Tensor
             Input tensor of shape ``(B, C, H, W, D)``.
+        masks : torch.Tensor, optional
+            Boolean ``(B, N_patches)``: True patches are replaced by the mask
+            token. Requires ``mask_token=True``.
 
         Returns
         -------
         torch.Tensor
             Token features of shape ``(B, N_total, C)``.
         """
+        grid = self._patch_grid(x)
         x = self.patch_embed(x)
-        x = self._pos_embed(x)
+        if masks is not None:
+            if self.mask_token is None:
+                raise ValueError("`masks` requires `mask_token=True`.")
+            x = torch.where(
+                masks.unsqueeze(-1), self.mask_token.to(x.dtype), x
+            )
+        x = self._pos_embed(x, grid)
         x = self.patch_drop(x)
         x = self.norm_pre(x)
         x = self.blocks(x)
@@ -614,8 +671,9 @@ class VisionTransformer3D(nn.Module):
         n_blocks = len(self.blocks)
         take = {i if i >= 0 else n_blocks + i for i in indices}
 
+        grid = self._patch_grid(x)
         x = self.patch_embed(x)
-        x = self._pos_embed(x)
+        x = self._pos_embed(x, grid)
         x = self.patch_drop(x)
         x = self.norm_pre(x)
 
@@ -678,6 +736,8 @@ class VisionTransformer3D(nn.Module):
             nwd.add("cls_token")
         if self.reg_token is not None:
             nwd.add("reg_token")
+        if self.mask_token is not None:
+            nwd.add("mask_token")
         if isinstance(self.pos_embed, nn.Parameter):
             nwd.add("pos_embed")
         return nwd

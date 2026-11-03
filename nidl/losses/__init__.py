@@ -12,5 +12,7 @@ from .barlowtwins import BarlowTwinsLoss
 from .beta_vae import BetaVAELoss
 from .dcl import DCLLoss, DCLWLoss
 from .dino import DINOLoss
+from .ibot import IBOTPatchLoss
 from .infonce import InfoNCE
+from .koleo import KoLeoLoss
 from .yaware_infonce import KernelMetric, YAwareInfoNCE
