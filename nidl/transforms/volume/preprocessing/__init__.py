@@ -7,4 +7,9 @@
 ##########################################################################
 
 from .intensity import RobustRescaling, ZNormalization
-from .spatial import CropOrPad, Resample, Resize
+from .pretrained import (
+    BrainIACPreprocessing,
+    NeuroJEPAPreprocessing,
+    NeuroSimCLRPreprocessing,
+)
+from .spatial import CropForeground, CropOrPad, Reorient, Resample, Resize

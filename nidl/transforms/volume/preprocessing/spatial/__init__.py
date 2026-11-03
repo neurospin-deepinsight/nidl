@@ -6,6 +6,8 @@
 # for details.
 ##########################################################################
 
+from .crop_foreground import CropForeground
 from .crop_or_pad import CropOrPad
+from .reorient import Reorient
 from .resample import Resample
 from .resize import Resize

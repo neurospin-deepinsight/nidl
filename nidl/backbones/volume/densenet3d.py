@@ -6,7 +6,10 @@
 # for details.
 ##########################################################################
 
+from __future__ import annotations
+
 from collections import OrderedDict
+from typing import Optional
 
 import torch
 import torch.nn.functional as func
@@ -31,8 +34,9 @@ class DenseNet(nn.Module):
         (i.e. bn_size * k features in the bottleneck layer).
     in_channels: int, default=1
         how many input channels has the input.
-    n_embedding: int, default=512
-        the size of the embedding space.
+    n_embedding: int or None, default=512
+        the size of the embedding space. If None, there is no final linear
+        layer and the average-pooled features are returned.
     memory_efficient: bool, default=False
         if True, uses checkpointing. Much more memory efficient,
         but slower. See <https://arxiv.org/pdf/1707.06990.pdf>.
@@ -45,7 +49,7 @@ class DenseNet(nn.Module):
         num_init_features: int = 64,
         bn_size: int = 4,
         in_channels: int = 1,
-        n_embedding: int = 512,
+        n_embedding: Optional[int] = 512,
         memory_efficient: bool = False,
     ):
         super().__init__()
@@ -93,7 +97,11 @@ class DenseNet(nn.Module):
                 self.features.add_module(f"transition{i + 1}", trans)
                 num_features = num_features // 2
 
-        self.embedding = nn.Linear(num_features, n_embedding)
+        self.embedding = (
+            nn.Linear(num_features, n_embedding)
+            if n_embedding is not None
+            else nn.Identity()
+        )
         # Official init from torch repo.
         for m in self.modules():
             if isinstance(m, nn.Conv3d):

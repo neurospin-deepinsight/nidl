@@ -69,6 +69,11 @@ class SimCLR(TransformerMixin, BaseEstimator):
         Projector output dimension.
     temperature : float, default=0.1
         The InfoNCE loss temperature parameter.
+    proj_bias : bool, default=True
+        Whether the linear layers of the projection head have a bias.
+    proj_batch_norm : bool, default=False
+        Whether each linear layer of the projection head is followed by a
+        batch normalization.
     optimizer : {'sgd', 'adam', 'adamW'} or torch.optim.Optimizer or type, \
         default="adamW"
         Optimizer for training the model. If a string is given, it can be:
@@ -117,6 +122,41 @@ class SimCLR(TransformerMixin, BaseEstimator):
     lr_scheduler : LRSchedulerPLType or None
         Learning rate scheduler used for training.
 
+    Notes
+    -----
+    .. rubric:: Pretrained Weights
+
+    Weights are available on the Hugging Face Hub, in the nidl format (see
+    :class:`~nidl.estimators.base.NidlHubMixin`):
+
+    - `nidl-neurospin/brainiac-vit-b
+      <https://huggingface.co/nidl-neurospin/brainiac-vit-b>`_: BrainIAC [4]_,
+      a 3D ViT-B with 88.3M encoder parameters and 768-dimensional
+      features, for :math:`96 \times 96 \times 96` inputs. Research-only and
+      non-commercial use.
+    - `nidl-neurospin/neuro-simclr-resnet18
+      <https://huggingface.co/nidl-neurospin/neuro-simclr-resnet18>`_:
+      Neuro-SimCLR [5]_, a 3D ResNet-18 with 33.2M encoder parameters and
+      512-dimensional features, for :math:`150 \times 192 \times 192` inputs.
+
+    .. important::
+
+        **BrainIAC features differ from the original code.** The original
+        model has no class token and returns its first patch token, an
+        ordinary token at a corner of the volume. nidl averages the patch
+        tokens instead, so `transform` does not return the original
+        BrainIAC features. The weights are unchanged, but the projection head
+        was trained on the first patch token.
+
+    Each set of weights needs its own preprocessing, given by
+    :meth:`get_preprocessing`, and :meth:`transform` rejects inputs of the
+    wrong shape:
+
+    >>> model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
+    >>> preprocess = model.get_preprocessing()
+
+    Loading weights needs ``pip install nidl[pretrained]``.
+
     References
     ----------
     .. [1] Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton,
@@ -126,6 +166,13 @@ class SimCLR(TransformerMixin, BaseEstimator):
            Learning with Contrastive Predictive Coding", arXiv 2018.
     .. [3] Sohn Kihyuk, "Improved Deep Metric Learning with Multi-class N-pair
            Loss Objective", NIPS 2016.
+    .. [4] Tak et al., "A generalizable foundation model for analysis of human
+           brain MRI", Nature Neuroscience, 2026.
+           https://doi.org/10.1038/s41593-026-02202-6
+    .. [5] Kaczmarek et al., "Building a General SimCLR Self-Supervised
+           Foundation Model Across Neurological Diseases to Advance 3D Brain
+           MRI Diagnoses", ICCV Workshops, 2025.
+           https://arxiv.org/abs/2509.10620
 
     """
 
@@ -137,6 +184,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
         proj_hidden_dim: int = 2048,
         proj_output_dim: int = 128,
         temperature: float = 0.1,
+        proj_bias: bool = True,
+        proj_batch_norm: bool = False,
         optimizer: Union[str, Optimizer, type[Optimizer]] = "adamW",
         learning_rate: float = 3e-4,
         weight_decay: float = 5e-4,
@@ -166,6 +215,8 @@ class SimCLR(TransformerMixin, BaseEstimator):
             input_dim=proj_input_dim,
             hidden_dim=proj_hidden_dim,
             output_dim=proj_output_dim,
+            bias=proj_bias,
+            batch_norm=proj_batch_norm,
         )
 
         self.temperature = temperature
@@ -224,6 +275,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
                 - "z1": tensor of shape `(batch_size, n_features)`;
                 - "z2": tensor of shape `(batch_size, n_features)`;
                 - "y": eventual targets (returned as is).
+
         """
         outputs = self._shared_step(batch, is_train=True)
         self.log("loss/train", outputs["loss"], prog_bar=True, sync_dist=True)
@@ -256,6 +308,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
                 - "z1": tensor of shape `(batch_size, n_features)`;
                 - "z2": tensor of shape `(batch_size, n_features)`;
                 - "y": eventual targets (returned as is).
+
         """
         outputs = self._shared_step(batch, is_train=False)
         self.log("loss/val", outputs["loss"], prog_bar=True, sync_dist=True)
@@ -293,6 +346,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
             The encoded features returned by the encoder.
 
         """
+        self.check_pretrained_input(batch)
         return self.encoder(batch)
 
     def configure_optimizers(self):

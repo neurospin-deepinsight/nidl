@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Optional
+from functools import partial
+from typing import Optional, Union
 
 import torch
 import torch.nn.functional as F  # ruff: ignore[lowercase-imported-as-non-lowercase]
@@ -159,7 +160,7 @@ class Gate(nn.Module):
     def forward(self, x: torch.Tensor):
         logits = self.gate(x)
         scores = (
-            logits.softmax(dim=-1)
+            logits.softmax(dim=-1, dtype=torch.float32)
             if self.score_func == "softmax"
             else logits.sigmoid()
         )
@@ -347,6 +348,10 @@ class RoPEAttention(nn.Module):
     a depth-group / height-group / width-group and each group is rotated by
     the token's position along that axis. It lets the encoder
     work on 3D volumes without any additive absolute positional embedding.
+
+    If `attn_gate=True`, the output of each head is further multiplied by a
+    learned, token-dependent sigmoid gate, as in the official Neuro-JEPA
+    weights.
     """
 
     def __init__(
@@ -357,6 +362,7 @@ class RoPEAttention(nn.Module):
         attn_drop=0.0,
         proj_drop=0.0,
         grid_size=16,
+        attn_gate=False,
     ):
         super().__init__()
         self.num_heads = num_heads
@@ -364,6 +370,9 @@ class RoPEAttention(nn.Module):
         self.qkv = nn.Linear(dim, dim * 3, bias=qkv_bias)
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
+        self.proj_attn_gate = (
+            nn.Linear(dim, num_heads, bias=qkv_bias) if attn_gate else None
+        )
         self.attn_drop_p = attn_drop
         self.d_dim = self.h_dim = self.w_dim = int(
             2 * ((self.head_dim // 3) // 2)
@@ -388,6 +397,9 @@ class RoPEAttention(nn.Module):
         W_patches=None,
     ):
         B, N, C = x.size()
+        gate = None
+        if self.proj_attn_gate is not None:
+            gate = torch.sigmoid(self.proj_attn_gate(x)).unsqueeze(-1)
         qkv = (
             self.qkv(x)
             .unflatten(-1, (3, self.num_heads, self.head_dim))
@@ -426,7 +438,10 @@ class RoPEAttention(nn.Module):
         x = F.scaled_dot_product_attention(
             q, k, v, dropout_p=self.attn_drop_p if self.training else 0.0
         )
-        x = x.transpose(1, 2).reshape(B, N, C)
+        x = x.transpose(1, 2)  # (B, N, num_heads, head_dim)
+        if gate is not None:
+            x = x * gate
+        x = x.reshape(B, N, C)
         return self.proj_drop(self.proj(x))
 
 
@@ -461,6 +476,7 @@ class Block(nn.Module):
         moe_params: Optional[MoEParams] = None,
         grid_size=16,
         norm_layer=nn.LayerNorm,
+        attn_gate=False,
     ):
         super().__init__()
         self.norm1 = norm_layer(dim)
@@ -471,6 +487,7 @@ class Block(nn.Module):
             attn_drop=attn_drop,
             proj_drop=drop,
             grid_size=grid_size,
+            attn_gate=attn_gate,
         )
         self.drop_path = (
             nn.Identity()
@@ -541,10 +558,17 @@ class VisionTransformer3DMoE(nn.Module):
     use_moe : bool, default=False
         Whether to replace the dense MLP with a sparse MoE (see `MoE`) in
         the blocks listed in `moe_params.moe_layer_indices`.
-    moe_params : MoEParams or None, default=None
-        Sparse MoE hyperparameters. Required if `use_moe=True`.
+    moe_params : MoEParams, dict or None, default=None
+        Sparse MoE hyperparameters, or the parameters of `MoEParams`.
+        Required if `use_moe=True`.
     init_std : float, default=0.02
         Standard deviation used for truncated-normal weight init.
+    attn_gate : bool, default=False
+        Whether to add the learned per-head attention gate of the official
+        Neuro-JEPA weights (see `RoPEAttention`).
+    norm_eps : float, default=1e-5
+        Epsilon of the layer norms. The official Neuro-JEPA weights use
+        `1e-6`.
     """
 
     def __init__(
@@ -558,10 +582,14 @@ class VisionTransformer3DMoE(nn.Module):
         mlp_ratio=4.0,
         drop_path_rate=0.0,
         use_moe=False,
-        moe_params: Optional[MoEParams] = None,
+        moe_params: Optional[Union[MoEParams, Mapping]] = None,
         init_std=0.02,
+        attn_gate=False,
+        norm_eps=1e-5,
     ):
         super().__init__()
+        if isinstance(moe_params, Mapping):
+            moe_params = MoEParams(**moe_params)
         self.embed_dim = embed_dim
         self.num_heads = num_heads
         self.patch_size = patch_size
@@ -580,6 +608,7 @@ class VisionTransformer3DMoE(nn.Module):
             img_size[2] // patch_size[2],
         )
 
+        norm_layer = partial(nn.LayerNorm, eps=norm_eps)
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, depth)]
         self.blocks = nn.ModuleList(
             [
@@ -591,11 +620,13 @@ class VisionTransformer3DMoE(nn.Module):
                     use_moe=(use_moe and i in self.moe_layer_indices),
                     moe_params=moe_params,
                     grid_size=self._grid_shape[0],
+                    norm_layer=norm_layer,
+                    attn_gate=attn_gate,
                 )
                 for i in range(depth)
             ]
         )
-        self.norm = nn.LayerNorm(embed_dim)
+        self.norm = norm_layer(embed_dim)
 
         self.init_std = init_std
         self.apply(self._init_weights)

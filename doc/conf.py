@@ -361,6 +361,10 @@ sphinx_gallery_conf = {
     "junit": "../test-results/sphinx-gallery/junit.xml",
     "examples_dirs": "../examples/",
     "gallery_dirs": "auto_examples",
+    # Examples executed when building the documentation. The pretrained
+    # models example needs a GPU, gated weights and the whole OpenBHB
+    # quasi-raw dataset: it is rendered with precomputed figures instead.
+    "filename_pattern": r"/plot_(?!pretrained_openbhb)",
     # Ignore the function signature leftover by joblib
     "ignore_pattern": r"func_code\.py",
     "show_memory": not sys.platform.startswith("win"),
