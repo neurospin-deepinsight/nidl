@@ -28,7 +28,7 @@ def initialize_momentum_params(online_net: nn.Module, momentum_net: nn.Module):
 
     params_online = online_net.parameters()
     params_momentum = momentum_net.parameters()
-    for po, pm in zip(params_online, params_momentum):
+    for po, pm in zip(params_online, params_momentum, strict=False):
         pm.data.copy_(po.data)
         pm.requires_grad = False
 
@@ -66,7 +66,9 @@ class MomentumUpdater:
             Momentum network (e.g. momentum backbone, or momentum projection).
         """
 
-        for op, mp in zip(online_net.parameters(), momentum_net.parameters()):
+        for op, mp in zip(
+            online_net.parameters(), momentum_net.parameters(), strict=False
+        ):
             mp.data = (
                 self.cur_lambda * mp.data + (1 - self.cur_lambda) * op.data
             )

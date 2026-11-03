@@ -8,8 +8,8 @@
 from __future__ import annotations
 
 from collections import OrderedDict
-from collections.abc import Sequence
-from typing import Callable, Optional, Union
+from collections.abc import Callable, Sequence
+from typing import Optional, Union
 
 import torch
 from timm.layers import trunc_normal_
@@ -59,7 +59,7 @@ def _assert_divisible(
     ValueError
         If one dimension is not divisible.
     """
-    if any(i % p != 0 for i, p in zip(img_size, patch_size)):
+    if any(i % p != 0 for i, p in zip(img_size, patch_size, strict=False)):
         raise ValueError(
             f"img_size={img_size} must be divisible by "
             f"patch_size={patch_size}."
@@ -119,7 +119,8 @@ class PatchEmbed3D(nn.Module):
         _assert_divisible(self.img_size, self.patch_size)
 
         self.grid_size = tuple(
-            i // p for i, p in zip(self.img_size, self.patch_size)
+            i // p
+            for i, p in zip(self.img_size, self.patch_size, strict=False)
         )
         self.num_patches = (
             self.grid_size[0] * self.grid_size[1] * self.grid_size[2]

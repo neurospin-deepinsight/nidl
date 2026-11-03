@@ -294,7 +294,9 @@ def hex(color):
     }
 
     # swap keys for values
-    new_xterm_colors = dict(zip(xterm_colors.values(), xterm_colors.keys()))
+    new_xterm_colors = dict(
+        zip(xterm_colors.values(), xterm_colors.keys(), strict=False)
+    )
     return new_xterm_colors[color]
 
 
@@ -628,7 +630,9 @@ class Colored:
 
     def reverse_dict(self):
         """reverse dictionary"""
-        self.reserve_paint = dict(zip(self.paint.values(), self.paint.keys()))
+        self.reserve_paint = dict(
+            zip(self.paint.values(), self.paint.keys(), strict=False)
+        )
 
 
 def stylize(text, styles, reset=True):

@@ -1140,12 +1140,14 @@ class Masker(nn.Module):
         while not valid_mask:
             # Sample start position for each dimension
             starts = []
-            for grid, block in zip(self.grid_size, b_size):
+            for grid, block in zip(self.grid_size, b_size, strict=False):
                 start = torch.randint(0, grid - block + 1, (1,)).item()
                 starts.append(start)
             # Create the mask
             mask = torch.zeros(self.grid_size, dtype=torch.int32)
-            slices = tuple(slice(s, s + b) for s, b in zip(starts, b_size))
+            slices = tuple(
+                slice(s, s + b) for s, b in zip(starts, b_size, strict=False)
+            )
             mask[slices] = 1
             # Constrain the mask to a set of acceptable regions
             if acceptable_regions is not None:
