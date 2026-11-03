@@ -261,12 +261,14 @@ def regression_report(
             f"target_name {len(target_names)} "
         )
 
-    rows = zip(target_names, *metrics_computed)
+    rows = zip(target_names, *metrics_computed, strict=False)
     last_line_heading = "average"
     if output_dict:
         report_dict = {label[0]: label[1:] for label in rows}
         for label, scores in report_dict.items():
-            report_dict[label] = dict(zip(headers, [float(i) for i in scores]))
+            report_dict[label] = dict(
+                zip(headers, [float(i) for i in scores], strict=False)
+            )
     else:
         name_width = max(len(cn) for cn in headers)
         num_metrics = len(headers)
@@ -285,7 +287,7 @@ def regression_report(
     if output_dict:
         if n_regressors > 1:
             report_dict[last_line_heading] = dict(
-                zip(headers, [float(i) for i in avg])
+                zip(headers, [float(i) for i in avg], strict=False)
             )
         elif n_regressors == 1:
             return report_dict[target_names[0]]
