@@ -513,6 +513,8 @@ transformations on brain 3D volumes.</p>
         classDiagram
   Resample &lt;|-- Resize
   VolumeTransform &lt;|-- CropOrPad
+  VolumeTransform &lt;|-- InverseLetterbox
+  VolumeTransform &lt;|-- Letterbox
   VolumeTransform &lt;|-- Resample
   VolumeTransform &lt;|-- RobustRescaling
   VolumeTransform &lt;|-- ZNormalization
@@ -547,6 +549,9 @@ functions.</p>
 </div>
 <pre align="center" class="mermaid align-center">
         classDiagram
+  VolumeTransform &lt;|-- RandomAffine
+  VolumeTransform &lt;|-- RandomBiasField
+  VolumeTransform &lt;|-- RandomContrastAdjust
   VolumeTransform &lt;|-- RandomErasing
   VolumeTransform &lt;|-- RandomFlip
   VolumeTransform &lt;|-- RandomGaussianBlur

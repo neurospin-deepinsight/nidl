@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**102:34.987** total execution time for 9 files **from all galleries**:
+**117:36.223** total execution time for 9 files **from all galleries**:
 
 .. container::
 
@@ -33,29 +33,29 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_examples_plot_dcl_vs_simclr.py` (``../examples/plot_dcl_vs_simclr.py``)
-     - 67:13.789
-     - 1198.8
+     - 83:03.395
+     - 1240.9
    * - :ref:`sphx_glr_auto_examples_plot_metrics_callback.py` (``../examples/plot_metrics_callback.py``)
-     - 10:14.295
-     - 2408.8
-   * - :ref:`sphx_glr_auto_examples_plot_barlowtwins_openbhb.py` (``../examples/plot_barlowtwins_openbhb.py``)
-     - 05:48.164
-     - 122.9
-   * - :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py` (``../examples/plot_yaware_openbhb.py``)
-     - 05:43.616
-     - 122.8
+     - 09:50.684
+     - 2410.2
    * - :ref:`sphx_glr_auto_examples_plot_model_probing.py` (``../examples/plot_model_probing.py``)
-     - 05:32.622
-     - 229.6
+     - 05:23.981
+     - 229.8
+   * - :ref:`sphx_glr_auto_examples_plot_yaware_openbhb.py` (``../examples/plot_yaware_openbhb.py``)
+     - 05:17.734
+     - 122.8
+   * - :ref:`sphx_glr_auto_examples_plot_barlowtwins_openbhb.py` (``../examples/plot_barlowtwins_openbhb.py``)
+     - 05:14.872
+     - 123.1
    * - :ref:`sphx_glr_auto_examples_plot_ijepa_medmnist.py` (``../examples/plot_ijepa_medmnist.py``)
-     - 03:00.305
-     - 817.3
+     - 03:55.690
+     - 820.6
    * - :ref:`sphx_glr_auto_examples_plot_openbhb.py` (``../examples/plot_openbhb.py``)
-     - 02:27.378
-     - 1449.0
+     - 02:28.924
+     - 1416.6
    * - :ref:`sphx_glr_auto_examples_plot_openbhb_hydra.py` (``../examples/plot_openbhb_hydra.py``)
-     - 01:25.289
-     - 180.4
+     - 01:16.731
+     - 167.6
    * - :ref:`sphx_glr_auto_examples_plot_simclr_mnist.py` (``../examples/plot_simclr_mnist.py``)
-     - 01:09.529
+     - 01:04.212
      - 143.1
