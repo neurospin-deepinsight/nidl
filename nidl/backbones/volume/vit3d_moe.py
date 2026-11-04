@@ -1,3 +1,10 @@
+##########################################################################
+# NSAp - Copyright (C) CEA, 2025
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
 from __future__ import annotations
 
 import math
@@ -9,6 +16,11 @@ import torch
 import torch.nn.functional as F  # ruff: ignore[lowercase-imported-as-non-lowercase]
 from torch import distributed as dist
 from torch import nn
+
+# ==========================================================================
+# Low-level utilities
+#   Ported from: src/neurojepa/utils/tensors.py, src/neurojepa/masks/utils.py
+# ==========================================================================
 
 
 def trunc_normal_(
@@ -76,6 +88,12 @@ def repeat_interleave_batch(
     )
 
 
+# ==========================================================================
+# Patch embedding
+#   Ported from: src/neurojepa/models/utils/patch_embed.py
+# ==========================================================================
+
+
 class PatchEmbed3D(nn.Module):
     """Tokenizes a (B, C, H, W, D) volume into non-overlapping 3D patches
     ("tubelets") with a single strided Conv3d -- this is what makes I-JEPA
@@ -98,10 +116,11 @@ class PatchEmbed3D(nn.Module):
 
 # ==========================================================================
 # Mixture-of-Experts
+#   Ported from: src/neurojepa/models/utils/moe.py
 #   Aux-loss-free, bias-corrected top-k router (DeepSeek-V3 style) with a
 #   handful of *shared* experts (always active, dense) plus N *routed*
 #   experts (only top-k active per token). Lets different experts
-#   specialize by anatomical region / tissue type instead of
+#   specialize by anatomical region / tissue type (paper Fig. 5) instead of
 #   every token going through one shared dense MLP.
 # ==========================================================================
 
@@ -246,7 +265,9 @@ def moe_bias_update(
     model: nn.Module, update_rate: float, bias_clip: float = 0.3
 ) -> tuple[float, float]:
     """Aux-loss-free load-balancing update, ported from
-    `models/utils/moe.py::moe_bias_update`.
+    `models/utils/moe.py::moe_bias_update`, simplified to single-device
+    (the official version additionally all-reduces expert counts across
+    DDP ranks before this step; add that back if training distributed).
 
     `model` must expose `.blocks` (a ModuleList of `Block` instances, some
     of which may hold a `MoE` in `.mlp`). Call this once per optimizer step,
@@ -324,6 +345,14 @@ class MoEParams:
     # Layer indices (0-indexed) that use MoE; the rest use a plain dense MLP.
     # Matches the official base config: every other block from 1 to 11.
     moe_layer_indices: tuple[int, ...] = (1, 3, 5, 7, 9, 11)
+
+
+# ==========================================================================
+# Attention + Transformer block
+#   Ported from: src/neurojepa/models/utils/modules.py
+#   (dropped: ACRoPEAttention / action tokens / causal masking -- V-JEPA2
+#   video-only extras, unused by Neuro-JEPA's own pretrain config)
+# ==========================================================================
 
 
 def rotate_queries_or_keys(x: torch.Tensor, pos: torch.Tensor) -> torch.Tensor:
@@ -514,9 +543,19 @@ class Block(nn.Module):
         return x, moe_scores
 
 
+# ==========================================================================
+# Vision Transformer encoder -- the independent, reusable backbone
+#   Ported from: src/neurojepa/models/vision_transformer.py
+# ==========================================================================
+
+
 class VisionTransformer3DMoE(nn.Module):
     """3D ViT backbone with an optional sparse Mixture-of-Experts (MoE)
     mixed in at configurable layers.
+
+    num_prefix_tokens and forward_features have been added for compatibility
+    with code developed for a standard vit backbone with no MoE
+    (as in nidl/backbones/vit3d.py)
 
     Parameters
     ----------
@@ -545,6 +584,10 @@ class VisionTransformer3DMoE(nn.Module):
         Sparse MoE hyperparameters. Required if `use_moe=True`.
     init_std : float, default=0.02
         Standard deviation used for truncated-normal weight init.
+    class_token : bool, default=False
+        Whether to prepend a CLS token.
+    reg_tokens : int, default=0
+        Number of register tokens.
     """
 
     def __init__(
@@ -560,6 +603,8 @@ class VisionTransformer3DMoE(nn.Module):
         use_moe=False,
         moe_params: Optional[MoEParams] = None,
         init_std=0.02,
+        class_token: bool = False,
+        reg_tokens: int = 0
     ):
         super().__init__()
         self.embed_dim = embed_dim
@@ -601,6 +646,12 @@ class VisionTransformer3DMoE(nn.Module):
         self.apply(self._init_weights)
         self._rescale_blocks()
 
+        self.has_class_token = class_token
+        self.num_reg_tokens = int(reg_tokens)
+        self.num_prefix_tokens = (
+            1 if self.has_class_token else 0
+        ) + self.num_reg_tokens
+
     @property
     def grid_shape(self) -> tuple[int, int, int]:
         """(nH, nW, nD) patch-grid dimensions."""
@@ -638,24 +689,56 @@ class VisionTransformer3DMoE(nn.Module):
     def forward(
         self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
     ):
-        """Encode a volume into patch tokens.
+        """
+        Forward pass.
+
+        Given that the backbone has been developed for NeuroJEPA
+        it doesn't currently feature a ``forward_head`` method
+        making ``forward`` and ``forward_features`` functionally equivalent.
 
         Parameters
         ----------
         x : torch.Tensor
-            ``(B, C, H, W, D)`` volume.
-        masks : list of torch.Tensor or None, default=None
-            Optional list of ``(B, K)`` LongTensors: if given, only those
-            patch indices are kept, and the output batch is multiplied by
+            Input volume of shape ``(B, C, H, W, D)``.
+        masks : list of torch.Tensor, default=None
+            Optional list of ``(B, K)`` LongTensors. If given, only those
+            patch indices are kept; output batch is multiplied by
             ``len(masks)`` (one block per mask, concatenated along batch).
 
         Returns
         -------
         tokens : torch.Tensor
-            ``(B[*len(masks)], K, E)`` patch tokens.
+            Output tokens of shape ``(B * len(masks), K, E)``.
         moe_scores : list
-            One entry per block of router scores, or an empty list if
-            `use_moe=False`.
+            Router scores (one entry per block), or an empty list if
+            ``use_moe=False``.
+        """
+        return self.forward_features(x, masks)
+
+    def forward_features(
+        self,
+        x: torch.Tensor,
+        masks: Optional[list[torch.Tensor]] = None
+    ):
+        """
+        Compute the backbone features.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input volume of shape ``(B, C, H, W, D)``.
+        masks : list of torch.Tensor, default=None
+            Optional list of ``(B, K)`` LongTensors. If given, only those
+            patch indices are kept; output batch is multiplied by
+            ``len(masks)`` (one block per mask, concatenated along batch).
+
+        Returns
+        -------
+        tokens : torch.Tensor
+            Output tokens of shape ``(B * len(masks), K, E)``.
+        moe_scores : list
+            Router scores (one entry per block), or an empty list if
+            ``use_moe=False``.
         """
         _, _, H, W, D = x.shape
         H_p, W_p, D_p = (
@@ -686,3 +769,4 @@ class VisionTransformer3DMoE(nn.Module):
                 moe_scores_all.append(moe_scores)
 
         return self.norm(x), moe_scores_all
+        
