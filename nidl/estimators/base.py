@@ -126,12 +126,13 @@ class NidlHubMixin:
       a sample without batch dimension and the range of its values, checked
       by :meth:`check_pretrained_input` (either can be null);
     - ``"preprocessing"`` (optional): ``{"transform": ..., "kwargs": ...}``, a
-      transform exposed by :mod:`nidl.transforms.volume.preprocessing` and
-      the parameters fixed by the weights, see :meth:`get_preprocessing`;
+      transform exposed by ``nidl.transforms.volume.preprocessing`` and
+      the parameters fixed by the weights, see
+      :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`;
     - ``"weights"`` (optional): ``{"missing_ok": [...]}``, prefixes of the
       parameters that the weights do not include and which keep their
       initial values, and for weights published elsewhere, their repository
-      and converter (see :mod:`nidl.estimators.external`);
+      and converter (see :class:`~nidl.estimators.external.ExternalWeights`);
     - ``"nidl_version"``: the version of nidl that wrote it.
 
     Classes are looked up by name in these modules only, so that a
@@ -140,7 +141,7 @@ class NidlHubMixin:
     Weights that cannot be published again in the nidl format are loaded
     from the repository of their authors and renamed by a converter, as
     described by the ``"weights"`` entry of the configuration: see
-    :mod:`nidl.estimators.external`.
+    :class:`~nidl.estimators.external.ExternalWeights`.
 
     Attributes
     ----------
@@ -311,7 +312,7 @@ class NidlHubMixin:
             `encoder_kwargs`.
         preprocessing : mapping or None, default=None
             ``{"transform": ..., "kwargs": ...}``, the transform of
-            :mod:`nidl.transforms.volume.preprocessing` to apply on the
+            ``nidl.transforms.volume.preprocessing`` to apply on the
             inputs, with the parameters fixed by the weights.
         input_shape : sequence of int or None, default=None
             Shape of a sample, without batch dimension.
@@ -589,10 +590,11 @@ class BaseEstimator(NidlHubMixin, pl.LightningModule):
     This class provides:
 
     - a :meth:`fit` method.
-    - :meth:`~NidlHubMixin.from_pretrained`,
-      :meth:`~NidlHubMixin.save_pretrained` and
-      :meth:`~NidlHubMixin.push_to_hub` methods, to share estimators and
-      their weights with the Hugging Face Hub (see :class:`NidlHubMixin`).
+    - :meth:`~nidl.estimators.base.NidlHubMixin.from_pretrained`,
+      :meth:`~nidl.estimators.base.NidlHubMixin.save_pretrained` and
+      :meth:`~nidl.estimators.base.NidlHubMixin.push_to_hub` methods, to
+      share estimators and their weights with the Hugging Face Hub (see
+      :class:`~nidl.estimators.base.NidlHubMixin`).
     - a :meth:`transform` if the child class inherits from
       :class:`TransformerMixin`
     - a :meth:`transform_with_targets` method if the child class inherits from
@@ -874,7 +876,7 @@ class BaseEstimator(NidlHubMixin, pl.LightningModule):
         Notes
         -----
         Outputs are gathered across GPUs in distributed settings, similarly to
-        :meth:`transform`.
+        :meth:`~nidl.estimators.BaseEstimator.transform`.
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)

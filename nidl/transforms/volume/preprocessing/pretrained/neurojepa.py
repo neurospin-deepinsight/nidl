@@ -50,7 +50,8 @@ class NeuroJEPAPreprocessing(VolumeTransform):
         OpenBHB volumes are "LAS". Arrays do not carry this information and a
         wrong value silently mirrors the brain, hence there is no default.
     **kwargs : dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     Notes
     -----

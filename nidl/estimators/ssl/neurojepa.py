@@ -686,20 +686,23 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
 
     The nidl repositories only hold the configuration: the weights are
     downloaded from the repositories of the authors, at the commit validated
-    against the official code (see :mod:`nidl.estimators.external`). Only
-    one encoder is published, so `context_encoder` and `target_encoder` are
+    against the official code (see
+    :class:`~nidl.estimators.external.ExternalWeights`). Only one encoder is
+    published, so `context_encoder` and `target_encoder` are
     identical after loading and the `predictor` remains randomly
     initialized.
 
     The weights need their own preprocessing (see
     :class:`~nidl.transforms.volume.preprocessing.NeuroJEPAPreprocessing`),
-    given by :meth:`get_preprocessing`, and :meth:`transform` rejects inputs
-    of the wrong shape or range:
+    given by :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`,
+    and :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of
+    the wrong shape or range:
 
     >>> model = NeuroJEPA.from_pretrained("nidl-neurospin/neuro-jepa-vit-b")
     >>> preprocess = model.get_preprocessing(input_orientation="LAS")
 
-    Loading weights needs ``pip install nidl[pretrained]``.
+    Loading weights needs ``pip install nidl[pretrained]``. See
+    :ref:`pretrained_models` for all the available models.
 
     References
     ----------

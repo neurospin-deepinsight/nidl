@@ -47,7 +47,8 @@ class BrainIACPreprocessing(VolumeTransform):
         ``((6, 176), (7, 213), (3, 165))``. If None, the volume is not
         cropped.
     **kwargs : dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     Notes
     -----

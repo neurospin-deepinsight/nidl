@@ -40,6 +40,7 @@ from nidl.info import __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "gh_substitutions",
+    "pretrained_models",
     "myst_parser",
     "numpydoc",
     "sphinx_copybutton",

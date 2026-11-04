@@ -32,6 +32,7 @@ from nidl.backbones.volume.vit3d_moe import (
 from nidl.estimators.external import ExternalWeights, NeuroJEPAWeights
 from nidl.estimators.ssl import NeuroJEPA, SimCLR, YAwareContrastiveLearning
 from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
+from nidl.transforms.volume import preprocessing
 from nidl.transforms.volume.preprocessing import (
     BrainIACPreprocessing,
     CropForeground,
@@ -103,6 +104,14 @@ def _tiny_neurojepa_config(**weights):
             **weights,
         },
     }
+
+
+def _tuples(value):
+    if isinstance(value, dict):
+        return {k: _tuples(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return tuple(_tuples(v) for v in value)
+    return value
 
 
 def _sizes(state_dict):
@@ -329,6 +338,27 @@ class TestNidlHubMixin(unittest.TestCase):
         )
         self.assertEqual(loaded.learning_rate, 1.0)
 
+    def test_fine_tune_after_from_pretrained(self):
+        self._model().save_pretrained(self.directory)
+        model = SimCLR.from_pretrained(
+            self.directory, accelerator="cpu", devices=1, max_epochs=1,
+            logger=False, enable_progress_bar=False,
+            enable_checkpointing=False,
+        )
+        before = {k: v.clone() for k, v in model.state_dict().items()}
+        x = torch.rand(4, 1, 16, 16, 16)
+        views = [[a, a + 0.01 * torch.randn_like(a)] for a in x]
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            model.fit(DataLoader(views, batch_size=2))
+        self.assertTrue(model.fitted)
+        self.assertFalse(
+            torch.equal(
+                before["encoder.norm.weight"],
+                model.state_dict()["encoder.norm.weight"],
+            )
+        )
+
     def test_encoder_given_as_class(self):
         model = SimCLR(
             encoder=VisionTransformer3D,
@@ -545,7 +575,7 @@ class TestConvertedArchitectures(unittest.TestCase):
         return info["estimator"].from_config(config, accelerator="cpu")
 
     def test_yaware(self):
-        state_dict = self._build("yaware").state_dict()
+        state_dict = self._build("yaware-densenet121-bhb10k").state_dict()
         self.assertEqual(len(state_dict), 724)
         self.assertEqual(
             sum(v.numel() for v in state_dict.values()), 11912760
@@ -555,7 +585,7 @@ class TestConvertedArchitectures(unittest.TestCase):
         )
 
     def test_neuro_simclr(self):
-        model = self._build("neuro-simclr")
+        model = self._build("neuro-simclr-resnet18")
         state_dict = model.state_dict()
         self.assertEqual(
             sum(v.numel() for v in state_dict.values()), 33465428
@@ -566,7 +596,7 @@ class TestConvertedArchitectures(unittest.TestCase):
         self.assertNotIn("projection_head.layers.0.bias", state_dict)
 
     def test_brainiac(self):
-        model = self._build("brainiac").eval()
+        model = self._build("brainiac-vit-b").eval()
         state_dict = model.state_dict()
         self.assertEqual(
             sum(v.numel() for v in state_dict.values()), 90514690
@@ -584,7 +614,7 @@ class TestConvertedArchitectures(unittest.TestCase):
     def test_original_names(self):
         """Original names of each checkpoint, renamed by the tool."""
         expected = {
-            "yaware": {
+            "yaware-densenet121-bhb10k": {
                 "module.hidden_representation.weight": (
                     "projection_head.layers.0.weight"
                 ),
@@ -592,11 +622,11 @@ class TestConvertedArchitectures(unittest.TestCase):
                     "encoder.features.conv0.weight"
                 ),
             },
-            "neuro-simclr": {
+            "neuro-simclr-resnet18": {
                 "module.encoder.conv1.weight": "encoder.conv1.weight",
                 "module.projector.2.weight": "projection_head.layers.2.weight",
             },
-            "brainiac": {
+            "brainiac-vit-b": {
                 "backbone.patch_embedding.position_embeddings": (
                     "encoder.pos_embed"
                 ),
@@ -621,6 +651,40 @@ class TestConvertedArchitectures(unittest.TestCase):
                         original = re.sub(pattern, replacement, original)
                     self.assertEqual(original, renamed)
                     self.assertIn(renamed, model.state_dict())
+
+    def test_documentation_registry(self):
+        """The models advertised in the documentation are the published
+        ones."""
+        registry = Path(__file__).parents[2] / "doc" / "pretrained_models.json"
+        if not registry.is_file():
+            self.skipTest("documentation not available")
+        models = json.loads(registry.read_text())["models"]
+        published = {**self.tool.MODELS, **self.tool.EXTERNAL_MODELS}
+        self.assertEqual(
+            {m["repo_id"] for m in models},
+            {f"nidl-neurospin/{name}" for name in published},
+        )
+        for model in models:
+            with self.subTest(model["repo_id"]):
+                info = published[model["repo_id"].split("/")[1]]
+                estimator = info["estimator"]
+                if not isinstance(estimator, str):
+                    estimator = estimator.__name__
+                config = info["config"]
+                self.assertEqual(model["estimator"], estimator)
+                self.assertEqual(
+                    model["preprocessing"],
+                    config["preprocessing"]["transform"],
+                )
+                self.assertEqual(
+                    model["gated"], "repo_id" in config.get("weights", {})
+                )
+                for key in ("subjects", "volumes", "modality"):
+                    self.assertIn(key, model)
+                transform = getattr(
+                    preprocessing, model["preprocessing"]
+                )
+                transform(**_tuples(model["openbhb"]["kwargs"]))
 
     def test_default_models_unchanged(self):
         self.assertIn("embedding.weight", densenet121().state_dict())

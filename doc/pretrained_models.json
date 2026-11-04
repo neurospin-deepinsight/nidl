@@ -1,0 +1,192 @@
+{
+  "openbhb": {
+    "description": "Ridge regression of age on frozen features, OpenBHB train split (3,227) to test split (757)",
+    "nidl_version": "0.0.3.dev0",
+    "date": "2026-11-03",
+    "example": "sphx_glr_auto_examples_plot_pretrained_openbhb.py"
+  },
+  "models": [
+    {
+      "repo_id": "nidl-neurospin/yaware-densenet121-bhb10k",
+      "name": "y-Aware DenseNet-121",
+      "family": "published",
+      "estimator": "YAwareContrastiveLearning",
+      "encoder": "3D DenseNet-121",
+      "parameters": "11.2M",
+      "features": 1024,
+      "pretraining": "y-Aware contrastive learning on BHB-10K (about 10,000 healthy participants), with age as proxy",
+      "subjects": null,
+      "volumes": "~10,000",
+      "modality": "T1w (VBM gray matter maps)",
+      "input": "CAT12 VBM gray matter maps in the MNI space at 1.5 mm, of shape 121 x 145 x 121",
+      "preprocessing": "ZNormalization",
+      "openbhb": {
+        "modality": "vbm",
+        "kwargs": {},
+        "mae": 3.08,
+        "r2": 0.89
+      },
+      "fidelity": "Matches the original implementation. The OpenBHB brain age is optimistic: BHB-10K includes the OpenBHB participants and age was the pretraining proxy.",
+      "license": "Not stated by the authors",
+      "gated": false,
+      "paper": {
+        "title": "Dufumier et al., Contrastive Learning with Continuous Proxy Meta-Data for 3D MRI Classification, MICCAI 2021",
+        "url": "https://arxiv.org/abs/2106.08808"
+      },
+      "code": "https://github.com/Duplums/yAwareContrastiveLearning"
+    },
+    {
+      "repo_id": "nidl-neurospin/neuro-simclr-resnet18",
+      "name": "Neuro-SimCLR ResNet-18",
+      "family": "published",
+      "estimator": "SimCLR",
+      "encoder": "3D ResNet-18",
+      "parameters": "33.2M",
+      "features": 512,
+      "pretraining": "SimCLR on 44,958 T1w MRI of 18,759 patients from 11 public datasets",
+      "subjects": "18,759",
+      "volumes": "44,958",
+      "modality": "T1w",
+      "input": "Skull-stripped T1w MRI prepared with TurboPrep, rigidly registered to the MNI152 ICBM 2009c template at 1 mm",
+      "preprocessing": "NeuroSimCLRPreprocessing",
+      "openbhb": {
+        "modality": "quasiraw",
+        "kwargs": {
+          "input_orientation": "LAS",
+          "padding": [
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              6,
+              5
+            ]
+          ]
+        },
+        "mae": 4.39,
+        "r2": 0.736
+      },
+      "fidelity": "All the weights of the original checkpoint are loaded strictly. OpenBHB images are not prepared with TurboPrep.",
+      "license": "Not stated by the authors (code under MIT)",
+      "gated": false,
+      "paper": {
+        "title": "Kaczmarek et al., Building a General SimCLR Self-Supervised Foundation Model Across Neurological Diseases to Advance 3D Brain MRI Diagnoses, ICCV Workshops 2025",
+        "url": "https://arxiv.org/abs/2509.10620"
+      },
+      "code": "https://github.com/emilykaczmarek/3D-Neuro-SimCLR"
+    },
+    {
+      "repo_id": "nidl-neurospin/brainiac-vit-b",
+      "name": "BrainIAC ViT-B",
+      "family": "published",
+      "estimator": "SimCLR",
+      "encoder": "3D ViT-B/16",
+      "parameters": "88.3M",
+      "features": 768,
+      "pretraining": "SimCLR on structural brain MRI of several sequences",
+      "subjects": null,
+      "volumes": "32,015",
+      "modality": "Structural MRI (T1w, T2w, FLAIR, ...)",
+      "input": "Skull-stripped, bias-corrected MRI, rigidly registered to the BrainIAC template (170 x 206 x 162 at 1 mm, LAS)",
+      "preprocessing": "BrainIACPreprocessing",
+      "openbhb": {
+        "modality": "quasiraw",
+        "kwargs": {
+          "crop": [
+            [
+              6,
+              176
+            ],
+            [
+              7,
+              213
+            ],
+            [
+              3,
+              165
+            ]
+          ]
+        },
+        "mae": 6.47,
+        "r2": 0.47
+      },
+      "fidelity": "The encoder matches an independent implementation of the original model within 1e-6. nidl averages the patch tokens where the original code returns the first one.",
+      "license": "BrainIAC Research-Only (non-commercial), redistributed with the approval of the authors",
+      "gated": false,
+      "paper": {
+        "title": "Tak et al., A generalizable foundation model for analysis of human brain MRI, Nature Neuroscience 2026",
+        "url": "https://doi.org/10.1038/s41593-026-02202-6"
+      },
+      "code": "https://github.com/AIM-KannLab/BrainIAC"
+    },
+    {
+      "repo_id": "nidl-neurospin/neuro-jepa-vit-b",
+      "name": "Neuro-JEPA ViT-B",
+      "family": "published",
+      "estimator": "NeuroJEPA",
+      "encoder": "3D ViT-B with mixtures of experts",
+      "parameters": "122M",
+      "features": 768,
+      "pretraining": "JEPA on about 1.55 million T1w, T2w and FLAIR scans from NYU Langone Health",
+      "subjects": "282,693",
+      "volumes": "~1.55M",
+      "modality": "T1w, T2w, FLAIR",
+      "input": "Skull-stripped, bias-corrected MRI, affinely registered to MNI152 at 1 mm",
+      "preprocessing": "NeuroJEPAPreprocessing",
+      "openbhb": {
+        "modality": "quasiraw",
+        "kwargs": {
+          "input_orientation": "LAS"
+        },
+        "mae": 3.17,
+        "r2": 0.878
+      },
+      "fidelity": "Features bit-identical to the official code, preprocessing included, on the 3,984 OpenBHB images.",
+      "license": "CC-BY-NC-ND 4.0 (non-commercial, no derivatives)",
+      "gated": true,
+      "weights": "https://huggingface.co/NYUMedML/Neuro-JEPA",
+      "paper": {
+        "title": "Huang et al., Learning Sparse Latent Predictive Foundation Model for Multimodal Neuroimaging, arXiv 2026",
+        "url": "https://arxiv.org/abs/2606.14957"
+      },
+      "code": "https://github.com/NYUMedML/Neuro-JEPA"
+    },
+    {
+      "repo_id": "nidl-neurospin/neuro-jepa-vit-l",
+      "name": "Neuro-JEPA ViT-L",
+      "family": "published",
+      "estimator": "NeuroJEPA",
+      "encoder": "3D ViT-L with mixtures of experts",
+      "parameters": "431M",
+      "features": 1024,
+      "pretraining": "JEPA on about 1.55 million T1w, T2w and FLAIR scans from NYU Langone Health",
+      "subjects": "282,693",
+      "volumes": "~1.55M",
+      "modality": "T1w, T2w, FLAIR",
+      "input": "Skull-stripped, bias-corrected MRI, affinely registered to MNI152 at 1 mm",
+      "preprocessing": "NeuroJEPAPreprocessing",
+      "openbhb": {
+        "modality": "quasiraw",
+        "kwargs": {
+          "input_orientation": "LAS"
+        },
+        "mae": 3.0,
+        "r2": 0.893
+      },
+      "fidelity": "Features bit-identical to the official code, preprocessing included, on the 3,984 OpenBHB images.",
+      "license": "CC-BY-NC-ND 4.0 (non-commercial, no derivatives)",
+      "gated": true,
+      "weights": "https://huggingface.co/NYUMedML/Neuro-JEPA-Large",
+      "paper": {
+        "title": "Huang et al., Learning Sparse Latent Predictive Foundation Model for Multimodal Neuroimaging, arXiv 2026",
+        "url": "https://arxiv.org/abs/2606.14957"
+      },
+      "code": "https://github.com/NYUMedML/Neuro-JEPA"
+    }
+  ]
+}

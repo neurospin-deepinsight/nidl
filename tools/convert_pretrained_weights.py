@@ -23,15 +23,19 @@ This script produced the repositories of the `nidl-neurospin
 
 Run it with::
 
-    python convert_pretrained_weights.py brainiac out/ --source BrainIAC.ckpt
+    python convert_pretrained_weights.py brainiac-vit-b out/ \
+        --source BrainIAC.ckpt
     python convert_pretrained_weights.py neuro-jepa-vit-b out/
 
 Sources of the original checkpoints:
 
-- yaware: https://github.com/Duplums/yAwareContrastiveLearning
-- neuro-simclr: https://github.com/emilykaczmarek/3D-Neuro-SimCLR
-- brainiac: https://github.com/AIM-KannLab/BrainIAC
+- yaware-densenet121-bhb10k:
+  https://github.com/Duplums/yAwareContrastiveLearning
+- neuro-simclr-resnet18: https://github.com/emilykaczmarek/3D-Neuro-SimCLR
+- brainiac-vit-b: https://github.com/AIM-KannLab/BrainIAC
 - neuro-jepa-vit-b and neuro-jepa-vit-l: https://github.com/NYUMedML/Neuro-JEPA
+
+The model names are the names of the repositories.
 """
 
 import argparse
@@ -45,7 +49,7 @@ from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
 from nidl.info import __version__
 
 MODELS = {
-    "yaware": {
+    "yaware-densenet121-bhb10k": {
         "estimator": YAwareContrastiveLearning,
         "checkpoint_key": "model",
         "key_mapping": (
@@ -71,7 +75,7 @@ MODELS = {
             "preprocessing": {"transform": "ZNormalization", "kwargs": {}},
         },
     },
-    "neuro-simclr": {
+    "neuro-simclr-resnet18": {
         "estimator": SimCLR,
         "checkpoint_key": "model_state_dict",
         "key_mapping": (
@@ -101,7 +105,7 @@ MODELS = {
             },
         },
     },
-    "brainiac": {
+    "brainiac-vit-b": {
         "estimator": SimCLR,
         "checkpoint_key": "state_dict",
         "key_mapping": (

@@ -161,21 +161,13 @@ encoder, the shape and range of its inputs and their preprocessing. The
 estimator then knows the input it expects:
 :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing` gives the
 preprocessing of the training data, and batches of the wrong shape or range
-raise an error in :meth:`transform`. Save your own estimators with
+raise an error in :meth:`~nidl.estimators.BaseEstimator.transform`. Save your own estimators with
 :meth:`~nidl.estimators.base.NidlHubMixin.save_pretrained` or
 :meth:`~nidl.estimators.base.NidlHubMixin.push_to_hub`. Install the
 dependencies with ``pip install nidl[pretrained]``.
 
-The available weights are listed in the documentation of each estimator, for
-now :class:`~nidl.estimators.ssl.NeuroJEPA`,
-:class:`~nidl.estimators.ssl.YAwareContrastiveLearning` and
-:class:`~nidl.estimators.ssl.SimCLR` (BrainIAC and Neuro-SimCLR). They keep
-their own license. The BrainIAC, Neuro-SimCLR and y-Aware ones are hosted by
-the `nidl-neurospin <https://huggingface.co/nidl-neurospin>`_ organization.
-The Neuro-JEPA ones are gated (CC-BY-NC-ND 4.0), must be requested on their
-`model page <https://huggingface.co/NYUMedML/Neuro-JEPA>`_: they cannot be
-published again, so they are downloaded from the repository of their authors
-and renamed when loaded, see :mod:`nidl.estimators.external`.
+The available models, their expected inputs and licenses are listed in
+:ref:`pretrained_models`.
 
 .. currentmodule:: nidl.estimators
 

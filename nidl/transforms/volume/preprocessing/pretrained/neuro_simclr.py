@@ -49,7 +49,8 @@ class NeuroSimCLRPreprocessing(VolumeTransform):
         to the grid of the ICBM 2009c template. For OpenBHB quasi-raw volumes
         (:math:`182 \times 218 \times 182`), use ``((5, 6), (6, 5), (6, 5))``.
     **kwargs : dict
-        Keyword arguments given to :class:`nidl.transforms.Transform`.
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     Notes
     -----

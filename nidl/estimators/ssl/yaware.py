@@ -144,15 +144,18 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
       :math:`121 \times 145 \times 121` gray matter maps preprocessed with
       CAT12 (VBM).
 
-    The volumes must be standardized with :meth:`get_preprocessing`, and
-    :meth:`transform` rejects inputs of the wrong shape:
+    The volumes must be standardized with
+    :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`, and
+    :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of the
+    wrong shape:
 
     >>> model = YAwareContrastiveLearning.from_pretrained(
     ...     "nidl-neurospin/yaware-densenet121-bhb10k"
     ... )
     >>> preprocess = model.get_preprocessing()
 
-    Loading weights needs ``pip install nidl[pretrained]``.
+    Loading weights needs ``pip install nidl[pretrained]``. See
+    :ref:`pretrained_models` for all the available models.
 
     References
     ----------

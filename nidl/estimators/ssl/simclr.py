@@ -149,13 +149,15 @@ class SimCLR(TransformerMixin, BaseEstimator):
         was trained on the first patch token.
 
     Each set of weights needs its own preprocessing, given by
-    :meth:`get_preprocessing`, and :meth:`transform` rejects inputs of the
+    :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`, and
+    :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of the
     wrong shape:
 
     >>> model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
     >>> preprocess = model.get_preprocessing()
 
-    Loading weights needs ``pip install nidl[pretrained]``.
+    Loading weights needs ``pip install nidl[pretrained]``. See
+    :ref:`pretrained_models` for all the available models.
 
     References
     ----------
