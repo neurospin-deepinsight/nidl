@@ -86,7 +86,7 @@ class RandomResizedCrop(VolumeTransform):
 
             box = []  # list of slices
             cbrt_volume = np.cbrt(target_volume)
-            for ar, size in zip(sampled_ar, in_shape):
+            for ar, size in zip(sampled_ar, in_shape, strict=False):
                 box_size = round(cbrt_volume * ar)
                 if box_size > size:
                     return None

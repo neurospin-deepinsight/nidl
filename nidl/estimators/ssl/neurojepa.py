@@ -584,7 +584,7 @@ def foreground_aware_jepa_loss(
         ]
 
     loss, n = 0.0, 0
-    for scale_idx, (zi, hi) in enumerate(zip(z, h)):
+    for scale_idx, (zi, hi) in enumerate(zip(z, h, strict=False)):
         per_token = torch.abs(zi - hi) ** loss_exp / loss_exp  # (B, K, D)
         per_token = per_token.mean(dim=-1)  # (B, K)
 

@@ -16,8 +16,8 @@ from __future__ import annotations
 import numbers
 import random
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
-from typing import Any, Callable, Optional, Union
+from collections.abc import Callable, Sequence
+from typing import Any, Optional, Union
 
 import numpy as np
 import torch

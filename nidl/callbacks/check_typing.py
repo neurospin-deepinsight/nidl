@@ -42,7 +42,9 @@ def _isinstance_typing(value: t.Any, annot: t.Any) -> bool:
         # tuple[T1, T2, ...]
         if len(value) != len(args):
             return False
-        return all(_isinstance_typing(v, a) for v, a in zip(value, args))
+        return all(
+            _isinstance_typing(v, a) for v, a in zip(value, args, strict=False)
+        )
 
     # List[T], Sequence[T]
     if origin in (list, t.Sequence):

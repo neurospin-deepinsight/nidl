@@ -98,7 +98,7 @@ class RandomGaussianBlur(VolumeTransform):
     @staticmethod
     def _sample_uniform_params(params):
         results = []
-        for a, b in zip(params[::2], params[1::2]):
+        for a, b in zip(params[::2], params[1::2], strict=False):
             results.append(random.uniform(a, b))
         return tuple(results)
 
@@ -154,7 +154,7 @@ class RandomGaussianBlur(VolumeTransform):
                 f"{name} must have {check_length} dimensions, got"
                 f"{len(intervals)}"
             )
-        for a, b in zip(intervals[::2], intervals[1::2]):
+        for a, b in zip(intervals[::2], intervals[1::2], strict=False):
             VolumeTransform._parse_range(
                 (a, b), check_min=check_min, check_max=check_max
             )
