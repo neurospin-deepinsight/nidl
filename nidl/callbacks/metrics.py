@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import inspect
 import numbers
-from typing import Callable, Union
+from collections.abc import Callable
+from typing import Union
 
 import numpy as np
 import pytorch_lightning as pl

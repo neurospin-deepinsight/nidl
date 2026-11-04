@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import hashlib
 import os
-from typing import Any, Callable, Optional, Union
+from collections.abc import Callable
+from typing import Any, Optional, Union
 
 import nibabel
 import numpy as np
@@ -336,7 +337,7 @@ class ImageDataFrameDataset(Dataset):
         elif isinstance(self.target_transform, dict):
             return [
                 self.target_transform.get(col, lambda x: x)(val)
-                for col, val in zip(self.label_cols, label)
+                for col, val in zip(self.label_cols, label, strict=False)
             ]
         else:
             raise TypeError(

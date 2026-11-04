@@ -12,4 +12,12 @@ from .pretrained import (
     NeuroJEPAPreprocessing,
     NeuroSimCLRPreprocessing,
 )
-from .spatial import CropForeground, CropOrPad, Reorient, Resample, Resize
+from .spatial import (
+    CropForeground,
+    CropOrPad,
+    InverseLetterbox,
+    Letterbox,
+    Reorient,
+    Resample,
+    Resize,
+)
