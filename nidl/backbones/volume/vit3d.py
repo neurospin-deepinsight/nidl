@@ -84,7 +84,8 @@ class PatchEmbed3D(nn.Module):
     bias : bool, default=True
         Whether to use bias in the projection layer.
     strict_img_size : bool, default=True
-        Whether to require exact input size during forward.
+        Whether to require all batch images to have
+        the same input size during forward.
     flatten : bool, default=True
         Whether to flatten to token sequence.
     output_fmt : str, default="NLC"
@@ -219,7 +220,7 @@ class VisionTransformer3D(nn.Module):
         Whether to apply normalization after pooling. If ``None``, defaults
         to ``global_pool == "avg"``.
     dynamic_img_size : bool, default=False
-        Present for interface compatibility. Not used here.
+        Accept any input size (position embeddings are resized).
     pos_embed : {"learned", "sincos", "none"}, default="learned"
         Absolute positional embedding mode.
     drop_rate : float, default=0.0
@@ -404,7 +405,9 @@ class VisionTransformer3D(nn.Module):
                 nn.init.ones_(module.weight)
                 nn.init.zeros_(module.bias)
 
-    def _pos_embed(self, x: Tensor) -> Tensor:
+    def _pos_embed(
+        self, x: Tensor, grid: Optional[Sequence[int]] = None
+    ) -> Tensor:
         """
         Add prefix tokens and absolute position embeddings.
 
@@ -412,6 +415,8 @@ class VisionTransformer3D(nn.Module):
         ----------
         x : torch.Tensor
             Patch tokens of shape ``(B, N, C)``.
+        grid : sequence of int, optional
+            Input patch grid, used if ``dynamic_img_size=True``.
 
         Returns
         -------
@@ -421,6 +426,10 @@ class VisionTransformer3D(nn.Module):
         if len(x.shape) != 3:
             raise ValueError(f"Expected input shape (B, N, C), got {x.shape}.")
 
+        pos = self.pos_embed
+        if self.dynamic_img_size and grid is not None:
+            pos = self._resize_pos_embed(grid)
+
         B = x.shape[0]
         prefix = []
         if self.cls_token is not None:
@@ -429,28 +438,50 @@ class VisionTransformer3D(nn.Module):
             prefix.append(self.reg_token.expand(B, -1, -1))
 
         if self.no_embed_class:
-            if self.pos_embed is not None:
-                if x.shape[1] != self.pos_embed.shape[1]:
+            if pos is not None:
+                if x.shape[1] != pos.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} patch tokens, got"
+                        f"Expected {pos.shape[1]} patch tokens, got"
                         f" {x.shape[1]}."
                     )
-                x = x + self.pos_embed
+                x = x + pos
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
         else:
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
-            if self.pos_embed is not None:
-                if x.shape[1] != self.pos_embed.shape[1]:
+            if pos is not None:
+                if x.shape[1] != pos.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} tokens, got "
-                        f"{x.shape[1]}."
+                        f"Expected {pos.shape[1]} tokens, got {x.shape[1]}."
                     )
-
-                x = x + self.pos_embed
+                x = x + pos
 
         return self.pos_drop(x)
+
+    def _compute_grid_shape(self, x: Tensor) -> list[int]:
+        """
+        Compute Patch grid shape ``[H', W', D']``
+        for an input ``(B, C, H, W, D)``.
+        """
+        patch_size = self.patch_embed.patch_size
+        return [s // p for s, p in zip(x.shape[-3:], patch_size)]
+
+    def _resize_pos_embed(self, grid: Sequence[int]) -> Optional[Tensor]:
+        """
+        Trilinear resize of the patch position embeddings
+        to target shape``grid``
+        """
+        grid = tuple(grid)
+        if self.pos_embed is None or grid == tuple(self.grid_size):
+            return self.pos_embed
+        n = 0 if self.no_embed_class else self.num_prefix_tokens
+        prefix, pos = self.pos_embed[:, :n], self.pos_embed[:, n:]
+        pos = pos.reshape(1, *self.grid_size, -1).permute(0, 4, 1, 2, 3)
+        pos = nn.functional.interpolate(
+            pos, size=grid, mode="trilinear", align_corners=False
+        )
+        return torch.cat([prefix, pos.flatten(2).transpose(1, 2)], dim=1)
 
     def _patch_tokens(self, x: Tensor) -> Tensor:
         """
@@ -508,7 +539,9 @@ class VisionTransformer3D(nn.Module):
 
         raise ValueError(f"Unsupported pool_type: {pool_type}.")
 
-    def forward_features(self, x: Tensor) -> Tensor:
+    def forward_features(
+        self, x: Tensor
+    ) -> Tensor:
         """
         Compute token features.
 
@@ -516,14 +549,14 @@ class VisionTransformer3D(nn.Module):
         ----------
         x : torch.Tensor
             Input tensor of shape ``(B, C, H, W, D)``.
-
         Returns
         -------
         torch.Tensor
             Token features of shape ``(B, N_total, C)``.
         """
+        grid = self._compute_grid_shape(x)
         x = self.patch_embed(x)
-        x = self._pos_embed(x)
+        x = self._pos_embed(x, grid)
         x = self.patch_drop(x)
         x = self.norm_pre(x)
         x = self.blocks(x)
@@ -615,8 +648,9 @@ class VisionTransformer3D(nn.Module):
         n_blocks = len(self.blocks)
         take = {i if i >= 0 else n_blocks + i for i in indices}
 
+        grid = self._compute_grid_shape(x)
         x = self.patch_embed(x)
-        x = self._pos_embed(x)
+        x = self._pos_embed(x, grid)
         x = self.patch_drop(x)
         x = self.norm_pre(x)
 
@@ -682,243 +716,6 @@ class VisionTransformer3D(nn.Module):
         if isinstance(self.pos_embed, nn.Parameter):
             nwd.add("pos_embed")
         return nwd
-
-class DynamicSizeViT(VisionTransformer3D):
-    """
-    Extension of the 3D ViT backbone that can handle variable-sized inputs
-    via positional embeddings interpolation as in DINO [1]_.
-    
-    Positional embeddings are first computed for a grid of shape A.
-    When a volume with a grid of shape A' is presented in input, positional
-    embeddings of shape A' are computed from those of shape A with trilinear
-    interpolation.
-
-    The code for positional embeddings interpolation is derived from [2]_
-    with the adaptations to handle 3D volumes.
-
-    Parameters
-    ----------
-    img_size : int or sequence of int
-        Input size in ``(H, W, D)``.
-    patch_size : int or sequence of int
-        Patch size in ``(H, W, D)``.
-    in_chans : int, default=1
-        Number of input channels.
-    num_classes : int, default=0
-        Number of output classes. If non-positive, head is identity.
-    global_pool : {"cls_token", "avg", "max", "avgmax", ""}
-        default="cls_token"
-        Pooling mode. If "", no pooling is applied and the full token sequence
-        is returned.
-    embed_dim : int, default=768
-        Embedding dimension.
-    depth : int, default=12
-        Number of transformer blocks.
-    num_heads : int, default=12
-        Number of attention heads.
-    mlp_ratio : float, default=4.0
-        MLP expansion ratio.
-    qkv_bias : bool, default=True
-        Whether to use qkv bias.
-    qk_norm : bool, default=False
-        Whether to apply normalization to qk in attention.
-    scale_attn_norm : bool, default=False
-        Whether to scale attention scores before softmax.
-    scale_mlp_norm : bool, default=False
-        Whether to scale MLP outputs.
-    proj_bias : bool, default=True
-        Whether to use bias in projection layers.
-    class_token : bool, default=True
-        Whether to prepend a CLS token.
-    reg_tokens : int, default=0
-        Number of register tokens.
-    no_embed_class : bool, default=False
-        If ``True``, position embeddings are defined only on patch tokens.
-    pre_norm : bool, default=False
-        Whether to apply normalization before the transformer blocks.
-    final_norm : bool, default=True
-        Whether to apply normalization after the transformer blocks.
-    fc_norm : bool or None, default=None
-        Whether to apply normalization after pooling.
-        If ``None``, defaults to ``global_pool == "avg"``.
-    dynamic_img_size : bool, default=False
-        Present for interface compatibility. Not used here.
-    pos_embed : {"learned", "sincos", "none"}, default="learned"
-        Absolute positional embedding mode.
-    drop_rate : float, default=0.0
-        Head dropout.
-    pos_drop_rate : float, default=0.0
-        Positional dropout.
-    proj_drop_rate : float, default=0.0
-        Projection dropout in each transformer block.
-    attn_drop_rate : float, default=0.0
-        Attention dropout in each transformer block.
-    drop_path_rate : float, default=0.0
-        Maximum stochastic depth rate.
-    embed_layer : callable, default=PatchEmbed3D
-        Patch embedding layer constructor.
-    norm_layer : callable, default=nn.LayerNorm
-        Normalization layer constructor.
-    act_layer : callable, default=nn.GELU
-        Activation layer constructor.
-    block_fn : callable, default=Block
-        Transformer block constructor.
-    mlp_layer : callable, default=Mlp
-        MLP layer constructor.
-    attn_layer : callable, default=Attention
-        Attention layer constructor.
-
-    References
-    ----------
-    [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
-        Transformers" ICCV, 2021. https://arxiv.org/abs/2104.14294
-
-    [2] https://github.com/facebookresearch/dino/blob/main/
-        vision_transformer.py#L134
-    """
-    def __init__(
-            self,
-            img_size,
-            patch_size,
-            in_chans = 1,
-            num_classes = 0,
-            global_pool = "cls_token",
-            embed_dim = 768,
-            depth = 12,
-            num_heads = 12,
-            mlp_ratio = 4,
-            qkv_bias = True,
-            qk_norm = False,
-            scale_attn_norm = False,
-            scale_mlp_norm = False,
-            proj_bias = True,
-            class_token = True,
-            reg_tokens = 0,
-            no_embed_class = False,
-            pre_norm = False,
-            final_norm = True,
-            fc_norm = None,
-            dynamic_img_size = False,
-            pos_embed = "learned",
-            drop_rate = 0,
-            pos_drop_rate = 0,
-            proj_drop_rate = 0,
-            attn_drop_rate = 0,
-            drop_path_rate = 0,
-            embed_layer = PatchEmbed3D,
-            norm_layer = nn.LayerNorm,
-            act_layer = nn.GELU,
-            block_fn = Block,
-            mlp_layer = Mlp,
-            attn_layer = Attention
-        ):
-            super().__init__(
-                img_size, patch_size, in_chans, num_classes,
-                global_pool, embed_dim, depth, num_heads,
-                mlp_ratio, qkv_bias, qk_norm, scale_attn_norm,
-                scale_mlp_norm, proj_bias, class_token, reg_tokens,
-                no_embed_class, pre_norm, final_norm, fc_norm,
-                dynamic_img_size, pos_embed, drop_rate, pos_drop_rate,
-                proj_drop_rate, attn_drop_rate, drop_path_rate, embed_layer,
-                norm_layer, act_layer, block_fn, mlp_layer, attn_layer
-            )
-
-    def forward_features(self, x: Tensor) -> Tensor:
-        # Shape must be unpacked for resizing
-        h, w, d = x.shape[2], x.shape[3], x.shape[4]
-        x = self.patch_embed(x)
-        x = self._pos_embed(x, h, w, d)
-        x = self.patch_drop(x)
-        x = self.norm_pre(x)
-        x = self.blocks(x)
-        x = self.norm(x)
-        return x
-
-    def _pos_embed(self, x: Tensor, h, w, d) -> Tensor:
-
-        if len(x.shape) != 3:
-            raise ValueError(f"Expected input shape (B, N, C), got {x.shape}.")
-
-        B = x.shape[0]
-        prefix = []
-        if self.cls_token is not None:
-            prefix.append(self.cls_token.expand(B, -1, -1))
-        if self.reg_token is not None:
-            prefix.append(self.reg_token.expand(B, -1, -1))
-
-        if (not self.no_embed_class) and prefix:
-            # prefix tokens must be included in pos embeddings computation.
-            x = torch.cat([*prefix, x], dim=1)
-        
-        # If pos embeddings have been computed for a grid of different shape,
-        # they are used to interpolate embeddings for new grid shape.
-        if self.pos_embed is not None:
-            if x.shape[1] != self.pos_embed.shape[1]:
-                interpolated_embed = self.interpolate_pos_encoding(h, w, d)
-            else:
-                interpolated_embed = self.pos_embed
-                
-            x = x + interpolated_embed
-    
-        if self.no_embed_class and prefix:
-            x = torch.cat([*prefix, x], dim=1)
-
-        return self.pos_drop(x)
-
-    # "Resize" of the patch tokens grid to accout
-    # for smaller local crops and correct positional embeddings
-    def interpolate_pos_encoding(self, h, w, d):
-        """
-        Interpolates positional embeddings for new target shape from
-        positional embeddings computed for a different shape.
-        In DINO, positional embeddings computed for (bigger) global crops
-        are used to derive embeddings for (smaller) local crops.
-        On the 3D volumes, trilinear interpolation is used
-        (rather then bicubic as in the original implementation).
-        """
-
-        if self.no_embed_class:
-            patch_pos_embed = self.pos_embed
-        else:
-            prefix_pos_embed = self.pos_embed[:, :self.num_prefix_tokens]
-            patch_pos_embed = self.pos_embed[:, self.num_prefix_tokens:]
-
-        # original grid size
-        w1, h1, d1 = self.grid_size
-
-        # target grid size
-        w0 = w // self.patch_embed.patch_size[1]
-        h0 = h // self.patch_embed.patch_size[0]
-        d0 = d // self.patch_embed.patch_size[2]
-        patch_embedding_dim = self.pos_embed.shape[-1]
-        # to avoid floating point error in the interpolation.
-        w0, h0, d0 = w0 + 0.1, h0 + 0.1, d0 + 0.1
-
-        # Reconstruct 2D patch grid in (B, W, H, D, C).
-        patches_grid = patch_pos_embed.reshape(
-            1,
-            h1, w1, d1,
-            patch_embedding_dim
-        )
-
-        # Interpolate positional embeddings for a grid of shape target size
-        # starting from patches_grid embeddings with trilinear interpolation.
-        patch_pos_embed = nn.functional.interpolate(
-            patches_grid.permute(0, 4, 1, 2, 3),  # convert to (B, C, H, W, D).
-            scale_factor=(h0 / h1, w0 / w1, d0 / d1),
-            mode='trilinear',
-            align_corners = False
-        )
-
-        # Reshape to 1-D vector of patch embeddings
-        patch_pos_embed = patch_pos_embed \
-            .permute(0, 2, 3, 4, 1) \
-            .view(1, -1, patch_embedding_dim)
-
-        if self.no_embed_class:
-            return patch_pos_embed
-        else:
-            return torch.cat((prefix_pos_embed, patch_pos_embed), dim=1)
 
 def _resize_pos_embed_2d_to_3d(
     pos_embed: Tensor,
