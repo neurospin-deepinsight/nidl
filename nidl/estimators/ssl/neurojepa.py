@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 
@@ -545,7 +545,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         pass ``use_moe=True`` to that constructor and set ``use_moe=True``
         here too so the MoE bias update runs during training).
 
-    mask_scale_configs : sequence of MaskScaleConfig, \
+    mask_scale_configs : sequence of MaskScaleConfig or dict, \
         default=3-scale config from [1]_
         One entry per masking "scale": each draws `num_blocks` blocks with
         sizes controlled by `spatial_scale`/`depth_scale`/`aspect_ratio`,
@@ -554,6 +554,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         scale), a medium-block (16 blocks, 20-50% spatial scale), and a
         large-block (4 blocks, 50-70% spatial scale) masking are all drawn
         for every volume, at every step, each targeting a 75% mask ratio.
+        A dict gives the parameters of a MaskScaleConfig.
 
     foreground_aware : bool, default=True
         Whether to compute a per-patch foreground map (voxel-intensity based)
@@ -771,7 +772,12 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         self.masker = MultiScaleMaskCollator(
             grid_shape=grid_shape,
             patch_size=patch_size,
-            scale_configs=mask_scale_configs,
+            scale_configs=[
+                MaskScaleConfig(**config)
+                if isinstance(config, Mapping)
+                else config
+                for config in mask_scale_configs
+            ],
             foreground_aware=foreground_aware,
             foreground_threshold=foreground_threshold,
             min_foreground_fraction=min_foreground_fraction,

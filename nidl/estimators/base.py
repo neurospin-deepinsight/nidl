@@ -40,6 +40,18 @@ from ..utils.weights import Weights
 ENCODERS_MODULE = "nidl.backbones.volume"
 PREPROCESSING_MODULE = "nidl.transforms.volume.preprocessing"
 
+#: Parameters of the trainer saved with an estimator, with their default
+#: values: they change how the estimator is trained (the "warmup_cosine"
+#: schedule depends on `max_epochs`), unlike the hardware ones.
+TRAINER_PARAMS = {
+    "max_epochs": None,
+    "max_steps": -1,
+    "precision": None,
+    "gradient_clip_val": None,
+    "gradient_clip_algorithm": None,
+    "accumulate_grad_batches": 1,
+}
+
 
 def _resolve(name: str, module_name: str, kind: str) -> Callable:
     """Return the public callable `name` of `module_name`.
@@ -56,6 +68,22 @@ def _resolve(name: str, module_name: str, kind: str) -> Callable:
             f"Unknown {kind} '{name}': it must be exposed by {module_name}."
         )
     return obj
+
+
+def _preprocessing_config(preprocessing: Any) -> Any:
+    """Check and copy a preprocessing entry, or a list of entries."""
+    if not isinstance(preprocessing, Mapping):
+        if not all(isinstance(entry, Mapping) for entry in preprocessing):
+            raise ValueError(
+                "The preprocessing must be a {'transform': ..., 'kwargs': "
+                "...} entry or a list of them."
+            )
+        return [_preprocessing_config(entry) for entry in preprocessing]
+    _resolve(preprocessing["transform"], PREPROCESSING_MODULE, "preprocessing")
+    return {
+        "transform": preprocessing["transform"],
+        "kwargs": dict(preprocessing.get("kwargs", {})),
+    }
 
 
 def _fetch_file(
@@ -119,6 +147,10 @@ class NidlHubMixin:
 
     - ``"estimator"``: the name of the estimator class;
     - ``"estimator_kwargs"``: the parameters of the estimator;
+    - ``"trainer"`` (optional): the parameters of the trainer that change
+      how the estimator is trained, such as `max_epochs` or `precision` (see
+      ``TRAINER_PARAMS``), so that `fit` reproduces its training. The
+      hardware ones, such as `devices`, are not saved;
     - ``"encoder"``: ``{"name": ..., "kwargs": ...}``, a backbone exposed by
       :mod:`nidl.backbones.volume` and its parameters, if the estimator has
       an encoder;
@@ -127,7 +159,8 @@ class NidlHubMixin:
       by :meth:`check_pretrained_input` (either can be null);
     - ``"preprocessing"`` (optional): ``{"transform": ..., "kwargs": ...}``, a
       transform exposed by ``nidl.transforms.volume.preprocessing`` and
-      the parameters fixed by the weights, see
+      the parameters fixed by the weights, or a list of them applied in
+      order, see
       :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`;
     - ``"weights"`` (optional): ``{"missing_ok": [...]}``, prefixes of the
       parameters that the weights do not include and which keep their
@@ -264,8 +297,8 @@ class NidlHubMixin:
         config : mapping
             The configuration, see :class:`NidlHubMixin`.
         **kwargs : dict
-            Parameters of the estimator overriding the ones of the
-            configuration.
+            Parameters of the estimator or of its trainer overriding the
+            ones of the configuration.
 
         Returns
         -------
@@ -277,7 +310,15 @@ class NidlHubMixin:
                 f"This configuration is for {config.get('estimator')}, not "
                 f"{cls.__name__}: use {config.get('estimator')} instead."
             )
-        estimator_kwargs = {**config.get("estimator_kwargs", {}), **kwargs}
+        trainer = config.get("trainer", {})
+        unknown = sorted(set(trainer) - set(TRAINER_PARAMS))
+        if unknown:
+            raise ValueError(f"Unknown trainer parameters {unknown}.")
+        estimator_kwargs = {
+            **trainer,
+            **config.get("estimator_kwargs", {}),
+            **kwargs,
+        }
         encoder = config.get("encoder")
         if encoder is not None and "encoder" not in kwargs:
             build = _resolve(encoder["name"], ENCODERS_MODULE, "encoder")
@@ -310,10 +351,11 @@ class NidlHubMixin:
             :mod:`nidl.backbones.volume` building the encoder. It can be
             omitted if the estimator was given the encoder as a class and its
             `encoder_kwargs`.
-        preprocessing : mapping or None, default=None
+        preprocessing : mapping, sequence of mapping or None, default=None
             ``{"transform": ..., "kwargs": ...}``, the transform of
             ``nidl.transforms.volume.preprocessing`` to apply on the
-            inputs, with the parameters fixed by the weights.
+            inputs, with the parameters fixed by the weights, or a list of
+            them applied in order.
         input_shape : sequence of int or None, default=None
             Shape of a sample, without batch dimension.
         input_range : (float, float) or None, default=None
@@ -397,11 +439,12 @@ class NidlHubMixin:
         **kwargs : dict
             Parameters of the transform depending on your data, such as the
             `input_orientation` of the volumes. They cannot override the
-            parameters fixed by the weights.
+            parameters fixed by the weights. A preprocessing made of
+            several transforms takes none.
 
         Returns
         -------
-        transform : Transform or None
+        transform : Transform, Compose or None
             The transform to apply on each sample, or None if the weights
             need none.
 
@@ -413,6 +456,19 @@ class NidlHubMixin:
         entry = (self.pretrained_config_ or {}).get("preprocessing")
         if entry is None:
             return None
+        if not isinstance(entry, Mapping):
+            if kwargs:
+                raise ValueError(
+                    "This preprocessing is made of several transforms and "
+                    f"takes no parameter, got {sorted(kwargs)}."
+                )
+            from torchvision.transforms import Compose
+
+            return Compose([self._build_preprocessing(e, {}) for e in entry])
+        return self._build_preprocessing(entry, kwargs)
+
+    @staticmethod
+    def _build_preprocessing(entry: Mapping[str, Any], kwargs: dict):
         transform = _resolve(
             entry["transform"], PREPROCESSING_MODULE, "preprocessing"
         )
@@ -499,6 +555,13 @@ class NidlHubMixin:
             "estimator": type(self).__name__,
             "estimator_kwargs": self._estimator_kwargs(),
         }
+        trainer = {
+            name: self.trainer_params_.get(name, default)
+            for name, default in TRAINER_PARAMS.items()
+            if self.trainer_params_.get(name, default) != default
+        }
+        if trainer:
+            config["trainer"] = trainer
         encoder = encoder or previous.get("encoder") or self._encoder_config()
         if encoder is not None:
             _resolve(encoder["name"], ENCODERS_MODULE, "encoder")
@@ -515,15 +578,7 @@ class NidlHubMixin:
             config["input"] = previous["input"]
         preprocessing = preprocessing or previous.get("preprocessing")
         if preprocessing is not None:
-            _resolve(
-                preprocessing["transform"],
-                PREPROCESSING_MODULE,
-                "preprocessing",
-            )
-            config["preprocessing"] = {
-                "transform": preprocessing["transform"],
-                "kwargs": dict(preprocessing.get("kwargs", {})),
-            }
+            config["preprocessing"] = _preprocessing_config(preprocessing)
         try:
             return json.loads(json.dumps(config))
         except TypeError as e:

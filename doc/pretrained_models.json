@@ -2,10 +2,103 @@
   "openbhb": {
     "description": "Ridge regression of age on frozen features, OpenBHB train split (3,227) to test split (757)",
     "nidl_version": "0.0.3.dev0",
-    "date": "2026-11-03",
+    "date": "2026-11-05",
     "example": "sphx_glr_auto_examples_plot_pretrained_openbhb.py"
   },
   "models": [
+    {
+      "repo_id": "nidl-neurospin/open-simclr-resnet50",
+      "name": "Open-SimCLR ResNet-50",
+      "family": "open",
+      "estimator": "SimCLR",
+      "encoder": "3D ResNet-50",
+      "parameters": "50.4M",
+      "features": 2048,
+      "pretraining": "SimCLR on the train split of OpenMind (63,992 quasi-raw T1w, T2w and FLAIR volumes of 31,775 participants from 787 OpenNeuro datasets), 100 epochs on one GPU",
+      "subjects": "31,775",
+      "volumes": "63,992",
+      "modality": "T1w, T2w, FLAIR",
+      "input": "Quasi-raw MRI of OpenMind or OpenBHB: skull-stripped, bias-corrected and affinely registered to MNI152 at 1 mm (182 x 218 x 182)",
+      "preprocessing": [
+        "Resize",
+        "CropOrPad",
+        "ZNormalization"
+      ],
+      "openbhb": {
+        "modality": "quasiraw",
+        "kwargs": {},
+        "mae": 3.86,
+        "r2": 0.769
+      },
+      "fidelity": "Weights of the last checkpoint of the training (epoch 100), loaded strictly. The preprocessing is the one of the training code. The projection head is included.",
+      "license": "CC-BY 4.0",
+      "gated": false,
+      "paper": null,
+      "code": "https://github.com/neurospin-deepinsight/nidl",
+      "recipe": "sphx_glr_auto_examples_plot_open_models_pretraining.py"
+    },
+    {
+      "repo_id": "nidl-neurospin/open-barlowtwins-resnet50",
+      "name": "Open-BarlowTwins ResNet-50",
+      "family": "open",
+      "estimator": "BarlowTwins",
+      "encoder": "3D ResNet-50",
+      "parameters": "50.4M",
+      "features": 2048,
+      "pretraining": "Barlow Twins on the train split of OpenMind (63,992 quasi-raw T1w, T2w and FLAIR volumes of 31,775 participants from 787 OpenNeuro datasets), 100 epochs on one GPU",
+      "subjects": "31,775",
+      "volumes": "63,992",
+      "modality": "T1w, T2w, FLAIR",
+      "input": "Quasi-raw MRI of OpenMind or OpenBHB: skull-stripped, bias-corrected and affinely registered to MNI152 at 1 mm (182 x 218 x 182)",
+      "preprocessing": [
+        "Resize",
+        "CropOrPad",
+        "ZNormalization"
+      ],
+      "openbhb": {
+        "modality": "quasiraw",
+        "kwargs": {},
+        "mae": 4.12,
+        "r2": 0.714
+      },
+      "fidelity": "Weights of the last checkpoint of the training (epoch 100), loaded strictly. The preprocessing is the one of the training code. The projection head is included.",
+      "license": "CC-BY 4.0",
+      "gated": false,
+      "paper": null,
+      "code": "https://github.com/neurospin-deepinsight/nidl",
+      "recipe": "sphx_glr_auto_examples_plot_open_models_pretraining.py"
+    },
+    {
+      "repo_id": "nidl-neurospin/open-neurojepa-vit-b",
+      "name": "Open-NeuroJEPA ViT-B",
+      "family": "open",
+      "estimator": "NeuroJEPA",
+      "encoder": "3D ViT-B with mixtures of experts",
+      "parameters": "124M",
+      "features": 768,
+      "pretraining": "NeuroJEPA on the train split of OpenMind (63,992 quasi-raw T1w, T2w and FLAIR volumes of 31,775 participants from 787 OpenNeuro datasets), 100 epochs on one GPU",
+      "subjects": "31,775",
+      "volumes": "63,992",
+      "modality": "T1w, T2w, FLAIR",
+      "input": "Quasi-raw MRI of OpenMind or OpenBHB: skull-stripped, bias-corrected and affinely registered to MNI152 at 1 mm (182 x 218 x 182)",
+      "preprocessing": [
+        "Resize",
+        "CropOrPad",
+        "ZNormalization"
+      ],
+      "openbhb": {
+        "modality": "quasiraw",
+        "kwargs": {},
+        "mae": 4.26,
+        "r2": 0.782
+      },
+      "fidelity": "Weights of the last checkpoint of the training (epoch 100), loaded strictly. The preprocessing is the one of the training code. The context and target encoders and the predictor are all included, so that the pretraining can be continued.",
+      "license": "CC-BY 4.0",
+      "gated": false,
+      "paper": null,
+      "code": "https://github.com/neurospin-deepinsight/nidl",
+      "recipe": "sphx_glr_auto_examples_plot_open_models_pretraining.py"
+    },
     {
       "repo_id": "nidl-neurospin/yaware-densenet121-bhb10k",
       "name": "y-Aware DenseNet-121",

@@ -31,11 +31,13 @@ from nidl.backbones.volume.vit3d_moe import (
 )
 from nidl.estimators.external import ExternalWeights, NeuroJEPAWeights
 from nidl.estimators.ssl import NeuroJEPA, SimCLR, YAwareContrastiveLearning
+from nidl.estimators.ssl.neurojepa import MaskScaleConfig
 from nidl.estimators.ssl.utils.projection_heads import SimCLRProjectionHead
 from nidl.transforms.volume import preprocessing
 from nidl.transforms.volume.preprocessing import (
     BrainIACPreprocessing,
     CropForeground,
+    CropOrPad,
     NeuroJEPAPreprocessing,
     NeuroSimCLRPreprocessing,
     Reorient,
@@ -338,6 +340,81 @@ class TestNidlHubMixin(unittest.TestCase):
         )
         self.assertEqual(loaded.learning_rate, 1.0)
 
+    def test_training_parameters(self):
+        model = self._model(
+            max_epochs=3, precision="bf16-mixed", gradient_clip_val=1.0,
+            devices=1,
+        )
+        model.save_pretrained(self.directory)
+        config = json.loads((self.directory / "config.json").read_text())
+        self.assertEqual(
+            config["trainer"],
+            {"max_epochs": 3, "precision": "bf16-mixed",
+             "gradient_clip_val": 1.0},
+        )
+        loaded = SimCLR.from_pretrained(
+            self.directory, accelerator="cpu", max_epochs=5
+        )
+        self.assertEqual(loaded.trainer_params["max_epochs"], 5)
+        self.assertEqual(loaded.trainer_params["precision"], "bf16-mixed")
+        self.assertEqual(loaded.trainer_params["gradient_clip_val"], 1.0)
+        self.assertEqual(loaded.trainer_params["devices"], "auto")
+
+    def test_no_training_parameters_by_default(self):
+        self._model().save_pretrained(self.directory)
+        config = json.loads((self.directory / "config.json").read_text())
+        self.assertNotIn("trainer", config)
+
+    def test_unknown_training_parameters(self):
+        config = _tiny_vit_config()
+        config["trainer"] = {"max_epochs": 1, "callbacks": None}
+        with self.assertRaisesRegex(ValueError, "callbacks"):
+            SimCLR.from_config(config)
+
+    def test_preprocessing_list(self):
+        config = _tiny_vit_config()
+        config["preprocessing"] = [
+            {"transform": "CropOrPad", "kwargs": {"target_shape": 8}},
+            {"transform": "ZNormalization", "kwargs": {}},
+        ]
+        model = SimCLR.from_config(config, accelerator="cpu")
+        transform = model.get_preprocessing()
+        self.assertIsInstance(transform.transforms[0], CropOrPad)
+        output = transform(np.random.default_rng(0).random((1, 9, 9, 9)))
+        self.assertEqual(tuple(output.shape), (1, 8, 8, 8))
+        self.assertAlmostEqual(float(output.mean()), 0.0, places=5)
+        with self.assertRaisesRegex(ValueError, "several transforms"):
+            model.get_preprocessing(target_shape=4)
+        model.save_pretrained(self.directory)
+        saved = json.loads((self.directory / "config.json").read_text())
+        self.assertEqual(saved["preprocessing"], config["preprocessing"])
+
+    def test_preprocessing_list_only_nidl_objects(self):
+        for preprocessing in (
+            [{"transform": "torch"}],
+            [[{"transform": "ZNormalization"}]],
+        ):
+            with self.subTest(preprocessing), self.assertRaises(ValueError):
+                self._model().save_pretrained(
+                    self.directory, preprocessing=preprocessing
+                )
+
+    def test_neurojepa_masks_in_json(self):
+        config = _tiny_neurojepa_config()
+        del config["weights"]
+        masks = [{"spatial_scale": [0.2, 0.5], "num_blocks": 2}]
+        config["estimator_kwargs"]["mask_scale_configs"] = masks
+        model = NeuroJEPA.from_config(config, accelerator="cpu")
+        self.assertEqual(
+            [generator.cfg for generator in model.masker.generators],
+            [MaskScaleConfig(spatial_scale=[0.2, 0.5], num_blocks=2)],
+        )
+        model.save_pretrained(self.directory)
+        saved = json.loads((self.directory / "config.json").read_text())
+        self.assertEqual(
+            saved["estimator_kwargs"]["mask_scale_configs"], masks
+        )
+
     def test_fine_tune_after_from_pretrained(self):
         self._model().save_pretrained(self.directory)
         model = SimCLR.from_pretrained(
@@ -611,6 +688,30 @@ class TestConvertedArchitectures(unittest.TestCase):
         self.assertTrue(torch.equal(features, tokens.mean(dim=1)))
         self.assertIsInstance(model.encoder.norm, torch.nn.LayerNorm)
 
+    def test_open_models(self):
+        """Sizes of the state dicts of the training checkpoints."""
+        expected = {
+            "open-simclr-resnet50": (324, 51519349),
+            "open-barlowtwins-resnet50": (334, 63005943),
+            "open-neurojepa-vit-b": (1252, 269607552),
+        }
+        for name, (n_tensors, n_values) in expected.items():
+            with self.subTest(name):
+                model = self._build(name)
+                state_dict = model.state_dict()
+                self.assertEqual(len(state_dict), n_tensors)
+                self.assertEqual(
+                    sum(v.numel() for v in state_dict.values()), n_values
+                )
+                self.assertEqual(
+                    model.trainer_params["max_epochs"], 100
+                )
+                transform = model.get_preprocessing()
+                x = np.random.default_rng(0).random((1, 182, 218, 182))
+                self.assertEqual(
+                    tuple(transform(x).shape), (1, 128, 128, 128)
+                )
+
     def test_original_names(self):
         """Original names of each checkpoint, renamed by the tool."""
         expected = {
@@ -672,19 +773,22 @@ class TestConvertedArchitectures(unittest.TestCase):
                     estimator = estimator.__name__
                 config = info["config"]
                 self.assertEqual(model["estimator"], estimator)
-                self.assertEqual(
-                    model["preprocessing"],
-                    config["preprocessing"]["transform"],
-                )
+                entries = config["preprocessing"]
+                if isinstance(entries, dict):
+                    entries = [entries]
+                names = model["preprocessing"]
+                if isinstance(names, str):
+                    names = [names]
+                self.assertEqual(names, [e["transform"] for e in entries])
                 self.assertEqual(
                     model["gated"], "repo_id" in config.get("weights", {})
                 )
                 for key in ("subjects", "volumes", "modality"):
                     self.assertIn(key, model)
-                transform = getattr(
-                    preprocessing, model["preprocessing"]
-                )
-                transform(**_tuples(model["openbhb"]["kwargs"]))
+                kwargs = _tuples(model["openbhb"]["kwargs"])
+                for entry in entries:
+                    transform = getattr(preprocessing, entry["transform"])
+                    transform(**_tuples(entry.get("kwargs", {})), **kwargs)
 
     def test_default_models_unchanged(self):
         self.assertIn("embedding.weight", densenet121().state_dict())

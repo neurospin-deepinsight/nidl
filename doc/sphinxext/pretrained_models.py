@@ -15,7 +15,8 @@ Usage in a page::
        :family: published
        :view: table
 
-with `view` among "table" (summary), "cards" (one dropdown per model) and
+with `family` among "open" and "published" (all the models if omitted)
+and `view` among "table" (summary), "cards" (one dropdown per model) and
 "openbhb" (brain age on OpenBHB).
 """
 
@@ -131,11 +132,17 @@ def _openbhb(models, info):
 def _cards(models):
     lines = []
     for model in models:
-        openbhb = model["openbhb"]
-        kwargs = [f"{k}={_python(v)}" for k, v in openbhb["kwargs"].items()]
+        modality = model["openbhb"]["modality"]
+        kwargs = [
+            f"{k}={_python(v)}" for k, v in model["openbhb"]["kwargs"].items()
+        ]
         estimator = model["estimator"]
-        paper = f"`{model['paper']['title']} <{model['paper']['url']}>`__"
-        transform = f"{PREPROCESSING}.{model['preprocessing']}"
+        transforms = model["preprocessing"]
+        if isinstance(transforms, str):
+            transforms = [transforms]
+        transforms = " then ".join(
+            f":class:`~{PREPROCESSING}.{name}`" for name in transforms
+        )
         lines += [
             f".. _{_label(model)}:",
             "",
@@ -150,12 +157,17 @@ def _cards(models):
             ),
             f"   :Pretraining: {model['pretraining']}",
             f"   :Expected input: {model['input']}",
-            f"   :Preprocessing: :class:`~{transform}`",
+            f"   :Preprocessing: {transforms}",
             f"   :Fidelity: {model['fidelity']}",
             f"   :License: {model['license']}",
-            f"   :Paper: {paper}",
-            f"   :Original code: {model['code']}",
         ]
+        if model.get("paper"):
+            paper = model["paper"]
+            lines.append(f"   :Paper: `{paper['title']} <{paper['url']}>`__")
+        if model.get("recipe"):
+            lines.append(f"   :Pretraining recipe: :ref:`{model['recipe']}`")
+        else:
+            lines.append(f"   :Original code: {model['code']}")
         if model["gated"]:
             lines += [
                 "",
@@ -178,7 +190,11 @@ def _cards(models):
                     [f'"{model["repo_id"]}"'],
                 )
             ),
-            f"      # Parameters for OpenBHB {openbhb['modality']} images",
+            *(
+                [f"      # Parameters for OpenBHB {modality} images"]
+                if kwargs
+                else []
+            ),
             *(
                 f"      {line}"
                 for line in _call(
@@ -192,7 +208,7 @@ def _cards(models):
 
 class PretrainedModels(SphinxDirective):
     option_spec: ClassVar[dict] = {
-        "family": directives.unchanged_required,
+        "family": directives.unchanged,
         "view": lambda arg: directives.choice(
             arg, ("table", "cards", "openbhb")
         ),
@@ -202,10 +218,11 @@ class PretrainedModels(SphinxDirective):
         path = Path(self.env.srcdir) / self.config.pretrained_models_registry
         self.env.note_dependency(str(path))
         registry = json.loads(path.read_text())
+        family = self.options.get("family")
         models = [
             model
             for model in registry["models"]
-            if model["family"] == self.options["family"]
+            if family in (None, model["family"])
         ]
         if not models:
             return []

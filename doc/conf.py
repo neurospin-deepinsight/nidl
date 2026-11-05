@@ -365,7 +365,10 @@ sphinx_gallery_conf = {
     # Examples executed when building the documentation. The pretrained
     # models example needs a GPU, gated weights and the whole OpenBHB
     # quasi-raw dataset: it is rendered with precomputed figures instead.
-    "filename_pattern": r"/plot_(?!pretrained_openbhb)",
+    # The pretraining of the open models takes days on a GPU.
+    "filename_pattern": (
+        r"/plot_(?!pretrained_openbhb|open_models_pretraining)"
+    ),
     # Ignore the function signature leftover by joblib
     "ignore_pattern": r"func_code\.py",
     "show_memory": not sys.platform.startswith("win"),

@@ -19,13 +19,20 @@ This script produced the repositories of the `nidl-neurospin
   `config.json` and `model.safetensors` to upload;
 - for the weights that cannot, it only writes the `config.json`, whose
   ``"weights"`` entry points to the repository of the authors (see
-  :mod:`nidl.estimators.external`).
+  :mod:`nidl.estimators.external`);
+- for the open models, pretrained with nidl on OpenMind, it saves the
+  estimator of the last Lightning checkpoint of their training, with all its
+  weights (the predictor of NeuroJEPA included) and its training
+  hyper-parameters. Their training is reproduced by
+  ``examples/plot_open_models_pretraining.py``.
 
 Run it with::
 
     python convert_pretrained_weights.py brainiac-vit-b out/ \
         --source BrainIAC.ckpt
     python convert_pretrained_weights.py neuro-jepa-vit-b out/
+    python convert_pretrained_weights.py open-simclr-resnet50 out/ \
+        --source last.ckpt
 
 Sources of the original checkpoints:
 
@@ -34,6 +41,7 @@ Sources of the original checkpoints:
 - neuro-simclr-resnet18: https://github.com/emilykaczmarek/3D-Neuro-SimCLR
 - brainiac-vit-b: https://github.com/AIM-KannLab/BrainIAC
 - neuro-jepa-vit-b and neuro-jepa-vit-l: https://github.com/NYUMedML/Neuro-JEPA
+- open-*: trained with nidl on OpenMind, on one GPU.
 
 The model names are the names of the repositories.
 """
@@ -45,7 +53,12 @@ from pathlib import Path
 
 import torch
 
-from nidl.estimators.ssl import SimCLR, YAwareContrastiveLearning
+from nidl.estimators.ssl import (
+    BarlowTwins,
+    NeuroJEPA,
+    SimCLR,
+    YAwareContrastiveLearning,
+)
 from nidl.info import __version__
 
 MODELS = {
@@ -155,6 +168,154 @@ MODELS = {
 }
 
 
+#: Inference preprocessing of the open models: the whole image is resized
+#: to 121 x 145 x 121, as by the random crops of their training, then
+#: cropped or padded to 128 x 128 x 128 and standardized.
+OPEN_PREPROCESSING = [
+    {"transform": "Resize", "kwargs": {"target_shape": [121, 145, 121]}},
+    {"transform": "CropOrPad", "kwargs": {"target_shape": 128}},
+    {"transform": "ZNormalization", "kwargs": {}},
+]
+
+
+def _open(estimator, estimator_kwargs, encoder, trainer):
+    return {
+        "estimator": estimator,
+        "checkpoint_key": "state_dict",
+        "lightning": True,
+        "key_mapping": (),
+        "config": {
+            "estimator_kwargs": estimator_kwargs,
+            "trainer": {
+                "max_epochs": 100,
+                "precision": "bf16-mixed",
+                **trainer,
+            },
+            "encoder": encoder,
+            "input": {"shape": [1, 128, 128, 128], "range": None},
+            "preprocessing": OPEN_PREPROCESSING,
+        },
+    }
+
+
+_WARMUP_COSINE = {
+    "lr_scheduler": "warmup_cosine",
+    "lr_scheduler_kwargs": {
+        "warmup_epochs": 10,
+        "warmup_start_lr": 1e-06,
+        "min_lr": 0.0,
+        "interval": "step",
+    },
+}
+_RESNET50 = {"name": "resnet50", "kwargs": {"n_embedding": 2048}}
+
+#: Models pretrained with nidl on OpenMind (CC-BY 4.0), from the
+#: hyper-parameters of their training.
+MODELS.update(
+    {
+        "open-simclr-resnet50": _open(
+            SimCLR,
+            {
+                "proj_input_dim": 2048,
+                "proj_hidden_dim": 512,
+                "proj_output_dim": 128,
+                "temperature": 0.1,
+                "optimizer": "adamW",
+                "learning_rate": 1e-4,
+                "weight_decay": 5e-4,
+                **_WARMUP_COSINE,
+            },
+            _RESNET50,
+            {},
+        ),
+        "open-barlowtwins-resnet50": _open(
+            BarlowTwins,
+            {
+                "proj_input_dim": 2048,
+                "proj_hidden_dim": 2048,
+                "proj_output_dim": 2048,
+                "lambd": 0.005,
+                "optimizer": "adamW",
+                "learning_rate": 1e-4,
+                "weight_decay": 5e-4,
+                **_WARMUP_COSINE,
+            },
+            _RESNET50,
+            {},
+        ),
+        "open-neurojepa-vit-b": _open(
+            NeuroJEPA,
+            {
+                "mask_scale_configs": [
+                    {
+                        "spatial_scale": scale,
+                        "depth_scale": [0.0, 1.0],
+                        "aspect_ratio": [0.75, 1.5],
+                        "num_blocks": num_blocks,
+                        "total_mask_ratio": 0.75,
+                    }
+                    for scale, num_blocks in (
+                        ([0.0, 0.2], 32),
+                        ([0.2, 0.5], 16),
+                        ([0.5, 0.7], 4),
+                    )
+                ],
+                "foreground_aware": True,
+                "foreground_threshold": 0.0,
+                "min_foreground_fraction": 0.1,
+                "loss_exp": 1.0,
+                "bg_weight": 0.1,
+                "use_moe": True,
+                "moe_bias_update_rate": 0.0001,
+                "moe_bias_clip": 0.3,
+                "predictor_embed_dim": 384,
+                "predictor_depth": 12,
+                "predictor_num_heads": 12,
+                "optimizer": "adamW",
+                "optimizer_kwargs": {"betas": [0.9, 0.999], "eps": 1e-08},
+                "ema_start": 0.99925,
+                "ema_end": 0.99925,
+                "learning_rate": 5.25e-4,
+                "weight_decay": 0.04,
+                "exclude_bias_and_norm_wd": True,
+                "lr_scheduler": "warmup_cosine",
+                "lr_scheduler_kwargs": {
+                    "warmup_epochs": 40,
+                    "warmup_start_lr": 1e-4,
+                    "min_lr": 1e-06,
+                    "interval": "step",
+                },
+            },
+            {
+                "name": "VisionTransformer3DMoE",
+                "kwargs": {
+                    "img_size": [128, 128, 128],
+                    "patch_size": [16, 16, 16],
+                    "in_chans": 1,
+                    "embed_dim": 768,
+                    "depth": 12,
+                    "num_heads": 12,
+                    "mlp_ratio": 4.0,
+                    "use_moe": True,
+                    "moe_params": {
+                        "dim": 768,
+                        "n_shared_experts": 2,
+                        "n_routed_experts": 16,
+                        "n_activated_experts": 6,
+                        "moe_inter_dim": 384,
+                        "score_func": "softmax",
+                        "route_scale": 4.0,
+                        "bias_clip": 0.3,
+                        "bias_update_rate": 0.0001,
+                        "moe_layer_indices": [1, 3, 5, 7, 9, 11],
+                    },
+                },
+            },
+            {"gradient_clip_val": 1.0},
+        ),
+    }
+)
+
 
 def _neuro_jepa(repo_id, revision, embed_dim, depth, num_heads, inter_dim):
     return {
@@ -226,12 +387,15 @@ EXTERNAL_MODELS = {
 }
 
 
-def load_checkpoint(path, key):
+def load_checkpoint(path, key, lightning=False):
     if path.endswith(".safetensors"):
         from safetensors.torch import load_file
 
         return load_file(path)
-    return torch.load(path, map_location="cpu", weights_only=True)[key]
+    # Our own Lightning checkpoints also hold pickled hyper-parameters.
+    return torch.load(path, map_location="cpu", weights_only=not lightning)[
+        key
+    ]
 
 
 def convert(name, source, output):
@@ -242,7 +406,11 @@ def convert(name, source, output):
         **model_info["config"],
     }
     state_dict = {}
-    checkpoint = load_checkpoint(source, model_info["checkpoint_key"])
+    checkpoint = load_checkpoint(
+        source,
+        model_info["checkpoint_key"],
+        model_info.get("lightning", False),
+    )
     for key, value in checkpoint.items():
         for pattern, replacement in model_info["key_mapping"]:
             key = re.sub(pattern, replacement, key)

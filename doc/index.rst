@@ -111,15 +111,17 @@ Key features
         :class-card: sd-shadow-sm
         :class-title: sd-text-primary
 
-        Foundation models pretrained on large neuroimaging cohorts, loaded in
-        one line with their exact architecture and preprocessing:
-        BrainIAC, Neuro-JEPA, Neuro-SimCLR and y-Aware. Use them as frozen
-        feature extractors or fine-tune them, and share your own models on the
-        Hugging Face Hub.
+        Foundation models loaded in one line with their exact architecture
+        and preprocessing. **Open models** are pretrained with nidl on open
+        data (OpenMind), so that anyone can reproduce, compare or retrain them
+        from their published recipe. Published models (BrainIAC, Neuro-JEPA,
+        Neuro-SimCLR and y-Aware) are ported from their original code. Use
+        them as frozen feature extractors or fine-tune them, and share your
+        own models on the Hugging Face Hub.
 
         .. code-block:: python
 
-            model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
+            model = SimCLR.from_pretrained("nidl-neurospin/open-simclr-resnet50")
             features = model.transform(loader)
 
         +++
