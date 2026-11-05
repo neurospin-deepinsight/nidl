@@ -38,6 +38,7 @@ plugins = [
     "surfify",
 ]
 openbhb = ["huggingface_hub"]
+pretrained = ["huggingface_hub", "safetensors"]
 doc = [
     "docutils>=0.17",
     "furo>=2024.8.6",

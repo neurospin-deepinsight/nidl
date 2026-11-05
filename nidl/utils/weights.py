@@ -179,11 +179,13 @@ class Weights:
     @classmethod
     def hf_download(
         cls,
-        data_dir: Union[str, Path],
+        data_dir: Optional[Union[str, Path]],
         hf_id: str,
         filepath: str,
         hf_revision: Optional[str] = None,
         force_download: bool = False,
+        token: Optional[Union[str, bool]] = None,
+        local_files_only: bool = False,
     ) -> Path:
         """Download a given file if not already present.
 
@@ -192,8 +194,9 @@ class Weights:
 
         Parameters
         ----------
-        data_dir: pathlib.Path or str
-            path where data should be downloaded.
+        data_dir: pathlib.Path, str or None
+            path where data should be downloaded. If None, the standard
+            Hugging Face cache is used.
         hf_id: str
             the id of the repository.
         filepath: str
@@ -203,6 +206,11 @@ class Weights:
         force_download: bool, default=False
             whether the file should be downloaded even if it already exists in
             the local cache.
+        token: str, bool or None, default=None
+            Hugging Face token, required for gated repositories. If None, the
+            locally saved token or the `HF_TOKEN` variable is used.
+        local_files_only: bool, default=False
+            whether to only use the local cache, without network access.
 
         Returns
         -------
@@ -223,8 +231,10 @@ class Weights:
                 filename=filepath,
                 revision=hf_revision,
                 repo_type="model",
-                local_dir=str(data_dir),
+                local_dir=str(data_dir) if data_dir is not None else None,
                 force_download=force_download,
+                token=token,
+                local_files_only=local_files_only,
             )
         )
 

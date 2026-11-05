@@ -8,6 +8,11 @@
 from __future__ import annotations
 
 import abc
+import importlib
+import inspect
+import json
+import tempfile
+import warnings
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Optional, Union
@@ -27,10 +32,602 @@ from pytorch_lightning.utilities.types import (
 from torch.utils import data
 from torchmetrics import MetricCollection
 
+from ..info import __version__
 from ..utils.validation import _estimator_is, available_if, check_is_fitted
+from ..utils.weights import Weights
+
+#: Modules in which the classes named by a configuration are looked up.
+ENCODERS_MODULE = "nidl.backbones.volume"
+PREPROCESSING_MODULE = "nidl.transforms.volume.preprocessing"
+
+#: Parameters of the trainer saved with an estimator, with their default
+#: values: they change how the estimator is trained (the "warmup_cosine"
+#: schedule depends on `max_epochs`), unlike the hardware ones.
+TRAINER_PARAMS = {
+    "max_epochs": None,
+    "max_steps": -1,
+    "precision": None,
+    "gradient_clip_val": None,
+    "gradient_clip_algorithm": None,
+    "accumulate_grad_batches": 1,
+}
 
 
-class BaseEstimator(pl.LightningModule):
+def _resolve(name: str, module_name: str, kind: str) -> Callable:
+    """Return the public callable `name` of `module_name`.
+
+    Configurations come from the Hub and are not trusted: only the objects
+    exposed by nidl modules can be built, never an arbitrary import path.
+    """
+    module = importlib.import_module(module_name)
+    obj = None
+    if isinstance(name, str) and not name.startswith("_"):
+        obj = getattr(module, name, None)
+    if obj is None or inspect.ismodule(obj) or not callable(obj):
+        raise ValueError(
+            f"Unknown {kind} '{name}': it must be exposed by {module_name}."
+        )
+    return obj
+
+
+def _preprocessing_config(preprocessing: Any) -> Any:
+    """Check and copy a preprocessing entry, or a list of entries."""
+    if not isinstance(preprocessing, Mapping):
+        if not all(isinstance(entry, Mapping) for entry in preprocessing):
+            raise ValueError(
+                "The preprocessing must be a {'transform': ..., 'kwargs': "
+                "...} entry or a list of them."
+            )
+        return [_preprocessing_config(entry) for entry in preprocessing]
+    _resolve(preprocessing["transform"], PREPROCESSING_MODULE, "preprocessing")
+    return {
+        "transform": preprocessing["transform"],
+        "kwargs": dict(preprocessing.get("kwargs", {})),
+    }
+
+
+def _fetch_file(
+    model_id: Union[str, Path],
+    filename: str,
+    revision: Optional[str],
+    token: Optional[Union[str, bool]],
+    local_files_only: bool,
+) -> Path:
+    """Return the path of a file of a local folder or of a Hub repository."""
+    path = Path(model_id)
+    if path.is_dir():
+        if not (path / filename).is_file():
+            raise FileNotFoundError(f"No '{filename}' in '{path}'.")
+        return path / filename
+    try:
+        from huggingface_hub.utils import GatedRepoError
+    except ModuleNotFoundError:  # reported by `Weights.hf_download`
+        GatedRepoError = ()
+    try:
+        return Weights.hf_download(
+            None,
+            str(model_id),
+            filename,
+            hf_revision=revision,
+            token=token,
+            local_files_only=local_files_only,
+        )
+    except GatedRepoError as e:
+        raise PermissionError(
+            f"Access to the gated repository '{model_id}' has not been "
+            f"granted to this account. Request it on "
+            f"https://huggingface.co/{model_id}, then authenticate with "
+            "`huggingface-cli login` or the `token` parameter."
+        ) from e
+
+
+def _load_safetensors(path: Path) -> dict[str, torch.Tensor]:
+    try:
+        from safetensors.torch import load_file
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            f"File '{path}' cannot be read because the 'safetensors' package "
+            "is not installed. Please run 'pip install nidl[pretrained]' "
+            "first."
+        ) from e
+    return load_file(str(path), device="cpu")
+
+
+class NidlHubMixin:
+    """Save, share and load nidl estimators with the Hugging Face Hub.
+
+    An estimator is published as a folder, or a Hugging Face repository,
+    holding two files:
+
+    - `model.safetensors`: the weights of the estimator, named as in nidl;
+    - `config.json`: everything needed to build the estimator before loading
+      its weights.
+
+    The configuration contains:
+
+    - ``"estimator"``: the name of the estimator class;
+    - ``"estimator_kwargs"``: the parameters of the estimator;
+    - ``"trainer"`` (optional): the parameters of the trainer that change
+      how the estimator is trained, such as `max_epochs` or `precision` (see
+      ``TRAINER_PARAMS``), so that `fit` reproduces its training. The
+      hardware ones, such as `devices`, are not saved;
+    - ``"encoder"``: ``{"name": ..., "kwargs": ...}``, a backbone exposed by
+      :mod:`nidl.backbones.volume` and its parameters, if the estimator has
+      an encoder;
+    - ``"input"`` (optional): ``{"shape": ..., "range": ...}``, the shape of
+      a sample without batch dimension and the range of its values, checked
+      by :meth:`check_pretrained_input` (either can be null);
+    - ``"preprocessing"`` (optional): ``{"transform": ..., "kwargs": ...}``, a
+      transform exposed by ``nidl.transforms.volume.preprocessing`` and
+      the parameters fixed by the weights, or a list of them applied in
+      order, see
+      :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`;
+    - ``"weights"`` (optional): ``{"missing_ok": [...]}``, prefixes of the
+      parameters that the weights do not include and which keep their
+      initial values, and for weights published elsewhere, their repository
+      and converter (see :class:`~nidl.estimators.external.ExternalWeights`);
+    - ``"nidl_version"``: the version of nidl that wrote it.
+
+    Classes are looked up by name in these modules only, so that a
+    configuration downloaded from the Hub cannot run arbitrary code.
+
+    Weights that cannot be published again in the nidl format are loaded
+    from the repository of their authors and renamed by a converter, as
+    described by the ``"weights"`` entry of the configuration: see
+    :class:`~nidl.estimators.external.ExternalWeights`.
+
+    Attributes
+    ----------
+    pretrained_config_ : dict or None
+        The configuration of the loaded weights, if any.
+    """
+
+    CONFIG_NAME = "config.json"
+    WEIGHTS_NAME = "model.safetensors"
+
+    pretrained_config_: Optional[dict[str, Any]] = None
+
+    @classmethod
+    def from_pretrained(
+        cls,
+        model_id: Union[str, Path],
+        *,
+        revision: Optional[str] = None,
+        token: Optional[Union[str, bool]] = None,
+        local_files_only: bool = False,
+        strict: bool = True,
+        **kwargs: Any,
+    ):
+        """Build an estimator with published weights.
+
+        Parameters
+        ----------
+        model_id : str or Path
+            A Hugging Face repository, such as
+            ``"nidl-neurospin/brainiac-vit-b"``, or a local folder, holding a
+            `config.json` and a `model.safetensors`.
+        revision : str or None, default=None
+            Commit, branch or tag of the repository. By default, its last
+            commit. Weights published elsewhere are always downloaded at the
+            commit given by the configuration.
+        token : str, bool or None, default=None
+            Hugging Face token, needed for gated repositories. If None, the
+            locally saved token or the `HF_TOKEN` variable is used.
+        local_files_only : bool, default=False
+            Whether to only use the local Hugging Face cache.
+        strict : bool, default=True
+            Whether the weights must match the estimator exactly. If False,
+            a mismatch only raises a warning.
+        **kwargs : dict
+            Parameters of the estimator overriding the ones of the
+            configuration, such as the `devices` or the `precision`.
+
+        Returns
+        -------
+        estimator : object
+            The estimator, ready for `transform`.
+
+        Raises
+        ------
+        PermissionError
+            If the repository is gated and access has not been granted.
+        ValueError
+            If the configuration is not for this estimator or cannot be
+            read.
+        RuntimeError
+            If `strict` and the weights do not match the estimator.
+
+        Examples
+        --------
+        >>> from nidl.estimators.ssl import SimCLR
+        >>> model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
+        >>> preprocess = model.get_preprocessing()
+        """
+        fetch_kwargs = {"token": token, "local_files_only": local_files_only}
+        config_file = _fetch_file(
+            model_id, cls.CONFIG_NAME, revision=revision, **fetch_kwargs
+        )
+        with open(config_file) as f:
+            config = json.load(f)
+        if "estimator" not in config:
+            raise ValueError(f"'{model_id}' is not in the nidl format.")
+        weights = config.get("weights", {})
+        if "repo_id" in weights:  # published by their authors
+            if not weights.get("revision"):
+                raise ValueError(
+                    f"The external weights of '{model_id}' need a revision."
+                )
+            weights_file = _fetch_file(
+                weights["repo_id"],
+                weights.get("filename", cls.WEIGHTS_NAME),
+                revision=weights["revision"],
+                **fetch_kwargs,
+            )
+        else:
+            weights_file = _fetch_file(
+                model_id, cls.WEIGHTS_NAME, revision=revision, **fetch_kwargs
+            )
+        state_dict = _load_safetensors(weights_file)
+        if "converter" in weights:
+            from . import external
+
+            converter = _resolve(
+                weights["converter"], external.__name__, "converter"
+            )
+            if not (
+                isinstance(converter, type)
+                and issubclass(converter, external.ExternalWeights)
+                and converter is not external.ExternalWeights
+            ):
+                raise ValueError(
+                    f"Unknown converter '{weights['converter']}'."
+                )
+            state_dict = converter().convert(state_dict)
+        model = cls.from_config(config, **kwargs)
+        model._load_pretrained_weights(state_dict, strict)
+        model.fitted_ = True
+        return model
+
+    @classmethod
+    def from_config(cls, config: Mapping[str, Any], **kwargs: Any):
+        """Build an estimator from a configuration, without its weights.
+
+        Parameters
+        ----------
+        config : mapping
+            The configuration, see :class:`NidlHubMixin`.
+        **kwargs : dict
+            Parameters of the estimator or of its trainer overriding the
+            ones of the configuration.
+
+        Returns
+        -------
+        estimator : object
+            A new, randomly initialized estimator.
+        """
+        if config.get("estimator") != cls.__name__:
+            raise ValueError(
+                f"This configuration is for {config.get('estimator')}, not "
+                f"{cls.__name__}: use {config.get('estimator')} instead."
+            )
+        trainer = config.get("trainer", {})
+        unknown = sorted(set(trainer) - set(TRAINER_PARAMS))
+        if unknown:
+            raise ValueError(f"Unknown trainer parameters {unknown}.")
+        estimator_kwargs = {
+            **trainer,
+            **config.get("estimator_kwargs", {}),
+            **kwargs,
+        }
+        encoder = config.get("encoder")
+        if encoder is not None and "encoder" not in kwargs:
+            build = _resolve(encoder["name"], ENCODERS_MODULE, "encoder")
+            estimator_kwargs["encoder"] = build(**encoder.get("kwargs", {}))
+        model = cls(**estimator_kwargs)
+        model.pretrained_config_ = json.loads(json.dumps(config))
+        return model
+
+    def save_pretrained(
+        self,
+        save_directory: Union[str, Path],
+        *,
+        encoder: Optional[Mapping[str, Any]] = None,
+        preprocessing: Optional[Mapping[str, Any]] = None,
+        input_shape: Optional[Sequence[int]] = None,
+        input_range: Optional[tuple[float, float]] = None,
+    ) -> Path:
+        """Save the estimator in the nidl format.
+
+        The other parameters default to the ones of the loaded weights, if
+        any, so that a fine-tuned estimator keeps them.
+
+        Parameters
+        ----------
+        save_directory : str or Path
+            The folder where `config.json` and `model.safetensors` are
+            written, created if needed.
+        encoder : mapping or None, default=None
+            ``{"name": ..., "kwargs": ...}``, the backbone of
+            :mod:`nidl.backbones.volume` building the encoder. It can be
+            omitted if the estimator was given the encoder as a class and its
+            `encoder_kwargs`.
+        preprocessing : mapping, sequence of mapping or None, default=None
+            ``{"transform": ..., "kwargs": ...}``, the transform of
+            ``nidl.transforms.volume.preprocessing`` to apply on the
+            inputs, with the parameters fixed by the weights, or a list of
+            them applied in order.
+        input_shape : sequence of int or None, default=None
+            Shape of a sample, without batch dimension.
+        input_range : (float, float) or None, default=None
+            Range of the values of the inputs.
+
+        Returns
+        -------
+        save_directory : Path
+            The folder.
+        """
+        try:
+            from safetensors.torch import save_file
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                "Please run 'pip install nidl[pretrained]' to save weights."
+            ) from e
+        config = self._make_config(
+            encoder, preprocessing, input_shape, input_range
+        )
+        save_directory = Path(save_directory)
+        save_directory.mkdir(parents=True, exist_ok=True)
+        save_file(
+            {
+                name: value.detach().cpu().clone().contiguous()
+                for name, value in self.state_dict().items()
+            },
+            str(save_directory / self.WEIGHTS_NAME),
+            metadata={"format": "pt"},
+        )
+        with open(save_directory / self.CONFIG_NAME, "w") as f:
+            json.dump(config, f, indent=2)
+        return save_directory
+
+    def push_to_hub(
+        self,
+        repo_id: str,
+        *,
+        commit_message: str = "Upload nidl estimator",
+        private: Optional[bool] = None,
+        token: Optional[str] = None,
+        **kwargs: Any,
+    ):
+        """Save the estimator in the nidl format to a Hub repository.
+
+        Parameters
+        ----------
+        repo_id : str
+            The repository, created if needed.
+        commit_message : str, default="Upload nidl estimator"
+            The message of the commit.
+        private : bool or None, default=None
+            Whether a new repository is private.
+        token : str or None, default=None
+            Hugging Face token. If None, the locally saved one is used.
+        **kwargs : dict
+            Parameters given to :meth:`save_pretrained`.
+
+        Returns
+        -------
+        commit : huggingface_hub.CommitInfo
+            The commit, whose `oid` can be given as `revision` to
+            :meth:`from_pretrained`.
+        """
+        from huggingface_hub import HfApi
+
+        api = HfApi(token=token)
+        api.create_repo(repo_id, private=private, exist_ok=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            self.save_pretrained(tmp, **kwargs)
+            return api.upload_folder(
+                repo_id=repo_id,
+                folder_path=tmp,
+                commit_message=commit_message,
+            )
+
+    def get_preprocessing(self, **kwargs: Any):
+        """Return the preprocessing the loaded weights expect.
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Parameters of the transform depending on your data, such as the
+            `input_orientation` of the volumes. They cannot override the
+            parameters fixed by the weights. A preprocessing made of
+            several transforms takes none.
+
+        Returns
+        -------
+        transform : Transform, Compose or None
+            The transform to apply on each sample, or None if the weights
+            need none.
+
+        Raises
+        ------
+        ValueError
+            If a parameter is fixed by the weights.
+        """
+        entry = (self.pretrained_config_ or {}).get("preprocessing")
+        if entry is None:
+            return None
+        if not isinstance(entry, Mapping):
+            if kwargs:
+                raise ValueError(
+                    "This preprocessing is made of several transforms and "
+                    f"takes no parameter, got {sorted(kwargs)}."
+                )
+            from torchvision.transforms import Compose
+
+            return Compose([self._build_preprocessing(e, {}) for e in entry])
+        return self._build_preprocessing(entry, kwargs)
+
+    @staticmethod
+    def _build_preprocessing(entry: Mapping[str, Any], kwargs: dict):
+        transform = _resolve(
+            entry["transform"], PREPROCESSING_MODULE, "preprocessing"
+        )
+        fixed = entry.get("kwargs", {})
+        conflicts = sorted(set(fixed) & set(kwargs))
+        if conflicts:
+            raise ValueError(
+                f"Parameters {conflicts} are fixed by the weights."
+            )
+        return transform(**fixed, **kwargs)
+
+    def check_pretrained_input(self, x: torch.Tensor) -> None:
+        """Check a batch against what the loaded weights were trained on.
+
+        This is a no-op if the estimator does not come from
+        :meth:`from_pretrained`.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Batch of shape `(B, *input_shape)`.
+
+        Raises
+        ------
+        ValueError
+            If the batch has the wrong shape, contains non-finite values or
+            is out of the expected range.
+        """
+        expected = (self.pretrained_config_ or {}).get("input")
+        if expected is None:
+            return
+        help_msg = (
+            "The loaded weights need a dedicated preprocessing, see "
+            "`get_preprocessing`."
+        )
+        shape = expected.get("shape")
+        if shape is not None and tuple(x.shape[1:]) != tuple(shape):
+            raise ValueError(
+                f"Expected samples of shape {tuple(shape)}, got "
+                f"{tuple(x.shape[1:])}. {help_msg}"
+            )
+        if not torch.isfinite(x).all():
+            raise ValueError(f"Input contains non-finite values. {help_msg}")
+        value_range = expected.get("range")
+        if value_range is not None:
+            low, high = value_range
+            x_min, x_max = x.min().item(), x.max().item()
+            if x_min < low or x_max > high:
+                raise ValueError(
+                    f"Expected values in [{low}, {high}], got "
+                    f"[{x_min}, {x_max}]. {help_msg}"
+                )
+
+    def _load_pretrained_weights(
+        self, state_dict: Mapping[str, torch.Tensor], strict: bool
+    ) -> None:
+        weights = (self.pretrained_config_ or {}).get("weights", {})
+        missing_ok = tuple(weights.get("missing_ok", ()))
+        result = self.load_state_dict(state_dict, strict=False)
+        missing = [
+            key
+            for key in result.missing_keys
+            if not key.startswith(missing_ok)
+        ]
+        if missing or result.unexpected_keys:
+            message = (
+                f"The weights do not match {type(self).__name__}: missing "
+                f"keys {missing}, unexpected keys {result.unexpected_keys}."
+            )
+            if strict:
+                raise RuntimeError(message)
+            warnings.warn(message, stacklevel=3)
+
+    def _make_config(
+        self,
+        encoder: Optional[Mapping[str, Any]],
+        preprocessing: Optional[Mapping[str, Any]],
+        input_shape: Optional[Sequence[int]],
+        input_range: Optional[tuple[float, float]],
+    ) -> dict[str, Any]:
+        previous = self.pretrained_config_ or {}
+        config = {
+            "nidl_version": __version__,
+            "estimator": type(self).__name__,
+            "estimator_kwargs": self._estimator_kwargs(),
+        }
+        trainer = {
+            name: self.trainer_params_.get(name, default)
+            for name, default in TRAINER_PARAMS.items()
+            if self.trainer_params_.get(name, default) != default
+        }
+        if trainer:
+            config["trainer"] = trainer
+        encoder = encoder or previous.get("encoder") or self._encoder_config()
+        if encoder is not None:
+            _resolve(encoder["name"], ENCODERS_MODULE, "encoder")
+            config["encoder"] = {
+                "name": encoder["name"],
+                "kwargs": dict(encoder.get("kwargs", {})),
+            }
+        if input_shape is not None or input_range is not None:
+            config["input"] = {
+                "shape": None if input_shape is None else list(input_shape),
+                "range": None if input_range is None else list(input_range),
+            }
+        elif "input" in previous:
+            config["input"] = previous["input"]
+        preprocessing = preprocessing or previous.get("preprocessing")
+        if preprocessing is not None:
+            config["preprocessing"] = _preprocessing_config(preprocessing)
+        try:
+            return json.loads(json.dumps(config))
+        except TypeError as e:
+            raise TypeError(
+                f"The configuration cannot be saved in JSON: {e}."
+            ) from e
+
+    def _estimator_kwargs(self) -> dict[str, Any]:
+        """Return the parameters of the estimator, without the trainer's."""
+        excluded = set(inspect.signature(BaseEstimator.__init__).parameters)
+        excluded |= {"self", "encoder", "encoder_kwargs"}
+        signature = inspect.signature(type(self).__init__).parameters
+        kwargs = {}
+        for name, value in self.hparams.items():
+            if name not in signature or name in excluded:
+                continue
+            try:
+                json.dumps(value)
+            except TypeError as e:
+                if value is signature[name].default:
+                    continue
+                raise TypeError(
+                    f"Parameter '{name}' of {type(self).__name__} cannot be "
+                    f"saved in JSON: {value!r}."
+                ) from e
+            kwargs[name] = value
+        return kwargs
+
+    def _encoder_config(self) -> Optional[dict[str, Any]]:
+        """Return the encoder of the hyper-parameters, if given as a class."""
+        signature = inspect.signature(type(self).__init__).parameters
+        if "encoder" not in signature:
+            return None
+        encoder = self.hparams.get("encoder")
+        if isinstance(encoder, type):
+            try:
+                if _resolve(encoder.__name__, ENCODERS_MODULE, "") is encoder:
+                    kwargs = self.hparams.get("encoder_kwargs") or {}
+                    return {"name": encoder.__name__, "kwargs": dict(kwargs)}
+            except ValueError:
+                pass
+        raise ValueError(
+            "The encoder cannot be saved: give `encoder`, such as "
+            "{'name': 'resnet18', 'kwargs': {...}}, with a backbone exposed "
+            f"by {ENCODERS_MODULE}."
+        )
+
+
+class BaseEstimator(NidlHubMixin, pl.LightningModule):
     """Base class for all estimators in the NIDL framework designed for
     scalability.
 
@@ -48,6 +645,11 @@ class BaseEstimator(pl.LightningModule):
     This class provides:
 
     - a :meth:`fit` method.
+    - :meth:`~nidl.estimators.base.NidlHubMixin.from_pretrained`,
+      :meth:`~nidl.estimators.base.NidlHubMixin.save_pretrained` and
+      :meth:`~nidl.estimators.base.NidlHubMixin.push_to_hub` methods, to
+      share estimators and their weights with the Hugging Face Hub (see
+      :class:`~nidl.estimators.base.NidlHubMixin`).
     - a :meth:`transform` if the child class inherits from
       :class:`TransformerMixin`
     - a :meth:`transform_with_targets` method if the child class inherits from
@@ -329,7 +931,7 @@ class BaseEstimator(pl.LightningModule):
         Notes
         -----
         Outputs are gathered across GPUs in distributed settings, similarly to
-        :meth:`transform`.
+        :meth:`~nidl.estimators.BaseEstimator.transform`.
         """
         check_is_fitted(self)
         trainer = pl.Trainer(**self.trainer_params_)

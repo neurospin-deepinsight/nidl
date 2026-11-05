@@ -141,6 +141,45 @@ See :doc:`losses` and :doc:`projection_heads` for the losses and projection
 heads used by these estimators.
 
 
+Pretrained weights
+------------------
+
+All estimators inherit from :class:`~nidl.estimators.base.NidlHubMixin`: they
+can be saved, shared on the Hugging Face Hub and instantiated with published
+weights, as in `braindecode <https://braindecode.org>`_:
+
+.. code-block:: python
+
+    from nidl.estimators.ssl import SimCLR
+
+    model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
+    transform = model.get_preprocessing()
+
+A published estimator is a folder, or a Hub repository, holding its weights
+and a ``config.json`` with everything needed to build it: the estimator, its
+encoder, the shape and range of its inputs and their preprocessing. The
+estimator then knows the input it expects:
+:meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing` gives the
+preprocessing of the training data, and batches of the wrong shape or range
+raise an error in :meth:`~nidl.estimators.BaseEstimator.transform`. Save your own estimators with
+:meth:`~nidl.estimators.base.NidlHubMixin.save_pretrained` or
+:meth:`~nidl.estimators.base.NidlHubMixin.push_to_hub`. Install the
+dependencies with ``pip install nidl[pretrained]``.
+
+The available models, their expected inputs and licenses are listed in
+:ref:`pretrained_models`.
+
+.. currentmodule:: nidl.estimators
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    base.NidlHubMixin
+    external.ExternalWeights
+    external.NeuroJEPAWeights
+
+
 Probing estimators
 ------------------
 

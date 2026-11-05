@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 
@@ -521,7 +521,7 @@ def foreground_aware_jepa_loss(
 
 
 class NeuroJEPA(TransformerMixin, BaseEstimator):
-    """Implementation of Neuro-JEPA [1]_.
+    r"""Implementation of Neuro-JEPA [1]_.
 
     This solver predicts the representations of missing parts
     of the input (here: 3D brain MRI patches) from a visible context, using
@@ -545,7 +545,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         pass ``use_moe=True`` to that constructor and set ``use_moe=True``
         here too so the MoE bias update runs during training).
 
-    mask_scale_configs : sequence of MaskScaleConfig, \
+    mask_scale_configs : sequence of MaskScaleConfig or dict, \
         default=3-scale config from [1]_
         One entry per masking "scale": each draws `num_blocks` blocks with
         sizes controlled by `spatial_scale`/`depth_scale`/`aspect_ratio`,
@@ -554,6 +554,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         scale), a medium-block (16 blocks, 20-50% spatial scale), and a
         large-block (4 blocks, 50-70% spatial scale) masking are all drawn
         for every volume, at every step, each targeting a 75% mask ratio.
+        A dict gives the parameters of a MaskScaleConfig.
 
     foreground_aware : bool, default=True
         Whether to compute a per-patch foreground map (voxel-intensity based)
@@ -657,6 +658,53 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
     masker : MultiScaleMaskCollator
         Generates the per-step multi-scale (context, target) mask pairs.
 
+    Notes
+    -----
+    .. rubric:: Pretrained Weights
+
+    The official weights [1]_ are loaded with
+    :meth:`~nidl.estimators.base.NidlHubMixin.from_pretrained`, for
+    :math:`96 \times 108 \times 96` inputs:
+
+    - `nidl-neurospin/neuro-jepa-vit-b
+      <https://huggingface.co/nidl-neurospin/neuro-jepa-vit-b>`_: 12 layers
+      and 768-dimensional features, weights from `NYUMedML/Neuro-JEPA
+      <https://huggingface.co/NYUMedML/Neuro-JEPA>`_.
+    - `nidl-neurospin/neuro-jepa-vit-l
+      <https://huggingface.co/nidl-neurospin/neuro-jepa-vit-l>`_: 24 layers
+      and 1024-dimensional features, weights from `NYUMedML/Neuro-JEPA-Large
+      <https://huggingface.co/NYUMedML/Neuro-JEPA-Large>`_.
+
+    .. important::
+
+        **Registration required.** The weights are gated and under a
+        non-commercial license (CC-BY-NC-ND 4.0): you must first request
+        access on the model page of the authors (`NYUMedML/Neuro-JEPA
+        <https://huggingface.co/NYUMedML/Neuro-JEPA>`_ or
+        `NYUMedML/Neuro-JEPA-Large
+        <https://huggingface.co/NYUMedML/Neuro-JEPA-Large>`_), then
+        authenticate with ``huggingface-cli login``.
+
+    The nidl repositories only hold the configuration: the weights are
+    downloaded from the repositories of the authors, at the commit validated
+    against the official code (see
+    :class:`~nidl.estimators.external.ExternalWeights`). Only one encoder is
+    published, so `context_encoder` and `target_encoder` are
+    identical after loading and the `predictor` remains randomly
+    initialized.
+
+    The weights need their own preprocessing (see
+    :class:`~nidl.transforms.volume.preprocessing.NeuroJEPAPreprocessing`),
+    given by :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`,
+    and :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of
+    the wrong shape or range:
+
+    >>> model = NeuroJEPA.from_pretrained("nidl-neurospin/neuro-jepa-vit-b")
+    >>> preprocess = model.get_preprocessing(input_orientation="LAS")
+
+    Loading weights needs ``pip install nidl[pretrained]``. See
+    :ref:`pretrained_models` for all the available models.
+
     References
     ----------
     .. [1] Huang et al., "Learning Sparse Latent Predictive Foundation
@@ -724,7 +772,12 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         self.masker = MultiScaleMaskCollator(
             grid_shape=grid_shape,
             patch_size=patch_size,
-            scale_configs=mask_scale_configs,
+            scale_configs=[
+                MaskScaleConfig(**config)
+                if isinstance(config, Mapping)
+                else config
+                for config in mask_scale_configs
+            ],
             foreground_aware=foreground_aware,
             foreground_threshold=foreground_threshold,
             min_foreground_fraction=min_foreground_fraction,
@@ -906,6 +959,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
             Context-encoder features averaged across the token dimension,
             shape (B, embed_dim).
         """
+        self.check_pretrained_input(batch)
         tokens, _ = self.context_encoder(batch, masks=None)
         return tokens.mean(dim=1)
 

@@ -134,8 +134,14 @@ class ResNet(nn.Module):
         is applied.
     initial_kernel_size: int, default=7
         kernel size in the first conv layer.
-    n_embedding: int, default=512
-        the size of the embedding space.
+    n_embedding: int or None, default=512
+        the size of the embedding space. If None, there is no final linear
+        layer and the average-pooled features are returned.
+    initial_stride: int or None, default=None
+        the stride of the first convolution. By default, 2 if
+        `initial_kernel_size` is 7, 1 otherwise.
+    downsample_bias: bool, default=False
+        whether the convolutions of the shortcut connections have a bias.
     """
     def __init__(
             self,
@@ -149,7 +155,9 @@ class ResNet(nn.Module):
                 Union[ tuple[bool, bool, bool], None] = None,
             norm_layer: Union[type[nn.Module], None] = None,
             initial_kernel_size: int = 7,
-            n_embedding: int = 512):
+            n_embedding: Union[int, None] = 512,
+            initial_stride: Union[int, None] = None,
+            downsample_bias: bool = False):
         super().__init__()
 
         if norm_layer is None:
@@ -159,6 +167,7 @@ class ResNet(nn.Module):
         self.name = "resnet"
         self.inplanes = 64
         self.dilation = 1
+        self.downsample_bias = downsample_bias
 
         if replace_stride_with_dilation is None:
             # each element in the tuple indicates if we should replace
@@ -170,7 +179,8 @@ class ResNet(nn.Module):
                 f"or a 3-element tuple, got {replace_stride_with_dilation}.")
         self.groups = groups
         self.base_width = width_per_group
-        initial_stride = 2 if initial_kernel_size == 7 else 1
+        if initial_stride is None:
+            initial_stride = 2 if initial_kernel_size == 7 else 1
         padding = (initial_kernel_size-initial_stride+1) // 2
         self.conv1 = nn.Conv3d(in_channels, self.inplanes,
                                kernel_size=initial_kernel_size,
@@ -193,7 +203,10 @@ class ResNet(nn.Module):
         if block == Bottleneck:
             channels = [64] + [(64 * block.expansion) * 2 ** idx
                                for idx in range(1, 4)]
-        self.embedding = nn.Linear(channels[3], n_embedding)
+        self.embedding = (
+            nn.Linear(channels[3], n_embedding)
+            if n_embedding is not None else nn.Identity()
+        )
 
         for m in self.modules():
             if isinstance(m, nn.Conv3d):
@@ -223,7 +236,9 @@ class ResNet(nn.Module):
             stride = 1
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
-                conv1x1(self.inplanes, planes * block.expansion, stride),
+                nn.Conv3d(self.inplanes, planes * block.expansion,
+                          kernel_size=1, stride=stride,
+                          bias=self.downsample_bias),
                 norm_layer(planes * block.expansion),
             )
 

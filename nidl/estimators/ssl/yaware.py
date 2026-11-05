@@ -29,7 +29,7 @@ from nidl.utils.data_parsing import (
 
 
 class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
-    """y-Aware Contrastive Learning [1]_.
+    r"""y-Aware Contrastive Learning [1]_.
 
     y-Aware Contrastive Learning is a self-supervised learning framework for
     learning visual representations with auxiliary variables. It leverages
@@ -129,6 +129,33 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
         Optimizer used for training.
     lr_scheduler: LRSchedulerPLType or None
         Learning rate scheduler used for training.
+
+    Notes
+    -----
+    .. rubric:: Pretrained Weights
+
+    Weights are available on the Hugging Face Hub, in the nidl format (see
+    :class:`~nidl.estimators.base.NidlHubMixin`):
+
+    - `nidl-neurospin/yaware-densenet121-bhb10k
+      <https://huggingface.co/nidl-neurospin/yaware-densenet121-bhb10k>`_:
+      a 3D DenseNet-121 with 11.2M encoder parameters and 1024-dimensional
+      features, pretrained on BHB-10K with age as proxy [1]_, for
+      :math:`121 \times 145 \times 121` gray matter maps preprocessed with
+      CAT12 (VBM).
+
+    The volumes must be standardized with
+    :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`, and
+    :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of the
+    wrong shape:
+
+    >>> model = YAwareContrastiveLearning.from_pretrained(
+    ...     "nidl-neurospin/yaware-densenet121-bhb10k"
+    ... )
+    >>> preprocess = model.get_preprocessing()
+
+    Loading weights needs ``pip install nidl[pretrained]``. See
+    :ref:`pretrained_models` for all the available models.
 
     References
     ----------
@@ -313,6 +340,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             The encoded features returned by the encoder.
 
         """
+        self.check_pretrained_input(batch)
         return self.encoder(batch)
 
     def configure_optimizers(self):
