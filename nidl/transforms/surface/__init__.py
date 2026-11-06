@@ -15,6 +15,7 @@ from .intensity import (
     RandomGaussianNoise,
 )
 from .spatial import (
+    Downsample,
     RandomCutOut,
     RandomRotation,
 )

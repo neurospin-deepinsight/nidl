@@ -10,6 +10,7 @@
 Spatial-based transformations.
 """
 
+from pathlib import Path
 from typing import ClassVar
 
 import numpy as np
@@ -25,6 +26,81 @@ from ..utils import (
     Interval,
     validate_data,
 )
+
+
+class Downsample:
+    """
+    Downsample the data on an icosahedron by a given factor.
+
+    Parameters
+    ----------
+    source_order : int
+        Subdivision order of the source icosahedron.
+        Default 7.
+    target_order : int
+        Subdivision order of the target icosahedron.
+        Default 5.
+    standard_ico : bool
+        If True, recursively subdivides a standard icosahedron.
+        If False, loads precomputed FreeSurfer icosahedra.
+        Default False.
+    cache_file : str | Path | None
+        Path to a a ``.npz``  file used to save and restore precomputed Ico
+        data. If ``None``, no caching initilization is performed and data are
+        recomputed on initialization.
+
+    Attributes
+    ----------
+    down_indices_ : np.ndarray, shape (n_target,)
+        Indices of the nearest source vertices for each target vertex.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from nidl.surface import Ico
+    >>> from nidl.transforms.surface import Downsample
+    >>> transform = Downsample(source_order=7, target_order=3)
+    >>> x = np.ones(Ico.n_vertices(order=7))
+    >>> x_down = transform(x)
+    >>> x_down.shape
+    (642,)
+    """
+    def __init__(
+            self,
+            source_order: int = 7,
+            target_order: int = 5,
+            standard_ico: bool = False,
+            cache_file: str | Path | None = None,
+        ):
+        self.source_order = source_order
+        self.target_order = target_order
+
+        with Ico.cachemanager(cache_file):
+            self.down_indices_ = Ico.downsample(
+                source_order=source_order,
+                target_order=target_order,
+                standard_ico=standard_ico,
+            )
+
+    @validate_data(allowed_dims=(1, 2))
+    def __call__(
+            self,
+            texture: np.ndarray,
+        ) -> np.ndarray:
+        """
+        Downsample input texture data on the specified icosahedron.
+
+        Parameters
+        ----------
+        texture : np.ndarray, shape (N,) or (C, N)
+            Input texture.
+
+        Returns
+        -------
+        np.ndarray
+            Downsampled texture (new array, not in-place).
+        """
+        return texture[:, self.down_indices_]
 
 
 class RandomCutOut:
