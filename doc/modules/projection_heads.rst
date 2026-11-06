@@ -31,6 +31,7 @@ Projection heads
     YAwareProjectionHead
     BarlowTwinsProjectionHead
     DINOProjectionHead
+    CoMMProjectionHead
 
 .. autoclasstree:: nidl.estimators.ssl.utils
    :strict:

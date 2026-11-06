@@ -7,6 +7,7 @@
 ##########################################################################
 
 from collections import OrderedDict
+from functools import partial
 
 import unittest
 
@@ -28,8 +29,11 @@ from nidl.estimators.ssl import (
     YAwareContrastiveLearning,
     DINO,
     DCL,
-    IJEPA
+    IJEPA,
+    CoMM,
 )
+from nidl.backbones.volume.utils import Patched3DInputAdapter
+from nidl.utils.data_parsing import collate_multimodal
 from timm.models.vision_transformer import VisionTransformer
 from nidl.estimators.autoencoders import VAE
 from nidl.estimators.linear import LogisticRegression
@@ -59,7 +63,30 @@ class CustomTensorDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
-    
+
+
+class MultimodalTensorDataset(Dataset):
+    """ TensorDataset returning a dict {modality: data or None}, where each
+    sample misses at most one modality.
+    """
+    def __init__(self, data, n_modalities=3, transform=None):
+        self.data = data
+        self.n_modalities = n_modalities
+        self.transform = transform
+
+    def __getitem__(self, index):
+        sample = {}
+        for idx in range(self.n_modalities):
+            x = self.data[index]
+            if self.transform:
+                x = self.transform(x)
+            missing = (index % (self.n_modalities + 1) == idx)
+            sample[f"mod{idx}"] = None if missing else x
+        return sample
+
+    def __len__(self):
+        return len(self.data)
+
 
 class TestEstimators(unittest.TestCase):
     """ Test estimators: simple checks.
@@ -101,6 +128,21 @@ class TestEstimators(unittest.TestCase):
         self.multicrop_ssl_loader = DataLoader(multicrop_ssl_dataset, batch_size=2, shuffle=False)
         self.weakly_sup_loader = DataLoader(xxy_dataset, batch_size=2, shuffle=False)
         self.x_loader = DataLoader(x_dataset, batch_size=2, shuffle=False)
+        multimodal_ssl_dataset = MultimodalTensorDataset(
+            self.fake_data, transform=MultiViewsTransform(ssl_transforms, n_views=2)
+        )
+        multimodal_x_dataset = MultimodalTensorDataset(self.fake_data)
+        collate_fn = partial(
+            collate_multimodal, modalities=("mod0", "mod1", "mod2")
+        )
+        self.multimodal_ssl_loader = DataLoader(
+            multimodal_ssl_dataset, batch_size=4, shuffle=False,
+            collate_fn=collate_fn
+        )
+        self.multimodal_x_loader = DataLoader(
+            multimodal_x_dataset, batch_size=4, shuffle=False,
+            collate_fn=collate_fn
+        )
         self.x_2d_loader = DataLoader(x_2d_dataset, batch_size=2, shuffle=False)
         self.xy_loader = DataLoader(xy_dataset, batch_size=2, shuffle=False)
 
@@ -227,7 +269,59 @@ class TestEstimators(unittest.TestCase):
                 }
             ),
         )
-    
+
+    def multimodal_ssl_config(self):
+        params = {
+            "num_modalities": 3,
+            "embed_dim": self.latent_size,
+            "num_heads": 2,
+            "proj_hidden_dim": 3,
+            "proj_output_dim": 3,
+            "learning_rate": 5e-4,
+            "max_epochs": 2,
+            "random_state": 42,
+            "limit_train_batches": 3,
+        }
+
+        def map_encoder():
+            # Backbone returning 3D feature maps of shape (1, 5, 5, 1)
+            return nn.Sequential(
+                nn.Linear(5 * 5, 5 * 5), nn.Unflatten(1, (1, 5, 5, 1))
+            )
+
+        return (
+            (
+                CoMM,
+                {
+                    **params,
+                    "encoder": nn.Linear(5 * 5, self.latent_size),
+                    "freeze_encoder": False,
+                }
+            ),
+            (
+                CoMM,
+                {
+                    **params,
+                    "encoder": nn.Linear(5 * 5, self.latent_size),
+                    "freeze_encoder": True,
+                }
+            ),
+            (
+                CoMM,
+                {
+                    **params,
+                    "encoder": [map_encoder(), map_encoder()],
+                    "mod_to_encoder": [0, 1, 1],
+                    "adapter": Patched3DInputAdapter(
+                        num_channels=1, stride_level=1, patch_size_full=1,
+                        dim_tokens=self.latent_size, volume_size=(5, 5, 1)
+                    ),
+                    "per_modality_adapter": True,
+                    "freeze_encoder": False,
+                }
+            ),
+        )
+
     def test_weakly_sup_config(self):
         kernel_metric = KernelMetric(bandwidth="silverman")
         kernel_metric.fit(self.fake_labels.numpy())
@@ -349,6 +443,50 @@ class TestEstimators(unittest.TestCase):
                 msg="Shape mismatch for transformed data: "
                     f"{z.shape} != {(self.n_images, self.latent_size)}",
             )
+
+    def test_multimodal_ssl(self):
+        """ Test multimodal self supervised model (simple check)."""
+        for klass, params in self.multimodal_ssl_config():
+            print(f"[{print_multicolor(klass.__name__, display=False)}]...")
+            model = klass(**params)
+            model.fit(self.multimodal_ssl_loader)
+            z = model.transform(self.multimodal_x_loader)
+            self.assertTrue(
+                z.shape == (self.n_images, self.latent_size),
+                msg="Shape mismatch for transformed data: "
+                    f"{z.shape} != {(self.n_images, self.latent_size)}",
+            )
+
+    def test_multimodal_ssl_bad_parameters(self):
+        """ Test multimodal self supervised model with bad parameters."""
+        _, params = self.multimodal_ssl_config()[0]
+        # Several encoders without, or with a wrong, `mod_to_encoder`
+        for mod_to_encoder in (None, [0, 1], [0, 1, 2]):
+            with self.assertRaises(ValueError):
+                CoMM(**{
+                    **params,
+                    "encoder": [nn.Linear(5 * 5, self.latent_size),
+                                nn.Linear(5 * 5, self.latent_size)],
+                    "mod_to_encoder": mod_to_encoder,
+                })
+        # `sync_batchnorm` with several trainable encoders having batch norm
+        encoders = [
+            nn.Sequential(nn.Linear(5 * 5, self.latent_size),
+                          nn.BatchNorm1d(self.latent_size))
+            for _ in range(2)
+        ]
+        with self.assertRaises(ValueError):
+            CoMM(**{
+                **params,
+                "encoder": encoders,
+                "mod_to_encoder": [0, 1, 1],
+                "sync_batchnorm": True,
+            })
+        # `transform` expects a single image per modality, not views
+        model = CoMM(**params)
+        model.fit(self.multimodal_ssl_loader)
+        with self.assertRaises(ValueError):
+            model.transform(self.multimodal_ssl_loader)
     
     def test_vae(self):
         """ Test VAE model (simple check).

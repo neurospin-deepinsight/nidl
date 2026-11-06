@@ -18,6 +18,11 @@ from nidl.backbones.volume import (
     resnet50,
     resnet50_trunc,
 )
+from nidl.backbones.volume.utils import (
+    IdentityAdapter,
+    Patched3DInputAdapter,
+    SimpleFeaturesInputAdapter,
+)
 from nidl.utils import print_multicolor
 
 
@@ -78,6 +83,22 @@ class TestBackbones(unittest.TestCase):
                 self.assertTrue(out.shape == (self.n_images, 10))
             else:
                 self.assertTrue(out.shape == (self.n_images, 64, 32, 32, 32))
+
+    def test_input_adapters(self):
+        """ Test input adapters (simple check).
+        """
+        features = torch.rand(self.n_images, 10)
+        tokens = SimpleFeaturesInputAdapter()(features)
+        self.assertTrue(tokens.shape == (self.n_images, 1, 10))
+        tokens = torch.rand(self.n_images, 5, 10)
+        self.assertTrue(torch.equal(IdentityAdapter()(tokens), tokens))
+        self.assertTrue(torch.equal(IdentityAdapter()((tokens, None)), tokens))
+        adapter = Patched3DInputAdapter(
+            num_channels=self.n_channels, stride_level=32, patch_size_full=64,
+            dim_tokens=12, volume_size=128)
+        # 4x4x4 feature maps, 2x2x2 patches -> 8 tokens
+        feature_maps = torch.rand(self.n_images, self.n_channels, 4, 4, 4)
+        self.assertTrue(adapter(feature_maps).shape == (self.n_images, 8, 12))
 
 
 if __name__ == "__main__":

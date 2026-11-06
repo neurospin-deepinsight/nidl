@@ -203,6 +203,44 @@ class BarlowTwinsProjectionHead(ProjectionHead):
         )
 
 
+class CoMMProjectionHead(ProjectionHead):
+    """Projection head used in CoMM [1]_.
+
+    It is a 3-layer MLP with batch normalization and ReLU non-linearities.
+
+    Adapted from https://github.com/Duplums/CoMM.
+
+    References
+    ----------
+    .. [1] Benoit Dufumier, Javiera Castillo-Navarro, et al., "What to align
+           in multimodal contrastive learning?", ICLR 2025.
+    """
+
+    def __init__(
+        self,
+        input_dim: int = 2048,
+        hidden_dim: int = 512,
+        output_dim: int = 256,
+    ):
+        super().__init__(
+            [
+                (
+                    input_dim,
+                    hidden_dim,
+                    nn.SyncBatchNorm(hidden_dim),
+                    nn.ReLU(inplace=True),
+                ),
+                (
+                    hidden_dim,
+                    hidden_dim,
+                    nn.SyncBatchNorm(hidden_dim),
+                    nn.ReLU(inplace=True),
+                ),
+                (hidden_dim, output_dim, None, None),
+            ]
+        )
+
+
 class DINOProjectionHead(ProjectionHead):
     """Projection head used in DINO [1]_.
 

@@ -74,6 +74,22 @@ various utility functions.
    vit_large_patch16_128
 
 
+Input adapters
+..............
+
+Classes to patchify input volumes or feature maps into sequences of tokens.
+
+.. currentmodule:: nidl.backbones.volume.utils
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    SimpleFeaturesInputAdapter
+    IdentityAdapter
+    Patched3DInputAdapter
+
+
 Surface
 -------
 
