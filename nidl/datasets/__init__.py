@@ -11,5 +11,11 @@ nidl compatible dataset, as well as the datasets available in nidl.
 """
 
 from .base import BaseImageDataset, BaseNumpyDataset
+from .interface import (
+    HemisphereSplitDataset,
+)
 from .openbhb import OpenBHB
 from .pandas_dataset import ImageDataFrameDataset
+from .utils import (
+    get_channel_stats,
+)
