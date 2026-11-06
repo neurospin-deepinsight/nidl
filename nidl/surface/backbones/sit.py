@@ -12,11 +12,16 @@ Surface vision transformers.
 
 import fnmatch
 from pathlib import Path
-from typing import Callable, Self
+from typing import (
+    Any,
+    Callable,
+    Self,
+)
 
 import numpy as np
 import timm
 import torch
+from einops import rearrange
 from torch import nn
 
 from .. import Ico
@@ -71,6 +76,7 @@ class SiT(nn.Module):
         Pooling strategy applied after the Transformer:
         - ``"cls"``: use the class token representation,
         - ``"mean"``: average all tokens.
+        - ``"none"``: return all tokens, excluding the class token.
         Default ``"cls"``.
     dim_head: int
         Dimension of each attention head.
@@ -81,6 +87,10 @@ class SiT(nn.Module):
     emb_dropout: float
         Dropout rate applied to the input token embeddings.
         Default 0.
+    use_patchify : bool
+        Extract vertices from predefined patches and flatten the
+        spatial-channel dimensions. If False expect pre-patched data.
+        Default True.
     cache_file : str | Path | None
         Path to a a ``.npz``  file used to save and restore precomputed Ico
         data. If ``None``, no caching initilization is performed and data are
@@ -124,6 +134,7 @@ class SiT(nn.Module):
             dim_head: int = 64,
             dropout: float = 0.,
             emb_dropout: float = 0.,
+            use_patchify: bool = True,
             cache_file: str | Path | None = None,
             printer: Callable | None = None,
             n_jobs: int = 1,
@@ -131,13 +142,18 @@ class SiT(nn.Module):
         super().__init__()
 
         self.order = order
+        self.dim = dim
         self.standard_ico = standard_ico
         self.depth = depth
-        self.latent_dim = mlp_dim
+        self.n_channels = n_channels
+        self.n_classes = n_classes
+        self.use_patchify = use_patchify
         self.printer = printer
 
-        assert pool in {"cls", "mean"}, (
-            "Pool type must be either cls (cls token) or mean (mean pooling).")
+        assert pool in {"cls", "mean", "none"}, (
+            "Pool type must be either cls (cls token), mean (mean pooling), "
+            "or none (no pooling)."
+        )
 
         # Build blocks
         self.print(
@@ -167,9 +183,36 @@ class SiT(nn.Module):
         self.mlp_head = (
             nn.Sequential(
                 nn.LayerNorm(dim),
-                nn.Linear(dim, n_classes)) if n_classes > 0
+                nn.Linear(dim, n_classes)
+            ) if n_classes > 0
             else nn.Identity()
         )
+
+    def patchify(
+            self,
+            x: torch.Tensor
+        ) -> torch.Tensor:
+        """
+        Extract vertices from predefined patches and flatten the
+        spatial-channel dimensions.
+
+        This method slices the input tensor along its last dimension using the
+        indices stored in `self.patches`, then permutes and flattens the result
+        into a 3D layout where vertices and channels are combined.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input texture tensor of shape `(batch, channels, vertices)`.
+
+        Returns
+        -------
+        torch.Tensor
+            The processed tensor of shape
+            `(batch, patches, vertices x channels)`.
+        """
+        x = x[..., self.patches]
+        return rearrange(x, "b c n v -> b n (v c)")
 
     def forward(
             self,
@@ -181,22 +224,22 @@ class SiT(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Input tensor of shape ``(batch_size, n_channels, n_vertices)``.
+            Input tensor of shape ``(batch, channels, vertices)`` if
+            `use_patchify` else ``(batch, patches, vertices * channels)``.
             It may contain either left- or right-hemisphere data, but must
             first be symmetrized (as in an xhemi-style dataset).
-
+            
         Returns
         -------
         torch.Tensor
             If ``n_classes > 0``:
-                Output predictions of shape ``(batch_size, n_classes)``.
+                Output predictions of shape ``(batch, n_classes)``.
             If ``n_classes <= 0``:
-                Latent embedding of shape ``(batch_size, dim)``.
+                Latent embedding of shape ``(batch, dim)``.
         """
-        # Rearange
-        x = x[..., self.patches]
-        x = torch.swapdims(x, 1, 2)
-        x = torch.flatten(x, start_dim=2)
+        # Patch / rearrange
+        if self.use_patchify:
+            x = self.patchify(x)
 
         # Linear embeding
         x = self.patch_embedding(x)
@@ -212,7 +255,11 @@ class SiT(nn.Module):
         x = self.transformer(x)
 
         # Pooling
-        x = x.mean(dim=1) if self.pool == "mean" else x[:, 0]
+        x = (
+            x.mean(dim=1) if self.pool == "mean"
+            else x[:, 0] if self.pool == "cls"
+            else x[:, 1:]
+        )
 
         # Prediction
         x = self.mlp_head(x)
@@ -239,6 +286,35 @@ class SiT(nn.Module):
         if self.printer is not None:
             self.printer(message)
 
+    @property
+    def patch_spec(self):
+        """
+        Get the patch specification.
+
+        Returns
+        -------
+        tuple[int, int, int]
+            A tuple containing:
+            - The number of channels.
+            - The number of patches.
+            - The number of vertices.
+        """
+        return (self.n_channels, self.n_patches, self.n_vertices)
+
+    @property
+    def dim_spec(self):
+        """
+        Get the data dimension specification.
+
+        Returns
+        -------
+        tuple[int, int]
+            A tuple containing:
+            - The embedding dimension of each token.
+            - The flatten vertices x channels dimension.
+        """
+        return (self.dim, self.n_vertices * self.n_channels)
+
     @classmethod
     def from_pretrained(
             cls,
@@ -252,11 +328,6 @@ class SiT(nn.Module):
         ) -> Self:
         """
         Create a model instance and load pretrained weights.
-
-        We fix the patch parameters from the original paper, generating 320
-        patches per hemisphere and per channel. Since there are C input
-        channels and each patch contains V = 153 vertices, the total
-        dimensionality per patch is V x C.
 
         Parameters
         ----------
@@ -466,66 +537,97 @@ class SiT(nn.Module):
 
 class SiTAttentionMaps(nn.Module):
     """
-    Minimal standalone extractor for attention maps using forward hooks.
+    Standalone extractor for attention maps using forward hooks.
+
+    Extracts attention maps from specified modules in a SiT model using
+    forward hooks. The extracted attention maps are concatenated and returned
+    as a NumPy array.
 
     Parameters
     ----------
-    model : torch.nn.Module
-        Model from which attention maps will be extracted.
-    names : tuple[str]
-        List of module names or wildcard patterns to hook.
-        Default ('*attend').
+    model : nn.Module
+        The SiT model from which attention maps will be extracted. Must have
+        ``order`` and ``n_patches`` attributes, and ``patches`` attribute
+        containing vertex indices for each patch.
+    module_patterns : tuple[str]
+        Patterns to match module names for hooking. Supports wildcards.
+        Default ('*attend', ).
 
-    Returns
-    -------
-    numpy.ndarray
-        Concatenated attention maps of shape ``(N, ...)`` where ``N`` is the
-        total number of hooked modules.
+    Raises
+    ------
+    RuntimeError
+        If no modules match the provided patterns.
 
     Notes
     -----
-    - Uses forward hooks only.
+    - Uses forward hooks only (no backward hooks).
     - All matched modules are hooked.
     - The model must return tensors compatible with NumPy conversion.
+    - Assumes attention maps have shape ``(batch, heads, patches, patches)``
+      where the first patch is the CLS token.
+
+    References
+    ----------
+    .. [1] Dahan, Simon et al., Surface Vision Transformers: Attention-Based
+    Modelling applied to Cortical Analysis, MIDL, 2022.
+    .. [2] Dahan, Simon et al., Surface Vision Transformers: Flexible
+    Attention-Based Modelling of Biomedical Surfaces, TMI, 2022.
     """
 
     def __init__(
             self,
             model: torch.nn.Module,
-            names: tuple[str] = ("*attend", ),
+            module_patterns: tuple[str] = ("*attend", ),
         ) -> None:
         super().__init__()
 
         self.model = model
-        self.names = names
+        self.module_patterns = module_patterns
         self.hooks = []
         self.outputs = []
 
         # Resolve module names
         module_names = [name for name, _ in model.named_modules()]
         matched = []
-        for pattern in names:
+        for pattern in module_patterns:
             matched.extend(fnmatch.filter(module_names, pattern))
         if not matched:
-            raise RuntimeError(f"No modules matched patterns: {names}")
+            raise RuntimeError(
+                f"No modules matched patterns: {module_patterns}"
+            )
+        self.n_layers = len(matched)
 
-        # Register hooks
+        # Register hooks on matched modules
         for name, module in model.named_modules():
             if name in matched:
                 self.hooks.append(
                     module.register_forward_hook(self._hook)
                 )
 
-    def _hook(self, module, inp, out):
+    def _hook(
+            self,
+            module: nn.Module,
+            inp: Any,
+            out: torch.Tensor,
+        ) -> None:
         """
         Store hook output as NumPy.
+
+        Parameters
+        ----------
+        module : nn.Module
+            The module being hooked.
+        inp : Any
+            Input to the module (unused).
+        out : torch.Tensor
+            Output from the module, converted to NumPy and stored.
         """
         self.outputs.append(out.detach().cpu().numpy())
 
     def forward(
             self,
             x: torch.Tensor,
-            mask: np.ndarray | None = None,
+            vertex_mask: np.ndarray | None = None,
         ) -> np.ndarray:
         """
         Run the model, collect attention maps, and project them onto the
@@ -534,47 +636,53 @@ class SiTAttentionMaps(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Input tensor of shape ``(batch_size, n_channels, n_vertices)``.
-        mask : numpy.ndarray
-            Binary mask of shape ``(n_vertices,)`` used to zero out invalid
+            Input tensor of shape ``(batch, channels, vertices)``.
+        vertex_mask : np.ndarray | None
+            Binary mask of shape ``(vertices, )`` used to zero out invalid
             vertices.
+            Default None.
 
         Returns
         -------
-        numpy.ndarray
-            Array of shape ``(n_vertices, n_layers, n_heads)`` containing
-            per-vertex attention values.
+        np.ndarray
+            Array of shape ``(batch, layers, heads, vertices)`` containing
+            per-vertex attention values from CLS token to patches.
         """
-        # Run model and collect hook outputs
+        # Clear previous outputs and run model
         self.outputs.clear()
         _ = self.model(x)
-        out_maps = np.concatenate(self.outputs, axis=0)
 
-        # Extract layer/head structure
+        # Concatenate and reshape attention maps
+        out_maps = np.concatenate(self.outputs, axis=0)
         n_layers, n_heads = out_maps.shape[:2]
 
-        # Keep only attention from CLS to patches
-        # shape becomes (n_layers, n_heads, n_patches)
+        # Extract CLS-to-patch attention (shape: n_layers, n_heads, n_patches)
         attentions = out_maps[:, :, 1:, 0]
 
         # Reshape to (n_patches, n_layers, n_heads)
         attentions = attentions.transpose(2, 0, 1)
 
-        # Allocate spherical texture
+        # Initialize vertex-domain attention texture
         n_vertices = Ico.n_vertices(order=self.model.order)
         attention_texture = np.zeros(
             (n_vertices, n_layers, n_heads),
             dtype=np.float32,
         )
 
-        # Scatter patch attention into vertex domain
+        # Scatter patch attention to vertices
         for idx in range(self.model.n_patches):
             indices = self.model.patches[idx]
             attention_texture[indices] = attentions[idx]
 
-        # Apply mask
-        if mask is not None:
-            attention_texture *= mask[:, None, None]
+        # Apply vertex mask if provided
+        if vertex_mask is not None:
+            attention_texture *= vertex_mask[:, None, None]
+
+        # Split attenstion maps
+        attention_texture = attention_texture.transpose(1, 2, 0)
+        attention_texture = attention_texture.reshape(
+            -1, self.n_layers, n_heads, n_vertices,
+        )
 
         return attention_texture
 
