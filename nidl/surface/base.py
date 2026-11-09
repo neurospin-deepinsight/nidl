@@ -15,10 +15,12 @@ import inspect
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Any, Callable, ClassVar
 
 import networkx as nx
 import numpy as np
+import requests
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -255,7 +257,18 @@ class Ico:
         if standard_ico:
             vertices, triangles = cls._generate_standard(order)
         else:
-            vertices, triangles = cls._load_freesurfer(order)
+            with NamedTemporaryFile(suffix="freesurfer_icos.npz") as ico_file:
+                ico_file = cls._github_download(
+                    repo_owner="neurospin-deepinsight",
+                    repo_name="surfify",
+                    file_path="surfify/resources/freesurfer_icos.npz",
+                    branch="master",
+                    output_file=ico_file.name,
+                )
+                vertices, triangles = cls._load_freesurfer(
+                    order,
+                    ico_file,
+                )
         return np.array((vertices, triangles), dtype=object)
 
     @classmethod
@@ -745,6 +758,7 @@ class Ico:
     @staticmethod
     def _load_freesurfer(
             order: int,
+            ico_file: Path,
         ) -> tuple[np.ndarray, np.ndarray]:
         """
         Load a precomputed FreeSurfer icosahedral mesh.
@@ -759,6 +773,8 @@ class Ico:
         order : int
             Mesh resolution level to load. Must correspond to an existing
             ``fsaverage{order}`` entry in the resource file.
+        ico_file : Path
+            Path to the packaged ``freesurfer_icos.npz`` resource file.
 
         Returns
         -------
@@ -772,9 +788,7 @@ class Ico:
         KeyError
             If the requested ``fsaverage{order}`` mesh is not available.
         """
-        resource_dir = Path(__file__).parent / "resources"
-        resource_file = resource_dir / "freesurfer_icos.npz"
-        icos = np.load(resource_file)
+        icos = np.load(ico_file)
 
         surf_name = f"fsaverage{order}"
         try:
@@ -1192,3 +1206,62 @@ class Ico:
             angle = 2 * np.pi - angle
 
         return angle
+
+    @staticmethod
+    def _github_download(
+            repo_owner: str,
+            repo_name: str,
+            file_path: str,
+            branch: str = "main",
+            output_file: Path | None = None,
+            token: str | None = None,
+        ) -> Path:
+        """
+        Download a file from a GitHub repository.
+
+        Parameters
+        ----------
+        repo_owner : str
+            GitHub repository owner (user or organization).
+        repo_name : str
+            Repository name.
+        file_path : str
+            Path to the file in the repository (e.g., "src/data.csv").
+        branch : str
+            Branch name.
+            Default 'main'.
+        output_file : Path
+            Local path to save the file.
+            If None, uses the original filename in the current directory.
+            Default None.
+        token : str
+            GitHub personal access token for private repositories
+            Default None.
+
+        Returns
+        -------
+        Path
+            Path to the downloaded file.
+
+        Raises
+        ------
+        requests.HTTPError
+            If the file download fails (e.g., 404 or authentication error).
+        """
+        url = (
+            f"https://github.com//{repo_owner}/{repo_name}/"
+            f"raw/refs/heads/{branch}/{file_path}"
+        )
+        headers = {"Authorization": f"token {token}"} if token else None
+
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        output_file = output_file or Path(file_path).name
+        output_file = Path(output_file).resolve()
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        with output_file.open("wb") as of:
+            of.write(response.content)
+
+        return output_file
