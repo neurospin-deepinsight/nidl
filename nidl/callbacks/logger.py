@@ -112,6 +112,50 @@ class LiveMetricLogger(Callback):
         print( "\n".join(output_lines))
         self._lines_written = len(output_lines)
 
+    def _render_live(
+            self,
+            trainer: pl.Trainer,
+            batch_idx: int,
+            train: bool = True,
+        ) -> None:
+        """
+        Dynamically refreshes metrics.
+
+        Parameters
+        ----------
+        trainer : Trainer
+            PyTorch Lightning Trainer instance.
+        batch_idx : int
+            Current batch index.
+        train : bool
+             If True, display training metrics, otherwise validation metrics.
+            Default True.
+        """
+        if trainer.sanity_checking or batch_idx % self.refresh_rate_steps != 0:
+            return
+
+        max_epochs = trainer.max_epochs
+        epoch = trainer.current_epoch + 1
+        max_steps = (
+            trainer.num_training_batches
+            if train
+            else trainer.num_val_batches[0]
+        )
+        title = (
+            "TRAIN"
+            if train
+            else "VALIDATION"
+        )
+
+        self._render_block(
+            title=(
+                f"{title} | EPOCH {epoch}/{max_epochs} | "
+                f"STEP {batch_idx + 1}/{max_steps}"
+            ),
+            metrics=trainer.logged_metrics
+        )
+
+
     def on_fit_start(
             self,
             trainer: pl.Trainer,
@@ -159,19 +203,40 @@ class LiveMetricLogger(Callback):
         batch_idx : int
             Current batch index.
         """
-        if batch_idx % self.refresh_rate_steps != 0:
-            return
+        self._render_live(
+            trainer,
+            batch_idx,
+            train=True,
+        )
 
-        max_epochs = trainer.max_epochs
-        epoch = trainer.current_epoch + 1
-        max_steps = trainer.num_training_batches
+    def on_validation_batch_end(
+            self,
+            trainer: pl.Trainer,
+            pl_module: pl.LightningModule,
+            outputs: Any,
+            batch: Any,
+            batch_idx: int,
+        ) -> None:
+        """
+        Dynamically refreshes metrics during validation.
 
-        self._render_block(
-            title=(
-                f"TRAIN | EPOCH {epoch}/{max_epochs} | "
-                f"STEP {batch_idx + 1}/{max_steps}"
-            ),
-            metrics=trainer.logged_metrics
+        Parameters
+        ----------
+        trainer : Trainer
+            PyTorch Lightning Trainer instance.
+        pl_module : LightningModule
+            PyTorch Lightning Module instance.
+        outputs : Any
+            Output from the training step.
+        batch : Any
+            Current batch.
+        batch_idx : int
+            Current batch index.
+        """
+        self._render_live(
+            trainer,
+            batch_idx,
+            train=False,
         )
 
     def on_fit_end(
