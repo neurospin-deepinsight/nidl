@@ -57,7 +57,10 @@ class Transform(ABC):
         - RandomGaussianNoise (nd)
         - RandomBiasField (3d)
         - RandomContrastAdjust (nd)
-        - Gamma (TODO)
+        - RandomGamma (3d)
+        - RandomHistogramShift (3d)
+        - RandomGaussianSharpen (3d)
+        - RandomGibbsNoise (3d)
         - RandomBrightness (TODO)
 
     Intensity preprocessing:
@@ -69,6 +72,7 @@ class Transform(ABC):
         - Resize (3d)
         - CropOrPad (3d)
         - Letterbox (3d)
+        - CropForeground (3d)
 
 
     Parameters

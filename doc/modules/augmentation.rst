@@ -77,6 +77,7 @@ transformations on brain 3D volumes.
 
     RobustRescaling
     ZNormalization
+    CropForeground
     CropOrPad
     Resample
     Resize
@@ -99,8 +100,12 @@ functions.
    :toctree: generated/
    :template: class.rst
 
+    RandomGamma
     RandomGaussianBlur
     RandomGaussianNoise
+    RandomGaussianSharpen
+    RandomGibbsNoise
+    RandomHistogramShift
     RandomErasing
     RandomFlip
     RandomResizedCrop

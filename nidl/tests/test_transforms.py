@@ -15,11 +15,12 @@ from nidl.transforms.transforms import MultiViewsTransform, Identity, DinoTransf
 from nidl.transforms.volume.augmentation import (
     RandomRotation, RandomFlip, RandomResizedCrop, RandomErasing,
     RandomGaussianBlur, RandomGaussianNoise, RandomBiasField,
-    RandomContrastAdjust, RandomAffine
+    RandomContrastAdjust, RandomAffine, RandomGamma,
+    RandomHistogramShift, RandomGaussianSharpen, RandomGibbsNoise
 )
 from nidl.transforms.volume.preprocessing import (
     ZNormalization, RobustRescaling, CropOrPad, Resize, Resample,
-    Letterbox, InverseLetterbox   
+    Letterbox, InverseLetterbox, CropForeground
 )
 
 
@@ -626,6 +627,85 @@ class TestRandomGaussianNoise(unittest.TestCase):
             RandomGaussianNoise(mean=0, std=(-1.0, 0.1))
 
 
+class TestMRIIntensityAugmentations(unittest.TestCase):
+    """ RandomGamma, RandomHistogramShift, RandomGaussianSharpen and
+    RandomGibbsNoise (3DINO intensity augmentations).
+    """
+    def setUp(self):
+        np.random.seed(0)
+        self.transforms = [RandomGamma(), RandomHistogramShift(),
+                           RandomGaussianSharpen(), RandomGibbsNoise()]
+
+    def test_output_type_and_shape(self):
+        for tf in self.transforms:
+            for shape in [(8, 12, 10), (2, 8, 12, 10)]:
+                for dtype in [np.float32, np.float64, np.int16]:
+                    out = tf((np.random.rand(*shape) * 100).astype(dtype))
+                    self.assertIsInstance(out, np.ndarray)
+                    self.assertEqual((out.shape, out.dtype), (shape, dtype))
+                for dtype in [torch.float32, torch.float64]:
+                    out = tf(torch.rand(*shape, dtype=dtype))
+                    self.assertIsInstance(out, torch.Tensor)
+                    self.assertEqual((out.shape, out.dtype), (shape, dtype))
+                    self.assertTrue(torch.isfinite(out).all())
+
+    def test_gamma(self):
+        x = np.linspace(-1, 1, 1000).reshape(10, 10, 10)
+        out = RandomGamma(gamma=(2, 2))(x)
+        expected = ((x + 1) / 2) ** 2 * 2 - 1
+        self.assertTrue(np.allclose(out, expected, atol=1e-6))
+        out = RandomGamma(gamma=(1, 1))(x)  # identity
+        self.assertTrue(np.allclose(out, x, atol=1e-6))
+
+    def test_histogram_shift(self):
+        """Monotonic remapping, range kept, values changed; a constant
+        volume is unchanged."""
+        x = np.linspace(-1, 1, 1000).reshape(10, 10, 10)
+        out = RandomHistogramShift(num_control_points=4)(x)
+        self.assertTrue(np.all(np.diff(out.ravel()) >= 0))
+        self.assertAlmostEqual(out.min(), -1)
+        self.assertAlmostEqual(out.max(), 1)
+        self.assertFalse(np.allclose(out, x))
+        const = np.full((4, 4, 4), 3.0)
+        self.assertTrue(np.array_equal(RandomHistogramShift()(const), const))
+
+    def test_sharpen(self):
+        """Constant volumes (one per channel) are unchanged; an edge gets an
+        overshoot."""
+        x = np.stack([np.full((8, 8, 8), 1.0), np.full((8, 8, 8), 5.0)])
+        self.assertTrue(np.allclose(RandomGaussianSharpen()(x), x))
+        edge = np.zeros((16, 16, 16))
+        edge[8:] = 1
+        out = RandomGaussianSharpen()(edge)
+        self.assertGreater(out.max(), 1)
+        self.assertLess(out.min(), 0)
+
+    def test_gibbs(self):
+        """Mean kept and ringing near an edge; radius 0 edge cases."""
+        edge = np.zeros((16, 16, 16))
+        edge[8:] = 1
+        out = RandomGibbsNoise(alpha=(0.5, 0.5))(edge)
+        self.assertAlmostEqual(out.mean(), edge.mean())
+        self.assertLess(out.min(), -0.01)  # ripples below 0
+        # Radius 0: even size, nothing kept (as MONAI); odd size, only the
+        # zero frequency, i.e. the mean
+        out = RandomGibbsNoise(alpha=(1, 1))(edge)
+        self.assertTrue(np.allclose(out, 0))
+        x = np.random.rand(15, 15, 15)
+        out = RandomGibbsNoise(alpha=(1, 1))(x)
+        self.assertTrue(np.allclose(out, x.mean()))
+
+    def test_invalid_parameters(self):
+        with self.assertRaises(ValueError):
+            RandomGamma(gamma=(-1, 2))
+        with self.assertRaises(ValueError):
+            RandomHistogramShift(num_control_points=2)
+        with self.assertRaises(ValueError):
+            RandomGaussianSharpen(sigma1=(0.5, 1.0), sigma2=0.8)
+        with self.assertRaises(ValueError):
+            RandomGibbsNoise(alpha=(0.5, 1.5))
+
+
 class TestZNormalization(unittest.TestCase):
     def setUp(self):
         self.shape_3d = (10, 10, 10)
@@ -807,6 +887,26 @@ class TestRobustRescaling(unittest.TestCase):
         output = transform(volume)
         # All values should be exactly 0 because min == max
         self.assertTrue(np.allclose(output, 0.0, atol=1e-6))
+
+
+class TestCropForeground(unittest.TestCase):
+    def test_bounding_box(self):
+        x = np.zeros((2, 10, 12, 14), dtype=np.float32)
+        x[0, 2:5, 3:7, 4:9] = 1  # channel 0
+        x[1, 6, 8, 10] = 2       # channel 1 extends the box
+        out = CropForeground()(x)
+        self.assertEqual(out.shape, (2, 5, 6, 7))
+        self.assertTrue(np.array_equal(out, x[:, 2:7, 3:9, 4:11]))
+        out = CropForeground()(torch.from_numpy(x[0]))
+        self.assertIsInstance(out, torch.Tensor)
+        self.assertEqual(tuple(out.shape), (3, 4, 5))
+
+    def test_threshold_and_empty(self):
+        x = np.full((6, 6, 6), -1.0)
+        self.assertTrue(np.array_equal(CropForeground()(x), x))  # no fg
+        x[1:3, 2:4, 3:5] = 0.5
+        out = CropForeground(threshold=-1)(x)
+        self.assertEqual(out.shape, (2, 2, 2))
 
 
 class TestCropOrPad(unittest.TestCase):
