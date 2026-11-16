@@ -44,10 +44,12 @@ class Weights:
     HF_URL = "https://huggingface.co"
     NS_URL = "http://nsap.intra.cea.fr/neurospin-hub/"
 
-    def __init__(self,
-                 name: str,
-                 filepath: str,
-                 data_dir: Optional(Union[str, Path])):
+    def __init__(
+        self,
+        name: str,
+        filepath: str,
+        data_dir: Optional[Union[str, Path]] = None,
+    ):
         self.name = name
         self.data_dir = Path(data_dir) if data_dir else None
         self.filepath = filepath
@@ -55,15 +57,19 @@ class Weights:
         # Whether the file is a lightning checkpoint file
         self.is_lightning_ckpt = filepath.endswith(".ckpt")
         if self.dtype == "hf-hub":
-            assert data_dir is not None, '`data_dir` is required for'
-            'downloading weights from HuggingFace hub.'
+            assert data_dir is not None, (
+                "`data_dir` is required for downloading weights from "
+                "HuggingFace hub."
+            )
             hf_id, hf_revision = self.hub_split(name)
             self.weight_file = self.hf_download(
                 data_dir, hf_id, filepath, hf_revision
             )
         elif self.dtype == "ns-hub":
-            assert data_dir is not None, '`data_dir` is required for'
-            'downloading weights from Neurospin hub.'
+            assert data_dir is not None, (
+                "`data_dir` is required for downloading weights from "
+                "Neurospin hub."
+            )
             ns_id, _ = self.hub_split(name)
             self.weight_file = self.ns_download(data_dir, ns_id, filepath)
         else:
@@ -137,22 +143,27 @@ class Weights:
         Parameters
         ----------
         model: torch.nn.Module
-            an input model with a `load_pretrained` method decalred.
+            the model (or submodule) to load the weights into.
         submodule_prefix: str, optional
             Load only the weights starting with this prefix.
+            The prefix is stripped from the keys before loading.
             For example if the weights contain encoder and decoder weights,
             you would load with:
-            ```weights = Weights(name, path)
-            encoder = YourEncoder()
-            decoder = YourDecoder()
-            # Load weights
-            weights.load_pretrained(encoder, submodule_prefix='encoder.')
-            weights.load_pretrained(decoder, submodule_prefix='decoder.')```
-        weights_only: bool, default=False
+
+            .. code-block:: python
+
+                weights = Weights(name, filepath)
+                encoder = YourEncoder()
+                decoder = YourDecoder()
+                weights.load_pretrained(encoder, submodule_prefix="encoder")
+                weights.load_pretrained(decoder, submodule_prefix="decoder")
+        weights_only: bool, default=True
             Indicates whether unpickler should be restricted to
             loading only tensors, primitive types, dictionaries
             and any types added via
             :func:`torch.serialization.add_safe_globals`.
+        map_location: str, dict or torch.device, default="cpu"
+            Device mapping used when loading the weights.
 
         """
         if self.weight_file is None:
@@ -163,36 +174,40 @@ class Weights:
         if self.is_lightning_ckpt and not submodule_prefix:
             warnings.warn(
                 (
-                    "You are only loading the state_dict from a Lightning or"
+                    "You are only loading the state_dict from a Lightning or "
                     "nidl checkpoint. For loading whole checkpoint use the "
                     "method ``load_checkpoint`` instead."
                 ),
                 stacklevel=2,
             )
-        if submodule_prefix and not submodule_prefix.endswith('.'):
-            submodule_prefix += '.'
+        if submodule_prefix and not submodule_prefix.endswith("."):
+            submodule_prefix += "."
         state_dict = torch.load(
             self.weight_file,
             weights_only=weights_only,
-            map_location=map_location)
+            map_location=map_location,
+        )
         # If checkpoint extract state_dict
-        if 'state_dict' in state_dict:
-            state_dict = state_dict['state_dict']
+        if "state_dict" in state_dict:
+            state_dict = state_dict["state_dict"]
         # If loading submodule, filter weights and strip prefix from keys
         if submodule_prefix:
             # Filter weights keys and strip prefix from keys
-            state_dict_filtered = {k.replace(submodule_prefix, ''): v
-                          for k, v in state_dict.items()
-                          if k.startswith(submodule_prefix)}
+            # (only the leading prefix is removed).
+            n = len(submodule_prefix)
+            state_dict_filtered = {
+                k[n:]: v
+                for k, v in state_dict.items()
+                if k.startswith(submodule_prefix)
+            }
             if len(state_dict_filtered) == 0:
                 raise ValueError(
-                    f'No weights found for prefix {submodule_prefix}. Prefixes'
-                    'in state_dict are '
-                    f'{ {k.split(".")[0] for k in state_dict} }')
+                    f"No weights found for prefix '{submodule_prefix}'. "
+                    "Prefixes in state_dict are "
+                    f"{sorted({k.split('.')[0] for k in state_dict})}."
+                )
             state_dict = state_dict_filtered
-        model.load_state_dict(
-            state_dict, assign=False
-        )
+        model.load_state_dict(state_dict)
 
     @classmethod
     def hub_split(cls, hub_name: str) -> tuple[str, Optional[str]]:
