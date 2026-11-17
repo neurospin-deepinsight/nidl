@@ -6,6 +6,7 @@
 # for details.
 ##########################################################################
 
+from .random_affine import RandomAffine
 from .random_erasing import RandomErasing
 from .random_flip import RandomFlip
 from .random_resized_crop import RandomResizedCrop

@@ -1,7 +1,7 @@
 .. -*- mode: rst -*-
 
-.. image:: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
-    :target: https://img.shields.io/badge/python-3.9%20%7C%203.12-blue
+.. image:: https://img.shields.io/badge/python-3.10%20%7C%203.12-blue
+    :target: https://img.shields.io/badge/python-3.10%20%7C%203.12-blue
     :alt: Python Version
 
 .. image:: https://coveralls.io/repos/github/neurospin-deepinsight/nidl/badge.svg?branch=main

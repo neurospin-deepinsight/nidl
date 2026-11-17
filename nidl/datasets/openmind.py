@@ -20,9 +20,9 @@ import re
 import struct
 import tarfile
 import warnings
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from operator import itemgetter
-from typing import Any, Callable, Optional, Union
+from typing import Any, Optional, Union
 
 import nibabel
 import numpy as np
@@ -569,7 +569,7 @@ class OpenMind(Dataset):
                 items.extend(
                     {
                         m: (() if c is None else (c,))
-                        for m, c in zip(group, combo)
+                        for m, c in zip(group, combo, strict=False)
                     }
                     for combo in itertools.product(*pools)
                 )

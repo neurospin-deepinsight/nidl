@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "nidl"
 readme = "README.rst"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     {name = "Antoine Grigis", email = "antoine.grigis@cea.fr"},
     {name = "Benoit Dufumier", email="benoit.dufumier@cea.fr"},
@@ -119,7 +119,7 @@ ignore = [
 
 [tool.ruff]
 line-length = 79
-target-version = "py39"
+target-version = "py310"
 extend-exclude = [
     "tests",
 ]

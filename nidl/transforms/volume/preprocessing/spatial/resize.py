@@ -12,8 +12,15 @@ from typing import Union
 import numpy as np
 import SimpleITK as Stk
 import torch
+import torch.nn.functional as func
 
 from .resample import Resample, TypeTransformInput
+
+# Interpolation mode name match between SimpleITK and torch
+_ITK_TO_TORCH_MODE = {
+    "nearest": "nearest-exact",
+    "linear": "trilinear",
+}
 
 
 class Resize(Resample):
@@ -95,6 +102,34 @@ class Resize(Resample):
 
         """
 
+        # Fast interpolation for torch tensors
+        if (
+            isinstance(data, torch.Tensor)
+            and self.interpolation in _ITK_TO_TORCH_MODE
+        ):
+            return self._apply_transform_torch(data)
+
+        return self._apply_transform_sitk(data)
+
+    def _apply_transform_sitk(
+        self, data: TypeTransformInput
+    ) -> TypeTransformInput:
+        """Resize the input volume using SimpleITK.
+
+        Parameters
+        ----------
+        data: np.ndarray or torch.Tensor
+            The input data with shape :math:`(C, H, W, D)` or
+            :math:`(H, W, D)`. The channel dimension is never resized.
+
+        Returns
+        -------
+        data: np.ndarray or torch.Tensor
+            Resampled data with shape :math:`(H', W', D')`  or
+            :math:`(C, H', W', D')` and same type as input.
+
+        """
+
         in_shape = data.shape
 
         if len(in_shape) == 4:
@@ -121,6 +156,47 @@ class Resize(Resample):
         if is_data_tensor:
             resampled = torch.as_tensor(resampled, dtype=dtype, device=device)
         return resampled
+
+    def _apply_transform_torch(self, data: torch.Tensor) -> torch.Tensor:
+        """Resize the input volume using torch, faster for torch tensors.
+        Only 'nearest' and 'linear' interpolation are supported here, other
+        modes fall back to SITK path.
+
+        Parameters
+        ----------
+        data: np.ndarray or torch.Tensor
+            The input data with shape :math:`(C, H, W, D)` or
+            :math:`(H, W, D)`. The channel dimension is never resized.
+
+        Returns
+        -------
+        data: np.ndarray or torch.Tensor
+            Resampled data with shape :math:`(H', W', D')`  or
+            :math:`(C, H', W', D')` and same type as input.
+
+        """
+
+        if self.interpolation not in _ITK_TO_TORCH_MODE:
+            return self._apply_transform_sitk(data)
+
+        has_channel = data.ndim == 4
+        x = data if has_channel else data.unsqueeze(0)  # (C, H, W, D)
+        x = x.unsqueeze(0)  # (1, C, H, W, D) for interpolate
+        if not x.is_floating_point():
+            x = x.float()
+
+        mode = _ITK_TO_TORCH_MODE[self.interpolation]
+        kwargs = {"align_corners": False} if mode == "trilinear" else {}
+        resized = func.interpolate(
+            x, size=self.target_shape, mode=mode, **kwargs
+        )
+
+        resized = resized.squeeze(0)  # (C, H, W, D)
+        if not has_channel:
+            resized = resized.squeeze(0)
+        if not data.is_floating_point():
+            resized = resized.round()
+        return resized.to(dtype=data.dtype).contiguous()
 
     @staticmethod
     def get_reference_image(

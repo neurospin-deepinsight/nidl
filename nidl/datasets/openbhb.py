@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Callable, Optional, Union
+from collections.abc import Callable
+from typing import Any, Optional, Union
 
 import nibabel
 import numpy as np
@@ -706,7 +707,7 @@ class OpenBHB(Dataset):
                 self.get_or_download_file(s)
             return {
                 mod: self._load_data(id, s)
-                for (mod, s) in zip(self.modality, sample_path)
+                for (mod, s) in zip(self.modality, sample_path, strict=False)
             }
 
     def _load_data(self, id: int, path: str):

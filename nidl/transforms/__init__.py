@@ -7,6 +7,7 @@
 ##########################################################################
 
 from .transforms import (
+    DinoTransform,
     Identity,
     MultiViewsTransform,
     Transform,
