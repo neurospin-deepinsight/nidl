@@ -361,6 +361,9 @@ sphinx_gallery_conf = {
     "junit": "../test-results/sphinx-gallery/junit.xml",
     "examples_dirs": "../examples/",
     "gallery_dirs": "auto_examples",
+    # Examples rendered without being executed: the CoMM pretraining needs
+    # the whole OpenMind dataset (460 GB) and hours on a GPU.
+    "filename_pattern": r"/plot_(?!comm_openmind)",
     # Ignore the function signature leftover by joblib
     "ignore_pattern": r"func_code\.py",
     "show_memory": not sys.platform.startswith("win"),

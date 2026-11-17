@@ -6,6 +6,8 @@
 # for details.
 ##########################################################################
 
+import os
+import tempfile
 from collections import OrderedDict
 from functools import partial
 
@@ -32,7 +34,11 @@ from nidl.estimators.ssl import (
     IJEPA,
     CoMM,
 )
-from nidl.backbones.volume.utils import Patched3DInputAdapter
+from nidl.backbones.volume.utils import (
+    IdentityAdapter,
+    Patched3DInputAdapter,
+    SimpleFeaturesInputAdapter,
+)
 from nidl.utils.data_parsing import collate_multimodal
 from timm.models.vision_transformer import VisionTransformer
 from nidl.estimators.autoencoders import VAE
@@ -86,6 +92,30 @@ class MultimodalTensorDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
+
+
+class HeterogeneousDataset(Dataset):
+    """ Samples {mod0: (25,), mod1: (25,), mod2: (2, 7)}, each sample missing
+    at most one modality, with optional views."""
+    def __init__(self, n_samples, n_views=None):
+        self.n_samples = n_samples
+        self.n_views = n_views
+
+    def __getitem__(self, index):
+        shapes = {"mod0": (5 * 5,), "mod1": (5 * 5,), "mod2": (2, 7)}
+        sample = {}
+        for idx, (name, shape) in enumerate(shapes.items()):
+            if index % 4 == idx:
+                sample[name] = None
+            elif self.n_views is None:
+                sample[name] = torch.rand(shape)
+            else:
+                sample[name] = [torch.rand(shape)
+                                for _ in range(self.n_views)]
+        return sample
+
+    def __len__(self):
+        return self.n_samples
 
 
 class TestEstimators(unittest.TestCase):
@@ -456,6 +486,14 @@ class TestEstimators(unittest.TestCase):
                 msg="Shape mismatch for transformed data: "
                     f"{z.shape} != {(self.n_images, self.latent_size)}",
             )
+        # The loss terms are logged with the names of the modalities
+        _, params = self.multimodal_ssl_config()[0]
+        model = CoMM(**params, modality_names=("t1", "t2", "flair"))
+        model.fit(self.multimodal_ssl_loader)
+        for name in ("t1", "t2", "flair", "fused"):
+            for metric in ("ssl_loss", "ssl_acc"):
+                self.assertIn(f"{metric}_{name}/train",
+                              model.trainer.callback_metrics)
 
     def test_multimodal_ssl_bad_parameters(self):
         """ Test multimodal self supervised model with bad parameters."""
@@ -482,12 +520,176 @@ class TestEstimators(unittest.TestCase):
                 "mod_to_encoder": [0, 1, 1],
                 "sync_batchnorm": True,
             })
+        # Scans of different shapes within a modality
+        for other in (torch.zeros(1, 6, 6, 6), torch.zeros(3, 8, 8, 8)):
+            with self.assertRaises(ValueError):
+                collate_multimodal(
+                    [{"t1": torch.zeros(1, 8, 8, 8)}, {"t1": other}],
+                    modalities=("t1",),
+                )
+        # A list of adapters of the wrong length, or with
+        # `per_modality_adapter`
+        adapter = SimpleFeaturesInputAdapter()
+        for extra in ({"adapter": [adapter, adapter]},
+                      {"adapter": [adapter] * 3,
+                       "per_modality_adapter": True}):
+            with self.assertRaises(ValueError):
+                CoMM(**{**params, **extra})
+        # Wrong number of, duplicated or reserved modality names
+        for names in (("t1", "t2"), ("t1", "t1", "t2"),
+                      ("t1", "t2", "fused")):
+            with self.assertRaises(ValueError):
+                CoMM(**{**params, "modality_names": names})
+        # `embed_dim` not divisible by `num_heads`
+        with self.assertRaises(ValueError):
+            CoMM(**{**params, "embed_dim": 7})
+        # `embed_dim` different from the token dimension of the adapter
+        batch = next(iter(self.multimodal_x_loader))
+        model = CoMM(**{**params, "embed_dim": 12})
+        with self.assertRaises(ValueError):
+            model.transform_step(batch, 0)
+        # More modality slots in the batches than in the estimator
+        model = CoMM(**{**params, "num_modalities": 2})
+        with self.assertRaises(ValueError):
+            model.transform_step(batch, 0)
         # `transform` expects a single image per modality, not views
         model = CoMM(**params)
         model.fit(self.multimodal_ssl_loader)
         with self.assertRaises(ValueError):
             model.transform(self.multimodal_ssl_loader)
-    
+
+    def _multimodal_batch(self, present, scans=None):
+        """ Two views of a batch, given the (B, M) bool presence mask and
+        optionally the (2, B, M, 25) scans of every (sample, modality)."""
+        if scans is None:
+            scans = torch.rand(2, *present.shape, 5 * 5)
+        sample_idx = [
+            present[:, m].nonzero(as_tuple=True)[0] if present[:, m].any()
+            else None
+            for m in range(present.shape[1])
+        ]
+        views = [
+            [None if idx is None else view[idx, m]
+             for m, idx in enumerate(sample_idx)]
+            for view in scans
+        ]
+        return {"views": views, "sample_idx": sample_idx,
+                "n_samples": len(present)}
+
+    def test_multimodal_ssl_unused_modules(self):
+        """ Test that the adapters and encoders of a modality absent from a
+        batch still get a (zero) gradient, as required by DDP."""
+        _, params = self.multimodal_ssl_config()[0]
+        present = torch.ones(8, 3, dtype=torch.bool)
+        present[:, 2] = False             # no scan of modality 2
+        for extra in (
+            {"encoder": [nn.Linear(5 * 5, self.latent_size),
+                         nn.Linear(5 * 5, self.latent_size)],
+             "mod_to_encoder": [0, 0, 1]},
+            {"adapter": nn.Sequential(
+                nn.Linear(self.latent_size, self.latent_size),
+                nn.Unflatten(1, (1, self.latent_size))),
+             "per_modality_adapter": True},
+        ):
+            model = CoMM(**{**params, **extra})
+            z1, z2, present_ = model(self._multimodal_batch(present))
+            model.loss(z1, z2, present_)["loss"].backward()
+            for name, param in model.named_parameters():
+                if param.requires_grad:
+                    self.assertIsNotNone(
+                        param.grad, msg=f"{name} did not get a gradient")
+
+    def test_multimodal_ssl_missing_rows_in_head(self):
+        """ Test that the per-modality projections of the samples having a
+        modality do not depend on the samples missing it."""
+        _, params = self.multimodal_ssl_config()[0]
+        model = CoMM(**params).train()
+        scans = torch.rand(2, 8, 3, 5 * 5)
+        # samples 4-7 miss modality 1
+        present = torch.ones(8, 3, dtype=torch.bool)
+        present[4:, 1] = False
+        z_missing, _, present_ = model(self._multimodal_batch(present, scans))
+        # samples 0-3 alone
+        z_alone, _, _ = model(self._multimodal_batch(present[:4],
+                                                     scans[:, :4]))
+        self.assertTrue(torch.equal(present_, present))
+        # modality 1 of samples 0-3: the absent rows of samples 4-7 do not
+        # enter the batch normalization of the head
+        self.assertTrue(torch.allclose(z_missing[1][:4], z_alone[1],
+                                       atol=1e-5))
+        self.assertTrue(torch.equal(z_missing[1][4:],
+                                    torch.zeros_like(z_missing[1][4:])))
+        # a modality held by a single sample is dropped during training
+        present[1:, 2] = False
+        _, _, present_ = model(self._multimodal_batch(present, scans))
+        self.assertFalse(present_[:, 2].any())
+
+    def test_multimodal_ssl_heterogeneous(self):
+        """ Test modalities of different shapes, encoded by different
+        backbones into different numbers of tokens."""
+        _, params = self.multimodal_ssl_config()[0]
+        # mod0 / mod1: vectors (25,) -> 1 token; mod2: (2, 7) -> 2 tokens
+        collate = partial(collate_multimodal,
+                          modalities=("mod0", "mod1", "mod2"))
+        ssl_loader = DataLoader(
+            HeterogeneousDataset(self.n_images, n_views=2), batch_size=4,
+            collate_fn=collate)
+        x_loader = DataLoader(
+            HeterogeneousDataset(self.n_images), batch_size=4,
+            collate_fn=collate)
+        model = CoMM(**{
+            **params,
+            "encoder": [nn.Linear(5 * 5, self.latent_size),
+                        nn.Linear(7, self.latent_size)],
+            "mod_to_encoder": [0, 0, 1],
+            "adapter": [SimpleFeaturesInputAdapter(),
+                        SimpleFeaturesInputAdapter(), IdentityAdapter()],
+        })
+        model.fit(ssl_loader)
+        z = model.transform(x_loader)
+        self.assertEqual(tuple(z.shape), (self.n_images, self.latent_size))
+        batch = next(iter(x_loader))
+        tokens = model.encoder.encode(batch["x"])
+        self.assertEqual([tok.shape[1] for tok in tokens], [1, 1, 2])
+
+    def test_multimodal_ssl_sync_batchnorm_calls(self):
+        """ Test that a backbone with synchronized batch normalization must
+        run exactly once per batch."""
+        _, params = self.multimodal_ssl_config()[0]
+        model = CoMM(**{
+            **params,
+            "encoder": nn.Sequential(nn.Linear(5 * 5, self.latent_size),
+                                     nn.BatchNorm1d(self.latent_size)),
+        })
+        model.encoder = nn.SyncBatchNorm.convert_sync_batchnorm(
+            model.encoder).train()
+        model.encoder._check_sync_batchnorm_calls([0])
+        for calls in ([], [0, 0]):
+            with self.assertRaises(RuntimeError):
+                model.encoder._check_sync_batchnorm_calls(calls)
+
+    def test_multimodal_ssl_checkpoint(self):
+        """ Test that a CoMM checkpoint reloads when the encoder is given as
+        a class."""
+        _, params = self.multimodal_ssl_config()[0]
+        params = {
+            **params,
+            "encoder": nn.Linear,
+            "encoder_kwargs": {"in_features": 5 * 5,
+                               "out_features": self.latent_size},
+            "enable_checkpointing": False,
+            "logger": False,
+        }
+        model = CoMM(**params)
+        model.fit(self.multimodal_ssl_loader)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = os.path.join(tmpdir, "comm.ckpt")
+            model.trainer.save_checkpoint(path)
+            # the hyper-parameters hold the encoder class
+            reloaded = CoMM.load_from_checkpoint(path, weights_only=False)
+        for key, value in model.state_dict().items():
+            self.assertTrue(torch.equal(value, reloaded.state_dict()[key]))
+
     def test_vae(self):
         """ Test VAE model (simple check).
         """

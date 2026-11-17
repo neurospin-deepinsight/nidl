@@ -12,21 +12,36 @@ from torch import nn
 
 
 class CoMMLoss(nn.Module):
-    r"""Normalized Temperature Cross-Entropy loss for multimodal contrastive
-    learning as defined in CoMM [1]_, with missing modalities.
+    r"""CoMM loss [1]_, multimodal InfoNCE with missing modalities.
 
-    Given the embeddings of each of the :math:`M` modalities, :math:`z^{(m)}`,
-    and of all the modalities, :math:`z`, for two augmented views, the loss
-    averages the InfoNCE losses [2]_ :math:`\ell` between each embedding of
-    one view and the multimodal embedding of the other view:
+    For two augmented views :math:`v \in \{1, 2\}` of each sample, let
+    :math:`z_v^{(m)}` be the embedding of modality :math:`m \leq M`, and
+    :math:`z_v^{(M + 1)}` the multimodal embedding, which fuses all the
+    modalities. The loss aligns each embedding of one view with the
+    multimodal embedding of the other view:
 
     .. math::
-        \mathcal{L} = \frac{1}{M + 1} \sum_{k=1}^{M + 1}
-        \frac{1}{2} \Big(\ell\big(z_1^{(k)}, z_2\big)
-        + \ell\big(z_2^{(k)}, z_1\big)\Big)
+        \mathcal{L} = \frac{1}{M + 1} \sum_{k=1}^{M + 1} \frac{1}{2}
+        \Big(\ell\big(Z_1^{(k)}, Z_2^{(M + 1)}\big)
+        + \ell\big(Z_2^{(k)}, Z_1^{(M + 1)}\big)\Big),
 
-    with :math:`z^{(M + 1)} = z`. The term of a modality only uses the
-    samples having it, and terms with less than two samples are skipped.
+    where :math:`Z_v^{(k)}` gathers the embeddings of the :math:`n` samples
+    of the batch, and :math:`\ell` is the InfoNCE loss [2]_ with temperature
+    :math:`\tau` on :math:`\ell_2`-normalized embeddings. In
+    :math:`\ell(A, B)`, :math:`(a_i, b_i)` is a positive pair, and the other
+    samples of :math:`A` and :math:`B` are the negatives:
+
+    .. math::
+        \ell(A, B) = \frac{1}{2n} \sum_{i=1}^{n}
+        \big(\ell_i(A, B) + \ell_i(B, A)\big), \qquad
+        \ell_i(A, B) = -\log
+        \frac{\exp(a_i \cdot b_i / \tau)}
+        {\sum_{j=1}^{n} \exp(a_i \cdot b_j / \tau)
+        + \sum_{j \neq i} \exp(a_i \cdot a_j / \tau)}.
+
+    With missing modalities, the term of modality :math:`m` only uses the
+    samples having it (both in :math:`Z_v^{(m)}` and :math:`Z_v^{(M + 1)}`),
+    and is skipped if they are fewer than two.
 
     Adapted from https://github.com/Duplums/CoMM.
 
@@ -36,7 +51,9 @@ class CoMMLoss(nn.Module):
         Scale logits by the inverse of the temperature.
     weights : sequence of float or None, default=None
         Optional weight of each term (one per modality, then the multimodal
-        term).
+        term). The loss is then the mean of the weighted terms,
+        :math:`\frac{1}{K} \sum_k w_k \ell_k`, over the :math:`K` computed
+        terms (the weights are not normalized).
 
     References
     ----------
@@ -56,8 +73,11 @@ class CoMMLoss(nn.Module):
         self.INF = 1e8
 
     def infonce(self, z1, z2):
-        """InfoNCE loss and accuracy between two batches of normalized
-        embeddings, where `z1[i]` and `z2[i]` are positive pairs.
+        r"""InfoNCE loss :math:`\ell(z_1, z_2)` and accuracy between two
+        batches of normalized embeddings of shape (n, n_features), where
+        `z1[i]` and `z2[i]` are positive pairs. The accuracy is the
+        percentage of samples of `z1` whose nearest sample of `z2` is their
+        positive.
         """
         N = len(z1)
         # dim [N, N] => Upper triangle contains incorrect pairs
@@ -100,8 +120,8 @@ class CoMMLoss(nn.Module):
         -------
         outputs : dict
             The CoMM loss ("loss"), the mean SSL accuracy ("ssl_acc"), and the
-            loss and accuracy of each computed term ("ssl_loss_i",
-            "ssl_acc_i").
+            loss and accuracy of each computed term k ("ssl_loss_k",
+            "ssl_acc_k"), from 0 to M, M being the multimodal term.
         """
         assert len(z1) == len(z2)
         n_emb = len(z1)

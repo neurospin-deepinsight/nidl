@@ -22,9 +22,8 @@ def triple(t):
 
 
 class SimpleFeaturesInputAdapter(nn.Module):
-    """Adapter for 1D vectors, like tabular data without learnable weights.
-
-    It directly maps the input vector to a 1-length sequence.
+    """Adapter turning feature vectors (B, D) into sequences of a single
+    token (B, 1, D), e.g. the pooled output of a CNN. It has no weights.
 
     Adapted from https://github.com/Duplums/CoMM.
     """
@@ -35,8 +34,9 @@ class SimpleFeaturesInputAdapter(nn.Module):
 
 
 class IdentityAdapter(nn.Module):
-    """Adapter for transformer encoders, whose output is already a sequence
-    of tokens (the expert scores of MoE encoders are discarded).
+    """Adapter for encoders whose output is already a sequence of tokens
+    (B, N, D), e.g. vision transformers. For mixture-of-experts encoders,
+    which return a tuple, the expert scores are discarded.
 
     Adapted from https://github.com/Duplums/CoMM.
     """
@@ -52,9 +52,13 @@ class IdentityAdapter(nn.Module):
 
 
 class Patched3DInputAdapter(nn.Module):
-    """Adapter for 3D spatial inputs, like scans or feature maps.
+    """Adapter turning a 3D volume or feature map (B, C, H, W, D) into a
+    sequence of tokens (B, N, dim_tokens).
 
-    Creates tokens from patches over the volume.
+    The input is split into non-overlapping patches, each linearly projected
+    to a token, and 3D positional embeddings are added. The input may be
+    downsampled from a full volume, e.g. the feature map of a CNN: the patch
+    size on the input is then ``patch_size_full // stride_level``.
 
     Adapted from the 2D PatchedInputAdapter of
     https://github.com/Duplums/CoMM.
@@ -62,22 +66,23 @@ class Patched3DInputAdapter(nn.Module):
     Parameters
     ----------
     num_channels : int
-        Number of input channels of the volume.
+        Number of channels C of the input.
     stride_level : int
-        Stride level compared to the full-sized volume. E.g. 4 for 1/4th the
-        size of the volume.
+        Downsampling factor of the input relative to the full volume, e.g.
+        1 for a scan, or 32 for the feature map of a ResNet.
     patch_size_full : int or tuple of (int, int, int)
-        Patch size over the full volume size. Patch size for smaller inputs
-        will be computed accordingly.
+        Patch size in voxels of the full volume.
     dim_tokens : int or None, default=None
-        Dimension of output tokens. Can be set using the :meth:`init` method.
+        Dimension of the tokens. If None, call :meth:`init` before use.
     sincos_pos_emb : bool, default=True
-        Set to True to use fixed 3D sin-cos positional embeddings.
+        Whether the positional embeddings are initialized with 3D sin-cos
+        functions. Otherwise, they are initialized randomly and learned.
     learnable_pos_emb : bool, default=False
-        Set to True to learn positional embeddings instead.
+        Whether the sin-cos positional embeddings are learned (fixed
+        otherwise).
     volume_size : int or tuple of (int, int, int), default=128
-        Default volume size. Used to initialize size of positional
-        embeddings.
+        Size of the full volume, which sets the grid of the positional
+        embeddings (interpolated to the grid of the input).
     """
     def __init__(self,
                  num_channels: int,

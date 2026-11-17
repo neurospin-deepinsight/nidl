@@ -206,9 +206,18 @@ class BarlowTwinsProjectionHead(ProjectionHead):
 class CoMMProjectionHead(ProjectionHead):
     """Projection head used in CoMM [1]_.
 
-    It is a 3-layer MLP with batch normalization and ReLU non-linearities.
+    It is a 3-layer MLP, with batch normalization and ReLU non-linearities
+    after the first two layers. Set `sync_batchnorm=True` in the estimator to
+    synchronize the batch normalization across devices.
 
-    Adapted from https://github.com/Duplums/CoMM.
+    Parameters
+    ----------
+    input_dim : int, default=2048
+        Input dimension.
+    hidden_dim : int, default=512
+        Dimension of the two hidden layers.
+    output_dim : int, default=256
+        Output dimension.
 
     References
     ----------
@@ -227,13 +236,13 @@ class CoMMProjectionHead(ProjectionHead):
                 (
                     input_dim,
                     hidden_dim,
-                    nn.SyncBatchNorm(hidden_dim),
+                    nn.BatchNorm1d(hidden_dim),
                     nn.ReLU(inplace=True),
                 ),
                 (
                     hidden_dim,
                     hidden_dim,
-                    nn.SyncBatchNorm(hidden_dim),
+                    nn.BatchNorm1d(hidden_dim),
                     nn.ReLU(inplace=True),
                 ),
                 (hidden_dim, output_dim, None, None),
