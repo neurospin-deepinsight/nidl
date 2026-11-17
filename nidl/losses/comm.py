@@ -162,8 +162,14 @@ class CoMMLoss(nn.Module):
             raise ValueError(
                 f"CoMMLoss needs at least 2 samples, got {batch_size}.")
 
-        ssl_acc = {f"ssl_acc_{i}": acc_ for i, acc_ in zip(kept, acc)}
-        losses = {f"ssl_loss_{i}": loss_ for i, loss_ in zip(kept, loss)}
+        ssl_acc = {
+            f"ssl_acc_{i}": acc_
+            for i, acc_ in zip(kept, acc, strict=True)
+        }
+        losses = {
+            f"ssl_loss_{i}": loss_
+            for i, loss_ in zip(kept, loss, strict=True)
+        }
         if self.weights is not None:
             weights = torch.tensor([self.weights[i] for i in kept],
                                    device=z1[0].device)

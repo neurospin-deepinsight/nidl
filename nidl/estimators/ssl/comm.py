@@ -425,7 +425,7 @@ class MissingModMMFusion(nn.Module):
                     out = out[0]
                 # split the output back into the modalities of the group
                 sizes = [len(xs[m]) for m in mods]
-                for m, feat in zip(mods, out.split(sizes)):
+                for m, feat in zip(mods, out.split(sizes), strict=True):
                     feats[m] = feat
 
         # 2. Adapters: the T_m tokens of dimension D of each scan
@@ -506,7 +506,7 @@ class MissingModMMFusion(nn.Module):
             device=ref.device,
         )
         grids = []
-        for m, (tok, idx) in enumerate(zip(tokens, sample_idx)):
+        for m, (tok, idx) in enumerate(zip(tokens, sample_idx, strict=True)):
             if tok is None:  # no sample has m: one masked placeholder token
                 grids.append(ref.new_zeros(n_samples, 1, self.embed_dim))
                 continue
