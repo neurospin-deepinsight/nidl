@@ -7,8 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/modules/generated/nidl.transforms.volume.augmentation.RandomGaussianNoise.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:image" content="https://neurospin-deepinsight.github.io/nidl/_static/nidl-logo.png" />
-<meta property="og:image:alt" content="Nidl" />
+<meta property="og:description" content="Examples using nidl.transforms.volume.augmentation.RandomGaussianNoise: Multimodal pretraining with missing modalities: CoMM on OpenMind" />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_comm_openmind_thumb.png" />
+<meta property="og:image:alt" content="" />
+<meta name="description" content="Examples using nidl.transforms.volume.augmentation.RandomGaussianNoise: Multimodal pretraining with missing modalities: CoMM on OpenMind" />
 <link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.transforms.volume.augmentation.RandomErasing" href="nidl.transforms.volume.augmentation.RandomErasing.html"><link rel="prev" title="nidl.transforms.volume.augmentation.RandomGaussianBlur" href="nidl.transforms.volume.augmentation.RandomGaussianBlur.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
@@ -21,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=58997610" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -248,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb_hydra.html">How to use NIDL with Hydra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_comm_openmind.html">Multimodal pretraining with missing modalities: CoMM on OpenMind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -289,6 +292,8 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.NeuroJEPA.html">nidl.estimators.ssl.NeuroJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.CoMM.html">nidl.estimators.ssl.CoMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.utils.data_parsing.collate_multimodal.html">nidl.utils.data_parsing.collate_multimodal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
@@ -301,6 +306,7 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.CoMMLoss.html">nidl.losses.CoMMLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
@@ -310,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.CoMMProjectionHead.html">nidl.estimators.ssl.utils.CoMMProjectionHead</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.backbones.volume: Available backbones" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -328,6 +335,9 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_small_patch16_128.html">nidl.backbones.volume.vit_small_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_base_patch16_128.html">nidl.backbones.volume.vit_base_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_large_patch16_128.html">nidl.backbones.volume.vit_large_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.SimpleFeaturesInputAdapter.html">nidl.backbones.volume.utils.SimpleFeaturesInputAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.IdentityAdapter.html">nidl.backbones.volume.utils.IdentityAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.Patched3DInputAdapter.html">nidl.backbones.volume.utils.Patched3DInputAdapter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms.transforms: Available transformations" checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
@@ -438,11 +448,11 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.transforms.volume.augmentation.RandomGaussianNoise<a class="headerlink" href="#nidl-transforms-volume-augmentation-randomgaussiannoise" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.transforms.volume.augmentation.RandomGaussianNoise">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.transforms.volume.augmentation.</span></span><span class="sig-name descname"><span class="pre">RandomGaussianNoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/transforms/volume/augmentation/intensity/random_noise.py#L20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.augmentation.RandomGaussianNoise" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.transforms.volume.augmentation.</span></span><span class="sig-name descname"><span class="pre">RandomGaussianNoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/transforms/volume/augmentation/intensity/random_noise.py#L20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.augmentation.RandomGaussianNoise" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.transforms.transforms.VolumeTransform.html#nidl.transforms.transforms.VolumeTransform" title="nidl.transforms.transforms.VolumeTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolumeTransform</span></code></a></p>
 <p>Add Gaussian noise to input data with random parameters.</p>
 <p>The input data can have any shape with type <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or
-<a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch main (2.16.0a0+gitfbab7cc ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>. The output has consistent type and shape with
+<a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch main (2.16.0a0+git5b14331 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a>. The output has consistent type and shape with
 the input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -462,12 +472,12 @@ distribution from which the noise is sampled
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.volume.augmentation.RandomGaussianNoise.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/transforms/volume/augmentation/intensity/random_noise.py#L41"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.augmentation.RandomGaussianNoise.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/transforms/volume/augmentation/intensity/random_noise.py#L41"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.augmentation.RandomGaussianNoise.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.volume.augmentation.RandomGaussianNoise.apply_transform">
-<span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/transforms/volume/augmentation/intensity/random_noise.py#L54"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.augmentation.RandomGaussianNoise.apply_transform" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/transforms/volume/augmentation/intensity/random_noise.py#L54"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.augmentation.RandomGaussianNoise.apply_transform" title="Link to this definition">¶</a></dt>
 <dd><p>Add Gaussian noise to the input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -487,7 +497,13 @@ distribution from which the noise is sampled
 
 </dd></dl>
 
-<div style='clear:both'></div></section>
+<section id="examples-using-nidl-transforms-volume-augmentation-randomgaussiannoise">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">nidl.transforms.volume.augmentation.RandomGaussianNoise</span></code><a class="headerlink" href="#examples-using-nidl-transforms-volume-augmentation-randomgaussiannoise" title="Link to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This tutorial pretrains CoMM [1]_, a multimodal contrastive method, on the T1-weighted, T2-weighted and FLAIR brain MRI of OpenMind [2]_, where most sessions miss one or two of these modalities. It explains:"><img alt="" src="../../_images/sphx_glr_plot_comm_openmind_thumb.png" />
+<p><a class="reference internal" href="../../auto_examples/plot_comm_openmind.html"><span class="doc">Multimodal pretraining with missing modalities: CoMM on OpenMind</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Multimodal pretraining with missing modalities: CoMM on OpenMind</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
         </article>
       </div>
@@ -554,6 +570,7 @@ distribution from which the noise is sampled
 <li><a class="reference internal" href="#nidl.transforms.volume.augmentation.RandomGaussianNoise.apply_transform"><code class="docutils literal notranslate"><span class="pre">RandomGaussianNoise.apply_transform</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#examples-using-nidl-transforms-volume-augmentation-randomgaussiannoise">Examples using <code class="docutils literal notranslate"><span class="pre">nidl.transforms.volume.augmentation.RandomGaussianNoise</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -572,6 +589,6 @@ distribution from which the noise is sampled
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>

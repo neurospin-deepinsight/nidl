@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/modules/generated/nidl.transforms.volume.preprocessing.ZNormalization.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:description" content="Examples using nidl.transforms.volume.preprocessing.ZNormalization: Self-Supervised Learning with I-JEPA on MedMNIST3D" />
-<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_ijepa_medmnist_thumb.png" />
+<meta property="og:description" content="Examples using nidl.transforms.volume.preprocessing.ZNormalization: Multimodal pretraining with missing modalities: CoMM on OpenMind Self-Supervised Learning with I-JEPA on MedMNIST3D" />
+<meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_comm_openmind_thumb.png" />
 <meta property="og:image:alt" content="" />
-<meta name="description" content="Examples using nidl.transforms.volume.preprocessing.ZNormalization: Self-Supervised Learning with I-JEPA on MedMNIST3D" />
+<meta name="description" content="Examples using nidl.transforms.volume.preprocessing.ZNormalization: Multimodal pretraining with missing modalities: CoMM on OpenMind Self-Supervised Learning with I-JEPA on MedMNIST3D" />
 <link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.transforms.volume.preprocessing.CropOrPad" href="nidl.transforms.volume.preprocessing.CropOrPad.html"><link rel="prev" title="nidl.transforms.volume.preprocessing.RobustRescaling" href="nidl.transforms.volume.preprocessing.RobustRescaling.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=58997610" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -250,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb_hydra.html">How to use NIDL with Hydra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_comm_openmind.html">Multimodal pretraining with missing modalities: CoMM on OpenMind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -291,6 +292,8 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.NeuroJEPA.html">nidl.estimators.ssl.NeuroJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.CoMM.html">nidl.estimators.ssl.CoMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.utils.data_parsing.collate_multimodal.html">nidl.utils.data_parsing.collate_multimodal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
@@ -303,6 +306,7 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.CoMMLoss.html">nidl.losses.CoMMLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
@@ -312,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.CoMMProjectionHead.html">nidl.estimators.ssl.utils.CoMMProjectionHead</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.backbones.volume: Available backbones" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -330,6 +335,9 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_small_patch16_128.html">nidl.backbones.volume.vit_small_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_base_patch16_128.html">nidl.backbones.volume.vit_base_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_large_patch16_128.html">nidl.backbones.volume.vit_large_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.SimpleFeaturesInputAdapter.html">nidl.backbones.volume.utils.SimpleFeaturesInputAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.IdentityAdapter.html">nidl.backbones.volume.utils.IdentityAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.Patched3DInputAdapter.html">nidl.backbones.volume.utils.Patched3DInputAdapter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms.transforms: Available transformations" checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
@@ -440,7 +448,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.transforms.volume.preprocessing.ZNormalization<a class="headerlink" href="#nidl-transforms-volume-preprocessing-znormalization" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.transforms.volume.preprocessing.ZNormalization">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.transforms.volume.preprocessing.</span></span><span class="sig-name descname"><span class="pre">ZNormalization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masking_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/transforms/volume/preprocessing/intensity/z_normalization.py#L19"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.preprocessing.ZNormalization" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.transforms.volume.preprocessing.</span></span><span class="sig-name descname"><span class="pre">ZNormalization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masking_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/transforms/volume/preprocessing/intensity/z_normalization.py#L19"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.preprocessing.ZNormalization" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.transforms.transforms.VolumeTransform.html#nidl.transforms.transforms.VolumeTransform" title="nidl.transforms.transforms.VolumeTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolumeTransform</span></code></a></p>
 <p>Normalize a 3d volume by removing the mean and scaling to unit
 variance.</p>
@@ -452,7 +460,7 @@ variance.</p>
 <p>where <img class="math" src="../../_images/math/c67734af70861b2bd4dedf5c41c9aad231466f84.png" alt="x_i"/> is the original voxel intensity, <img class="math" src="../../_images/math/cc8d0c6e6e1b05ffebed368a3a5f6ac1aca005ef.png" alt="\mu(x)"/>
 is the data mean, <img class="math" src="../../_images/math/776e57daac64db66f59de34d328e0a06dfd0fa4f.png" alt="\sigma(x)"/> is the data std, and
 <img class="math" src="../../_images/math/0ad7b30534898f253002222f998f38001e604648.png" alt="\epsilon"/> is a small constant added for numerical stability.</p>
-<p>It can handle a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch main (2.16.0a0+gitfbab7cc ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a> as input
+<p>It can handle a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> or <a class="reference external" href="https://docs.pytorch.org/docs/main/tensors.html#torch.Tensor" title="(in PyTorch main (2.16.0a0+git5b14331 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a> as input
 and it returns a consistent output (same type and shape). Input shape must
 be <img class="math" src="../../_images/math/6039496e6256ecdd29f6570ea8b46d5ae9e8b314.png" alt="(C, H, W, D)"/> or <img class="math" src="../../_images/math/c1c3843390c1657b65b1fd63261b085ab12acb75.png" alt="(H, W, D)"/> (spatial dimensions).</p>
 <dl class="field-list simple">
@@ -477,12 +485,12 @@ errors.</p>
 constant non-deterministic values.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.volume.preprocessing.ZNormalization.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masking_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/transforms/volume/preprocessing/intensity/z_normalization.py#L61"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.preprocessing.ZNormalization.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masking_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/transforms/volume/preprocessing/intensity/z_normalization.py#L61"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.preprocessing.ZNormalization.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.transforms.volume.preprocessing.ZNormalization.apply_transform">
-<span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/transforms/volume/preprocessing/intensity/z_normalization.py#L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.preprocessing.ZNormalization.apply_transform" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/transforms/volume/preprocessing/intensity/z_normalization.py#L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.transforms.volume.preprocessing.ZNormalization.apply_transform" title="Link to this definition">¶</a></dt>
 <dd><p>Apply the z-normalization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -504,7 +512,10 @@ constant non-deterministic values.</p>
 
 <section id="examples-using-nidl-transforms-volume-preprocessing-znormalization">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">nidl.transforms.volume.preprocessing.ZNormalization</span></code><a class="headerlink" href="#examples-using-nidl-transforms-volume-preprocessing-znormalization" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to pretrain a 3D vision transformer with I-JEPA [1]_ on a MedMNIST3D dataset [2]_ using the nidl library. It will also show you how to evaluate the learned representations with a simple linear probe."><img alt="" src="../../_images/sphx_glr_plot_ijepa_medmnist_thumb.png" />
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This tutorial pretrains CoMM [1]_, a multimodal contrastive method, on the T1-weighted, T2-weighted and FLAIR brain MRI of OpenMind [2]_, where most sessions miss one or two of these modalities. It explains:"><img alt="" src="../../_images/sphx_glr_plot_comm_openmind_thumb.png" />
+<p><a class="reference internal" href="../../auto_examples/plot_comm_openmind.html"><span class="doc">Multimodal pretraining with missing modalities: CoMM on OpenMind</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Multimodal pretraining with missing modalities: CoMM on OpenMind</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to pretrain a 3D vision transformer with I-JEPA [1]_ on a MedMNIST3D dataset [2]_ using the nidl library. It will also show you how to evaluate the learned representations with a simple linear probe."><img alt="" src="../../_images/sphx_glr_plot_ijepa_medmnist_thumb.png" />
 <p><a class="reference internal" href="../../auto_examples/plot_ijepa_medmnist.html"><span class="doc">Self-Supervised Learning with I-JEPA on MedMNIST3D</span></a></p>
   <div class="sphx-glr-thumbnail-title">Self-Supervised Learning with I-JEPA on MedMNIST3D</div>
 </div></div><div style='clear:both'></div></section>
@@ -594,6 +605,6 @@ constant non-deterministic values.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>

@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=58997610" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -250,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_openbhb_hydra.html">How to use NIDL with Hydra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_model_probing.html">Model probing of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_comm_openmind.html">Multimodal pretraining with missing modalities: CoMM on OpenMind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -291,6 +292,8 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.NeuroJEPA.html">nidl.estimators.ssl.NeuroJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.CoMM.html">nidl.estimators.ssl.CoMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.utils.data_parsing.collate_multimodal.html">nidl.utils.data_parsing.collate_multimodal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
@@ -303,6 +306,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.CoMMLoss.html">nidl.losses.CoMMLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
@@ -312,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.estimators.ssl.utils.CoMMProjectionHead.html">nidl.estimators.ssl.utils.CoMMProjectionHead</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.backbones.volume: Available backbones" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -330,6 +335,9 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.backbones.volume.vit_small_patch16_128.html">nidl.backbones.volume.vit_small_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.backbones.volume.vit_base_patch16_128.html">nidl.backbones.volume.vit_base_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.backbones.volume.vit_large_patch16_128.html">nidl.backbones.volume.vit_large_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.backbones.volume.utils.SimpleFeaturesInputAdapter.html">nidl.backbones.volume.utils.SimpleFeaturesInputAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.backbones.volume.utils.IdentityAdapter.html">nidl.backbones.volume.utils.IdentityAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.backbones.volume.utils.Patched3DInputAdapter.html">nidl.backbones.volume.utils.Patched3DInputAdapter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -572,6 +580,7 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
 <pre align="center" class="mermaid align-center">
         classDiagram
   BaseEstimator &lt;|-- BarlowTwins
+  BaseEstimator &lt;|-- CoMM
   BaseEstimator &lt;|-- DCL
   BaseEstimator &lt;|-- DINO
   BaseEstimator &lt;|-- IJEPA
@@ -579,6 +588,7 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
   BaseEstimator &lt;|-- SimCLR
   BaseEstimator &lt;|-- YAwareContrastiveLearning
   TransformerMixin &lt;|-- BarlowTwins
+  TransformerMixin &lt;|-- CoMM
   TransformerMixin &lt;|-- DCL
   TransformerMixin &lt;|-- DINO
   TransformerMixin &lt;|-- IJEPA
@@ -587,6 +597,30 @@ the <a class="reference internal" href="generated/nidl.estimators.BaseEstimator.
   TransformerMixin &lt;|-- YAwareContrastiveLearning
     </pre><p>See <a class="reference internal" href="losses.html"><span class="doc">nidl.losses: Available losses</span></a> and <a class="reference internal" href="projection_heads.html"><span class="doc">nidl.estimators.ssl.utils: Available projection heads</span></a> for the losses and projection
 heads used by these estimators.</p>
+</section>
+<section id="multimodal-embedding-estimators">
+<h3>Multimodal embedding estimators<a class="headerlink" href="#multimodal-embedding-estimators" title="Link to this heading">¶</a></h3>
+<p>Self-supervised learning embedding estimators learning a joint representation
+of several modalities, possibly missing for some samples. Their batches are
+built with <a class="reference internal" href="generated/nidl.utils.data_parsing.collate_multimodal.html#nidl.utils.data_parsing.collate_multimodal" title="nidl.utils.data_parsing.collate_multimodal"><code class="xref py py-func docutils literal notranslate"><span class="pre">collate_multimodal</span></code></a>.</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.ssl.CoMM.html#nidl.estimators.ssl.CoMM" title="nidl.estimators.ssl.CoMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoMM</span></code></a>(encoder, num_modalities[, ...])</p></td>
+<td><p>CoMM <a class="reference internal" href="generated/nidl.estimators.ssl.CoMM.html#r5f672cba52ed-1" id="id8"><span>[R5f672cba52ed-1]</span></a>, with missing modalities.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.utils.data_parsing.collate_multimodal.html#nidl.utils.data_parsing.collate_multimodal" title="nidl.utils.data_parsing.collate_multimodal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collate_multimodal</span></code></a>(batch[, modalities])</p></td>
+<td><p>Collate samples with missing modalities into a multimodal batch.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 <section id="probing-estimators">
@@ -606,13 +640,13 @@ learned by an embedding estimator.</p>
 <section id="autoencoders">
 <h2>Autoencoders<a class="headerlink" href="#autoencoders" title="Link to this heading">¶</a></h2>
 <p>Autoencoder estimators and losses.</p>
-<section id="id8">
-<h3>Embedding estimators<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<section id="id9">
+<h3>Embedding estimators<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#nidl.estimators.autoencoders.VAE" title="nidl.estimators.autoencoders.VAE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VAE</span></code></a>(encoder, decoder, encoder_out_dim, ...)</p></td>
-<td><p>Variational Auto-Encoder (VAE) <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-1" id="id9"><span>[Rfc808ee91d8e-1]</span></a> <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-2" id="id10"><span>[Rfc808ee91d8e-2]</span></a>.</p></td>
+<td><p>Variational Auto-Encoder (VAE) <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-1" id="id10"><span>[Rfc808ee91d8e-1]</span></a> <a class="reference internal" href="generated/nidl.estimators.autoencoders.VAE.html#rfc808ee91d8e-2" id="id11"><span>[Rfc808ee91d8e-2]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -708,11 +742,14 @@ learned by an embedding estimator.</p>
 <li><a class="reference internal" href="#base-classes">Base Classes</a></li>
 <li><a class="reference internal" href="#self-supervised-learning">Self-Supervised Learning</a><ul>
 <li><a class="reference internal" href="#embedding-estimators">Embedding estimators</a></li>
+<li><a class="reference internal" href="#multimodal-embedding-estimators">Multimodal embedding estimators</a><ul>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#probing-estimators">Probing estimators</a></li>
 <li><a class="reference internal" href="#autoencoders">Autoencoders</a><ul>
-<li><a class="reference internal" href="#id8">Embedding estimators</a></li>
+<li><a class="reference internal" href="#id9">Embedding estimators</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#dummy-estimator">Dummy estimator</a></li>
@@ -734,7 +771,7 @@ learned by an embedding estimator.</p>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.esm.min.mjs";
 
 

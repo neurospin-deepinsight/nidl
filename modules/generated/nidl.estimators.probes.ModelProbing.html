@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_model_probing_thumb.png" />
 <meta property="og:image:alt" content="" />
 <meta name="description" content="Examples using nidl.estimators.probes.ModelProbing: Model probing of embedding estimators" />
-<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.estimators.autoencoders.VAE" href="nidl.estimators.autoencoders.VAE.html"><link rel="prev" title="nidl.estimators.ssl.NeuroJEPA" href="nidl.estimators.ssl.NeuroJEPA.html">
+<link rel="search" title="Search" href="../../search.html"><link rel="next" title="nidl.estimators.autoencoders.VAE" href="nidl.estimators.autoencoders.VAE.html"><link rel="prev" title="nidl.utils.data_parsing.collate_multimodal" href="nidl.utils.data_parsing.collate_multimodal.html">
         <link rel="prefetch" href="../../_static/nidl-transparent.png" as="image">
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"><!-- Generated with Sphinx 9.1.1 and Furo 2025.12.19 -->
@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=58997610" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -250,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb_hydra.html">How to use NIDL with Hydra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_model_probing.html">Model probing of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_comm_openmind.html">Multimodal pretraining with missing modalities: CoMM on OpenMind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_examples/plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -291,6 +292,8 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.NeuroJEPA.html">nidl.estimators.ssl.NeuroJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.CoMM.html">nidl.estimators.ssl.CoMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.utils.data_parsing.collate_multimodal.html">nidl.utils.data_parsing.collate_multimodal</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
@@ -303,6 +306,7 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.losses.CoMMLoss.html">nidl.losses.CoMMLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
@@ -312,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.estimators.ssl.utils.CoMMProjectionHead.html">nidl.estimators.ssl.utils.CoMMProjectionHead</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.backbones.volume: Available backbones" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -330,6 +335,9 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_small_patch16_128.html">nidl.backbones.volume.vit_small_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_base_patch16_128.html">nidl.backbones.volume.vit_base_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.vit_large_patch16_128.html">nidl.backbones.volume.vit_large_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.SimpleFeaturesInputAdapter.html">nidl.backbones.volume.utils.SimpleFeaturesInputAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.IdentityAdapter.html">nidl.backbones.volume.utils.IdentityAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.backbones.volume.utils.Patched3DInputAdapter.html">nidl.backbones.volume.utils.Patched3DInputAdapter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -440,7 +448,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.probes.ModelProbing<a class="headerlink" href="#nidl-estimators-probes-modelprobing" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.probes.ModelProbing">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.probes.</span></span><span class="sig-name descname"><span class="pre">ModelProbing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/estimators/probes/model_probing.py#L21"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.probes.</span></span><span class="sig-name descname"><span class="pre">ModelProbing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/estimators/probes/model_probing.py#L21"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nidl.estimators.BaseEstimator.html#nidl.estimators.BaseEstimator" title="nidl.estimators.base.BaseEstimator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
 <p>Estimator to probe the representation of an embedding estimator.</p>
 <p>It has the following logic during <cite>fit</cite>:</p>
@@ -498,12 +506,12 @@ names and the values are the metric scores;</p></li>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.probes.ModelProbing.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/estimators/probes/model_probing.py#L78"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/estimators/probes/model_probing.py#L78"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.probes.ModelProbing.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataloader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/estimators/probes/model_probing.py#L106"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.fit" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataloader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/estimators/probes/model_probing.py#L106"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Fit the probe on the training data embeddings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -526,7 +534,7 @@ used for further embedding and training of the probes.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.probes.ModelProbing.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/estimators/probes/model_probing.py#L147"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.predict" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/estimators/probes/model_probing.py#L147"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.predict" title="Link to this definition">¶</a></dt>
 <dd><p>Predict the labels on the test dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -547,7 +555,7 @@ used for further embedding and training of the probes.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nidl.estimators.probes.ModelProbing.score">
-<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/476dc46/nidl/estimators/probes/model_probing.py#L168"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.score" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/estimators/probes/model_probing.py#L168"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.probes.ModelProbing.score" title="Link to this definition">¶</a></dt>
 <dd><p>Score the probe on the test dataset.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -612,14 +620,14 @@ and metric scores as values.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="nidl.estimators.ssl.NeuroJEPA.html">
+          <a class="prev-page" href="nidl.utils.data_parsing.collate_multimodal.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">nidl.estimators.ssl.NeuroJEPA</div>
+                <div class="title">nidl.utils.data_parsing.collate_multimodal</div>
                 
               </div>
             </a>
@@ -684,6 +692,6 @@ and metric scores as values.</p>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>

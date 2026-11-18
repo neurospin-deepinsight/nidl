@@ -70,6 +70,23 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial pretrains CoMM [1]_, a multimodal contrastive method, on the T1-weighted, T2-weighted and FLAIR brain MRI of OpenMind [2]_, where most sessions miss one or two of these modalities. It explains:">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_comm_openmind_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/plot_comm_openmind`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Multimodal pretraining with missing modalities: CoMM on OpenMind</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This notebook introduces the OpenBHB dataset [1]_, a large-scale, multi-site brain MRI dataset. It is designed to perform benchmarking of machine learning and deep learning models on neuroimaging data.">
 
 .. only:: html
@@ -183,6 +200,7 @@ Examples
    /auto_examples/plot_dcl_vs_simclr
    /auto_examples/plot_openbhb_hydra
    /auto_examples/plot_model_probing
+   /auto_examples/plot_comm_openmind
    /auto_examples/plot_openbhb
    /auto_examples/plot_simclr_mnist
    /auto_examples/plot_barlowtwins_openbhb

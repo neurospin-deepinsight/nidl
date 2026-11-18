@@ -61,8 +61,9 @@ Key features
         uniformly preprocessed) and :class:`~nidl.datasets.OpenMind` (114k brain MRIs). 
         Bring your own data with :class:`~nidl.datasets.ImageDataFrameDataset`.
 
-        +++
-        :ref:`Learn more <open_datasets>` :fas:`arrow-right`
+        .. card-footer::
+
+            :ref:`Learn more <open_datasets>` :fas:`arrow-right`
 
     .. grid-item-card:: :fas:`brain` Models
         :class-card: sd-shadow-sm
@@ -76,8 +77,9 @@ Key features
         generative (:class:`~nidl.estimators.autoencoders.VAE`) models, all
         exposing the scikit-learn ``fit`` / ``transform`` API.
 
-        +++
-        :ref:`Learn more <self_supervised_learning>` :fas:`arrow-right`
+        .. card-footer::
+
+            :ref:`Learn more <self_supervised_learning>` :fas:`arrow-right`
 
     .. grid-item-card:: :fas:`dice` Augmentations
         :class-card: sd-shadow-sm
@@ -91,8 +93,9 @@ Key features
         Generate multiple views per sample with
         :class:`~nidl.transforms.transforms.MultiViewsTransform`.
 
-        +++
-        :ref:`Learn more <data_augmentation>` :fas:`arrow-right`
+        .. card-footer::
+
+            :ref:`Learn more <data_augmentation>` :fas:`arrow-right`
 
     .. grid-item-card:: :fas:`chart-line` Evaluation
         :class-card: sd-shadow-sm
@@ -103,8 +106,9 @@ Key features
         training with :class:`~nidl.callbacks.ModelProbingCallback` and
         :class:`~nidl.callbacks.MetricsCallback`.
 
-        +++
-        :ref:`Learn more <model_probing>` :fas:`arrow-right`
+        .. card-footer::
+
+            :ref:`Learn more <model_probing>` :fas:`arrow-right`
 
 Fit a model in a few lines
 --------------------------

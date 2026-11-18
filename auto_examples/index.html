@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neurospin-deepinsight.github.io/auto_examples/index.html" />
 <meta property="og:site_name" content="Nidl" />
-<meta property="og:description" content="Decoupled Contrastive Learning How to use NIDL with Hydra Model probing of embedding estimators Presentation of the OpenBHB dataset Self-Supervised Contrastive Learning with SimCLR on MNIST Self-Su..." />
+<meta property="og:description" content="Decoupled Contrastive Learning How to use NIDL with Hydra Model probing of embedding estimators Multimodal pretraining with missing modalities: CoMM on OpenMind Presentation of the OpenBHB dataset ..." />
 <meta property="og:image" content="https://neurospin-deepinsight.github.io/_images/sphx_glr_plot_dcl_vs_simclr_thumb.png" />
 <meta property="og:image:alt" content="" />
-<meta name="description" content="Decoupled Contrastive Learning How to use NIDL with Hydra Model probing of embedding estimators Presentation of the OpenBHB dataset Self-Supervised Contrastive Learning with SimCLR on MNIST Self-Su..." />
+<meta name="description" content="Decoupled Contrastive Learning How to use NIDL with Hydra Model probing of embedding estimators Multimodal pretraining with missing modalities: CoMM on OpenMind Presentation of the OpenBHB dataset ..." />
 <link rel="search" title="Search" href="../search.html"><link rel="next" title="Decoupled Contrastive Learning" href="plot_dcl_vs_simclr.html"><link rel="prev" title="Quickstart" href="../quickstart.html">
         <link rel="prefetch" href="../_static/nidl-transparent.png" as="image">
 
@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=58997610" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -250,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_dcl_vs_simclr.html">Decoupled Contrastive Learning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb_hydra.html">How to use NIDL with Hydra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_model_probing.html">Model probing of embedding estimators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_comm_openmind.html">Multimodal pretraining with missing modalities: CoMM on OpenMind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_openbhb.html">Presentation of the OpenBHB dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_simclr_mnist.html">Self-Supervised Contrastive Learning with SimCLR on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_barlowtwins_openbhb.html">Self-Supervised Learning with Barlow Twins</a></li>
@@ -291,6 +292,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.DINO.html">nidl.estimators.ssl.DINO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.IJEPA.html">nidl.estimators.ssl.IJEPA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.NeuroJEPA.html">nidl.estimators.ssl.NeuroJEPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.CoMM.html">nidl.estimators.ssl.CoMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.utils.data_parsing.collate_multimodal.html">nidl.utils.data_parsing.collate_multimodal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.probes.ModelProbing.html">nidl.estimators.probes.ModelProbing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.autoencoders.VAE.html">nidl.estimators.autoencoders.VAE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.dummy.DummyEmbeddingEstimator.html">nidl.estimators.dummy.DummyEmbeddingEstimator</a></li>
@@ -303,6 +306,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.YAwareInfoNCE.html">nidl.losses.YAwareInfoNCE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BarlowTwinsLoss.html">nidl.losses.BarlowTwinsLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.DINOLoss.html">nidl.losses.DINOLoss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.CoMMLoss.html">nidl.losses.CoMMLoss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.losses.BetaVAELoss.html">nidl.losses.BetaVAELoss</a></li>
 </ul>
 </li>
@@ -312,6 +316,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.YAwareProjectionHead.html">nidl.estimators.ssl.utils.YAwareProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.BarlowTwinsProjectionHead.html">nidl.estimators.ssl.utils.BarlowTwinsProjectionHead</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.DINOProjectionHead.html">nidl.estimators.ssl.utils.DINOProjectionHead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.estimators.ssl.utils.CoMMProjectionHead.html">nidl.estimators.ssl.utils.CoMMProjectionHead</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/architectures.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.backbones.volume</span></code>: Available backbones</a><input aria-label="Toggle navigation of nidl.backbones.volume: Available backbones" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -330,6 +335,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.backbones.volume.vit_small_patch16_128.html">nidl.backbones.volume.vit_small_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.backbones.volume.vit_base_patch16_128.html">nidl.backbones.volume.vit_base_patch16_128</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.backbones.volume.vit_large_patch16_128.html">nidl.backbones.volume.vit_large_patch16_128</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.backbones.volume.utils.SimpleFeaturesInputAdapter.html">nidl.backbones.volume.utils.SimpleFeaturesInputAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.backbones.volume.utils.IdentityAdapter.html">nidl.backbones.volume.utils.IdentityAdapter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules/generated/nidl.backbones.volume.utils.Patched3DInputAdapter.html">nidl.backbones.volume.utils.Patched3DInputAdapter</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../modules/augmentation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nidl.transforms.transforms</span></code>: Available transformations</a><input aria-label="Toggle navigation of nidl.transforms.transforms: Available transformations" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -441,6 +449,9 @@
 </div><div class="sphx-glr-thumbcontainer" tooltip="This notebook will show you how to investigate the data representation given by an embedding estimator (such as SimCLR, y-Aware Contrastive Learning or Barlow Twins) during training and inference using the notion of &quot;probing&quot;. A standard machine learning model (e.g. linear or SVM) is trained and evaluated on the data embedding for a given task as the model is being fitted (for training monitoring) or at inference. It allows the user to understand what concepts are learned by the model."><img alt="" src="../_images/sphx_glr_plot_model_probing_thumb.png" />
 <p><a class="reference internal" href="plot_model_probing.html"><span class="doc">Model probing of embedding estimators</span></a></p>
   <div class="sphx-glr-thumbnail-title">Model probing of embedding estimators</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial pretrains CoMM [1]_, a multimodal contrastive method, on the T1-weighted, T2-weighted and FLAIR brain MRI of OpenMind [2]_, where most sessions miss one or two of these modalities. It explains:"><img alt="" src="../_images/sphx_glr_plot_comm_openmind_thumb.png" />
+<p><a class="reference internal" href="plot_comm_openmind.html"><span class="doc">Multimodal pretraining with missing modalities: CoMM on OpenMind</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Multimodal pretraining with missing modalities: CoMM on OpenMind</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This notebook introduces the OpenBHB dataset [1]_, a large-scale, multi-site brain MRI dataset. It is designed to perform benchmarking of machine learning and deep learning models on neuroimaging data."><img alt="" src="../_images/sphx_glr_plot_openbhb_thumb.png" />
 <p><a class="reference internal" href="plot_openbhb.html"><span class="doc">Presentation of the OpenBHB dataset</span></a></p>
   <div class="sphx-glr-thumbnail-title">Presentation of the OpenBHB dataset</div>
@@ -532,6 +543,6 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     </body>
 </html>

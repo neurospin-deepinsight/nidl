@@ -1,0 +1,21 @@
+﻿:orphan:
+
+.. note::
+
+   This page is a reference documentation. It only explains the
+   function signature, and not how to use it. Please refer to the
+   :ref:`user guide <user_guide>` for the big picture.
+
+
+nidl.utils.data_parsing.collate_multimodal
+==========================================
+
+.. currentmodule:: nidl.utils.data_parsing
+
+.. autofunction:: collate_multimodal
+
+.. include:: nidl.utils.data_parsing.collate_multimodal.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>
