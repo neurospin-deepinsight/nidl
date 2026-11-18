@@ -48,15 +48,15 @@ class CropForeground(VolumeTransform):
         Returns
         -------
         data: np.ndarray or torch.Tensor
-            Cropped volume, same type as the input.
+            Cropped volume (a copy), same type as the input.
         """
         mask = data > self.threshold
         if isinstance(mask, torch.Tensor):
             mask = mask.cpu().numpy()
         if mask.ndim == 4:
             mask = mask.any(axis=0)
-        if not mask.any():
-            return data
-        idx = np.argwhere(mask)
-        lo, hi = idx.min(axis=0), idx.max(axis=0) + 1
-        return data[..., lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]]
+        if mask.any():
+            idx = np.argwhere(mask)
+            lo, hi = idx.min(axis=0), idx.max(axis=0) + 1
+            data = data[..., lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]]
+        return data.clone() if isinstance(data, torch.Tensor) else data.copy()

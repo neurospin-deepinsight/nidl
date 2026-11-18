@@ -10,6 +10,7 @@ from __future__ import annotations
 import random
 
 import numpy as np
+import scipy.fft as sfft
 
 from ....transforms import TypeTransformInput, VolumeTransform
 from ._utils import _like, _to_float_numpy
@@ -57,12 +58,12 @@ class RandomGibbsNoise(VolumeTransform):
         alpha = random.uniform(*self.alpha)
         x = _to_float_numpy(data)
         axes = (-3, -2, -1)
-        k = np.fft.fftshift(np.fft.fftn(x, axes=axes), axes=axes)
+        k = sfft.fftshift(sfft.fftn(x, axes=axes), axes=axes)
         shape = np.array(x.shape[-3:])
         radius = (1 - alpha) * shape.max() * np.sqrt(2) / 2
         grid = np.ogrid[tuple(slice(0, n) for n in shape)]
         center = (shape - 1) / 2
         dist2 = sum((g - c) ** 2 for g, c in zip(grid, center, strict=False))
         k = k * (dist2 <= radius**2)  # same mask for every channel
-        out = np.fft.ifftn(np.fft.ifftshift(k, axes=axes), axes=axes).real
+        out = sfft.ifftn(sfft.ifftshift(k, axes=axes), axes=axes).real
         return _like(out, data)

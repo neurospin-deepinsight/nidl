@@ -42,6 +42,8 @@ class RandomGamma(VolumeTransform):
     def __init__(self, gamma: tuple[float, float] = (0.5, 2.0), **kwargs):
         super().__init__(**kwargs)
         self.gamma = self._parse_range(gamma, check_min=0)
+        if self.gamma[0] <= 0:
+            raise ValueError(f"`gamma` must be > 0, got {gamma}")
 
     def apply_transform(self, data: TypeTransformInput) -> TypeTransformInput:
         """Apply a random gamma transform.

@@ -66,7 +66,7 @@ class RandomHistogramShift(VolumeTransform):
         x = _to_float_numpy(data)
         lo, hi = x.min(), x.max()
         if hi == lo:
-            return data
+            return _like(x, data)
         out = np.interp(x, lo + reference * (hi - lo),
                         lo + floating * (hi - lo))
         return _like(out, data)

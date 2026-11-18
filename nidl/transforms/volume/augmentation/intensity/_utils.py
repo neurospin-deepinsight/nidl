@@ -21,7 +21,15 @@ def _to_float_numpy(data: TypeTransformInput) -> np.ndarray:
 
 
 def _like(out: np.ndarray, data: TypeTransformInput) -> TypeTransformInput:
-    """`out` with the type, dtype and device of `data`."""
+    """`out` with the type, dtype and device of `data` (integers are
+    rounded and clipped to the dtype range)."""
+    dtype = data.dtype
     if isinstance(data, torch.Tensor):
-        return torch.as_tensor(out, dtype=data.dtype, device=data.device)
-    return out.astype(data.dtype)
+        if not dtype.is_floating_point:
+            info = torch.iinfo(dtype)
+            out = np.clip(np.rint(out), info.min, info.max)
+        return torch.as_tensor(out, dtype=dtype, device=data.device)
+    if np.issubdtype(dtype, np.integer):
+        info = np.iinfo(dtype)
+        out = np.clip(np.rint(out), info.min, info.max)
+    return out.astype(dtype)
