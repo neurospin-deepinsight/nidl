@@ -347,11 +347,16 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.transforms.VolumeTransform.html">nidl.transforms.transforms.VolumeTransform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.RobustRescaling.html">nidl.transforms.volume.preprocessing.RobustRescaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.ZNormalization.html">nidl.transforms.volume.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.CropForeground.html">nidl.transforms.volume.preprocessing.CropForeground</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.CropOrPad.html">nidl.transforms.volume.preprocessing.CropOrPad</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.Resample.html">nidl.transforms.volume.preprocessing.Resample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.Resize.html">nidl.transforms.volume.preprocessing.Resize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGamma.html">nidl.transforms.volume.augmentation.RandomGamma</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianBlur.html">nidl.transforms.volume.augmentation.RandomGaussianBlur</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianNoise.html">nidl.transforms.volume.augmentation.RandomGaussianNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianSharpen.html">nidl.transforms.volume.augmentation.RandomGaussianSharpen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGibbsNoise.html">nidl.transforms.volume.augmentation.RandomGibbsNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomHistogramShift.html">nidl.transforms.volume.augmentation.RandomHistogramShift</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomErasing.html">nidl.transforms.volume.augmentation.RandomErasing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomFlip.html">nidl.transforms.volume.augmentation.RandomFlip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomResizedCrop.html">nidl.transforms.volume.augmentation.RandomResizedCrop</a></li>
@@ -505,13 +510,16 @@ transformations on brain 3D volumes.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.ZNormalization.html#nidl.transforms.volume.preprocessing.ZNormalization" title="nidl.transforms.volume.preprocessing.ZNormalization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZNormalization</span></code></a>([masking_fn, eps])</p></td>
 <td><p>Normalize a 3d volume by removing the mean and scaling to unit variance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.CropOrPad.html#nidl.transforms.volume.preprocessing.CropOrPad" title="nidl.transforms.volume.preprocessing.CropOrPad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CropOrPad</span></code></a>(target_shape[, padding_mode, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.CropForeground.html#nidl.transforms.volume.preprocessing.CropForeground" title="nidl.transforms.volume.preprocessing.CropForeground"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CropForeground</span></code></a>([threshold])</p></td>
+<td><p>Crop a 3d volume to the bounding box of its foreground (voxels above <cite>threshold</cite> in any channel).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.CropOrPad.html#nidl.transforms.volume.preprocessing.CropOrPad" title="nidl.transforms.volume.preprocessing.CropOrPad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CropOrPad</span></code></a>(target_shape[, padding_mode, ...])</p></td>
 <td><p>Crop and/or pad a 3d volume to match the target shape.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.Resample.html#nidl.transforms.volume.preprocessing.Resample" title="nidl.transforms.volume.preprocessing.Resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resample</span></code></a>([target, interpolation])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.Resample.html#nidl.transforms.volume.preprocessing.Resample" title="nidl.transforms.volume.preprocessing.Resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resample</span></code></a>([target, interpolation])</p></td>
 <td><p>Resample a 3d volume to a different physical space.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.Resize.html#nidl.transforms.volume.preprocessing.Resize" title="nidl.transforms.volume.preprocessing.Resize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resize</span></code></a>(target_shape[, interpolation])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.preprocessing.Resize.html#nidl.transforms.volume.preprocessing.Resize" title="nidl.transforms.volume.preprocessing.Resize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resize</span></code></a>(target_shape[, interpolation])</p></td>
 <td><p>Resize a 3d volume to match a target shape.</p></td>
 </tr>
 </tbody>
@@ -520,6 +528,7 @@ transformations on brain 3D volumes.</p>
 <pre align="center" class="mermaid align-center">
         classDiagram
   Resample &lt;|-- Resize
+  VolumeTransform &lt;|-- CropForeground
   VolumeTransform &lt;|-- CropOrPad
   VolumeTransform &lt;|-- InverseLetterbox
   VolumeTransform &lt;|-- Letterbox
@@ -534,11 +543,23 @@ functions.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianBlur.html#nidl.transforms.volume.augmentation.RandomGaussianBlur" title="nidl.transforms.volume.augmentation.RandomGaussianBlur"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomGaussianBlur</span></code></a>([sigma])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGamma.html#nidl.transforms.volume.augmentation.RandomGamma" title="nidl.transforms.volume.augmentation.RandomGamma"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomGamma</span></code></a>([gamma])</p></td>
+<td><p>Random gamma contrast change of a 3d volume:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianBlur.html#nidl.transforms.volume.augmentation.RandomGaussianBlur" title="nidl.transforms.volume.augmentation.RandomGaussianBlur"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomGaussianBlur</span></code></a>([sigma])</p></td>
 <td><p>Blur a 3d volume using a Gaussian filter with random kernel size.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianNoise.html#nidl.transforms.volume.augmentation.RandomGaussianNoise" title="nidl.transforms.volume.augmentation.RandomGaussianNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomGaussianNoise</span></code></a>([mean, std])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianNoise.html#nidl.transforms.volume.augmentation.RandomGaussianNoise" title="nidl.transforms.volume.augmentation.RandomGaussianNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomGaussianNoise</span></code></a>([mean, std])</p></td>
 <td><p>Add Gaussian noise to input data with random parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGaussianSharpen.html#nidl.transforms.volume.augmentation.RandomGaussianSharpen" title="nidl.transforms.volume.augmentation.RandomGaussianSharpen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomGaussianSharpen</span></code></a>([sigma1, sigma2, alpha])</p></td>
+<td><p>Random unsharp masking of a 3d volume:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomGibbsNoise.html#nidl.transforms.volume.augmentation.RandomGibbsNoise" title="nidl.transforms.volume.augmentation.RandomGibbsNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomGibbsNoise</span></code></a>([alpha])</p></td>
+<td><p>Random Gibbs ringing (MRI artifact) in a 3d volume.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomHistogramShift.html#nidl.transforms.volume.augmentation.RandomHistogramShift" title="nidl.transforms.volume.augmentation.RandomHistogramShift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomHistogramShift</span></code></a>([num_control_points])</p></td>
+<td><p>Remap the intensities of a 3d volume with a random increasing curve.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/nidl.transforms.volume.augmentation.RandomErasing.html#nidl.transforms.volume.augmentation.RandomErasing" title="nidl.transforms.volume.augmentation.RandomErasing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomErasing</span></code></a>([scale, ratio, ...])</p></td>
 <td><p>Randomly erases boxes in a 3d volume.</p></td>
@@ -562,8 +583,12 @@ functions.</p>
   VolumeTransform &lt;|-- RandomContrastAdjust
   VolumeTransform &lt;|-- RandomErasing
   VolumeTransform &lt;|-- RandomFlip
+  VolumeTransform &lt;|-- RandomGamma
   VolumeTransform &lt;|-- RandomGaussianBlur
   VolumeTransform &lt;|-- RandomGaussianNoise
+  VolumeTransform &lt;|-- RandomGaussianSharpen
+  VolumeTransform &lt;|-- RandomGibbsNoise
+  VolumeTransform &lt;|-- RandomHistogramShift
   VolumeTransform &lt;|-- RandomResizedCrop
   VolumeTransform &lt;|-- RandomRotation
     </pre></section>

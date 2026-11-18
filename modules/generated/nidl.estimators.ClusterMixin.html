@@ -345,11 +345,16 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.transforms.VolumeTransform.html">nidl.transforms.transforms.VolumeTransform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.RobustRescaling.html">nidl.transforms.volume.preprocessing.RobustRescaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.ZNormalization.html">nidl.transforms.volume.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.CropForeground.html">nidl.transforms.volume.preprocessing.CropForeground</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.CropOrPad.html">nidl.transforms.volume.preprocessing.CropOrPad</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.Resample.html">nidl.transforms.volume.preprocessing.Resample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.Resize.html">nidl.transforms.volume.preprocessing.Resize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGamma.html">nidl.transforms.volume.augmentation.RandomGamma</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianBlur.html">nidl.transforms.volume.augmentation.RandomGaussianBlur</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianNoise.html">nidl.transforms.volume.augmentation.RandomGaussianNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianSharpen.html">nidl.transforms.volume.augmentation.RandomGaussianSharpen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGibbsNoise.html">nidl.transforms.volume.augmentation.RandomGibbsNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomHistogramShift.html">nidl.transforms.volume.augmentation.RandomHistogramShift</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomErasing.html">nidl.transforms.volume.augmentation.RandomErasing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomFlip.html">nidl.transforms.volume.augmentation.RandomFlip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomResizedCrop.html">nidl.transforms.volume.augmentation.RandomResizedCrop</a></li>
@@ -446,7 +451,7 @@ signature, and not how to use it. Please refer to the
 <h1>nidl.estimators.ClusterMixin<a class="headerlink" href="#nidl-estimators-clustermixin" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="nidl.estimators.ClusterMixin">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.</span></span><span class="sig-name descname"><span class="pre">ClusterMixin</span></span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/estimators/base.py#L781"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ClusterMixin" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nidl.estimators.</span></span><span class="sig-name descname"><span class="pre">ClusterMixin</span></span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/02736cb/nidl/estimators/base.py#L781"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.estimators.ClusterMixin" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mixin class for all cluster estimators in nidl.</p>
 <p>This mixin sets the estimator type to <cite>clusterer</cite> through the

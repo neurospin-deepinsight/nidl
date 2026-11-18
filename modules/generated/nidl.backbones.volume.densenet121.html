@@ -345,11 +345,16 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.transforms.VolumeTransform.html">nidl.transforms.transforms.VolumeTransform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.RobustRescaling.html">nidl.transforms.volume.preprocessing.RobustRescaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.ZNormalization.html">nidl.transforms.volume.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.CropForeground.html">nidl.transforms.volume.preprocessing.CropForeground</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.CropOrPad.html">nidl.transforms.volume.preprocessing.CropOrPad</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.Resample.html">nidl.transforms.volume.preprocessing.Resample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.Resize.html">nidl.transforms.volume.preprocessing.Resize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGamma.html">nidl.transforms.volume.augmentation.RandomGamma</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianBlur.html">nidl.transforms.volume.augmentation.RandomGaussianBlur</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianNoise.html">nidl.transforms.volume.augmentation.RandomGaussianNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianSharpen.html">nidl.transforms.volume.augmentation.RandomGaussianSharpen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGibbsNoise.html">nidl.transforms.volume.augmentation.RandomGibbsNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomHistogramShift.html">nidl.transforms.volume.augmentation.RandomHistogramShift</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomErasing.html">nidl.transforms.volume.augmentation.RandomErasing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomFlip.html">nidl.transforms.volume.augmentation.RandomFlip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomResizedCrop.html">nidl.transforms.volume.augmentation.RandomResizedCrop</a></li>
@@ -446,7 +451,7 @@ function signature, and not how to use it. Please refer to the
 <h1>nidl.backbones.volume.densenet121<a class="headerlink" href="#nidl-backbones-volume-densenet121" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="nidl.backbones.volume.densenet121">
-<span class="sig-prename descclassname"><span class="pre">nidl.backbones.volume.</span></span><span class="sig-name descname"><span class="pre">densenet121</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/backbones/volume/densenet3d.py#L219"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.backbones.volume.densenet121" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nidl.backbones.volume.</span></span><span class="sig-name descname"><span class="pre">densenet121</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/02736cb/nidl/backbones/volume/densenet3d.py#L219"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.backbones.volume.densenet121" title="Link to this definition">¶</a></dt>
 <dd><p>3D Densenet-121 model adapted from Huang et al. 2018. See
 <a class="reference external" href="https://doi.org/10.48550/arXiv.1608.06993">https://doi.org/10.48550/arXiv.1608.06993</a> for details.</p>
 </dd></dl>

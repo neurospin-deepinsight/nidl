@@ -345,11 +345,16 @@
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.transforms.VolumeTransform.html">nidl.transforms.transforms.VolumeTransform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.RobustRescaling.html">nidl.transforms.volume.preprocessing.RobustRescaling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.ZNormalization.html">nidl.transforms.volume.preprocessing.ZNormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.CropForeground.html">nidl.transforms.volume.preprocessing.CropForeground</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.CropOrPad.html">nidl.transforms.volume.preprocessing.CropOrPad</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.Resample.html">nidl.transforms.volume.preprocessing.Resample</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.preprocessing.Resize.html">nidl.transforms.volume.preprocessing.Resize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGamma.html">nidl.transforms.volume.augmentation.RandomGamma</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianBlur.html">nidl.transforms.volume.augmentation.RandomGaussianBlur</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianNoise.html">nidl.transforms.volume.augmentation.RandomGaussianNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGaussianSharpen.html">nidl.transforms.volume.augmentation.RandomGaussianSharpen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomGibbsNoise.html">nidl.transforms.volume.augmentation.RandomGibbsNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomHistogramShift.html">nidl.transforms.volume.augmentation.RandomHistogramShift</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomErasing.html">nidl.transforms.volume.augmentation.RandomErasing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomFlip.html">nidl.transforms.volume.augmentation.RandomFlip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nidl.transforms.volume.augmentation.RandomResizedCrop.html">nidl.transforms.volume.augmentation.RandomResizedCrop</a></li>
@@ -446,7 +451,7 @@ function signature, and not how to use it. Please refer to the
 <h1>nidl.metrics.procrustes_r2<a class="headerlink" href="#nidl-metrics-procrustes-r2" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="nidl.metrics.procrustes_r2">
-<span class="sig-prename descclassname"><span class="pre">nidl.metrics.</span></span><span class="sig-name descname"><span class="pre">procrustes_r2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/1a1f9ef/nidl/metrics/ssl.py#L436"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.metrics.procrustes_r2" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nidl.metrics.</span></span><span class="sig-name descname"><span class="pre">procrustes_r2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/neurospin-deepinsight/nidl/blob/02736cb/nidl/metrics/ssl.py#L436"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nidl.metrics.procrustes_r2" title="Link to this definition">¶</a></dt>
 <dd><p>Procrustes similarity between two point clouds / embeddings in the
 Euclidean case, when scale matters.</p>
 <p>Computes the least squares solution for the regression problem Y = ΩX + b
