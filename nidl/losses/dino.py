@@ -15,7 +15,8 @@ class DINOLoss(Module):
 
     It supports global and local image crops. A linear warmup schedule for the
     teacher temperature is implemented to stabilize training at the beginning.
-    Centering is applied to the teacher output to avoid model collapse.
+    Centering is applied to the teacher output to avoid model collapse
+    (moving-average center, or Sinkhorn-Knopp as in DINOv2 [2]_).
 
     Parameters
     ----------
@@ -31,6 +32,8 @@ class DINOLoss(Module):
         Temperature for the student network.
     center_momentum: float, default=0.9
         Momentum term for the center calculation.
+    centering: {"centering", "sinkhorn_knopp"}, default="centering"
+        Moving-average center or Sinkhorn-Knopp (no center), as in DINOv2.
 
     Examples
     --------
@@ -51,6 +54,8 @@ class DINOLoss(Module):
     ----------
     .. [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
            Transformers." ICCV, 2021. https://arxiv.org/abs/2104.14294
+    .. [2] Oquab, M., et al., "DINOv2: Learning Robust Visual Features
+           without Supervision." TMLR, 2024. https://arxiv.org/abs/2304.07193
 
     """
 
@@ -62,8 +67,12 @@ class DINOLoss(Module):
         warmup_teacher_temp_epochs: int = 30,
         student_temp: float = 0.1,
         center_momentum: float = 0.9,
+        centering: str = "centering",
     ) -> None:
         super().__init__()
+        if centering not in ("centering", "sinkhorn_knopp"):
+            raise ValueError(f"Unknown centering: {centering}")
+        self.centering = centering
 
         self.teacher_temp = teacher_temp
         self.student_temp = student_temp
@@ -107,19 +116,8 @@ class DINOLoss(Module):
             The average cross-entropy loss.
         """
 
-        # Get teacher temperature
-        if epoch is not None:
-            if epoch < self.warmup_teacher_temp_epochs:
-                teacher_temperature = self.teacher_temp_schedule[epoch]
-            else:
-                teacher_temperature = torch.tensor(self.teacher_temp)
-        else:
-            teacher_temperature = torch.tensor(self.teacher_temp)
-
         # Calculate cross-entropy loss.
-        t_out = func.softmax(
-            (teacher_out - self.center) / teacher_temperature, dim=-1
-        )
+        t_out = self._teacher_probs(teacher_out, epoch)
         s_out = func.log_softmax(student_out / self.student_temp, dim=-1)
 
         # Calculate feature similarities, ignoring the diagonal
@@ -142,6 +140,23 @@ class DINOLoss(Module):
 
         return loss
 
+    def _teacher_probs(self, teacher_out: Tensor, epoch: int | None) -> Tensor:
+        """Centered and sharpened teacher probabilities, same shape as
+        `teacher_out`."""
+        temp = self._teacher_temp(epoch)
+        if self.centering == "sinkhorn_knopp":
+            shape = teacher_out.shape
+            q = sinkhorn_knopp(teacher_out.reshape(-1, shape[-1]), temp)
+            return q.reshape(shape)
+        center = self.center.reshape(-1)
+        return func.softmax((teacher_out - center) / temp, dim=-1)
+
+    def _teacher_temp(self, epoch: int | None) -> Tensor:
+        """Teacher temperature at `epoch` (warmup, then constant)."""
+        if epoch is not None and epoch < self.warmup_teacher_temp_epochs:
+            return self.teacher_temp_schedule[epoch]
+        return torch.tensor(self.teacher_temp)
+
     @torch.no_grad()
     def update_center(self, teacher_out: Tensor) -> None:
         """Moving average update of the center used for the teacher output.
@@ -151,6 +166,8 @@ class DINOLoss(Module):
         teacher_out: torch.Tensor of shape (n_views, batch_size, n_features)
             Features from the teacher model.
         """
+        if self.centering != "centering":
+            return
 
         # Calculate the batch center using the specified center function
         batch_center = torch.mean(teacher_out, dim=(0, 1), keepdim=True)
@@ -164,3 +181,32 @@ class DINOLoss(Module):
             self.center * self.center_momentum
             + batch_center * (1 - self.center_momentum)
         )
+
+
+@torch.no_grad()
+def sinkhorn_knopp(logits: Tensor, temp: Tensor, n_iter: int = 3) -> Tensor:
+    """Sinkhorn-Knopp teacher probabilities (n_samples, n_prototypes), as in
+    DINOv2: rows sum to 1, prototypes get equal shares of the (global)
+    batch."""
+    distributed = dist.is_available() and dist.is_initialized()
+    logits = logits.float()
+    # Same shift on all processes: avoids overflow, no effect on the result
+    shift = logits.max()
+    n = torch.tensor(float(len(logits)), device=logits.device)
+    if distributed:
+        dist.all_reduce(shift, op=dist.ReduceOp.MAX)
+        dist.all_reduce(n)
+    q = torch.exp((logits - shift) / temp).T  # (n_prototypes, n_samples)
+    tiny = torch.finfo(q.dtype).tiny
+    total = q.sum()
+    if distributed:
+        dist.all_reduce(total)
+    q /= total
+    k = len(q)
+    for _ in range(n_iter):
+        rows = q.sum(dim=1, keepdim=True)
+        if distributed:
+            dist.all_reduce(rows)
+        q /= rows.clamp(min=tiny) * k
+        q /= q.sum(dim=0, keepdim=True).clamp(min=tiny) * n
+    return (q * n).T
