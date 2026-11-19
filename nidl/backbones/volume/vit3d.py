@@ -481,7 +481,7 @@ class VisionTransformer3D(nn.Module):
     def _patch_grid(self, x: Tensor) -> list[int]:
         """Patch grid ``[H', W', D']`` of an input ``(B, C, H, W, D)``."""
         patch_size = self.patch_embed.patch_size
-        return [s // p for s, p in zip(x.shape[-3:], patch_size)]
+        return [s // p for s, p in zip(x.shape[-3:], patch_size, strict=False)]
 
     def _resize_pos_embed(self, grid: Sequence[int]) -> Optional[Tensor]:
         """Trilinear resize of the patch position embeddings to ``grid``
