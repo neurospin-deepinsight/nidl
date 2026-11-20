@@ -30,6 +30,7 @@ from nidl.estimators.ssl.utils.momentum import (
     initialize_momentum_params,
 )
 from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
+from nidl.estimators.ssl.utils.vit_wrapper import ViTWrapperMixin
 from nidl.utils.data_parsing import parse_x_or_xy_batch
 
 
@@ -428,7 +429,7 @@ class IJEPA(TransformerMixin, BaseEstimator):
         self.lr_scheduler_kwargs.setdefault("min_lr", 0)
 
 
-class IJEPAVisionTransformer(nn.Module):
+class IJEPAVisionTransformer(ViTWrapperMixin, nn.Module):
     """
     Thin wrapper around a timm-like Vision Transformer encoder for I-JEPA.
 
@@ -482,7 +483,23 @@ class IJEPAVisionTransformer(nn.Module):
     The masking step is intended for I-JEPA-style masked prediction workflows,
     where a subset of patch tokens is selected before being processed by the
     transformer encoder.
+    The ``embed_dim``, ``num_heads``, ``has_class_token``, ``num_reg_tokens``
+    and ``num_prefix_tokens`` attributes and the interface check are derived
+    from the shared wrapper
+    :class:`~nidl.estimators.ssl.utils.vit_wrapper.ViTWrapperMixin`.
     """
+
+    _REQUIRED = (
+        "has_class_token",
+        "num_reg_tokens",
+        "patch_embed",
+        "patch_drop",
+        "norm_pre",
+        "blocks",
+        "norm",
+        "_pos_embed",
+        "embed_dim",
+    )
 
     def __init__(self, vit: nn.Module):
         super().__init__()
@@ -493,45 +510,6 @@ class IJEPAVisionTransformer(nn.Module):
                 f"missing {missings} "
             )
         self.vit = vit
-
-    def _is_vit_like(self, vit: nn.Module):
-        """
-        Check whether a module follows the expected timm-like ViT interface.
-
-        Parameters
-        ----------
-        vit : nn.Module
-            Module to validate.
-
-        Returns
-        -------
-        list[str]
-            Names of required attributes or methods that are missing from
-            ``vit``. An empty list indicates that the module matches the
-            expected interface.
-
-        Notes
-        -----
-        This is a shallow interface check. It verifies the presence of required
-        members, but does not validate their semantics, signatures, or runtime
-        behavior.
-        """
-        missings = [
-            k
-            for k in (
-                "has_class_token",
-                "num_reg_tokens",
-                "patch_embed",
-                "patch_drop",
-                "norm_pre",
-                "blocks",
-                "norm",
-                "_pos_embed",
-                "embed_dim",
-            )
-            if not hasattr(vit, k)
-        ]
-        return missings
 
     @property
     def grid_size(self):
@@ -546,33 +524,6 @@ class IJEPAVisionTransformer(nn.Module):
             is typically ``(H_p, W_p, D_p)``.
         """
         return self.vit.patch_embed.grid_size
-
-    @property
-    def embed_dim(self):
-        return self.vit.embed_dim
-
-    @property
-    def num_heads(self):
-        return self.vit.blocks[0].attn.num_heads
-
-    @property
-    def has_class_token(self):
-        return self.vit.has_class_token
-
-    @property
-    def num_reg_tokens(self):
-        return self.vit.num_reg_tokens
-
-    @property
-    def num_prefix_tokens(self):
-        # Prefer timm's own bookkeeping if present
-        if hasattr(self.vit, "num_prefix_tokens"):
-            return self.vit.num_prefix_tokens
-        n = 0
-        if self.has_class_token:
-            n += 1
-        n += self.num_reg_tokens
-        return n
 
     def patch_embed(self, x: torch.Tensor):
         return self.vit.patch_embed(x)

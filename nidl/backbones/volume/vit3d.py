@@ -16,7 +16,7 @@ from timm.layers import trunc_normal_
 from timm.models.vision_transformer import Attention, Block, Mlp
 from torch import Tensor, nn
 
-from ...backbones.volume.utils.pos_embed import build_3d_sincos_posemb
+from .utils.pos_embed import build_3d_sincos_posemb
 
 
 def _to_3tuple(x: int | Sequence[int]) -> tuple[int, int, int]:
@@ -84,7 +84,8 @@ class PatchEmbed3D(nn.Module):
     bias : bool, default=True
         Whether to use bias in the projection layer.
     strict_img_size : bool, default=True
-        Whether to require exact input size during forward.
+        Whether to require the input spatial size to match ``img_size``
+        exactly during forward.
     flatten : bool, default=True
         Whether to flatten to token sequence.
     output_fmt : str, default="NLC"
@@ -220,7 +221,10 @@ class VisionTransformer3D(nn.Module):
         Whether to apply normalization after pooling. If ``None``, defaults
         to ``global_pool == "avg"``.
     dynamic_img_size : bool, default=False
-        Present for interface compatibility. Not used here.
+        Whether to accept inputs whose spatial size differs from
+        ``img_size``. If ``True``, patch position embeddings are resized on
+        the fly (with trilinear interpolation, or rebuilt exactly if
+        ``pos_embed="sincos"``).
     pos_embed : {"learned", "sincos", "none"}, default="learned"
         Absolute positional embedding mode.
     drop_rate : float, default=0.0
@@ -290,6 +294,7 @@ class VisionTransformer3D(nn.Module):
         self.num_reg_tokens = int(reg_tokens)
         self.no_embed_class = bool(no_embed_class)
         self.dynamic_img_size = dynamic_img_size
+        self.pos_embed_type = pos_embed
         self.num_prefix_tokens = (
             1 if class_token else 0
         ) + self.num_reg_tokens
@@ -405,7 +410,9 @@ class VisionTransformer3D(nn.Module):
                 nn.init.ones_(module.weight)
                 nn.init.zeros_(module.bias)
 
-    def _pos_embed(self, x: Tensor) -> Tensor:
+    def _pos_embed(
+        self, x: Tensor, grid: Optional[Sequence[int]] = None
+    ) -> Tensor:
         """
         Add prefix tokens and absolute position embeddings.
 
@@ -413,6 +420,8 @@ class VisionTransformer3D(nn.Module):
         ----------
         x : torch.Tensor
             Patch tokens of shape ``(B, N, C)``.
+        grid : sequence of int, optional
+            Input patch grid, used if ``dynamic_img_size=True``.
 
         Returns
         -------
@@ -422,6 +431,10 @@ class VisionTransformer3D(nn.Module):
         if len(x.shape) != 3:
             raise ValueError(f"Expected input shape (B, N, C), got {x.shape}.")
 
+        pos = self.pos_embed
+        if self.dynamic_img_size and grid is not None:
+            pos = self._resize_pos_embed(grid)
+
         B = x.shape[0]
         prefix = []
         if self.cls_token is not None:
@@ -430,27 +443,58 @@ class VisionTransformer3D(nn.Module):
             prefix.append(self.reg_token.expand(B, -1, -1))
 
         if self.no_embed_class:
-            if self.pos_embed is not None:
-                if x.shape[1] != self.pos_embed.shape[1]:
+            if pos is not None:
+                if x.shape[1] != pos.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} patch tokens, got"
+                        f"Expected {pos.shape[1]} patch tokens, got"
                         f" {x.shape[1]}."
                     )
-                x = x + self.pos_embed
+                x = x + pos
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
         else:
             if prefix:
                 x = torch.cat([*prefix, x], dim=1)
-            if self.pos_embed is not None:
-                if x.shape[1] != self.pos_embed.shape[1]:
+            if pos is not None:
+                if x.shape[1] != pos.shape[1]:
                     raise ValueError(
-                        f"Expected {self.pos_embed.shape[1]} tokens, got "
-                        f"{x.shape[1]}."
+                        f"Expected {pos.shape[1]} tokens, got {x.shape[1]}."
                     )
-                x = x + self.pos_embed
+                x = x + pos
 
         return self.pos_drop(x)
+
+    def _compute_grid_shape(self, x: Tensor) -> list[int]:
+        """
+        Compute the patch grid shape ``[H', W', D']`` for an input of
+        shape ``(B, C, H, W, D)``.
+        """
+        patch_size = self.patch_embed.patch_size
+        return [s // p for s, p in zip(x.shape[-3:], patch_size, strict=True)]
+
+    def _resize_pos_embed(self, grid: Sequence[int]) -> Optional[Tensor]:
+        """
+        Resize the patch position embeddings to the target patch grid
+        ``grid``.
+
+        Learned embeddings are resized with trilinear interpolation, while
+        sin-cos embeddings are rebuilt exactly for the new grid. Prefix
+        token embeddings, if any, are kept unchanged.
+        """
+        grid = tuple(grid)
+        if self.pos_embed is None or grid == tuple(self.grid_size):
+            return self.pos_embed
+        n = 0 if self.no_embed_class else self.num_prefix_tokens
+        prefix, pos = self.pos_embed[:, :n], self.pos_embed[:, n:]
+        if self.pos_embed_type == "sincos":
+            pos = build_3d_sincos_posemb(*grid, embed_dim=self.embed_dim)
+            pos = pos.to(prefix)
+        else:
+            pos = pos.reshape(1, *self.grid_size, -1).permute(0, 4, 1, 2, 3)
+            pos = nn.functional.interpolate(
+                pos, size=grid, mode="trilinear", align_corners=False
+            )
+        return torch.cat([prefix, pos.flatten(2).transpose(1, 2)], dim=1)
 
     def _patch_tokens(self, x: Tensor) -> Tensor:
         """
@@ -522,8 +566,9 @@ class VisionTransformer3D(nn.Module):
         torch.Tensor
             Token features of shape ``(B, N_total, C)``.
         """
+        grid = self._compute_grid_shape(x)
         x = self.patch_embed(x)
-        x = self._pos_embed(x)
+        x = self._pos_embed(x, grid)
         x = self.patch_drop(x)
         x = self.norm_pre(x)
         x = self.blocks(x)
@@ -615,8 +660,9 @@ class VisionTransformer3D(nn.Module):
         n_blocks = len(self.blocks)
         take = {i if i >= 0 else n_blocks + i for i in indices}
 
+        grid = self._compute_grid_shape(x)
         x = self.patch_embed(x)
-        x = self._pos_embed(x)
+        x = self._pos_embed(x, grid)
         x = self.patch_drop(x)
         x = self.norm_pre(x)
 

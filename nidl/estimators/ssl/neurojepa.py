@@ -1,3 +1,10 @@
+##########################################################################
+# NSAp - Copyright (C) CEA, 2026
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
 from __future__ import annotations
 
 import math
@@ -24,18 +31,30 @@ from nidl.estimators.ssl.utils.momentum import (
     initialize_momentum_params,
 )
 from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
+from nidl.estimators.ssl.utils.vit_wrapper import ViTWrapperMixin
 from nidl.utils.data_parsing import parse_x_or_xy_batch
 
 
-class NeuroJEPAEncoderWrapper(nn.Module):
-    """Thin interface-checking wrapper around a user-supplied 3D encoder.
+class NeuroJEPAEncoderWrapper(ViTWrapperMixin, nn.Module):
+    """
+    Thin interface-checking wrapper around a user-supplied 3D encoder.
+    This module adapts a Vision Transformer (ViT) implementation that follows
+    the `timm` encoder interface to expose a reduced, NeuroJEPA-oriented API.
 
     Parameters
     ----------
     vit : nn.Module
-        Must expose ``embed_dim`` (int), ``patch_size`` (3-tuple),
-        ``grid_shape`` (3-tuple), ``blocks`` (nn.ModuleList), and
-        ``forward(x, masks=None) -> (tokens, moe_scores)``.
+        Vision Transformer-like encoder module. The wrapped module must
+        expose the following attributes or methods:
+
+        - ``embed_dim`` (int)
+        - ``blocks`` (nn.ModuleList)
+        - ``has_class_token`` (bool)
+        - ``num_reg_tokens`` (int)
+        - ``patch_size`` (3-tuple)
+        - ``grid_shape`` (3-tuple)
+        - ``forward(x, masks=None) -> (tokens, moe_scores)``
+
         :class:`~nidl.backbones.volume.VisionTransformer3DMoE` is a
         reference implementation satisfying this contract.
 
@@ -43,13 +62,29 @@ class NeuroJEPAEncoderWrapper(nn.Module):
     ------
     TypeError
         If ``vit`` is missing any of the required attributes.
+
+    Notes
+    -----
+    The ``forward_features`` method is functionally identical to ``forward``
+    and is kept for compatibility with code that follows the timm interface.
+    The ``embed_dim``, ``num_heads``, ``has_class_token``, ``num_reg_tokens``
+    and ``num_prefix_tokens`` attributes and the interface check are derived
+    from the shared wrapper
+    :class:`~nidl.estimators.ssl.utils.vit_wrapper.ViTWrapperMixin`.
     """
 
-    _REQUIRED = ("embed_dim", "patch_size", "grid_shape", "blocks")
+    _REQUIRED = (
+        "embed_dim",
+        "blocks",
+        "has_class_token",
+        "num_reg_tokens",
+        "patch_size",
+        "grid_shape",
+    )
 
     def __init__(self, vit: nn.Module):
         super().__init__()
-        missing = [a for a in self._REQUIRED if not hasattr(vit, a)]
+        missing = self._is_vit_like(vit)
         if missing:
             raise TypeError(
                 "encoder must follow the NeuroJEPA 3D-ViT interface, "
@@ -58,10 +93,6 @@ class NeuroJEPAEncoderWrapper(nn.Module):
         if not callable(getattr(vit, "forward", None)):
             raise TypeError("encoder must be callable (implement forward).")
         self.vit = vit
-
-    @property
-    def embed_dim(self) -> int:
-        return self.vit.embed_dim
 
     @property
     def patch_size(self) -> tuple[int, int, int]:
@@ -80,12 +111,17 @@ class NeuroJEPAEncoderWrapper(nn.Module):
     ):
         return self.vit(x, masks=masks)
 
+    def forward_features(
+        self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
+    ):
+        return self.forward(x, masks)
+
 
 class VisionTransformerPredictor3D(nn.Module):
-    """Takes context-encoder tokens + (context indices, target indices) and
+    """
+    Lightweight Vision Transformer that takes
+    context-encoder tokens + (context indices, target indices) and
     predicts the target-encoder's latents at the target positions.
-
-    Ported from: src/neurojepa/models/predictor.py
     """
 
     def __init__(
@@ -220,8 +256,6 @@ def compute_foreground_patches(
     """Per-patch boolean foreground map from voxel intensities: a patch
     counts as foreground if at least `min_foreground_fraction` of its voxels
     exceed a per-sample, data-driven intensity threshold.
-
-    Ported from `src/neurojepa/masks/masking.py::compute_foreground_patches`.
     """
     pH, pW, pD = patch_size
     B = volumes.shape[0]
@@ -246,7 +280,7 @@ def compute_foreground_patches(
 
 @dataclass
 class MaskScaleConfig:
-    """One entry of the `mask:` list in `pretrain_neurojepa_base.yaml`."""
+    """Configuration of one masking scale (see `MultiScaleMaskCollator`)."""
 
     spatial_scale: tuple[float, float] = (0.0, 0.2)
     depth_scale: tuple[float, float] = (0.0, 1.0)
@@ -276,8 +310,6 @@ class _MaskGenerator:
     `total_mask_ratio` of all patches. One "scale" in the multi-scale scheme;
     `MultiScaleMaskCollator` runs several of these (one per `MaskScaleConfig`)
     per training step.
-
-    Ported from: src/neurojepa/masks/masking.py::_MaskGenerator
     """
 
     def __init__(self, grid_shape: tuple[int, int, int], cfg: MaskScaleConfig):
@@ -406,8 +438,6 @@ class _MaskGenerator:
 class MultiScaleMaskCollator:
     """Runs one `_MaskGenerator` per `MaskScaleConfig`, plus (optionally) the
     foreground computation.
-
-    Ported from: src/neurojepa/masks/masking.py::MaskCollator
     """
 
     def __init__(
@@ -493,8 +523,6 @@ def foreground_aware_jepa_loss(
         weighting (falls back to a uniform mean L1, i.e. nidl's plain loss).
     bg_weight : weight assigned to a pure-background patch (fg=0); a pure
         foreground patch (fg=1) always gets weight 1.0.
-
-    Ported from: src/neurojepa/loss/jepa_loss.py
     """
     use_weighting = fg_map is not None and bg_weight < 1.0
     pred_fg = None
@@ -521,9 +549,10 @@ def foreground_aware_jepa_loss(
 
 
 class NeuroJEPA(TransformerMixin, BaseEstimator):
-    """Implementation of Neuro-JEPA [1]_.
+    """Implementation of Neuro-JEPA [1]_, adapted from the official
+    code [2]_.
 
-    This solver predicts the representations of missing parts
+    This estimator predicts the representations of missing parts
     of the input (here: 3D brain MRI patches) from a visible context, using
     a context encoder, an EMA target encoder, and a predictor.
 
@@ -538,12 +567,11 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
     Parameters
     ----------
     encoder : nn.Module
-        3D ViT-like encoder. Must expose ``embed_dim``, ``patch_size``,
-        ``grid_shape``, ``blocks``, and ``forward(x, masks=None)``. See
-        :class:`~nidl.backbones.volume.VisionTransformer3DMoE` for a
-        reference implementation (with or without a sparse MoE backbone --
-        pass ``use_moe=True`` to that constructor and set ``use_moe=True``
-        here too so the MoE bias update runs during training).
+        3D ViT-like encoder that follows the `timm` interface.
+        See :class:`~nidl.backbones.volume.VisionTransformer3DMoE` for a
+        reference implementation (with or without a sparse MoE backbone -- pass
+        ``use_moe=True`` to that constructor and set ``use_moe=True`` here
+        too so the MoE bias update runs during training).
 
     mask_scale_configs : sequence of MaskScaleConfig, \
         default=3-scale config from [1]_
@@ -661,6 +689,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
     ----------
     .. [1] Huang et al., "Learning Sparse Latent Predictive Foundation
            Model for Multimodal Neuroimaging", arXiv:2606.14957.
+    .. [2] https://github.com/NYUMedML/Neuro-JEPA
     """
 
     def __init__(

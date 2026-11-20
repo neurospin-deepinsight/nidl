@@ -1,3 +1,10 @@
+##########################################################################
+# NSAp - Copyright (C) CEA, 2026
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
 from __future__ import annotations
 
 import math
@@ -18,7 +25,7 @@ def trunc_normal_(
     a: float = -2.0,
     b: float = 2.0,
 ) -> torch.Tensor:
-    """Truncated-normal init, identical to the official `utils/tensors.py`."""
+    """Truncated-normal init."""
 
     def norm_cdf(x):
         return (1.0 + math.erf(x / math.sqrt(2.0))) / 2.0
@@ -38,8 +45,7 @@ def apply_masks(
     x: torch.Tensor, masks: Sequence[torch.Tensor], concat: bool = True
 ):
     """Gathers, per mask in `masks`, the tokens of `x` indexed by that mask,
-    then concatenates the results along the batch dimension. Verbatim (up to
-    formatting) `src/neurojepa/masks/utils.py`.
+    then concatenates the results along the batch dimension.
 
     Parameters
     ----------
@@ -64,8 +70,7 @@ def repeat_interleave_batch(
     x: torch.Tensor, B: int, repeat: int
 ) -> torch.Tensor:
     """[g0_0..g0_{B-1}, g1_0..g1_{B-1}, ...] (N=len(x)//B groups of size B)
-    -> each group repeated `repeat` times, concatenated group-by-group.
-    Verbatim `src/neurojepa/utils/tensors.py`."""
+    -> each group repeated `repeat` times, concatenated group-by-group."""
     N = len(x) // B
     return torch.cat(
         [
@@ -245,8 +250,7 @@ class MoE(nn.Module):
 def moe_bias_update(
     model: nn.Module, update_rate: float, bias_clip: float = 0.3
 ) -> tuple[float, float]:
-    """Aux-loss-free load-balancing update, ported from
-    `models/utils/moe.py::moe_bias_update`.
+    """Aux-loss-free load-balancing update.
 
     `model` must expose `.blocks` (a ModuleList of `Block` instances, some
     of which may hold a `MoE` in `.mlp`). Call this once per optimizer step,
@@ -518,6 +522,14 @@ class VisionTransformer3DMoE(nn.Module):
     """3D ViT backbone with an optional sparse Mixture-of-Experts (MoE)
     mixed in at configurable layers.
 
+    ``num_prefix_tokens`` and ``forward_features`` are exposed for interface
+    parity with :class:`~nidl.backbones.volume.VisionTransformer3D`. Note
+    that ``forward_features`` returns ``(tokens, moe_scores)``.
+
+    This backbone is not yet fully compliant with the timm Vision
+    Transformer interface: in particular, it supports neither a class token
+    nor register tokens (``has_class_token=False``, ``num_reg_tokens=0``).
+
     Parameters
     ----------
     img_size : (int, int, int), default=(96, 108, 96)
@@ -601,6 +613,10 @@ class VisionTransformer3DMoE(nn.Module):
         self.apply(self._init_weights)
         self._rescale_blocks()
 
+        self.has_class_token = False
+        self.num_reg_tokens = 0
+        self.num_prefix_tokens = 0
+
     @property
     def grid_shape(self) -> tuple[int, int, int]:
         """(nH, nW, nD) patch-grid dimensions."""
@@ -638,24 +654,54 @@ class VisionTransformer3DMoE(nn.Module):
     def forward(
         self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
     ):
-        """Encode a volume into patch tokens.
+        """
+        Forward pass.
+
+        Given that the backbone has been developed for NeuroJEPA
+        it doesn't currently feature a ``forward_head`` method
+        making ``forward`` and ``forward_features`` functionally equivalent.
 
         Parameters
         ----------
         x : torch.Tensor
-            ``(B, C, H, W, D)`` volume.
-        masks : list of torch.Tensor or None, default=None
-            Optional list of ``(B, K)`` LongTensors: if given, only those
-            patch indices are kept, and the output batch is multiplied by
+            Input volume of shape ``(B, C, H, W, D)``.
+        masks : list of torch.Tensor, default=None
+            Optional list of ``(B, K)`` LongTensors. If given, only those
+            patch indices are kept; output batch is multiplied by
             ``len(masks)`` (one block per mask, concatenated along batch).
 
         Returns
         -------
         tokens : torch.Tensor
-            ``(B[*len(masks)], K, E)`` patch tokens.
+            Output tokens of shape ``(B * len(masks), K, E)``.
         moe_scores : list
-            One entry per block of router scores, or an empty list if
-            `use_moe=False`.
+            Router scores (one entry per block), or an empty list if
+            ``use_moe=False``.
+        """
+        return self.forward_features(x, masks)
+
+    def forward_features(
+        self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
+    ):
+        """
+        Compute the backbone features.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input volume of shape ``(B, C, H, W, D)``.
+        masks : list of torch.Tensor, default=None
+            Optional list of ``(B, K)`` LongTensors. If given, only those
+            patch indices are kept; output batch is multiplied by
+            ``len(masks)`` (one block per mask, concatenated along batch).
+
+        Returns
+        -------
+        tokens : torch.Tensor
+            Output tokens of shape ``(B * len(masks), K, E)``.
+        moe_scores : list
+            Router scores (one entry per block), or an empty list if
+            ``use_moe=False``.
         """
         _, _, H, W, D = x.shape
         H_p, W_p, D_p = (
