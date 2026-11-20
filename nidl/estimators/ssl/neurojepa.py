@@ -31,46 +31,55 @@ from nidl.estimators.ssl.utils.momentum import (
     initialize_momentum_params,
 )
 from nidl.estimators.ssl.utils.optimizer import configure_ssl_optimizers
+from nidl.estimators.ssl.utils.vit_wrapper import ViTWrapperMixin
 from nidl.utils.data_parsing import parse_x_or_xy_batch
 
 
-class NeuroJEPAEncoderWrapper(nn.Module):
+class NeuroJEPAEncoderWrapper(ViTWrapperMixin, nn.Module):
     """
     Thin interface-checking wrapper around a user-supplied 3D encoder.
     This module adapts a Vision Transformer (ViT) implementation that follows
-    the `timm` encoder interface and exposes a reduced NeuroJEPA-oriented API.
-        
+    the `timm` encoder interface to expose a reduced, NeuroJEPA-oriented API.
+
     Parameters
     ----------
     vit : nn.Module
         Vision Transformer-like encoder module. The wrapped module must
         expose the following attributes or methods:
-            - ``embed_dim`` (int)
-            - ``blocks`` (nn.ModuleList)
-            - ``has_class_token`` (bool)
-            - ``num_reg_tokens`` (int)
-            - ``patch_size`` (3-tuple)
-            - ``grid_shape`` (3-tuple)
-            - ``forward(x, masks=None) -> (tokens, moe_scores)``,
-        `vit3d_moe.VisionTransformer3D` is a reference implementation
-        satisfying this contract.
+
+        - ``embed_dim`` (int)
+        - ``blocks`` (nn.ModuleList)
+        - ``has_class_token`` (bool)
+        - ``num_reg_tokens`` (int)
+        - ``patch_size`` (3-tuple)
+        - ``grid_shape`` (3-tuple)
+        - ``forward(x, masks=None) -> (tokens, moe_scores)``
+
+        :class:`~nidl.backbones.volume.VisionTransformer3DMoE` is a
+        reference implementation satisfying this contract.
 
     Raises
     ------
     TypeError
         If ``vit`` is missing any of the required attributes.
 
-        
     Notes
-    ------
-    The forward_features method is functionally identical to forward
-    and its kept for compatibility with code that follows the timm interface
+    -----
+    The ``forward_features`` method is functionally identical to ``forward``
+    and is kept for compatibility with code that follows the timm interface.
+    The ``embed_dim``, ``num_heads``, ``has_class_token``, ``num_reg_tokens``
+    and ``num_prefix_tokens`` attributes and the interface check are derived
+    from the shared wrapper
+    :class:`~nidl.estimators.ssl.utils.vit_wrapper.ViTWrapperMixin`.
     """
 
     _REQUIRED = (
-        "embed_dim", "blocks",
-        "has_class_token", "num_reg_tokens",
-        "patch_size", "grid_shape"
+        "embed_dim",
+        "blocks",
+        "has_class_token",
+        "num_reg_tokens",
+        "patch_size",
+        "grid_shape",
     )
 
     def __init__(self, vit: nn.Module):
@@ -84,54 +93,6 @@ class NeuroJEPAEncoderWrapper(nn.Module):
         if not callable(getattr(vit, "forward", None)):
             raise TypeError("encoder must be callable (implement forward).")
         self.vit = vit
-    
-    def _is_vit_like(self, vit: nn.Module):
-        """
-        Check whether a module follows the expected timm-like ViT interface
-
-        Parameters
-        ----------
-        vit : nn.Module
-            Module to validate.
-
-        Returns
-        -------
-        list[str]
-            Names of required attributes or methods that are missing from
-            ``vit``. An empty list indicates that the module matches the
-            expected interface.
-
-        Notes
-        -----
-        This is a shallow interface check.
-        It verifies the presence of required members, but does not validate
-        their semantics, signatures, or runtime behavior.
-        """
-        missings = [a for a in self._REQUIRED if not hasattr(vit, a)]
-        return missings
-
-    @property
-    def embed_dim(self) -> int:
-        return self.vit.embed_dim
-
-    @property
-    def num_heads(self):
-        return self.vit.blocks[0].attn.num_heads
-
-    @property
-    def has_class_token(self):
-        return self.vit.has_class_token
-
-    @property
-    def num_prefix_tokens(self):
-        # Prefer timm's own bookkeeping if present
-        if hasattr(self.vit, "num_prefix_tokens"):
-            return self.vit.num_prefix_tokens
-        n = 0
-        if self.has_class_token:
-            n += 1
-        n += self.num_reg_tokens
-        return n
 
     @property
     def patch_size(self) -> tuple[int, int, int]:
@@ -151,9 +112,7 @@ class NeuroJEPAEncoderWrapper(nn.Module):
         return self.vit(x, masks=masks)
 
     def forward_features(
-        self,
-        x: torch.Tensor,
-        masks: Optional[list[torch.Tensor]] = None
+        self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
     ):
         return self.forward(x, masks)
 
@@ -163,8 +122,6 @@ class VisionTransformerPredictor3D(nn.Module):
     Lightweight Vision Transformer that takes
     context-encoder tokens + (context indices, target indices) and
     predicts the target-encoder's latents at the target positions.
-
-    Ported from: src/neurojepa/models/predictor.py
     """
 
     def __init__(
@@ -299,8 +256,6 @@ def compute_foreground_patches(
     """Per-patch boolean foreground map from voxel intensities: a patch
     counts as foreground if at least `min_foreground_fraction` of its voxels
     exceed a per-sample, data-driven intensity threshold.
-
-    Ported from `src/neurojepa/masks/masking.py::compute_foreground_patches`.
     """
     pH, pW, pD = patch_size
     B = volumes.shape[0]
@@ -325,7 +280,7 @@ def compute_foreground_patches(
 
 @dataclass
 class MaskScaleConfig:
-    """One entry of the `mask:` list in `pretrain_neurojepa_base.yaml`."""
+    """Configuration of one masking scale (see `MultiScaleMaskCollator`)."""
 
     spatial_scale: tuple[float, float] = (0.0, 0.2)
     depth_scale: tuple[float, float] = (0.0, 1.0)
@@ -355,8 +310,6 @@ class _MaskGenerator:
     `total_mask_ratio` of all patches. One "scale" in the multi-scale scheme;
     `MultiScaleMaskCollator` runs several of these (one per `MaskScaleConfig`)
     per training step.
-
-    Ported from: src/neurojepa/masks/masking.py::_MaskGenerator
     """
 
     def __init__(self, grid_shape: tuple[int, int, int], cfg: MaskScaleConfig):
@@ -485,8 +438,6 @@ class _MaskGenerator:
 class MultiScaleMaskCollator:
     """Runs one `_MaskGenerator` per `MaskScaleConfig`, plus (optionally) the
     foreground computation.
-
-    Ported from: src/neurojepa/masks/masking.py::MaskCollator
     """
 
     def __init__(
@@ -572,8 +523,6 @@ def foreground_aware_jepa_loss(
         weighting (falls back to a uniform mean L1, i.e. nidl's plain loss).
     bg_weight : weight assigned to a pure-background patch (fg=0); a pure
         foreground patch (fg=1) always gets weight 1.0.
-
-    Ported from: src/neurojepa/loss/jepa_loss.py
     """
     use_weighting = fg_map is not None and bg_weight < 1.0
     pred_fg = None
@@ -600,9 +549,10 @@ def foreground_aware_jepa_loss(
 
 
 class NeuroJEPA(TransformerMixin, BaseEstimator):
-    """Implementation of Neuro-JEPA [1]_.
+    """Implementation of Neuro-JEPA [1]_, adapted from the official
+    code [2]_.
 
-    This solver predicts the representations of missing parts
+    This estimator predicts the representations of missing parts
     of the input (here: 3D brain MRI patches) from a visible context, using
     a context encoder, an EMA target encoder, and a predictor.
 
@@ -618,18 +568,20 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
     ----------
     encoder : nn.Module
         3D ViT-like encoder that follows the `timm` interface.
-        See `nidl.volume.backbones.vit3d_moe.VisionTransformer3D` for a
+        See :class:`~nidl.backbones.volume.VisionTransformer3DMoE` for a
         reference implementation (with or without a sparse MoE backbone -- pass
         ``use_moe=True`` to that constructor and set ``use_moe=True`` here
         too so the MoE bias update runs during training).
 
-    mask_scale_configs : sequence of MaskScaleConfig,
-        default=3-scale paper config
+    mask_scale_configs : sequence of MaskScaleConfig, \
+        default=3-scale config from [1]_
         One entry per masking "scale": each draws `num_blocks` blocks with
         sizes controlled by `spatial_scale`/`depth_scale`/`aspect_ratio`,
         unions them, and adjusts to hit exactly `total_mask_ratio` of all
-        patches. Concretely: small-block, medium-block, and large-block
-        maskings are all trained on for every volume, at every step.
+        patches. By default, a small-block (32 blocks, 0-20% spatial
+        scale), a medium-block (16 blocks, 20-50% spatial scale), and a
+        large-block (4 blocks, 50-70% spatial scale) masking are all drawn
+        for every volume, at every step, each targeting a 75% mask ratio.
 
     foreground_aware : bool, default=True
         Whether to compute a per-patch foreground map (voxel-intensity based)
@@ -637,8 +589,15 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         background patches first, and (b) down-weight background patches in
         the loss (see `bg_weight`).
 
-    foreground_threshold, min_foreground_fraction : float
-        Passed to `compute_foreground_patches`.
+    foreground_threshold : float, default=0.0
+        Fallback per-sample voxel-intensity threshold used by
+        `compute_foreground_patches` when the sample's data-driven
+        (2nd/98th percentile based) threshold cannot be estimated.
+
+    min_foreground_fraction : float, default=0.1
+        Minimum fraction of foreground voxels a patch must contain to be
+        itself counted as a foreground patch (see
+        `compute_foreground_patches`).
 
     loss_exp : float, default=1.0
         Exponent of the per-token L1-style loss (`|pred - target|^p / p`).
@@ -654,22 +613,66 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
         `vision_transformer_3d.moe_bias_update`). Set to match however you
         built `encoder`.
 
-    moe_bias_update_rate, moe_bias_clip : float
-        Hyperparameters of that update (ignored if `use_moe=False`).
+    moe_bias_update_rate : float, default=1e-4
+        Step size of the MoE router bias update (ignored if `use_moe=False`).
 
-    predictor_embed_dim, predictor_depth, predictor_num_heads : int
-        Predictor size, analogous to nidl's `predictor_embed_dim` /
-        `predictor_depth_pred`.
+    moe_bias_clip : float, default=0.3
+        Maximum absolute value of the MoE router bias after each update
+        (ignored if `use_moe=False`).
 
-    ema_start, ema_end : float
-        Passed straight to nidl's own `MomentumUpdater`.
+    predictor_embed_dim : int, default=384
+        Dimension of the predictor hidden layers. It can be different from
+        the encoder output dimension.
 
-    optimizer, learning_rate, weight_decay, exclude_bias_and_norm_wd,
-    optimizer_kwargs, lr_scheduler, lr_scheduler_kwargs : same as `IJEPA`.
+    predictor_depth : int, default=6
+        Number of Transformer blocks in the predictor.
 
-    **kwargs : dict
-        Extra named arguments for `BaseEstimator` (given to the PL
-        `Trainer`), such as `max_epochs`, `max_steps`, `callbacks`, etc.
+    predictor_num_heads : int, default=12
+        Number of attention heads in the predictor.
+
+    optimizer : {'sgd', 'adam', 'adamW'} or Optimizer, default='adamW'
+        Optimizer for training the model. If a string is given, it can be:
+
+            - 'sgd': Stochastic Gradient Descent (with optional momentum).
+            - 'adam': First-order gradient-based optimizer.
+            - 'adamW' (default): Adam with decoupled weight decay
+              regularization (see "Decoupled Weight Decay Regularization",
+              Loshchilov and Hutter, ICLR 2019).
+
+    learning_rate : float, default=6e-4
+        Initial learning rate.
+
+    weight_decay : float, default=0.04
+        Weight decay in the optimizer.
+
+    exclude_bias_and_norm_wd : bool, default=True
+        Whether the bias terms and normalization layers get weight decay
+        during optimization or not.
+
+    ema_start : float, default=0.99925
+        Base value for the weighting coefficient in the target encoder
+        momentum update with exponential moving average. A cosine
+        annealing scheme is used.
+
+    ema_end : float, default=1.0
+        Final value for the weighting coefficient in the target encoder
+        momentum update.
+
+    optimizer_kwargs : dict or None, default=None
+        Extra named arguments for the optimizer.
+
+    lr_scheduler : {"none", "warmup_cosine"}, LRSchedulerPLType or None, \
+        default="warmup_cosine"
+        Learning rate scheduler to use.
+
+    lr_scheduler_kwargs : dict or None, default=None
+        Extra named arguments for the scheduler. By default, it is set to
+        {"warmup_epochs": 10, "warmup_start_lr": 1e-6, "min_lr": 0.0,
+        "interval": "step"}.
+
+    **kwargs : dict, optional
+        Extra named arguments for the `BaseEstimator` class (given to the
+        PL `Trainer`), such as `max_epochs`, `max_steps`, `callbacks`, etc.
 
     Attributes
     ----------
@@ -686,6 +689,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
     ----------
     .. [1] Huang et al., "Learning Sparse Latent Predictive Foundation
            Model for Multimodal Neuroimaging", arXiv:2606.14957.
+    .. [2] https://github.com/NYUMedML/Neuro-JEPA
     """
 
     def __init__(

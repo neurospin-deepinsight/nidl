@@ -84,8 +84,8 @@ class PatchEmbed3D(nn.Module):
     bias : bool, default=True
         Whether to use bias in the projection layer.
     strict_img_size : bool, default=True
-        Whether to require all batch images to have
-        the same input size during forward.
+        Whether to require the input spatial size to match ``img_size``
+        exactly during forward.
     flatten : bool, default=True
         Whether to flatten to token sequence.
     output_fmt : str, default="NLC"
@@ -221,7 +221,10 @@ class VisionTransformer3D(nn.Module):
         Whether to apply normalization after pooling. If ``None``, defaults
         to ``global_pool == "avg"``.
     dynamic_img_size : bool, default=False
-        Accept any input size (position embeddings are resized).
+        Whether to accept inputs whose spatial size differs from
+        ``img_size``. If ``True``, patch position embeddings are resized on
+        the fly (with trilinear interpolation, or rebuilt exactly if
+        ``pos_embed="sincos"``).
     pos_embed : {"learned", "sincos", "none"}, default="learned"
         Absolute positional embedding mode.
     drop_rate : float, default=0.0
@@ -291,6 +294,7 @@ class VisionTransformer3D(nn.Module):
         self.num_reg_tokens = int(reg_tokens)
         self.no_embed_class = bool(no_embed_class)
         self.dynamic_img_size = dynamic_img_size
+        self.pos_embed_type = pos_embed
         self.num_prefix_tokens = (
             1 if class_token else 0
         ) + self.num_reg_tokens
@@ -462,26 +466,34 @@ class VisionTransformer3D(nn.Module):
 
     def _compute_grid_shape(self, x: Tensor) -> list[int]:
         """
-        Compute Patch grid shape ``[H', W', D']``
-        for an input ``(B, C, H, W, D)``.
+        Compute the patch grid shape ``[H', W', D']`` for an input of
+        shape ``(B, C, H, W, D)``.
         """
         patch_size = self.patch_embed.patch_size
-        return [s // p for s, p in zip(x.shape[-3:], patch_size)]
+        return [s // p for s, p in zip(x.shape[-3:], patch_size, strict=True)]
 
     def _resize_pos_embed(self, grid: Sequence[int]) -> Optional[Tensor]:
         """
-        Trilinear resize of the patch position embeddings
-        to target shape``grid``
+        Resize the patch position embeddings to the target patch grid
+        ``grid``.
+
+        Learned embeddings are resized with trilinear interpolation, while
+        sin-cos embeddings are rebuilt exactly for the new grid. Prefix
+        token embeddings, if any, are kept unchanged.
         """
         grid = tuple(grid)
         if self.pos_embed is None or grid == tuple(self.grid_size):
             return self.pos_embed
         n = 0 if self.no_embed_class else self.num_prefix_tokens
         prefix, pos = self.pos_embed[:, :n], self.pos_embed[:, n:]
-        pos = pos.reshape(1, *self.grid_size, -1).permute(0, 4, 1, 2, 3)
-        pos = nn.functional.interpolate(
-            pos, size=grid, mode="trilinear", align_corners=False
-        )
+        if self.pos_embed_type == "sincos":
+            pos = build_3d_sincos_posemb(*grid, embed_dim=self.embed_dim)
+            pos = pos.to(prefix)
+        else:
+            pos = pos.reshape(1, *self.grid_size, -1).permute(0, 4, 1, 2, 3)
+            pos = nn.functional.interpolate(
+                pos, size=grid, mode="trilinear", align_corners=False
+            )
         return torch.cat([prefix, pos.flatten(2).transpose(1, 2)], dim=1)
 
     def _patch_tokens(self, x: Tensor) -> Tensor:
@@ -540,9 +552,7 @@ class VisionTransformer3D(nn.Module):
 
         raise ValueError(f"Unsupported pool_type: {pool_type}.")
 
-    def forward_features(
-        self, x: Tensor
-    ) -> Tensor:
+    def forward_features(self, x: Tensor) -> Tensor:
         """
         Compute token features.
 
@@ -550,6 +560,7 @@ class VisionTransformer3D(nn.Module):
         ----------
         x : torch.Tensor
             Input tensor of shape ``(B, C, H, W, D)``.
+
         Returns
         -------
         torch.Tensor
@@ -717,6 +728,7 @@ class VisionTransformer3D(nn.Module):
         if isinstance(self.pos_embed, nn.Parameter):
             nwd.add("pos_embed")
         return nwd
+
 
 def _resize_pos_embed_2d_to_3d(
     pos_embed: Tensor,

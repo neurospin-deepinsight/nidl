@@ -1,5 +1,5 @@
 ##########################################################################
-# NSAp - Copyright (C) CEA, 2025
+# NSAp - Copyright (C) CEA, 2026
 # Distributed under the terms of the CeCILL-B license, as published by
 # the CEA-CNRS-INRIA. Refer to the LICENSE file or to
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
@@ -17,11 +17,6 @@ import torch.nn.functional as F  # ruff: ignore[lowercase-imported-as-non-lowerc
 from torch import distributed as dist
 from torch import nn
 
-# ==========================================================================
-# Low-level utilities
-#   Ported from: src/neurojepa/utils/tensors.py, src/neurojepa/masks/utils.py
-# ==========================================================================
-
 
 def trunc_normal_(
     tensor: torch.Tensor,
@@ -30,7 +25,7 @@ def trunc_normal_(
     a: float = -2.0,
     b: float = 2.0,
 ) -> torch.Tensor:
-    """Truncated-normal init, identical to the official `utils/tensors.py`."""
+    """Truncated-normal init."""
 
     def norm_cdf(x):
         return (1.0 + math.erf(x / math.sqrt(2.0))) / 2.0
@@ -50,8 +45,7 @@ def apply_masks(
     x: torch.Tensor, masks: Sequence[torch.Tensor], concat: bool = True
 ):
     """Gathers, per mask in `masks`, the tokens of `x` indexed by that mask,
-    then concatenates the results along the batch dimension. Verbatim (up to
-    formatting) `src/neurojepa/masks/utils.py`.
+    then concatenates the results along the batch dimension.
 
     Parameters
     ----------
@@ -76,8 +70,7 @@ def repeat_interleave_batch(
     x: torch.Tensor, B: int, repeat: int
 ) -> torch.Tensor:
     """[g0_0..g0_{B-1}, g1_0..g1_{B-1}, ...] (N=len(x)//B groups of size B)
-    -> each group repeated `repeat` times, concatenated group-by-group.
-    Verbatim `src/neurojepa/utils/tensors.py`."""
+    -> each group repeated `repeat` times, concatenated group-by-group."""
     N = len(x) // B
     return torch.cat(
         [
@@ -86,12 +79,6 @@ def repeat_interleave_batch(
         ],
         dim=0,
     )
-
-
-# ==========================================================================
-# Patch embedding
-#   Ported from: src/neurojepa/models/utils/patch_embed.py
-# ==========================================================================
 
 
 class PatchEmbed3D(nn.Module):
@@ -116,11 +103,10 @@ class PatchEmbed3D(nn.Module):
 
 # ==========================================================================
 # Mixture-of-Experts
-#   Ported from: src/neurojepa/models/utils/moe.py
 #   Aux-loss-free, bias-corrected top-k router (DeepSeek-V3 style) with a
 #   handful of *shared* experts (always active, dense) plus N *routed*
 #   experts (only top-k active per token). Lets different experts
-#   specialize by anatomical region / tissue type (paper Fig. 5) instead of
+#   specialize by anatomical region / tissue type instead of
 #   every token going through one shared dense MLP.
 # ==========================================================================
 
@@ -264,10 +250,7 @@ class MoE(nn.Module):
 def moe_bias_update(
     model: nn.Module, update_rate: float, bias_clip: float = 0.3
 ) -> tuple[float, float]:
-    """Aux-loss-free load-balancing update, ported from
-    `models/utils/moe.py::moe_bias_update`, simplified to single-device
-    (the official version additionally all-reduces expert counts across
-    DDP ranks before this step; add that back if training distributed).
+    """Aux-loss-free load-balancing update.
 
     `model` must expose `.blocks` (a ModuleList of `Block` instances, some
     of which may hold a `MoE` in `.mlp`). Call this once per optimizer step,
@@ -345,14 +328,6 @@ class MoEParams:
     # Layer indices (0-indexed) that use MoE; the rest use a plain dense MLP.
     # Matches the official base config: every other block from 1 to 11.
     moe_layer_indices: tuple[int, ...] = (1, 3, 5, 7, 9, 11)
-
-
-# ==========================================================================
-# Attention + Transformer block
-#   Ported from: src/neurojepa/models/utils/modules.py
-#   (dropped: ACRoPEAttention / action tokens / causal masking -- V-JEPA2
-#   video-only extras, unused by Neuro-JEPA's own pretrain config)
-# ==========================================================================
 
 
 def rotate_queries_or_keys(x: torch.Tensor, pos: torch.Tensor) -> torch.Tensor:
@@ -543,19 +518,17 @@ class Block(nn.Module):
         return x, moe_scores
 
 
-# ==========================================================================
-# Vision Transformer encoder -- the independent, reusable backbone
-#   Ported from: src/neurojepa/models/vision_transformer.py
-# ==========================================================================
-
-
 class VisionTransformer3DMoE(nn.Module):
     """3D ViT backbone with an optional sparse Mixture-of-Experts (MoE)
     mixed in at configurable layers.
 
-    num_prefix_tokens and forward_features have been added for compatibility
-    with code developed for a standard vit backbone with no MoE
-    (as in nidl/backbones/vit3d.py)
+    ``num_prefix_tokens`` and ``forward_features`` are exposed for interface
+    parity with :class:`~nidl.backbones.volume.VisionTransformer3D`. Note
+    that ``forward_features`` returns ``(tokens, moe_scores)``.
+
+    This backbone is not yet fully compliant with the timm Vision
+    Transformer interface: in particular, it supports neither a class token
+    nor register tokens (``has_class_token=False``, ``num_reg_tokens=0``).
 
     Parameters
     ----------
@@ -584,10 +557,6 @@ class VisionTransformer3DMoE(nn.Module):
         Sparse MoE hyperparameters. Required if `use_moe=True`.
     init_std : float, default=0.02
         Standard deviation used for truncated-normal weight init.
-    class_token : bool, default=False
-        Whether to prepend a CLS token.
-    reg_tokens : int, default=0
-        Number of register tokens.
     """
 
     def __init__(
@@ -603,8 +572,6 @@ class VisionTransformer3DMoE(nn.Module):
         use_moe=False,
         moe_params: Optional[MoEParams] = None,
         init_std=0.02,
-        class_token: bool = False,
-        reg_tokens: int = 0
     ):
         super().__init__()
         self.embed_dim = embed_dim
@@ -646,11 +613,9 @@ class VisionTransformer3DMoE(nn.Module):
         self.apply(self._init_weights)
         self._rescale_blocks()
 
-        self.has_class_token = class_token
-        self.num_reg_tokens = int(reg_tokens)
-        self.num_prefix_tokens = (
-            1 if self.has_class_token else 0
-        ) + self.num_reg_tokens
+        self.has_class_token = False
+        self.num_reg_tokens = 0
+        self.num_prefix_tokens = 0
 
     @property
     def grid_shape(self) -> tuple[int, int, int]:
@@ -716,9 +681,7 @@ class VisionTransformer3DMoE(nn.Module):
         return self.forward_features(x, masks)
 
     def forward_features(
-        self,
-        x: torch.Tensor,
-        masks: Optional[list[torch.Tensor]] = None
+        self, x: torch.Tensor, masks: Optional[list[torch.Tensor]] = None
     ):
         """
         Compute the backbone features.
@@ -769,4 +732,3 @@ class VisionTransformer3DMoE(nn.Module):
                 moe_scores_all.append(moe_scores)
 
         return self.norm(x), moe_scores_all
-        

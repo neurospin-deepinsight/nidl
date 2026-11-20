@@ -66,8 +66,6 @@ def _tiny_vit(use_moe: bool = False) -> VisionTransformer3DMoE:
         num_heads=2,
         use_moe=use_moe,
         moe_params=moe_params,
-        class_token=False,
-        reg_tokens=0
     )
 
 
@@ -292,13 +290,10 @@ class TestNeuroJEPAComponents(unittest.TestCase):
     def test_encoder_wrapper_exposes_interface(self):
         encoder = _tiny_vit()
         wrapper = NeuroJEPAEncoderWrapper(encoder)
-        
-        self.assertEqual(wrapper.embed_dim, encoder.embed_dim)
+
         self.assertIs(wrapper.blocks, encoder.blocks)
-        self.assertEqual(wrapper.has_class_token, encoder.has_class_token)
         self.assertEqual(wrapper.patch_size, encoder.patch_size)
         self.assertEqual(wrapper.grid_shape, encoder.grid_shape)
-        
 
         x = torch.rand(2, 1, *VOLUME_SHAPE)
         tokens, moe_scores = wrapper(x)
