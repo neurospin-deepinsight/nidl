@@ -26,16 +26,46 @@ from typing import Any, Optional, Union
 
 import nibabel
 import numpy as np
+import pandas as pd
 from torch.utils.data import Dataset
 
 # preprocessing -> (folder in the repository, available modalities)
 PREPROCESSINGS = {
     "quasiraw": ("quasiraw-v2.1.1", ("t1", "t2", "flair")),
     "cat12vbm": ("cat12vbm-12.8.2", ("mwp1",)),
+    # same shards as "cat12vbm", reading the morphometry instead of the image
+    "cat12vbm_roi": ("cat12vbm-12.8.2", ("mwp1",)),
+}
+# Tissue -> prefix of its volumes in the CAT12 morphometry
+TISSUES = {"gm": "Vgm", "wm": "Vwm", "csf": "Vcsf"}
+# Atlases of the CAT12 (12.8.2) morphometry -> (number of regions, tissues
+# with a volume per region), and the global volumes ("total_volumes": TIV,
+# CSF, GM and WM, not split by tissue)
+ROI_ATLASES = {
+    "aal3": (170, ("gm",)),
+    "cobra": (52, ("gm", "wm")),
+    "hammers": (95, ("gm", "wm", "csf")),
+    "ibsr": (32, ("gm", "wm", "csf")),
+    "julichbrain": (248, ("gm", "wm")),
+    "lpba40": (56, ("gm", "wm")),
+    "mori": (128, ("gm", "wm")),
+    "neuromorphometrics": (136, ("gm", "wm", "csf")),
+    "Schaefer2018_100Parcels_17Networks_order": (100, ("gm", "wm")),
+    "Schaefer2018_200Parcels_17Networks_order": (200, ("gm", "wm")),
+    "Schaefer2018_400Parcels_17Networks_order": (400, ("gm", "wm")),
+    "Schaefer2018_600Parcels_17Networks_order": (600, ("gm", "wm")),
+    "suit": (28, ("gm", "wm")),
+    "thalamic_nuclei": (22, ("gm",)),
+    "thalamus": (14, ("gm",)),
+    "total_volumes": (4, ()),
 }
 MODALITIES = tuple(
     dict.fromkeys(m for _, mods in PREPROCESSINGS.values() for m in mods)
 )
+# Image identity in the index (meta.json) and in participants.tsv
+IMAGE_COLUMNS = ("dataset", "subject", "session", "modality", "run")
+# Phenotypes of participants.tsv
+PHENOTYPES = ("age", "sex", "bmi", "race", "handedness", "health_status")
 INDEX_NAME = "index.json.gz"
 _INDEX_VERSION = 1
 _DATASET_RE = re.compile(r"ds\d+")
@@ -64,9 +94,10 @@ class OpenMind(Dataset):
       `(1, 182, 218, 182)`.
     - "cat12vbm": T1w images processed with CAT12 VBM (v12.8.2). The images
       are the modulated gray matter maps ("mwp1") non-linearly registered to
-      MNI space at 1.5mm isotropic, shape `(1, 113, 137, 113)`. Each image
-      comes with its morphometry: the gray matter volume of each region of
-      16 atlases (see `return_morphometry`).
+      MNI space at 1.5mm isotropic, shape `(1, 113, 137, 113)`.
+    - "cat12vbm_roi": the morphometry of the same CAT12 VBM images, i.e. the
+      gray matter (and white matter, CSF) volume of each region of an atlas,
+      in cm³ (see `atlas` and `tissue`), shape `(n_tissues, n_regions)`.
 
     The shards contain one sample per (subject, session, modality, run) tuple.
     Deciding which images go together is done here, at load time, with
@@ -85,14 +116,64 @@ class OpenMind(Dataset):
         of ``.tar`` shards per OpenNeuro dataset, and ``val_split.csv``.
         Missing files are fetched from the Hugging Face.
 
-    preprocessing : {"quasiraw", "cat12vbm"}, default="quasiraw"
-        Which preprocessed images to load.
+    preprocessing : {"quasiraw", "cat12vbm", "cat12vbm_roi"}, \
+        default="quasiraw"
+        Which preprocessed data to load.
+
+    atlas : None, str or sequence of str, default=None
+        Only available with ``preprocessing="cat12vbm_roi"``, where None
+        means "neuromorphometrics". Atlases of the morphometry to load (as
+        defined in CAT12 12.8.2), with their number of regions and the
+        tissues with a volume per region:
+
+        - "aal3": 170 regions (166 in AAL3 + 4 labels empty by design,
+          always 0), GM
+        - "cobra": 52, GM and WM
+        - "hammers": 95, GM, WM and CSF
+        - "ibsr": 32, GM, WM and CSF
+        - "julichbrain": 248, GM and WM
+        - "lpba40": 56, GM and WM
+        - "mori": 128, GM and WM
+        - "neuromorphometrics": 136, GM, WM and CSF
+        - "Schaefer2018_<N>Parcels_17Networks_order" with N in 100, 200, 400
+          and 600: N regions, GM and WM
+        - "suit": 28, GM and WM
+        - "thalamic_nuclei": 22, GM
+        - "thalamus": 14, GM
+        - "total_volumes": the TIV, CSF, GM and WM volumes of the whole
+          brain, in this order, always of shape `(1, 4)` (`tissue` does not
+          apply).
+
+        A string returns a `(n_tissues, n_regions)` array per image; a
+        sequence returns a dict {atlas: array} per image. The region names
+        are given by `get_roi_labels`. Some regions may be empty (volume 0),
+        e.g. very small nuclei.
+
+    tissue : None, str or sequence of str, default=None
+        Only available with ``preprocessing="cat12vbm_roi"``, where None
+        means "gm". Tissue(s) whose volume per region is loaded, among "gm"
+        (gray matter), "wm" (white matter) and "csf", one row per tissue in
+        the given order. Each requested tissue must be available for all
+        the requested atlases (see `atlas`).
 
     modality : None, str or sequence of str, default=None
         Modalities to keep, among "t1", "t2" and "flair" for the quasi-raw
         preprocessing and "mwp1" for CAT12 VBM. None keeps all of them. A
         string returns a single image per item; a sequence returns a dict
         {modality: image} per item, see `group_by`.
+
+    target : None, str or list of str, default=None
+        Phenotype(s) returned with each item, among "age" (float, years), 
+        "sex" ("female" or "male"), "bmi" (float),
+        "race" ("white/caucasian", "african american/black", "asian" or
+        "multiracial/mixed"), "handedness" ("right", "left" or
+        "ambidextrous") and "health_status" ("healthy" or "ill"). Unknown
+        values are NaN. If a string, `__getitem__` returns ``(data,
+        target)``; if a list, ``(data, {phenotype: target})``. If None (the
+        default, for self-supervised learning), only the data are returned.
+        For grouped items, the target is read from the first available image
+        of the group (the phenotypes are the same for all the images of a
+        subject).
 
     group_by : None, {"session", "subject"} or callable, default=None
         How images are regrouped into items:
@@ -151,13 +232,6 @@ class OpenMind(Dataset):
         If True, multiply each image by its brain mask. Images without mask
         (e.g. CAT12 VBM) are returned unchanged.
 
-    return_morphometry : bool, default=False
-        Only available with ``preprocessing="cat12vbm"``. If True,
-        `__getitem__` returns ``(data, morphometry)`` where `morphometry` is
-        a dict {atlas: {region: gray matter volume}} (plus the "total_volumes"
-        TIV, GM, WM and CSF volumes). For grouped dict items, `morphometry` is
-        a dict {modality: morphometry}.
-
     streaming : bool, default=True
         If True, the images of the shards missing locally are downloaded on
         demand from the Hugging Face (when accessed via `__getitem__`), one
@@ -179,6 +253,18 @@ class OpenMind(Dataset):
         A function/transform that takes in an image (or a dict of images) and
         returns a transformed version.
 
+    target_transforms : callable or None, default=None
+        A function/transform applied to the target(s).
+
+    Attributes
+    ----------
+    images : pandas.DataFrame
+        Metadata of the selected images, indexed by their position in
+        `entries` (the indices referenced by `items`): "dataset", "subject",
+        "session", "modality", "run" and the phenotypes of
+        ``participants.tsv``. Built (and ``participants.tsv`` fetched) on
+        first access only.
+
     Examples
     --------
     One quasi-raw T1w image per item:
@@ -199,18 +285,31 @@ class OpenMind(Dataset):
     >>> print(sample["t1"].shape, sample["t2"].shape)
     (1, 182, 218, 182) (1, 182, 218, 182)
 
-    CAT12 VBM gray matter maps with their morphometry:
+    CAT12 VBM gray matter volumes per region of two atlases, with the TIV:
 
-    >>> dataset = OpenMind(root="data/openmind", preprocessing="cat12vbm",
-    ...                    return_morphometry=True)
-    >>> mwp1, morphometry = dataset[0]
-    >>> print(mwp1.shape, morphometry["total_volumes"]["TIV"])
-    (1, 113, 137, 113) 1391.08099215686
+    >>> dataset = OpenMind(
+    ...     root="data/openmind",
+    ...     preprocessing="cat12vbm_roi",
+    ...     atlas=("neuromorphometrics", "aal3", "total_volumes"),
+    ... )
+    >>> rois = dataset[0]
+    >>> print(rois["neuromorphometrics"].shape, rois["aal3"].shape)
+    (1, 136) (1, 170)
+    >>> print(rois["total_volumes"][0, 0])  # TIV
+    1391.081
 
     Subject-level train/validation splits (from ``<root>/val_split.csv``):
 
     >>> train = OpenMind(root="data/openmind", modality="t1", split="train")
     >>> val = OpenMind(root="data/openmind", modality="t1", split="val")
+
+    T1w images with the age and sex of the participants:
+
+    >>> dataset = OpenMind(root="data/openmind", modality="t1",
+    ...                    target=["age", "sex"])
+    >>> t1, target = dataset[0]
+    >>> print(target)
+    {'age': 26.0, 'sex': 'female'}
 
     One image per subject, drawn among all modalities:
 
@@ -248,7 +347,10 @@ class OpenMind(Dataset):
         self,
         root: str,
         preprocessing: str = "quasiraw",
+        atlas: Optional[Union[str, Sequence[str]]] = None,
+        tissue: Optional[Union[str, Sequence[str]]] = None,
         modality: Optional[Union[str, Sequence[str]]] = None,
+        target: Union[str, list[str], None] = None,
         group_by: Optional[Union[str, Callable[[dict], Any]]] = None,
         require_all: bool = True,
         instance: str = "first",
@@ -256,16 +358,21 @@ class OpenMind(Dataset):
         split: Optional[str] = None,
         split_file: Optional[str] = None,
         apply_mask: bool = False,
-        return_morphometry: bool = False,
         streaming: bool = True,
         max_workers: int = 1,
         shards: str = "*/*.tar",
         transforms: Optional[Callable] = None,
+        target_transforms: Optional[Callable] = None,
     ):
         self.root = self._parse_root(root)
         self.preprocessing = self._parse_preprocessing(preprocessing)
         self.folder = PREPROCESSINGS[self.preprocessing][0]
+        self.atlases = self._parse_atlas(atlas)
+        # A dict per image only makes sense when loading several atlases
+        self._atlas_as_dict = atlas is not None and not isinstance(atlas, str)
+        self.tissues = self._parse_tissue(tissue)
         self.modalities = self._parse_modality(modality)
+        self.target = self._parse_target(target)
         self.group_by = self._parse_group_by(group_by)
         self.require_all = require_all
         if instance not in ("first", "random", "all"):
@@ -276,14 +383,10 @@ class OpenMind(Dataset):
         self.instance = instance
         self.split = self._parse_split(split)
         self.apply_mask = apply_mask
-        if return_morphometry and self.preprocessing != "cat12vbm":
-            raise ValueError(
-                "return_morphometry is only available with "
-                "preprocessing='cat12vbm'"
-            )
-        self.return_morphometry = return_morphometry
         self.streaming = streaming
         self.transforms = transforms
+        self.target_transforms = target_transforms
+        self._images: Optional[pd.DataFrame] = None
         # A dict per item only makes sense when regrouping several modalities
         self._as_dict = group_by is not None and not isinstance(modality, str)
 
@@ -314,6 +417,7 @@ class OpenMind(Dataset):
             for i, e in enumerate(self.entries)
             if e["shard"] in in_shards
             and e["meta"]["modality"] in self.modalities
+            and (self.atlases is None or e["morphometry"] is not None)
             and (keep is None or self._is_kept(e["meta"], keep))
             and (
                 val_subjects is None
@@ -341,10 +445,12 @@ class OpenMind(Dataset):
         Returns
         -------
         data : array or dict of array
-            A float32 array of shape `(1, X, Y, Z)`, or a dict
-            {modality: array} for grouped multimodal items.
-        morphometry : dict, optional
-            Only if `return_morphometry` is True.
+            A float32 array of shape `(1, X, Y, Z)` (images) or
+            `(n_tissues, n_regions)` (morphometry), a dict {atlas: array} for
+            several atlases, and a dict {modality: ...} for grouped
+            multimodal items.
+        target : Any, optional
+            Only if `target` is not None.
         """
         chosen = {}
         for modality, candidates in self.items[idx].items():
@@ -355,26 +461,129 @@ class OpenMind(Dataset):
             else:
                 chosen[modality] = candidates[0]
 
-        images, morphometries = {}, {}
-        for modality, entry_idx in chosen.items():
-            if entry_idx is None:
-                images[modality], morphometries[modality] = None, None
-                continue
-            entry = self.entries[entry_idx]
-            images[modality] = self._load_image(entry)
-            if self.return_morphometry:
-                morphometries[modality] = self._load_morphometry(entry)
-
+        images = {
+            modality: (
+                None
+                if entry_idx is None
+                else self._load_rois(self.entries[entry_idx])
+                if self.atlases is not None
+                else self._load_image(self.entries[entry_idx])
+            )
+            for modality, entry_idx in chosen.items()
+        }
         if self._as_dict:
-            data, morphometry = images, morphometries
+            data = images
         else:
             # Exactly one modality per item (either ungrouped or a single
             # requested modality).
             (data,) = images.values()
-            morphometry = next(iter(morphometries.values()), None)
         if self.transforms is not None:
             data = self.transforms(data)
-        return (data, morphometry) if self.return_morphometry else data
+        if self.target is None:
+            return data
+        return data, self._get_target(chosen)
+
+    @property
+    def images(self) -> pd.DataFrame:
+        if self._images is None:
+            meta = pd.DataFrame(
+                [
+                    {c: self.entries[i]["meta"].get(c) for c in IMAGE_COLUMNS}
+                    for i in self._selected
+                ],
+                index=pd.Index(self._selected, name="entry"),
+                columns=list(IMAGE_COLUMNS),
+            )
+            self._images = (
+                meta.reset_index()
+                .merge(
+                    self.get_participants(),
+                    on=["dataset", "subject", "session", "run"],
+                    how="left",
+                )
+                .set_index("entry")
+            )
+        return self._images
+
+    def get_participants(self) -> pd.DataFrame:
+        """Phenotypes of each image (``participants.tsv``), with the columns
+        "dataset", "subject", "session", "run" and `PHENOTYPES`."""
+        path = os.path.join(self.root, "participants.tsv")
+        participants = pd.read_csv(
+            self.get_or_download_file(path),
+            sep="\t",
+            dtype=str,
+            na_values="n/a",
+            keep_default_na=False,
+        ).rename(
+            columns={"dataset_id": "dataset", "participant_id": "subject"}
+        )
+        for col in ("age", "bmi"):
+            participants[col] = pd.to_numeric(participants[col])
+        return participants[["dataset", "subject", "session", "run",
+                             *PHENOTYPES]]  # fmt: skip
+
+    def get_roi_labels(self) -> dict[str, list[str]]:
+        """Region names of each atlas of `atlas`, in the order of the
+        returned arrays (the same for all the images). Only available with
+        ``preprocessing="cat12vbm_roi"``; reads the morphometry of the first
+        image."""
+        if self.atlases is None:
+            raise ValueError(
+                "get_roi_labels is only available with "
+                "preprocessing='cat12vbm_roi'"
+            )
+        morphometry = self._load_morphometry(self.entries[self._selected[0]])
+        labels = {}
+        for atlas in self.atlases:
+            if atlas == "total_volumes":
+                labels[atlas] = list(morphometry[atlas])
+                continue
+            # The regions are in the same order for every tissue
+            prefix = f"{TISSUES['gm']}_"
+            labels[atlas] = [
+                key.removeprefix(prefix)
+                for key in morphometry[atlas]
+                if key.startswith(prefix)
+            ]
+        return labels
+
+    def _load_rois(self, entry: dict) -> Union[np.ndarray, dict]:
+        """Volumes of each region of the requested atlases and tissues."""
+        morphometry = self._load_morphometry(entry)
+        rois = {}
+        for atlas in self.atlases:
+            volumes = morphometry[atlas]
+            if atlas == "total_volumes":
+                rois[atlas] = np.fromiter(volumes.values(), np.float32)[None]
+                continue
+            rois[atlas] = np.stack(
+                [
+                    np.fromiter(
+                        (
+                            v
+                            for k, v in volumes.items()
+                            if k.startswith(f"{TISSUES[tissue]}_")
+                        ),
+                        np.float32,
+                    )
+                    for tissue in self.tissues
+                ]
+            )
+        return rois if self._atlas_as_dict else rois[self.atlases[0]]
+
+    def _get_target(self, chosen: dict[str, Optional[int]]) -> Any:
+        """Target of the first available image of an item."""
+        entry_idx = next(i for i in chosen.values() if i is not None)
+        row = self.images.loc[entry_idx]
+        target = (
+            row[self.target]
+            if isinstance(self.target, str)
+            else row[list(self.target)].to_dict()
+        )
+        if self.target_transforms is not None:
+            target = self.target_transforms(target)
+        return target
 
     def __str__(self) -> str:
         return (
@@ -810,6 +1019,69 @@ class OpenMind(Dataset):
                 f"{available}"
             )
         return modalities
+
+    def _parse_atlas(self, atlas) -> Optional[list[str]]:
+        if self.preprocessing != "cat12vbm_roi":
+            if atlas is not None:
+                raise ValueError(
+                    "atlas is only available with preprocessing='cat12vbm_roi'"
+                )
+            return None
+        if atlas is None:
+            return ["neuromorphometrics"]
+        atlases = [atlas] if isinstance(atlas, str) else list(atlas)
+        unknown = set(atlases) - set(ROI_ATLASES)
+        if unknown or not atlases or len(set(atlases)) != len(atlases):
+            raise ValueError(
+                f"atlas must be one or several distinct atlases among "
+                f"{list(ROI_ATLASES)}, got {atlas!r}"
+            )
+        return atlases
+
+    def _parse_tissue(self, tissue) -> Optional[list[str]]:
+        if self.atlases is None:
+            if tissue is not None:
+                raise ValueError(
+                    "tissue is only available with "
+                    "preprocessing='cat12vbm_roi'"
+                )
+            return None
+        if tissue is None:
+            tissues = ["gm"]
+        else:
+            tissues = [tissue] if isinstance(tissue, str) else list(tissue)
+            if (
+                not tissues
+                or not set(tissues) <= set(TISSUES)
+                or len(set(tissues)) != len(tissues)
+            ):
+                raise ValueError(
+                    f"tissue must be one or several distinct tissues among "
+                    f"{list(TISSUES)}, got {tissue!r}"
+                )
+        for atlas in self.atlases:
+            available = ROI_ATLASES[atlas][1]
+            missing = [t for t in tissues if t not in available]
+            if atlas != "total_volumes" and missing:
+                raise ValueError(
+                    f"The {atlas} atlas has no {missing} volumes, only "
+                    f"{list(available)}"
+                )
+        return tissues
+
+    @staticmethod
+    def _parse_target(target) -> Union[str, list[str], None]:
+        targets = [target] if isinstance(target, str) else target
+        if target is not None and (
+            not targets or not set(targets) <= set(PHENOTYPES)
+        ):
+            raise ValueError(
+                f"target must be None, or one or several phenotypes among "
+                f"{list(PHENOTYPES)}, got {target!r}"
+            )
+        return target if isinstance(target, str) or target is None else (
+            list(target)
+        )  # fmt: skip
 
     @staticmethod
     def _parse_split(split) -> Optional[str]:

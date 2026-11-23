@@ -1,3 +1,11 @@
+##########################################################################
+# NSAp - Copyright (C) CEA, 2025
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
+
 from __future__ import annotations
 
 import os
@@ -59,8 +67,10 @@ class OpenBHB(Dataset):
           shape `(121, 145, 121)`
         - "quasiraw": Whole-brain T1w image with minimal preprocessing,
           shape `(182, 218, 182)`
-        - "vbm_roi": Gray matter volume per region (Neuromorphometrics atlas,
-          142 regions by hemisphere), shape `(1, 284)`
+        - "vbm_roi": Gray matter and CSF volumes per region
+          (Neuromorphometrics atlas, 142 regions: 71 by hemisphere, midline
+          structures included), shape `(1, 284)`: the 142 gray matter
+          volumes, then the 142 CSF volumes (see `get_vbm_roi_labels`)
         - "fs_desikan_roi": FreeSurfer surface-based features computed on the
           Desikan atlas (34 regions by hemisphere), shape `(7, 68)`
         - "fs_destrieux_roi": FreeSurfer surface-based features computed on the
@@ -727,8 +737,9 @@ class OpenBHB(Dataset):
             row = row.drop(columns=["participant_id", "session"]).to_numpy()
             return row.reshape(shape).astype(np.float32)
         else:
-            return np.load(
-                path, mmap_mode=self.mmap_mode)[0].astype(np.float32)
+            return np.load(path, mmap_mode=self.mmap_mode)[0].astype(
+                np.float32
+            )
 
     def _parse_root(self, path):
         # eventually parse "~" or $HOME

@@ -58,7 +58,9 @@ Key features
         Large-scale open neuroimaging datasets ready for PyTorch, fetched on
         demand from Hugging Face and streamed during training:
         :class:`~nidl.datasets.OpenBHB` (~4k quality-checked brain T1w MRI 
-        uniformly preprocessed) and :class:`~nidl.datasets.OpenMind` (114k brain MRIs). 
+        uniformly preprocessed),
+        :class:`~nidl.datasets.OpenMind` (114k brain MRIs) and
+        :class:`~nidl.datasets.OpenFMind` (45k parcellated fMRI runs).
         Bring your own data with :class:`~nidl.datasets.ImageDataFrameDataset`.
 
         .. card-footer::

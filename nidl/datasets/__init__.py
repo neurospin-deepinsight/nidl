@@ -12,5 +12,6 @@ nidl compatible dataset, as well as the datasets available in nidl.
 
 from .base import BaseImageDataset, BaseNumpyDataset
 from .openbhb import OpenBHB
+from .openfmind import OpenFMind
 from .openmind import OpenMind
 from .pandas_dataset import ImageDataFrameDataset

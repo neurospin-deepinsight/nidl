@@ -12,6 +12,7 @@ import csv
 import gzip
 import io
 import json
+import operator
 import os
 import shutil
 import tarfile
@@ -101,6 +102,15 @@ def _write_cat12_sample(tar, dataset, subject, session, run, value):
     morphometry = {
         "total_volumes": {"TIV": 1000.0 + value},
         "aal3": {"Vgm_lPreCG": value, "Vgm_rPreCG": 2 * value},
+        # keys grouped by tissue, regions in the same order for each tissue
+        "neuromorphometrics": {
+            "Vgm_Left Amygdala": value,
+            "Vgm_3rd Ventricle": 0.0,
+            "Vwm_Left Amygdala": 10 * value,
+            "Vwm_3rd Ventricle": 0.0,
+            "Vcsf_Left Amygdala": 100 * value,
+            "Vcsf_3rd Ventricle": 1.0,
+        },
     }
     qc = {"group_stats": {"IQR": 2.0, "qc": 1.0}}
     _add_member(tar, f"{key}.meta.json", json.dumps(meta).encode())
@@ -270,6 +280,20 @@ class TestOpenMind(unittest.TestCase):
             w.writerow(["dataset_id", "participant_id", "session"])
             w.writerow(["ds000001", "sub-01", "ses-01"])
 
+        # Phenotypes of the CAT12 images (one row per image, "n/a" if
+        # unknown), as in the released participants.tsv
+        with open(os.path.join(cls.root, "participants.tsv"), "w") as f:
+            f.write(
+                "dataset_id\tparticipant_id\tsession\trun\tage\tsex\tbmi"
+                "\trace\thandedness\thealth_status\n"
+                "ds000001\tsub-01\tses-DEFAULT\t17\t26.0\tfemale\tn/a"
+                "\tn/a\tright\thealthy\n"
+                "ds000001\tsub-01\tses-DEFAULT\t18\t26.0\tfemale\tn/a"
+                "\tn/a\tright\thealthy\n"
+                "ds000002\tsub-01\tses-DEFAULT\t19\tn/a\tmale\t22.5"
+                "\tasian\tn/a\tn/a\n"
+            )
+
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.root, ignore_errors=True)
@@ -290,6 +314,9 @@ class TestOpenMind(unittest.TestCase):
 
     def _cat12(self, **kwargs):
         return OpenMind(self.root, preprocessing="cat12vbm", **kwargs)
+
+    def _roi(self, **kwargs):
+        return OpenMind(self.root, preprocessing="cat12vbm_roi", **kwargs)
 
     def test_len_and_modality_filter(self):
         dataset = self._quasiraw_only()
@@ -576,28 +603,129 @@ class TestOpenMind(unittest.TestCase):
         every = self._cat12(group_by="session", instance="all")
         self.assertEqual((len(first), len(every)), (2, 3))
 
-    def test_return_morphometry(self):
-        dataset = self._cat12(return_morphometry=True)
+    def test_cat12_roi_single_atlas(self):
+        dataset = self._roi(atlas="aal3")
+        self.assertEqual(dataset.atlases, ["aal3"])
+        self.assertEqual(len(dataset), 3)
         for i in range(len(dataset)):
-            image, morphometry = dataset[i]
-            value = float(image.flat[0])
-            self.assertEqual(
-                morphometry["total_volumes"]["TIV"], 1000.0 + value
-            )
-            self.assertEqual(morphometry["aal3"]["Vgm_rPreCG"], 2 * value)
+            rois = dataset[i]
+            self.assertEqual((rois.shape, rois.dtype), ((1, 2), np.float32))
+            self.assertEqual(rois[0, 1], 2 * rois[0, 0])
 
-    def test_return_morphometry_grouped_dict(self):
-        dataset = self._cat12(
-            modality=("mwp1",), group_by="session", return_morphometry=True
+    def test_cat12_roi_several_atlases(self):
+        dataset = self._roi(atlas=("aal3", "total_volumes"))
+        values = sorted(
+            (rois["aal3"][0, 0], rois["total_volumes"][0, 0])
+            for rois in (dataset[i] for i in range(len(dataset)))
         )
-        image, morphometry = dataset[0]
-        self.assertEqual(set(image), {"mwp1"})
-        self.assertEqual(set(morphometry), {"mwp1"})
-        self.assertIn("aal3", morphometry["mwp1"])
+        self.assertEqual(values, [(v, 1000.0 + v) for v in (1.0, 2.0, 3.0)])
+        self.assertEqual(
+            dataset.get_roi_labels(),
+            {"aal3": ["lPreCG", "rPreCG"], "total_volumes": ["TIV"]},
+        )
 
-    def test_return_morphometry_requires_cat12(self):
+    def test_cat12_roi_grouped_dict(self):
+        dataset = self._roi(
+            atlas="aal3", modality=("mwp1",), group_by="session"
+        )
+        rois = dataset[0]
+        self.assertEqual(set(rois), {"mwp1"})
+        self.assertEqual(rois["mwp1"].shape, (1, 2))
+
+    def test_cat12_roi_default_atlas_and_tissue(self):
+        dataset = self._roi()
+        self.assertEqual(dataset.atlases, ["neuromorphometrics"])
+        self.assertEqual(dataset.tissues, ["gm"])
+        self.assertEqual(dataset[0].shape, (1, 2))
+
+    def test_cat12_roi_tissues(self):
+        dataset = self._roi(tissue=("csf", "gm", "wm"))
+        for i in range(len(dataset)):
+            rois = dataset[i]
+            self.assertEqual(rois.shape, (3, 2))
+            value = rois[1, 0]
+            np.testing.assert_array_equal(
+                rois, [[100 * value, 1.0], [value, 0.0], [10 * value, 0.0]]
+            )
+        self.assertEqual(
+            dataset.get_roi_labels(),
+            {"neuromorphometrics": ["Left Amygdala", "3rd Ventricle"]},
+        )
+
+    def test_cat12_roi_tissue_with_total_volumes(self):
+        # total_volumes ignores `tissue`
+        rois = self._roi(
+            atlas=("neuromorphometrics", "total_volumes"), tissue="wm"
+        )[0]
+        self.assertEqual(rois["neuromorphometrics"].shape, (1, 2))
+        self.assertEqual(rois["total_volumes"].shape, (1, 1))
+
+    def test_bad_tissue_raises(self):
+        for tissue in ("grey", (), ("gm", "gm")):
+            with self.assertRaises(ValueError):
+                self._roi(tissue=tissue)
         with self.assertRaises(ValueError):
-            self._quasiraw_only(return_morphometry=True)
+            self._roi(atlas="aal3", tissue="wm")  # aal3 has GM only
+        with self.assertRaises(ValueError):
+            self._cat12(tissue="gm")  # only with cat12vbm_roi
+
+    def test_bad_atlas_raises(self):
+        for atlas in ("unknown", (), ("aal3", "aal3")):
+            with self.assertRaises(ValueError):
+                self._roi(atlas=atlas)
+        with self.assertRaises(ValueError):
+            self._cat12(atlas="aal3")  # only with cat12vbm_roi
+        with self.assertRaises(ValueError):
+            self._cat12().get_roi_labels()
+
+    def test_images_table(self):
+        dataset = self._cat12()
+        self.assertIsNone(dataset._images)  # lazy: nothing read at init
+        images = dataset.images
+        self.assertEqual(len(images), len(dataset))
+        self.assertEqual(
+            sorted(images.index), sorted(i for it in dataset.items
+                                         for c in it.values() for i in c)
+        )  # fmt: skip
+        row = images.loc[dataset.items[0]["mwp1"][0]]
+        self.assertEqual(row["modality"], "mwp1")
+        ds2 = images[images["dataset"] == "ds000002"].iloc[0]
+        self.assertTrue(np.isnan(ds2["age"]))
+        self.assertEqual((ds2["sex"], ds2["bmi"]), ("male", 22.5))
+
+    def test_images_table_without_phenotypes(self):
+        # Images missing from participants.tsv get NaN phenotypes
+        images = self._quasiraw_only().images
+        self.assertEqual(len(images), 10)
+        self.assertTrue(images["age"].isna().all())
+
+    def test_target(self):
+        dataset = self._cat12(target="age", target_transforms=operator.neg)
+        targets = {}
+        for i in range(len(dataset)):
+            image, age = dataset[i]
+            targets[float(image.flat[0])] = age
+        self.assertEqual((targets[1.0], targets[2.0]), (-26.0, -26.0))
+        self.assertTrue(np.isnan(targets[3.0]))
+
+    def test_target_list_with_rois(self):
+        dataset = self._roi(atlas="aal3", target=["sex", "handedness"])
+        rois, target = dataset[0]
+        self.assertEqual(rois.shape, (1, 2))
+        self.assertEqual(set(target), {"sex", "handedness"})
+
+    def test_target_grouped_dict(self):
+        dataset = self._cat12(
+            modality=("mwp1",), group_by="subject", target="sex"
+        )
+        sexes = sorted(dataset[i][1] for i in range(len(dataset)))
+        self.assertEqual(sexes, ["female", "male"])
+
+    def test_unknown_target_raises(self):
+        # Only the phenotypes of participants.tsv are valid targets
+        for target in ("weight", "dataset", ["age", "modality"], []):
+            with self.assertRaises(ValueError):
+                self._cat12(target=target)
 
     def test_cat12_split(self):
         val = self._cat12(split="val")
@@ -676,20 +804,20 @@ class TestOpenMind(unittest.TestCase):
         return get
 
     def test_streaming_reads_missing_shards_from_hf(self):
-        local = self._cat12(return_morphometry=True)
         root = self._new_root(folders=(CAT12,), index=True)
         os.remove(os.path.join(root, CAT12, "ds000002", "ds000002-000000.tar"))
         with patch(
             "huggingface_hub.utils.http_backoff",
             side_effect=self._fake_range_get(CAT12),
         ) as get:
-            streamed = OpenMind(
-                root, preprocessing="cat12vbm", return_morphometry=True
-            )
-            for i in range(len(local)):
-                (a, ma), (b, mb) = local[i], streamed[i]
-                self.assertTrue(np.array_equal(a, b))
-                self.assertEqual(ma, mb)
+            for kwargs in (
+                {"preprocessing": "cat12vbm"},
+                {"preprocessing": "cat12vbm_roi", "atlas": "aal3"},
+            ):
+                local = OpenMind(self.root, **kwargs)
+                streamed = OpenMind(root, **kwargs)
+                for i in range(len(local)):
+                    self.assertTrue(np.array_equal(local[i], streamed[i]))
         # Only ds000002 (1 image + 1 morphometry) is read remotely
         self.assertEqual(get.call_count, 2)
         for call in get.call_args_list:
