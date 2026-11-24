@@ -41,7 +41,6 @@ class ConfigLoader:
 
     The ``instantiate`` method works has follows:
 
-    - Isolate the requested ``setting`` block.
     - Recursively validate ``_version_`` metadata against installed Python
       packages (or module ``__version__`` attributes) before delegating object
       creation to Hydra's ``instantiate``.
@@ -54,28 +53,18 @@ class ConfigLoader:
     >>> import torch
     >>> from importlib.metadata import version
     >>> from omegaconf import OmegaConf
-    >>> from nidl.estimators.base import ConfigLoader
+    >>> from nidl.utils.config import ConfigLoader
     >>> cfg = OmegaConf.create({
-    ...     "transforms": {
-    ...         "v1": {
-    ...             "_target_": "torch.nn.Identity",
-    ...         },
+    ...     "transform": {
+    ...         "_target_": "torch.nn.Identity",
     ...     },
-    ...     "estimators": {
-    ...         "v1": {
-    ...             "_target_": "torch.nn.Linear",
-    ...             "in_features": 16,
-    ...             "out_features": 8,
-    ...         },
-    ...     },
-    ...     "settings": {
-    ...         "v1": {
-    ...             "transform": "${transforms.v1}",
-    ...             "estimator": "${estimators.v1}",
-    ...         },
+    ...     "estimator": {
+    ...         "_target_": "torch.nn.Linear",
+    ...         "in_features": 16,
+    ...         "out_features": 8,
     ...     },
     ... })
-    >>> obj = ConfigLoader.instantiate(cfg, setting="v1")
+    >>> obj = ConfigLoader.instantiate(cfg)
     >>> sorted(vars(obj).keys())
     ['estimator', 'transform']
     >>> isinstance(obj.transform, torch.nn.Identity)
@@ -88,7 +77,7 @@ class ConfigLoader:
         "val_dataloader",
         "test_dataloader",
         "estimator",
-        "weight",
+        "weights",
         "transform",
     })
 
@@ -96,13 +85,12 @@ class ConfigLoader:
     def instantiate(
             cls,
             cfg: str | Path | DictConfig,
-            setting: str,
             *args: Any,
             data_dir: str | Path | None = None,
             **kwargs: Any,
-        ) -> Any:
+        ) -> SimpleNamespace:
         """
-        Instantiate a setting from a Hydra configuration.
+        Instantiate a Hydra configuration.
 
         Parameters
         ----------
@@ -110,8 +98,6 @@ class ConfigLoader:
             Root Hydra configuration or a nested sub-node to instantiate. Can
             be the path to the configuration file or a pre-loaded
             configuration.
-        setting : str
-            Setting name to be loaded from the ``settings`` section.
         *args : Any
             Positional arguments forwarded directly to
             ``hydra.utils.instantiate``.
@@ -125,8 +111,8 @@ class ConfigLoader:
 
         Returns
         -------
-        Any
-            The instantiated objects.
+        SimpleNamespace
+            The instantiated objects with keys in ``ALLOWED_KEYS``.
 
         Raises
         ------
@@ -151,19 +137,11 @@ class ConfigLoader:
         # Resolve (${...}) befor isolating sub nodes
         OmegaConf.resolve(root_copy)
 
-        # Select the exact target sub-node
-        key = f"settings.{setting}"
-        target_node = OmegaConf.select(root_copy, key)
-        if target_node is None:
-            raise ValueError(
-                f"The requested '{key}' path is not defined."
-            )
-
         # Validate _version_ across the full tree
         cls._validate_and_strip_versions(root_copy)
 
-        # Instanciate setting objects
-        instantiated = hydra_instantiate(target_node, *args, **kwargs)
+        # Instanciate objects
+        instantiated = hydra_instantiate(root_copy, *args, **kwargs)
 
         # Check that instantiated keys belong to ``cls.ALLOWED_KEYS``
         keys = set(instantiated.keys())
@@ -281,28 +259,19 @@ class ConfigLoader:
 
         Examples
         --------
-        >>> import hydra
-        >>> import torch
         >>> import torch.nn as nn
         >>> from omegaconf import OmegaConf
-        >>> from torch.utils.data import Dataset
+        >>> from nidl.utils.config import ConfigLoader
         >>> cfg = OmegaConf.create({
-        ...     "model": {
+        ...     "estimator": {
         ...         "_target_": "torch.nn.Linear",
         ...         "in_features": 16,
         ...         "out_features": 8,
         ...     },
-        ...     "dataset": {
-        ...         "_target_": "torch.utils.data.TensorDataset",
-        ...     },
         ... })
-        >>> with ConfigLoader.record(nn.Module, Dataset):
-        ...     model = hydra.utils.instantiate(cfg.model)
-        ...     dataset = hydra.utils.instantiate(
-        ...         cfg.dataset,
-        ...         torch.zeros(4, 16),
-        ...     )
-        >>> model_cfg = ConfigLoader.to_config(model)
+        >>> with ConfigLoader.record(nn.Module, ):
+        ...     model = ConfigLoader.instantiate(cfg).estimator
+        >>> model_cfg = (model._init_args
         >>> model_cfg["_target_"]
         'torch.nn.modules.linear.Linear'
         """
@@ -415,18 +384,19 @@ class ConfigLoader:
 
         Examples
         --------
-        >>> @record_config
+        >>> from nidl.utils.config import ConfigLoader
+        >>> @ConfigLoader.record_config
         ... class Backbone:
         ...     def __init__(self, hidden_dim: int = 128) -> None:
         ...         self.hidden_dim = hidden_dim
-        >>> @record_config
+        >>> @ConfigLoader.record_config
         ... class Model:
         ...     def __init__(self, enc: Backbone, lr: float = 0.1) -> None:
         ...         self.enc = enc
         ...         self.lr = lr
-        >>> m = Model(backbone=Backbone(hidden_dim=6))
-        >>> m._init_args
-        {'enc': {'_target_': '__main__.Backbone', 'hidden_dim': 6}, 'lr': 0.1}
+        >>> m = Model(enc=Backbone(hidden_dim=6))
+        >>> m._init_args["enc"]
+        {'_target_': '__main__.Backbone', 'hidden_dim': 6}
         """
         orig_init = target_cls.__dict__.get("__init__")
         if orig_init is None or getattr(orig_init, "_is_recorded", False):
@@ -463,6 +433,8 @@ class ConfigLoader:
                             if key != "self"
                         },
                     }
+                    if installed_ver is None:
+                        del self.__dict__["_init_args"]["_version_"]
             finally:
                 if depth == 0:
                     self.__dict__.pop("_init_depth", None)
@@ -476,7 +448,7 @@ class ConfigLoader:
     @staticmethod
     def _get_installed_version(
             pkg_name: str,
-        ) -> str:
+        ) -> str | None:
         """
         Retrieve the installed version of a Python package or module.
 
@@ -492,8 +464,9 @@ class ConfigLoader:
 
         Returns
         -------
-        str
-            The detected version string of the package or module.
+        str | None
+            The detected version string of the package or module, or ``None``
+            if ``pkg_name`` is ``"__main__"``.
 
         Raises
         ------
@@ -501,6 +474,8 @@ class ConfigLoader:
             If the package is neither installed via package metadata nor
             importable with a ``__version__`` attribute.
         """
+        if pkg_name == "__main__":
+            return None
         try:
             return get_pkg_version(pkg_name)
         except PackageNotFoundError:
@@ -615,7 +590,7 @@ class ConfigLoader:
             dotpath = ConfigLoader._get_dotpath(type(val))
             pkg_name = dotpath.split(".")[0]
             installed_ver = ConfigLoader._get_installed_version(pkg_name)
-            return {
+            init_args = {
                 "_target_": dotpath,
                 "_version_": installed_ver,
                 **{
@@ -623,6 +598,9 @@ class ConfigLoader:
                     for _key, _val in val._init_args.items()
                 },
             }
+            if installed_ver is None:
+                del init_args["_version_"]
+            return init_args
         if isinstance(val, dict):
             return {
                 _key: ConfigLoader._extract_init_value(_val)

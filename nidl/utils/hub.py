@@ -19,6 +19,7 @@ import pytorch_lightning as pl
 import torch
 from huggingface_hub import (
     HfApi,
+    file_exists,
     hf_hub_download,
 )
 from pytorch_lightning.utilities.rank_zero import rank_zero_info
@@ -57,9 +58,14 @@ class HubMixin:
     When reloading via :meth:`from_pretrained`, the configuration file is
     fetched from the Hub and instantiated with :meth:`ConfigLoader.instantiate`
     into a :class:`types.SimpleNamespace` containing ``estimator`` (and any
-    other configured components). If a ``weights`` component is present, its
-    weights are loaded into the ``estimator`` and the ``estimator.fitted_``
-    property is set to ``True``.
+    other configured components). If a ``weights`` component is present, the
+    specified weights are loaded into the ``estimator``. Otherwise,
+    the ``model.safetensors`` next to the configuration file are used.
+
+    Raises
+    ------
+    ValueError
+        If no weights are found.
 
     See Also
     --------
@@ -85,7 +91,7 @@ class HubMixin:
     ...     estimator = SimCLR(encoder=nn.Linear(128, 64), lr=1e-3)
     ...     estimator.fitted_ = True
     ...     cfg_file, weights_file = estimator.save_pretrained(
-    ...         setting="v1",
+    ...         repo_id="local/v1",
     ...     )
     >>> print(cfg_file.read_text(encoding="utf-8"))
 
@@ -107,7 +113,7 @@ class HubMixin:
     ...         shuffle=True,
     ...     )
     ...     cfg_file, weights_file = estimator.save_pretrained(
-    ...         setting="v2",
+    ...         repo_id="local/v2",
     ...         recorded_instances={"train_dataloader": dataloader}
     ...     )
     >>> print(cfg_file.read_text(encoding="utf-8"))
@@ -115,18 +121,17 @@ class HubMixin:
     Reload a pretrained estimator and train data laoder:
 
     >>> loaded = SimCLR.from_pretrained(
-    ...     "local/simclr",
-    ...     setting="v2",
+    ...     "local/v2",
     ...     local_files_only=True,
     ... )
     """
     CONFIG_NAME = "config.yaml"
+    WEIGHTS_NAME = "model.safetensors"
 
     @classmethod
     def from_pretrained(
             cls,
             repo_id: str,
-            setting: str,
             *,
             revision: str | None = None,
             token: str | None = None,
@@ -143,23 +148,25 @@ class HubMixin:
         ----------
         repo_id : str
             A Hugging Face repository, such as
-            ``"nidl-neurospin/brainiac-vit-b"``.
-        setting : str
-            Setting name to be loaded from the ``settings`` section.
+            ``"username/repo-name"``.
         revision : str | None
             Commit tag of the repository. If None the last commit is used.
             Default None.
-        token : str | None, default None
+        token : str | None
             Hugging Face token, needed for gated repositories. If None, the
             locally saved token or the `HF_TOKEN` variable is used.
-        local_files_only : bool, default=False
+            Default None.
+        local_files_only : bool
             Whether to only use the local Hugging Face cache.
-        strict : bool, default=True
+            Default False.
+        strict : bool
             Whether the weights must match the estimator exactly. If False,
             a mismatch only raises a warning.
-        data_dir : str | Path | None, default None
+            Default True.
+        data_dir : str | Path | None
             Path where data should be downloaded. By default, files are
             downloaded in the standard nidl cache directory.
+            Default None.
         **kwargs : dict
             Parameters of the estimator overriding the ones of the
             configuration, such as the `devices` or the `precision`.
@@ -181,7 +188,7 @@ class HubMixin:
 
         Notes
         -----
-        Force any parameters except ``model_id`` to be passed by name (keyword)
+        Force any parameters except ``repo_id`` to be passed by name (keyword)
         rather than by position.
         """
         config_file = fetch_file(
@@ -194,27 +201,36 @@ class HubMixin:
         )
         cfg_instantiated = ConfigLoader.instantiate(
             config_file,
-            setting=setting,
             data_dir=data_dir,
         )
         estimator = getattr(cfg_instantiated, "estimator", None)
-        weights = getattr(cfg_instantiated, "weight", None)
-        if estimator is not None and weights is not None:
+        weights = getattr(cfg_instantiated, "weights", None)
+        if weights is None:
+            weights = Weights(
+                filepath=cls.WEIGHTS_NAME,
+                repo_id=repo_id,
+                revision=revision,
+                token=token,
+                data_dir=data_dir,
+                local_files_only=local_files_only,
+            )
+        else:
+            del cfg_instantiated.weights
+        if estimator is not None:
             weights.load_pretrained(
                 estimator,
                 weights_only=True,
+                strict=strict,
             )
             estimator.fitted_ = True
-            del cfg_instantiated.weight
         return cfg_instantiated
 
     def save_pretrained(
             self,
-            setting: str,
-            basename: str = "model.safetensors",
+            repo_id: str,
+            *,
             data_dir: str | Path | None = None,
-            repo_id: str | None = None,
-            recorded_instances: dict[str, Any] | None = None
+            recorded_instances: dict[str, Any] | None = None,
         ) -> Path:
         """
         Save an estimator.
@@ -224,23 +240,18 @@ class HubMixin:
 
         Parameters
         ----------
-        setting : str
-            Setting name to be saved.
-        basename : str
-            The weights file basename.
-            Default 'model.safetensors'.
+        repo_id : str
+            A Hugging Face repository, such as
+            ``"local/repo-name"``.
         data_dir : str | Path | None
             Path where data should be saved on disk. By default, files are
             saved in the standard nidl cache directory.
-            Default None.
-        repo_id: str | None
-            Target repository identifier on the Hub (e.g.,
-            ``"username/repo-name"``).
             Default None.
         recorded_instances : dict[str, Any] | None
             Dictionary of instances created inside a
             :meth:`ConfigLoader.record` context manager (or decorated with
             :meth:`ConfigLoader.record_config`).
+            Default None.
 
         Returns
         -------
@@ -251,37 +262,25 @@ class HubMixin:
 
         Notes
         -----
-        Force any parameters except ``data_dir`` to be passed by name (keyword)
+        Force any parameters except ``repo_id`` to be passed by name (keyword)
         rather than by position.
         """
         check_is_fitted(self)
 
-        cls_name = type(self).__name__.lower()
-        data_dir = (
-            get_cache_dir(data_dir) /
-            f"local_{cls_name}"
-        )
-        data_dir.mkdir(parents=True, exist_ok=True)
+        data_dir = get_cache_dir(data_dir)
 
-        weigths_file = data_dir / basename
-        weigths_file = weigths_file.with_stem(f"{weigths_file.stem}_{setting}")
-        Weights.save_pretrained(self, weigths_file)
-        weights_inst = Weights(
-            filepath=weigths_file if repo_id is None else basename,
-            repo_id=repo_id,
-        )
-
-        cfg_file = (data_dir / self.CONFIG_NAME)
-        ref_cfg_dict = None
-        if cfg_file.is_file():
-            ref_cfg_dict = ConfigLoader.load(
-                cfg_file,
-                as_dict=True,
+        local_dir = Path(data_dir) / repo_id.replace("/", "_")
+        if local_dir.is_dir():
+            rank_zero_info(
+                f"WARNING: Save directory '{local_dir}' exists."
             )
+        local_dir.mkdir(parents=True, exist_ok=True)
+
+        weigths_file = local_dir / self.WEIGHTS_NAME
+        Weights.save_pretrained(self, weigths_file)
 
         _instances = {
             "estimator": self,
-            "weight": weights_inst,
         }
         _instances.update(recorded_instances or {})
         cfg_dict, valid_keys = {}, []
@@ -301,19 +300,9 @@ class HubMixin:
                     "configuration recording for this instance."
                 )
             valid_keys.append(key)
-            cfg_dict[f"{key}s"] = {
-                setting: getattr(inst, "_init_args", None)
-            }
+            cfg_dict[f"{key}"] = getattr(inst, "_init_args", None)
 
-        cfg_dict["settings"] = {
-            setting: {
-                key: f"${{{key}s.{setting}}}"
-                for key in valid_keys
-            }
-        }
-
-        if ref_cfg_dict is not None:
-            cfg_dict = ConfigLoader.merge(ref_cfg_dict, cfg_dict)
+        cfg_file = local_dir / self.CONFIG_NAME
         ConfigLoader.save(cfg_dict, cfg_file)
 
         return cfg_file, weigths_file
@@ -321,12 +310,13 @@ class HubMixin:
     def push_pretrained(
             self,
             repo_id: str,
-            path_in_repo: str | None = None,
+            *,
+            recorded_instances: dict[str, Any] | None = None,
             commit_message: str | None = None,
             revision: str | None = None,
             token: str | bool | None = None,
             private: bool = False,
-        ):
+        ) -> None:
         """
         Save the estimator in the nidl format to a Hub repository.
 
@@ -335,13 +325,10 @@ class HubMixin:
         repo_id : str
             Target repository identifier on the Hub (e.g.,
             ``"username/repo-name"``).
-        basename : str
-            The weights file basename.
-            Default 'model.safetensors'.
-        path_in_repo : str | None
-            Destination path inside the repository (using forward slashes
-            ``/``). If ``None``, defaults to the local file's basename.
-            Default None.
+        recorded_instances : dict[str, Any] | None
+            Dictionary of instances created inside a
+            :meth:`ConfigLoader.record` context manager (or decorated with
+            :meth:`ConfigLoader.record_config`).
         commit_message : str | None
             Custom commit message for the upload. If ``None``, a default
             message is generated automatically.
@@ -358,18 +345,20 @@ class HubMixin:
             function.
             Default False.
 
-        Returns
-        -------
-        commit : huggingface_hub.CommitInfo
-            The commit, whose `oid` can be given as `revision` to
-            :meth:`from_pretrained`.
+        Notes
+        -----
+        Force any parameters except ``repo_id`` to be passed by name (keyword)
+        rather than by position.
         """
         with tempfile.TemporaryDirectory() as tmp_dir:
-            for local_file in self.save_pretrained(tmp_dir, repo_id):
+            for local_file in self.save_pretrained(
+                    repo_id=repo_id,
+                    data_dir=tmp_dir,
+                    recorded_instances=recorded_instances,
+                ):
                 push_file(
                     local_file=local_file,
                     repo_id=repo_id,
-                    path_in_repo=path_in_repo,
                     commit_message=commit_message,
                     revision=revision,
                     token=token,
@@ -393,6 +382,11 @@ class Weights:
     revision : str | None
         Git branch, tag, or commit hash to fetch the file from (e.g.,
         ``"main"``).
+    token : str | None, default None
+        Hugging Face token, needed for gated repositories. If None, the
+        locally saved token or the `HF_TOKEN` variable is used.
+    local_files_only : bool, default=False
+        Whether to only use the local Hugging Face cache.
     data_dir : str | Path | None
         Directory where downloaded files should be cached. Defaults to the
         standard nidle cache directory.
@@ -407,6 +401,7 @@ class Weights:
     >>> from pathlib import Path
     >>> import torch
     >>> import torch.nn as nn
+    >>> from nidl.utils.hub import Weights
     >>> with tempfile.TemporaryDirectory() as tmp:
     ...     weight_file = Path(tmp) / "model.safetensors"
     ...     model = nn.Linear(4, 2)
@@ -424,6 +419,8 @@ class Weights:
             filepath: str | Path,
             repo_id: str | None = None,
             revision: str | None = None,
+            token: str | None = None,
+            local_files_only: bool = False,
             data_dir: str | Path | None = None,
         ) -> None:
         self.data_dir = get_cache_dir(data_dir)
@@ -434,7 +431,9 @@ class Weights:
                 repo_id,
                 filepath,
                 revision=revision,
+                token=token,
                 data_dir=data_dir,
+                local_files_only=local_files_only,
             )
 
     def load_checkpoint(
@@ -486,6 +485,7 @@ class Weights:
             self,
             model: torch.nn.Module,
             weights_only: bool = True,
+            strict: bool = True,
         ) -> None:
         """
        Load serialized state dictionary weights into a PyTorch module.
@@ -498,6 +498,10 @@ class Weights:
             Whether ``torch.load`` should restrict unpickling to tensors,
             primitive types, and safe globals when loading non-safetensors
             files.
+            Default True.
+        strict : bool
+            Whether the weights must match the estimator exactly. If False,
+            a mismatch only raises a warning.
             Default True.
         """
         if self.weight_file is None:
@@ -519,7 +523,7 @@ class Weights:
         )
         model.load_state_dict(
             state_dict,
-            strict=True,
+            strict=strict,
         )
 
     @classmethod
@@ -557,7 +561,8 @@ def fetch_file(
         data_dir: str | Path | None = None,
         force_download: bool = False,
         local_files_only: bool = False,
-    ) -> Path:
+        ignore_missing: bool = False,
+    ) -> Path | None:
     """
     Download a file from the Hugging Face Hub and return its local path.
 
@@ -586,12 +591,28 @@ def fetch_file(
     local_files_only: bool
         Whether to only use the local cache, without network access.
         Default False.
+    ignore_missing : bool
+        If True, return None instead of raising an error when the file
+        does not exist in the repository.
+        Default False.
 
     Returns
     -------
-    Path
-        Local file path.
+    Path | None
+        Local path to the downloaded file, or None if the file is missing
+        and `ignore_missing` is True.
     """
+    if ignore_missing:
+        exists = file_exists(
+            repo_id=repo_id,
+            filename=filename,
+            revision=revision,
+            repo_type="model",
+            token=token,
+        )
+        if not exists:
+            return None
+
     data_dir = get_cache_dir(data_dir)
 
     local_dir = Path(data_dir) / repo_id.replace("/", "_")
@@ -660,15 +681,6 @@ def push_file(
     huggingface_hub.utils.HfHubHTTPError
         If authentication fails or the user lacks write permissions on
         ``repo_id``.
-
-    Examples
-    --------
-    >>> url = push_file(
-    ...     local_path="outputs/config.yaml",
-    ...     repo_id="my-org/my-model",
-    ...     path_in_repo="configs/config.yaml",
-    ...     commit_message="Upload Hydra model configuration",
-    ... )
     """
     local_file = Path(local_file)
     if not local_file.is_file():
