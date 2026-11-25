@@ -8,8 +8,10 @@
 
 from torch import nn
 
+from ...utils.config import ConfigMixin
 
-class AlexNet(nn.Module):
+
+class AlexNet(ConfigMixin, nn.Module):
     """ 3D AlexNet architecture adapted from Abrol et al., 2021. See
     https://doi.org/10.5281/zenodo.4309677 for details.
 

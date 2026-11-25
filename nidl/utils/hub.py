@@ -7,363 +7,381 @@
 ##########################################################################
 
 """
-Hugging face utilities.
+Share nidl objects with the Hugging Face Hub.
+
+Each kind of object is saved in its own file of a repository,
+and loaded with the `from_pretrained` method of its class:
+
+- an estimator, with :meth:`BaseEstimator.from_pretrained
+  <nidl.utils.hub.HubMixin.from_pretrained>`, from ``config.yaml``
+  and ``model.safetensors``;
+- the preprocessing of its inputs, with :meth:`Transform.from_pretrained
+  <nidl.utils.hub.HubMixin.from_pretrained>`, from
+  ``preprocessor_config.yaml``.
+
+The configuration files are described in :mod:`nidl.utils.config`.
 """
 
+import contextlib
 import tempfile
+import warnings
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any
+from typing import Any, ClassVar, Optional, Union
 
 import pytorch_lightning as pl
 import torch
-from huggingface_hub import (
-    HfApi,
-    file_exists,
-    hf_hub_download,
-)
+import yaml
 from pytorch_lightning.utilities.rank_zero import rank_zero_info
-from safetensors.torch import (
-    load_file,
-    save_file,
-)
 
+from ..info import __version__
 from .config import (
-    ConfigLoader,
+    ConfigMixin,
+    check_config,
+    get_config,
+    instantiate,
+    is_torchvision_container,
+    resolve_target,
 )
-from .validation import (
-    check_is_fitted,
-    get_cache_dir,
-)
+from .validation import get_cache_dir
+
+#: Key of the version of nidl that saved a configuration file.
+VERSION_KEY = "nidl_version"
 
 
-class HubMixin:
+class HubMixin(ConfigMixin):
+    """Save, share and load nidl objects with the Hugging Face Hub.
+
+    An object is saved in a local folder, or a Hugging Face repository, as:
+
+    - a YAML configuration file, named after :attr:`CONFIG_NAME`, holding
+      the version of nidl that saved it and, under the :attr:`CONFIG_KEY`
+      key, the configuration of the object (see :class:`ConfigMixin
+      <nidl.utils.config.ConfigMixin>`);
+    - its weights, in :attr:`WEIGHTS_NAME`, if it has some.
+
+    Several kinds of objects can be saved in the same repository, such as an
+    estimator and the preprocessing of its inputs, as their files differ.
+
+    The configuration of the object is built from the parameters given to
+    its constructor. When saving, it is checked that it rebuilds the same
+    object, so that a configuration downloaded from the Hub always gives
+    the object that was saved.
+
+    Attributes
+    ----------
+    CONFIG_NAME : str
+        Name of the configuration file.
+    CONFIG_KEY : str
+        Key of the configuration of the object in this file.
+    WEIGHTS_NAME : str or None
+        Name of the file of the weights, or None if the object has none.
     """
-    Save, share, and load nidl estimators with the Hugging Face Hub.
 
-    An estimator is published as a local directory or a Hugging Face repository
-    holding two files:
-
-    - ``model.safetensors``: the weights of the fitted estimator;
-    - ``config.yaml``: the Hydra instantiation configuration capturing all
-      constructor arguments needed to rebuild the training data and estimator
-      before loading its weights.
-
-    To enable automatic serialization via :meth:`save_pretrained` or
-    :meth:`push_pretrained`, estimators must be instantiated inside a
-    :meth:`ConfigLoader.record` context manager (or decorated with
-    :meth:`ConfigLoader.record_config`) so their outermost ``__init__``
-    arguments are recorded in ``_init_args``.
-
-    When reloading via :meth:`from_pretrained`, the configuration file is
-    fetched from the Hub and instantiated with :meth:`ConfigLoader.instantiate`
-    into a :class:`types.SimpleNamespace` containing ``estimator`` (and any
-    other configured components). If a ``weights`` component is present, the
-    specified weights are loaded into the ``estimator``. Otherwise,
-    the ``model.safetensors`` next to the configuration file are used.
-
-    Raises
-    ------
-    ValueError
-        If no weights are found.
-
-    See Also
-    --------
-    ConfigLoader.record : Context manager that records constructor arguments
-        for subclass hierarchies during instantiation.
-    ConfigLoader.instantiate : Instantiate a saved YAML configuration file.
-
-    Examples
-    --------
-    >>> from pathlib import Path
-    >>> import torch
-    >>> import torch.nn as nn
-    >>> from torch.utils.data import DataLoader
-    >>> from torchvision.transforms import v2
-    >>> from nidl.datasets import OpenBHB
-    >>> from nidl.estimators.ssl import SimCLR
-    >>> from nidl.utils.config import ConfigLoader
-    >>> from nidl.utils.hub import Weights
-
-    Capture an estimator at instantiation, fit it and save it locally:
-
-    >>> with ConfigLoader.record(nn.Module, Weights):
-    ...     estimator = SimCLR(encoder=nn.Linear(128, 64), lr=1e-3)
-    ...     estimator.fitted_ = True
-    ...     cfg_file, weights_file = estimator.save_pretrained(
-    ...         repo_id="local/v1",
-    ...     )
-    >>> print(cfg_file.read_text(encoding="utf-8"))
-
-    Create a new release with the data laoder included:
-
-    >>> with ConfigLoader.record(nn.Module, OpenBHB, DataLoader, Weights):
-    ...     dataloader = DataLoader(
-    ...         OpenBHB(
-    ...             Path(__file__).parent / "nidl_data",
-    ...             modality="vbm_roi",
-    ...             target=None,
-    ...             transforms=v2.Compose([
-    ...                 v2.ToDtype(torch.float32, scale=True),
-    ...             ]),
-    ...             streaming=True,
-    ...         ),
-    ...         batch_size=3,
-    ...         num_workers=1,
-    ...         shuffle=True,
-    ...     )
-    ...     cfg_file, weights_file = estimator.save_pretrained(
-    ...         repo_id="local/v2",
-    ...         recorded_instances={"train_dataloader": dataloader}
-    ...     )
-    >>> print(cfg_file.read_text(encoding="utf-8"))
-
-    Reload a pretrained estimator and train data laoder:
-
-    >>> loaded = SimCLR.from_pretrained(
-    ...     "local/v2",
-    ...     local_files_only=True,
-    ... )
-    """
-    CONFIG_NAME = "config.yaml"
-    WEIGHTS_NAME = "model.safetensors"
+    CONFIG_NAME: ClassVar[str] = "config.yaml"
+    CONFIG_KEY: ClassVar[str] = "object"
+    WEIGHTS_NAME: ClassVar[Optional[str]] = None
 
     @classmethod
     def from_pretrained(
-            cls,
-            repo_id: str,
-            *,
-            revision: str | None = None,
-            token: str | None = None,
-            local_files_only: bool = False,
-            strict: bool = True,
-            data_dir: str | Path | None = None,
-            **kwargs: Any,
-        ) -> SimpleNamespace:
-        """
-        Build an estimator from a configuration file stored on a Hugging Face
-        repository.
+        cls,
+        repo_id: Union[str, Path],
+        *,
+        revision: Optional[str] = None,
+        token: Optional[Union[str, bool]] = None,
+        local_files_only: bool = False,
+        strict: bool = True,
+        data_dir: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
+    ):
+        """Build an object saved in a local folder or on the Hub.
 
         Parameters
         ----------
-        repo_id : str
+        repo_id : str or Path
             A Hugging Face repository, such as
-            ``"username/repo-name"``.
-        revision : str | None
-            Commit tag of the repository. If None the last commit is used.
-            Default None.
-        token : str | None
+            ``"nidl-neurospin/brainiac-vit-b"``, or a local folder, written
+            by :meth:`save_pretrained`.
+        revision : str or None, default=None
+            Commit, branch or tag of the repository. By default, its last
+            commit.
+        token : str, bool or None, default=None
             Hugging Face token, needed for gated repositories. If None, the
             locally saved token or the `HF_TOKEN` variable is used.
-            Default None.
-        local_files_only : bool
-            Whether to only use the local Hugging Face cache.
-            Default False.
-        strict : bool
-            Whether the weights must match the estimator exactly. If False,
-            a mismatch only raises a warning.
-            Default True.
-        data_dir : str | Path | None
-            Path where data should be downloaded. By default, files are
-            downloaded in the standard nidl cache directory.
-            Default None.
+        local_files_only : bool, default=False
+            Whether to only use the files already downloaded.
+        strict : bool, default=True
+            Whether the weights must match the object exactly. If False, a
+            mismatch only raises a warning. Ignored for objects without
+            weights.
+        data_dir : str, Path or None, default=None
+            Folder where the files are downloaded. By default, the nidl
+            cache directory (see the `NIDL_CACHE` variable).
         **kwargs : dict
-            Parameters of the estimator overriding the ones of the
-            configuration, such as the `devices` or the `precision`.
+            Parameters of the object overriding the ones of its
+            configuration, such as the `devices` of an estimator, or
+            completing them, such as the parameters that depend on your data.
 
         Returns
         -------
-        estimator : BaseEstimator
-            A configured  estimator.
+        obj : object
+            The object. Calling this method on a base class, such as
+            :class:`~nidl.transforms.transforms.Transform`, returns an
+            instance of the saved subclass.
 
         Raises
         ------
         PermissionError
             If the repository is gated and access has not been granted.
         ValueError
-            If the configuration is not for this estimator or cannot be
-            read.
+            If the configuration is not in the nidl format, is not for this
+            class, or builds a class that is not allowed (see
+            :func:`~nidl.utils.config.check_config`).
         RuntimeError
-            If `strict` and the weights do not match the estimator.
-
-        Notes
-        -----
-        Force any parameters except ``repo_id`` to be passed by name (keyword)
-        rather than by position.
+            If `strict` and the weights do not match the object.
         """
+        fetch_kwargs = {
+            "token": token,
+            "local_files_only": local_files_only,
+            "data_dir": data_dir,
+        }
         config_file = fetch_file(
-            repo_id,
-            cls.CONFIG_NAME,
-            revision=revision,
-            token=token,
-            data_dir=data_dir,
-            local_files_only=local_files_only,
+            repo_id, cls.CONFIG_NAME, revision=revision, **fetch_kwargs
         )
-        cfg_instantiated = ConfigLoader.instantiate(
-            config_file,
-            data_dir=data_dir,
-        )
-        estimator = getattr(cfg_instantiated, "estimator", None)
-        weights = getattr(cfg_instantiated, "weights", None)
-        if weights is None:
-            weights = Weights(
-                filepath=cls.WEIGHTS_NAME,
-                repo_id=repo_id,
-                revision=revision,
-                token=token,
-                data_dir=data_dir,
-                local_files_only=local_files_only,
+        config = _read_config(config_file)
+        node = config.get(cls.CONFIG_KEY) if isinstance(config, dict) else None
+        if not isinstance(node, dict) or "_target_" not in node:
+            raise ValueError(
+                f"'{repo_id}' is not in the nidl format: its "
+                f"{cls.CONFIG_NAME} has no '{cls.CONFIG_KEY}' entry."
             )
-        else:
-            del cfg_instantiated.weights
-        if estimator is not None:
-            weights.load_pretrained(
-                estimator,
-                weights_only=True,
+        _check_version(config.get(VERSION_KEY), repo_id)
+        target = resolve_target(node)
+        if not cls._accepts(target):
+            hint = (
+                f": use {target.__name__}.from_pretrained instead"
+                if issubclass(target, HubMixin)
+                else ""
+            )
+            raise ValueError(
+                f"'{repo_id}' holds a {target.__name__}, not a "
+                f"{cls.__name__}{hint}."
+            )
+        obj = instantiate(node, **kwargs)
+        if isinstance(obj, HubMixin):
+            obj._load_pretrained(
+                config,
+                repo_id,
                 strict=strict,
+                revision=revision,
+                **fetch_kwargs,
             )
-            estimator.fitted_ = True
-        return cfg_instantiated
+        return obj
 
-    def save_pretrained(
-            self,
-            repo_id: str,
-            *,
-            data_dir: str | Path | None = None,
-            recorded_instances: dict[str, Any] | None = None,
-        ) -> Path:
-        """
-        Save an estimator.
-
-        The weights are added in the saved configuration as well as the given
-        external instances.
+    def save_pretrained(self, save_directory: Union[str, Path]) -> Path:
+        """Save this object in a local folder.
 
         Parameters
         ----------
-        repo_id : str
-            A Hugging Face repository, such as
-            ``"local/repo-name"``.
-        data_dir : str | Path | None
-            Path where data should be saved on disk. By default, files are
-            saved in the standard nidl cache directory.
-            Default None.
-        recorded_instances : dict[str, Any] | None
-            Dictionary of instances created inside a
-            :meth:`ConfigLoader.record` context manager (or decorated with
-            :meth:`ConfigLoader.record_config`).
-            Default None.
+        save_directory : str or Path
+            The folder, created if needed. Its files of the same name are
+            replaced, the other ones are kept.
 
         Returns
         -------
-        cfg_file : Path
-            Path to the saved configuration file.
-        weights_file : Path
-            Path to the saved estimator weights.
+        save_directory : Path
+            The folder.
 
-        Notes
-        -----
-        Force any parameters except ``repo_id`` to be passed by name (keyword)
-        rather than by position.
+        Raises
+        ------
+        TypeError
+            If a parameter of the object cannot be saved (see
+            :class:`~nidl.utils.config.ConfigMixin`).
+        ValueError
+            If the object cannot be saved, for instance because its modules
+            were changed after its creation, so that its configuration does
+            not rebuild it.
+        RuntimeError
+            If the object is an estimator that is not fitted.
         """
-        check_is_fitted(self)
+        return save_pretrained(self, save_directory)
 
-        data_dir = get_cache_dir(data_dir)
-
-        local_dir = Path(data_dir) / repo_id.replace("/", "_")
-        if local_dir.is_dir():
-            rank_zero_info(
-                f"WARNING: Save directory '{local_dir}' exists."
-            )
-        local_dir.mkdir(parents=True, exist_ok=True)
-
-        weigths_file = local_dir / self.WEIGHTS_NAME
-        Weights.save_pretrained(self, weigths_file)
-
-        _instances = {
-            "estimator": self,
-        }
-        _instances.update(recorded_instances or {})
-        cfg_dict, valid_keys = {}, []
-        for key, inst in _instances.items():
-            if key not in ConfigLoader.ALLOWED_KEYS:
-                rank_zero_info(
-                    f"WARNING: Ignoring item '{key}' (allowed: "
-                    f"{ConfigLoader.ALLOWED_KEYS})"
-                )
-                continue
-            if not hasattr(inst, "_init_args"):
-                cls_name = type(inst).__name__
-                rank_zero_info(
-                    f"WARNING: Instance of '{cls_name}' has no attribute "
-                    "'_init_args'. Consider creating instance inside a "
-                    "`ConfigLoader.record` context manager. Skipping "
-                    "configuration recording for this instance."
-                )
-            valid_keys.append(key)
-            cfg_dict[f"{key}"] = getattr(inst, "_init_args", None)
-
-        cfg_file = local_dir / self.CONFIG_NAME
-        ConfigLoader.save(cfg_dict, cfg_file)
-
-        return cfg_file, weigths_file
-
-    def push_pretrained(
-            self,
-            repo_id: str,
-            *,
-            recorded_instances: dict[str, Any] | None = None,
-            commit_message: str | None = None,
-            revision: str | None = None,
-            token: str | bool | None = None,
-            private: bool = False,
-        ) -> None:
-        """
-        Save the estimator in the nidl format to a Hub repository.
+    def push_to_hub(
+        self,
+        repo_id: str,
+        *,
+        commit_message: Optional[str] = None,
+        private: bool = False,
+        revision: Optional[str] = None,
+        token: Optional[str] = None,
+    ):
+        """Save this object to a Hugging Face repository, in one commit.
 
         Parameters
         ----------
         repo_id : str
-            Target repository identifier on the Hub (e.g.,
-            ``"username/repo-name"``).
-        recorded_instances : dict[str, Any] | None
-            Dictionary of instances created inside a
-            :meth:`ConfigLoader.record` context manager (or decorated with
-            :meth:`ConfigLoader.record_config`).
-        commit_message : str | None
-            Custom commit message for the upload. If ``None``, a default
-            message is generated automatically.
-            Default None.
-        revision : str | None
-            Git branch or revision name to push the file to (e.g., ``"main"``).
-        token : str | bool | None
-            Hugging Face authentication token. If ``None``, uses the locally
-            saved token (via ``huggingface-cli login`` or ``HF_TOKEN`` env
-            variable).
-            Default None.
-        private : bool
-            Whether the repository should be private if created by this
-            function.
-            Default False.
+            The repository, such as ``"username/repo-name"``, created if
+            needed. Its files of the same name are replaced, the other ones
+            are kept.
+        commit_message : str or None, default=None
+            The message of the commit. By default, "Upload" and the name of
+            the class.
+        private : bool, default=False
+            Whether a new repository is private.
+        revision : str or None, default=None
+            Branch to push to. By default, the main branch.
+        token : str or None, default=None
+            Hugging Face token. If None, the locally saved token or the
+            `HF_TOKEN` variable is used.
 
-        Notes
-        -----
-        Force any parameters except ``repo_id`` to be passed by name (keyword)
-        rather than by position.
+        Returns
+        -------
+        commit : huggingface_hub.CommitInfo
+            The commit, whose `oid` can be given as `revision` to
+            :meth:`from_pretrained`.
         """
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            for local_file in self.save_pretrained(
-                    repo_id=repo_id,
-                    data_dir=tmp_dir,
-                    recorded_instances=recorded_instances,
-                ):
-                push_file(
-                    local_file=local_file,
-                    repo_id=repo_id,
-                    commit_message=commit_message,
-                    revision=revision,
-                    token=token,
-                    private=private,
-                )
+        return push_to_hub(
+            self,
+            repo_id,
+            commit_message=commit_message,
+            private=private,
+            revision=revision,
+            token=token,
+        )
+
+    @classmethod
+    def _accepts(cls, target: type) -> bool:
+        """Whether `from_pretrained` of this class can build `target`."""
+        return issubclass(target, cls)
+
+    def _check_saveable(self) -> None:
+        """Raise an error if this object cannot be saved."""
+
+    def _load_pretrained(
+        self,
+        config: dict[str, Any],
+        repo_id: Union[str, Path],
+        *,
+        strict: bool,
+        **fetch_kwargs: Any,
+    ) -> None:
+        """Load the weights of this object, built from `config`."""
+
+
+def save_pretrained(obj: Any, save_directory: Union[str, Path]) -> Path:
+    """Save a nidl object, or a container of torchvision transforms.
+
+    The object is saved as by :meth:`HubMixin.save_pretrained`. A container
+    of transforms (``Compose``, ``RandomApply``, ``RandomChoice`` or
+    ``RandomOrder``, of ``torchvision.transforms`` or
+    ``torchvision.transforms.v2``) is saved as a transform: it is loaded
+    with :meth:`Transform.from_pretrained
+    <nidl.utils.hub.HubMixin.from_pretrained>`.
+
+    Parameters
+    ----------
+    obj : HubMixin or torchvision container
+        The object.
+    save_directory : str or Path
+        The folder, created if needed. Its files of the same name are
+        replaced, the other ones are kept.
+
+    Returns
+    -------
+    save_directory : Path
+        The folder.
+
+    Raises
+    ------
+    TypeError
+        If the object, or one of its parameters, cannot be saved.
+    ValueError
+        If the configuration of the object does not rebuild it.
+
+    Examples
+    --------
+    >>> from torchvision.transforms import Compose
+    >>> from nidl.transforms import Transform
+    >>> from nidl.transforms.volume.preprocessing import (
+    ...     CropOrPad,
+    ...     ZNormalization,
+    ... )
+    >>> from nidl.utils.hub import save_pretrained
+    >>> preprocessing = Compose([CropOrPad(128), ZNormalization()])
+    >>> save_pretrained(preprocessing, "my_model")
+    PosixPath('my_model')
+    >>> preprocessing = Transform.from_pretrained("my_model")
+    """
+    hub_class = _hub_class(obj)
+    if isinstance(obj, HubMixin):
+        obj._check_saveable()
+    config = get_config(obj)
+    try:
+        check_config(config)
+    except ValueError as e:
+        raise ValueError(
+            f"This {type(obj).__name__} cannot be saved: {e}"
+        ) from e
+    _check_rebuild(obj, config)
+    save_directory = Path(save_directory)
+    save_directory.mkdir(parents=True, exist_ok=True)
+    if hub_class.WEIGHTS_NAME is not None:
+        Weights.save_pretrained(obj, save_directory / hub_class.WEIGHTS_NAME)
+    _write_config(
+        {VERSION_KEY: __version__, hub_class.CONFIG_KEY: config},
+        save_directory / hub_class.CONFIG_NAME,
+    )
+    return save_directory
+
+
+def push_to_hub(
+    obj: Any,
+    repo_id: str,
+    *,
+    commit_message: Optional[str] = None,
+    private: bool = False,
+    revision: Optional[str] = None,
+    token: Optional[str] = None,
+):
+    """Save a nidl object, or a container of torchvision transforms, to a
+    Hugging Face repository, in one commit.
+
+    The object is saved as by :func:`save_pretrained`.
+
+    Parameters
+    ----------
+    obj : HubMixin or torchvision container
+        The object.
+    repo_id : str
+        The repository, such as ``"username/repo-name"``, created if needed.
+        Its files of the same name are replaced, the other ones are kept.
+    commit_message : str or None, default=None
+        The message of the commit. By default, "Upload" and the name of the
+        class.
+    private : bool, default=False
+        Whether a new repository is private.
+    revision : str or None, default=None
+        Branch to push to. By default, the main branch.
+    token : str or None, default=None
+        Hugging Face token. If None, the locally saved token or the
+        `HF_TOKEN` variable is used.
+
+    Returns
+    -------
+    commit : huggingface_hub.CommitInfo
+        The commit, whose `oid` can be given as `revision` to
+        `from_pretrained`.
+    """
+    huggingface_hub = _import_hub_dependency("huggingface_hub")
+    api = huggingface_hub.HfApi(token=token)
+    api.create_repo(repo_id, private=private, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        save_pretrained(obj, tmp_dir)
+        return api.upload_folder(
+            repo_id=repo_id,
+            folder_path=tmp_dir,
+            commit_message=commit_message or f"Upload {type(obj).__name__}",
+            revision=revision,
+        )
 
 
 class Weights:
@@ -372,25 +390,23 @@ class Weights:
 
     Parameters
     ----------
-    filepath : str | Path
+    filepath : str or Path
         Path of the weight file on the local machine or relative path inside
         the Hugging Face repository.
-    repo_id : str | None
+    repo_id : str or None, default=None
         Target repository identifier on the Hub (e.g.,
         ``"username/repo-name"``) used if ``filepath`` does not exist locally.
-        Default None.
-    revision : str | None
+    revision : str or None, default=None
         Git branch, tag, or commit hash to fetch the file from (e.g.,
         ``"main"``).
-    token : str | None, default None
+    token : str or None, default=None
         Hugging Face token, needed for gated repositories. If None, the
         locally saved token or the `HF_TOKEN` variable is used.
     local_files_only : bool, default=False
         Whether to only use the local Hugging Face cache.
-    data_dir : str | Path | None
-        Directory where downloaded files should be cached. Defaults to the
-        standard nidle cache directory.
-        Default None.
+    data_dir : str, Path or None, default=None
+        Directory where downloaded files should be cached. By default, the
+        nidl cache directory.
 
     Examples
     --------
@@ -412,17 +428,16 @@ class Weights:
     ...     torch.equal(model.weight, reloaded.weight)
     True
     """
-    HF_URL = "https://huggingface.co"
 
     def __init__(
-            self,
-            filepath: str | Path,
-            repo_id: str | None = None,
-            revision: str | None = None,
-            token: str | None = None,
-            local_files_only: bool = False,
-            data_dir: str | Path | None = None,
-        ) -> None:
+        self,
+        filepath: Union[str, Path],
+        repo_id: Optional[str] = None,
+        revision: Optional[str] = None,
+        token: Optional[str] = None,
+        local_files_only: bool = False,
+        data_dir: Optional[Union[str, Path]] = None,
+    ) -> None:
         self.data_dir = get_cache_dir(data_dir)
 
         self.weight_file = Path(filepath)
@@ -437,35 +452,35 @@ class Weights:
             )
 
     def load_checkpoint(
-            self,
-            model: pl.LightningModule,
-            *,
-            map_location: str | dict | torch.device = "cpu",
-            **kwargs: Any,
-        ) -> pl.LightningModule | None:
+        self,
+        model: pl.LightningModule,
+        *,
+        map_location: Union[str, dict, torch.device] = "cpu",
+        **kwargs: Any,
+    ) -> Optional[pl.LightningModule]:
         """
         Load a PyTorch Lightning checkpoint into a LightningModule class.
 
         Parameters
         ----------
-        model: pl.LightningModule
+        model : pl.LightningModule
             A PyTorch Lightning module class exposing ``load_from_checkpoint``.
-        map_location : str | dict | torch.device
+        map_location : str, dict or torch.device, default="cpu"
             Device mapping used when loading the checkpoint.
-        **kwargs: Any
+        **kwargs : Any
             Extra keyword arguments passed to ``load_from_checkpoint``,
-            such as overriding ``accelerator`` or ``devices```.
+            such as overriding ``accelerator`` or ``devices``.
 
         Returns
         -------
-        pl.LightningModule | None
+        pl.LightningModule or None
             The instantiated LightningModule loaded from the checkpoint, or
             None if the provided file is not a ``.ckpt`` checkpoint.
         """
         if self.weight_file.suffix != ".ckpt":
             rank_zero_info(
                 f"WARNING: The provided file ({self.weight_file}) does not "
-                "seem to  be a Lightning's checkpoint file. To load weights "
+                "seem to be a Lightning's checkpoint file. To load weights "
                 "directly, use `load_pretrained` instead."
             )
             return
@@ -482,33 +497,25 @@ class Weights:
         )
 
     def load_pretrained(
-            self,
-            model: torch.nn.Module,
-            weights_only: bool = True,
-            strict: bool = True,
-        ) -> None:
+        self,
+        model: torch.nn.Module,
+        weights_only: bool = True,
+        strict: bool = True,
+    ) -> None:
         """
-       Load serialized state dictionary weights into a PyTorch module.
+        Load serialized state dictionary weights into a PyTorch module.
 
         Parameters
         ----------
-        model: torch.nn.Module
+        model : torch.nn.Module
             Target PyTorch module into which weights will be loaded.
-        weights_only: bool
+        weights_only : bool, default=True
             Whether ``torch.load`` should restrict unpickling to tensors,
             primitive types, and safe globals when loading non-safetensors
             files.
-            Default True.
-        strict : bool
-            Whether the weights must match the estimator exactly. If False,
-            a mismatch only raises a warning.
-            Default True.
+        strict : bool, default=True
+            Whether the weights must match the module exactly.
         """
-        if self.weight_file is None:
-            rank_zero_info(
-                "WARNING: Define weight file location first!"
-            )
-            return
         if self.weight_file.suffix == ".ckpt":
             rank_zero_info(
                 "WARNING: For pytorch_lightning checkpoints, use the method "
@@ -517,21 +524,18 @@ class Weights:
             return
 
         state_dict = (
-            load_file(self.weight_file, device="cpu")
+            load_safetensors(self.weight_file)
             if self.weight_file.suffix == ".safetensors"
             else torch.load(self.weight_file, weights_only=weights_only)
         )
-        model.load_state_dict(
-            state_dict,
-            strict=strict,
-        )
+        model.load_state_dict(state_dict, strict=strict)
 
     @classmethod
     def save_pretrained(
-            cls,
-            model: torch.nn.Module,
-            weight_file: str | Path,
-        ) -> None:
+        cls,
+        model: torch.nn.Module,
+        weight_file: Union[str, Path],
+    ) -> None:
         """
         Save a PyTorch module's state dictionary in ``safetensors`` format.
 
@@ -539,174 +543,235 @@ class Weights:
         ----------
         model : torch.nn.Module
             The PyTorch module whose ``state_dict`` will be serialized.
-        weight_file : str | Path
+        weight_file : str or Path
             Destination file path where the ``.safetensors`` weights will be
             written.
         """
-        save_file(
+        safetensors_torch = _import_hub_dependency("safetensors.torch")
+        safetensors_torch.save_file(
             {
                 name: value.detach().cpu().clone().contiguous()
                 for name, value in model.state_dict().items()
             },
-            weight_file,
+            str(weight_file),
             metadata={"format": "pt"},
         )
 
 
 def fetch_file(
-        repo_id: str,
-        filename: str | Path,
-        revision: str | None = None,
-        token: str | bool | None = None,
-        data_dir: str | Path | None = None,
-        force_download: bool = False,
-        local_files_only: bool = False,
-        ignore_missing: bool = False,
-    ) -> Path | None:
+    repo_id: Union[str, Path],
+    filename: Union[str, Path],
+    revision: Optional[str] = None,
+    token: Optional[Union[str, bool]] = None,
+    data_dir: Optional[Union[str, Path]] = None,
+    force_download: bool = False,
+    local_files_only: bool = False,
+) -> Path:
     """
-    Download a file from the Hugging Face Hub and return its local path.
+    Return the local path of a file of a local folder or of a Hugging Face
+    repository, downloaded if needed.
 
     Parameters
     ----------
-    repo_id: str
-        Target repository identifier on the Hub (e.g.,
+    repo_id : str or Path
+        A local folder, or a repository on the Hub (e.g.,
         ``"username/repo-name"``).
-    filename: str | Path
-        Path of the file to download in the repository.
-    revision: str | None
-        Revision of the repository (a tag, or a commit hash).
-        Default None.
-    token: str | bool | None
+    filename : str or Path
+        Path of the file in the folder or the repository.
+    revision : str or None, default=None
+        Revision of the repository (a branch, a tag, or a commit hash).
+        Ignored for a local folder.
+    token : str, bool or None, default=None
         Hugging Face token, required for gated repositories. If None, the
         locally saved token or the `HF_TOKEN` variable is used.
-        Default None.
-    data_dir: str | Path | None
-        Path where data should be downloaded. If None, the standard
-        nidl cache is used.
-        Default None.
-    force_download: bool
+    data_dir : str, Path or None, default=None
+        Path where the files of the repository are downloaded, in a folder
+        named after it. By default, the nidl cache directory.
+    force_download : bool, default=False
         Whether the file should be downloaded even if it already exists in
         the local cache.
-        Default False.
-    local_files_only: bool
+    local_files_only : bool, default=False
         Whether to only use the local cache, without network access.
-        Default False.
-    ignore_missing : bool
-        If True, return None instead of raising an error when the file
-        does not exist in the repository.
-        Default False.
 
     Returns
     -------
-    Path | None
-        Local path to the downloaded file, or None if the file is missing
-        and `ignore_missing` is True.
-    """
-    if ignore_missing:
-        exists = file_exists(
-            repo_id=repo_id,
-            filename=filename,
-            revision=revision,
-            repo_type="model",
-            token=token,
-        )
-        if not exists:
-            return None
-
-    data_dir = get_cache_dir(data_dir)
-
-    local_dir = Path(data_dir) / repo_id.replace("/", "_")
-    local_dir.mkdir(parents=True, exist_ok=True)
-
-    local_file = hf_hub_download(
-        repo_id=repo_id,
-        filename=filename,
-        revision=revision,
-        repo_type="model",
-        local_dir=local_dir,
-        force_download=force_download,
-        token=token,
-        local_files_only=local_files_only,
-    )
-
-    return Path(local_file)
-
-
-def push_file(
-        local_file: str | Path,
-        repo_id: str,
-        path_in_repo: str | None = None,
-        commit_message: str | None = None,
-        revision: str | None = None,
-        token: str | bool | None = None,
-        private: bool = False,
-    ) -> str:
-    """
-    Upload a local file to a Hugging Face Hub repository.
-
-    Parameters
-    ----------
-    local_file : str | Path
-        Path to the local file to be uploaded.
-    repo_id : str
-        Target repository identifier on the Hub (e.g.,
-        ``"username/repo-name"``).
-    path_in_repo : str | None
-        Destination path inside the repository (using forward slashes ``/``).
-        If ``None``, defaults to the local file's basename.
-        Default None.
-    commit_message : str | None
-        Custom commit message for the upload. If ``None``, a default message
-        is generated automatically.
-        Default None.
-    revision : str | None
-        Git branch or revision name to push the file to (e.g., ``"main"``).
-    token : str | bool | None
-        Hugging Face authentication token. If ``None``, uses the locally saved
-        token (via ``huggingface-cli login`` or ``HF_TOKEN`` env variable).
-        Default None.
-    private : bool
-        Whether the repository should be private if created by this function.
-        Default False.
-
-    Returns
-    -------
-    str
-        The HTTP URL of the uploaded file (commit URL) on the Hugging Face Hub.
+    Path
+        Local path to the file.
 
     Raises
     ------
     FileNotFoundError
-        If ``local_file`` does not exist or is not a file.
-    huggingface_hub.utils.HfHubHTTPError
-        If authentication fails or the user lacks write permissions on
-        ``repo_id``.
+        If the local folder has no such file.
+    PermissionError
+        If the repository is gated and access has not been granted.
     """
-    local_file = Path(local_file)
-    if not local_file.is_file():
-        raise FileNotFoundError(f"Local file not found: '{local_file}'")
+    folder = Path(repo_id)
+    if folder.is_dir():
+        if not (folder / filename).is_file():
+            raise FileNotFoundError(f"No '{filename}' in '{folder}'.")
+        return folder / filename
 
-    target_path = (
-        path_in_repo if path_in_repo is not None
-        else local_file.name
+    huggingface_hub = _import_hub_dependency("huggingface_hub")
+    from huggingface_hub.utils import GatedRepoError
+
+    local_dir = get_cache_dir(data_dir) / str(repo_id).replace("/", "_")
+    local_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        local_file = huggingface_hub.hf_hub_download(
+            repo_id=str(repo_id),
+            filename=str(filename),
+            revision=revision,
+            repo_type="model",
+            local_dir=local_dir,
+            force_download=force_download,
+            token=token,
+            local_files_only=local_files_only,
+        )
+    except GatedRepoError as e:
+        raise PermissionError(
+            f"Access to the gated repository '{repo_id}' has not been "
+            f"granted to this account. Request it on "
+            f"https://huggingface.co/{repo_id}, then authenticate with "
+            "`huggingface-cli login` or the `token` parameter."
+        ) from e
+    return Path(local_file)
+
+
+def load_safetensors(path: Union[str, Path]) -> dict[str, torch.Tensor]:
+    """Load a state dictionary saved in the safetensors format.
+
+    Parameters
+    ----------
+    path : str or Path
+        The ``.safetensors`` file.
+
+    Returns
+    -------
+    state_dict : dict of str to torch.Tensor
+        The tensors, on the CPU.
+    """
+    safetensors_torch = _import_hub_dependency("safetensors.torch")
+    return safetensors_torch.load_file(str(path), device="cpu")
+
+
+def _hub_class(obj: Any) -> type:
+    """Return the class giving the file names of `obj`."""
+    if isinstance(obj, HubMixin):
+        return type(obj)
+    if is_torchvision_container(type(obj)):
+        from ..transforms import Transform
+
+        return Transform
+    raise TypeError(
+        f"{type(obj).__name__} cannot be saved: only the nidl estimators, "
+        "the nidl transforms and the containers of torchvision transforms "
+        "can be."
     )
-    message = commit_message or f"Upload {target_path}"
 
-    api = HfApi(token=token)
-    api.create_repo(
-        repo_id=repo_id,
-        repo_type="model",
-        private=private,
-        exist_ok=True,
+
+def _check_rebuild(obj: Any, config: dict[str, Any]) -> None:
+    """Check that `config` rebuilds `obj`, without its weights."""
+    # The parameters without default value left out of the configuration,
+    # such as the orientation of the volumes, are given again.
+    params = obj.__dict__.get("_init_params", {})
+    overrides = {
+        name: params[name]
+        for name in getattr(obj, "_config_exclude", ())
+        if name in params
+    }
+    is_module = isinstance(obj, torch.nn.Module)
+    try:
+        # Modules are built on the meta device, without allocating memory.
+        with torch.device("meta") if is_module else contextlib.nullcontext():
+            clone = instantiate(config, **overrides)
+    except Exception:  # ruff: ignore[blind-except]
+        # Some modules cannot be built on the meta device: retry normally.
+        try:
+            clone = instantiate(config, **overrides)
+        except Exception as e:
+            raise ValueError(
+                f"This {type(obj).__name__} cannot be rebuilt from its "
+                f"configuration: {e}"
+            ) from e
+    if get_config(clone) != config:
+        raise ValueError(
+            f"This {type(obj).__name__} cannot be rebuilt from its "
+            "configuration: its parameters change when it is rebuilt."
+        )
+    if is_module:
+        shapes = {k: tuple(v.shape) for k, v in obj.state_dict().items()}
+        expected = {k: tuple(v.shape) for k, v in clone.state_dict().items()}
+        if shapes != expected:
+            differences = sorted(
+                key
+                for key in set(shapes) | set(expected)
+                if shapes.get(key) != expected.get(key)
+            )
+            raise ValueError(
+                f"The modules of this {type(obj).__name__} differ from the "
+                "ones built from its parameters, for instance because they "
+                "were changed after its creation: it cannot be rebuilt from "
+                f"its configuration. Differences: {differences[:5]}."
+            )
+
+
+def _check_version(version: Optional[str], repo_id: Union[str, Path]) -> None:
+    """Warn if `version` of nidl is more recent than the installed one."""
+    if version is None:
+        return
+    from packaging.version import InvalidVersion, Version
+
+    try:
+        newer = Version(str(version)) > Version(__version__)
+    except InvalidVersion:
+        return
+    if newer:
+        warnings.warn(
+            f"'{repo_id}' was saved with nidl {version}, more recent than "
+            f"the installed version ({__version__}): update nidl if it "
+            "cannot be loaded.",
+            stacklevel=3,
+        )
+
+
+def _read_config(path: Union[str, Path]) -> Any:
+    with open(path, encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+class _ConfigDumper(yaml.SafeDumper):
+    """Write the lists of numbers or strings on one line."""
+
+
+def _represent_list(dumper: yaml.SafeDumper, data: list) -> yaml.Node:
+    flow = all(isinstance(value, (bool, int, float, str)) for value in data)
+    return dumper.represent_sequence(
+        "tag:yaml.org,2002:seq", data, flow_style=flow
     )
 
-    commit_info = api.upload_file(
-        path_or_fileobj=local_file,
-        path_in_repo=target_path,
-        repo_id=repo_id,
-        repo_type="model",
-        commit_message=message,
-        revision=revision,
-    )
 
-    return str(commit_info.commit_url)
+_ConfigDumper.add_representer(list, _represent_list)
+
+
+def _write_config(config: dict[str, Any], path: Union[str, Path]) -> None:
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(
+            config,
+            f,
+            Dumper=_ConfigDumper,
+            sort_keys=False,
+            default_flow_style=False,
+        )
+
+
+def _import_hub_dependency(module_name: str):
+    """Import a dependency of the `hub` extra."""
+    import importlib
+
+    try:
+        return importlib.import_module(module_name)
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            f"'{module_name}' is needed to share models with the Hugging "
+            "Face Hub. Please run 'pip install nidl[hub]' first."
+        ) from e

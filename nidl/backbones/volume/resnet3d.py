@@ -12,6 +12,8 @@ from typing import Union
 import torch
 from torch import nn
 
+from ...utils.config import ConfigMixin
+
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -99,7 +101,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-class ResNet(nn.Module):
+class ResNet(ConfigMixin, nn.Module):
     """ 3D ResNet architecture adapted from He et al. 2015. See
     https://doi.org/10.48550/arXiv.1512.03385 for details.
 

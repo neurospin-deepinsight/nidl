@@ -663,7 +663,7 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
     .. rubric:: Pretrained Weights
 
     The official weights [1]_ are loaded with
-    :meth:`~nidl.estimators.base.NidlHubMixin.from_pretrained`, for
+    :meth:`~nidl.utils.hub.HubMixin.from_pretrained`, for
     :math:`96 \times 108 \times 96` inputs:
 
     - `nidl-neurospin/neuro-jepa-vit-b
@@ -695,14 +695,19 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
 
     The weights need their own preprocessing (see
     :class:`~nidl.transforms.volume.preprocessing.NeuroJEPAPreprocessing`),
-    given by :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`,
-    and :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of
-    the wrong shape or range:
+    published in the same repository and loaded with
+    :meth:`Transform.from_pretrained
+    <nidl.utils.hub.HubMixin.from_pretrained>`,
+    given the orientation of your volumes:
 
-    >>> model = NeuroJEPA.from_pretrained("nidl-neurospin/neuro-jepa-vit-b")
-    >>> preprocess = model.get_preprocessing(input_orientation="LAS")
+    >>> from nidl.transforms import Transform
+    >>> repo_id = "nidl-neurospin/neuro-jepa-vit-b"
+    >>> model = NeuroJEPA.from_pretrained(repo_id)
+    >>> preprocess = Transform.from_pretrained(
+    ...     repo_id, input_orientation="LAS"
+    ... )
 
-    Loading weights needs ``pip install nidl[pretrained]``. See
+    Loading weights needs ``pip install nidl[hub]``. See
     :ref:`pretrained_models` for all the available models.
 
     References
@@ -959,7 +964,6 @@ class NeuroJEPA(TransformerMixin, BaseEstimator):
             Context-encoder features averaged across the token dimension,
             shape (B, embed_dim).
         """
-        self.check_pretrained_input(batch)
         tokens, _ = self.context_encoder(batch, masks=None)
         return tokens.mean(dim=1)
 

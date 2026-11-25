@@ -49,6 +49,9 @@ class NeuroJEPAPreprocessing(VolumeTransform):
         posterior to Anterior and the third from inferior to Superior.
         OpenBHB volumes are "LAS". Arrays do not carry this information and a
         wrong value silently mirrors the brain, hence there is no default.
+        It depends on your data: it is not saved by
+        :meth:`~nidl.utils.hub.HubMixin.save_pretrained` and must be given to
+        :meth:`~nidl.utils.hub.HubMixin.from_pretrained`.
     **kwargs : dict
         Keyword arguments given to
         :class:`nidl.transforms.transforms.Transform`.
@@ -74,6 +77,8 @@ class NeuroJEPAPreprocessing(VolumeTransform):
     OUTPUT_SHAPE = (96, 108, 96)
     PERCENTILES = (0.5, 99.5)
     FOREGROUND_MARGIN = 4
+
+    _config_exclude = frozenset({"input_orientation"})
 
     def __init__(self, input_orientation: str, **kwargs):
         super().__init__(**kwargs)

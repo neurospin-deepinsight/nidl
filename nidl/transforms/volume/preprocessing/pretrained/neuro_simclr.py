@@ -42,7 +42,9 @@ class NeuroSimCLRPreprocessing(VolumeTransform):
     ----------
     input_orientation : str
         Orientation of the input volumes, as three axis codes, e.g. "RAS" or
-        "LAS" (OpenBHB volumes).
+        "LAS" (OpenBHB volumes). It depends on your data: it is not saved by
+        :meth:`~nidl.utils.hub.HubMixin.save_pretrained` and must be given to
+        :meth:`~nidl.utils.hub.HubMixin.from_pretrained`.
     padding : sequence of (int, int) or None, default=None
         Zero-padding before and after each axis, applied after the
         reorientation, to bring a volume registered to another 1 mm template
@@ -61,6 +63,8 @@ class NeuroSimCLRPreprocessing(VolumeTransform):
 
     TEMPLATE_SHAPE = (193, 229, 193)
     OUTPUT_SHAPE = (150, 192, 192)
+
+    _config_exclude = frozenset({"input_orientation"})
 
     def __init__(
         self,

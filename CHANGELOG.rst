@@ -1,10 +1,10 @@
 .. -*- mode: rst -*-
 
 
-0.0.0.dev
+0.0.3.dev
 =========
 
-**Released Planed Spetemeber 2025**
+**Released Planned December 2026**
 
 HIGHLIGHTS
 ----------
@@ -38,13 +38,15 @@ NEW
   :class:`~nidl.transforms.volume.augmentation.RandomResizedCrop`,
   :class:`~nidl.transforms.volume.augmentation.RandomRotation`
   :class:`~nidl.transforms.volume.augmentation.RandomFlip`.
-- :bdg-dark:`Code` Save, share and load estimators with the Hugging Face Hub
-  (``from_pretrained``, ``save_pretrained``, ``push_to_hub``), with the
-  matching architecture and preprocessing in a ``config.json``, and published
+- :bdg-dark:`Code` Save, share and load estimators and transforms with the
+  Hugging Face Hub (``from_pretrained``, ``save_pretrained``,
+  ``push_to_hub``), from the parameters given to their constructor, saved in
+  a ``config.yaml`` and a ``preprocessor_config.yaml``, and published
   weights for :class:`~nidl.estimators.ssl.NeuroJEPA`,
   :class:`~nidl.estimators.ssl.YAwareContrastiveLearning` and
   :class:`~nidl.estimators.ssl.SimCLR` (BrainIAC, Neuro-SimCLR) -
-  :class:`~nidl.estimators.base.NidlHubMixin`,
+  :class:`~nidl.utils.hub.HubMixin`,
+  :class:`~nidl.utils.config.ConfigMixin`,
   :class:`~nidl.transforms.volume.preprocessing.NeuroJEPAPreprocessing`,
   :class:`~nidl.transforms.volume.preprocessing.BrainIACPreprocessing`,
   :class:`~nidl.transforms.volume.preprocessing.NeuroSimCLRPreprocessing`.

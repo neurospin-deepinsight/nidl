@@ -135,7 +135,7 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
     .. rubric:: Pretrained Weights
 
     Weights are available on the Hugging Face Hub, in the nidl format (see
-    :class:`~nidl.estimators.base.NidlHubMixin`):
+    :class:`~nidl.estimators.BaseEstimator`):
 
     - `nidl-neurospin/yaware-densenet121-bhb10k
       <https://huggingface.co/nidl-neurospin/yaware-densenet121-bhb10k>`_:
@@ -144,17 +144,17 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
       :math:`121 \times 145 \times 121` gray matter maps preprocessed with
       CAT12 (VBM).
 
-    The volumes must be standardized with
-    :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`, and
-    :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of the
-    wrong shape:
+    The volumes must be standardized with the preprocessing published in the
+    same repository, loaded with
+    :meth:`Transform.from_pretrained
+    <nidl.utils.hub.HubMixin.from_pretrained>`:
 
-    >>> model = YAwareContrastiveLearning.from_pretrained(
-    ...     "nidl-neurospin/yaware-densenet121-bhb10k"
-    ... )
-    >>> preprocess = model.get_preprocessing()
+    >>> from nidl.transforms import Transform
+    >>> repo_id = "nidl-neurospin/yaware-densenet121-bhb10k"
+    >>> model = YAwareContrastiveLearning.from_pretrained(repo_id)
+    >>> preprocess = Transform.from_pretrained(repo_id)
 
-    Loading weights needs ``pip install nidl[pretrained]``. See
+    Loading weights needs ``pip install nidl[hub]``. See
     :ref:`pretrained_models` for all the available models.
 
     References
@@ -340,7 +340,6 @@ class YAwareContrastiveLearning(TransformerMixin, BaseEstimator):
             The encoded features returned by the encoder.
 
         """
-        self.check_pretrained_input(batch)
         return self.encoder(batch)
 
     def configure_optimizers(self):

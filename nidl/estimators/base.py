@@ -7,6 +7,8 @@
 ##########################################################################
 
 import abc
+import inspect
+import warnings
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Optional, Union
@@ -28,12 +30,25 @@ from torchmetrics import MetricCollection
 
 from ..utils.hub import (
     HubMixin,
+    fetch_file,
+    load_safetensors,
 )
 from ..utils.validation import (
     _estimator_is,
     available_if,
     check_is_fitted,
 )
+
+#: Modules of the encoders that can be saved with an estimator.
+ENCODERS_MODULE = "nidl.backbones"
+
+#: Parameters of the trainer and of `BaseEstimator` that are not saved with
+#: an estimator, as they strongly depends on the machine. They can be manually
+#: given to :meth:`BaseEstimator.from_pretrained` if needed.
+RUNTIME_PARAMS = (
+    frozenset(inspect.signature(pl.Trainer.__init__).parameters)
+    | {"callbacks", "save_hparams", "ignore"}
+) - {"self"}
 
 
 class BaseEstimator(HubMixin, pl.LightningModule):
@@ -54,11 +69,11 @@ class BaseEstimator(HubMixin, pl.LightningModule):
     This class provides:
 
     - a :meth:`fit` method.
-    - :meth:`~nidl.estimators.base.HubMixin.from_pretrained`,
-      :meth:`~nidl.estimators.base.HubMixin.save_pretrained` and
-      :meth:`~nidl.estimators.base.HubMixin.push_pretrained` methods, to
-      share estimators and their weights with the Hugging Face Hub (see
-      :class:`~nidl.estimators.base.HubMixin`).
+    - :meth:`~nidl.utils.hub.HubMixin.from_pretrained`,
+      :meth:`~nidl.utils.hub.HubMixin.save_pretrained` and
+      :meth:`~nidl.utils.hub.HubMixin.push_to_hub` methods, to share
+      estimators and their weights with the Hugging Face Hub (see
+      :class:`~nidl.utils.hub.HubMixin`).
     - a :meth:`transform` if the child class inherits from
       :class:`TransformerMixin`
     - a :meth:`transform_with_targets` method if the child class inherits from
@@ -161,7 +176,43 @@ class BaseEstimator(HubMixin, pl.LightningModule):
     Callbacks can help you to tune, monitor or debug an estimator. For
     instance you can check the type of the input batches using
     `BatchTypingCallback` callback.
+
+    .. rubric:: Sharing estimators
+
+    An estimator is saved, in a local folder or a Hugging Face repository,
+    as a ``model.safetensors`` file holding its weights and a ``config.yaml``
+    file holding its configuration, i.e., the parameters given to its
+    constructor (see :class:`~nidl.utils.config.ConfigMixin`). This file
+    contains:
+
+    - ``nidl_version``: the version of nidl that saved it;
+    - ``estimator``: the configuration of the estimator;
+    - ``weights`` (optional): for weights published elsewhere, see
+      :class:`~nidl.estimators.external.ExternalWeights`. It can also give
+      the prefixes of the parameters that the weights do not include, which
+      keep their initial values, in ``missing_ok``.
+
+    Only the encoders of ``nidl.backbones`` can be saved, given either as
+    an instance or as a class with their parameters in `encoder_kwargs`.
+
+    The preprocessing of the inputs of the estimator is shared separately,
+    with :meth:`Transform.save_pretrained
+    <nidl.utils.hub.HubMixin.save_pretrained>`, usually in the same
+    repository.
+
+    Examples
+    --------
+    >>> from nidl.backbones.volume import resnet18
+    >>> from nidl.estimators.ssl import SimCLR
+    >>> model = SimCLR(encoder=resnet18(n_embedding=512), proj_input_dim=512)
+    >>> model.fit(train_loader)
+    >>> model.save_pretrained("my_model")  # or model.push_to_hub("org/repo")
+    >>> model = SimCLR.from_pretrained("my_model", devices=1)
     """
+
+    CONFIG_NAME = "config.yaml"
+    CONFIG_KEY = "estimator"
+    WEIGHTS_NAME = "model.safetensors"
 
     def __init__(
         self,
@@ -217,6 +268,82 @@ class BaseEstimator(HubMixin, pl.LightningModule):
     @property
     def trainer_params(self):
         return self.trainer_params_
+
+    def _config_params(self) -> dict[str, Any]:
+        """Return the parameters saved in the configuration, without the
+        ones of the trainer depending on the machine."""
+        own = inspect.signature(type(self).__init__).parameters
+        return {
+            name: value
+            for name, value in super()._config_params().items()
+            if name in own or name not in RUNTIME_PARAMS
+        }
+
+    def _check_saveable(self) -> None:
+        check_is_fitted(self)
+        params = self.__dict__.get("_init_params", {})
+        encoder = params.get("encoder")
+        if encoder is None:
+            return
+        cls = encoder if isinstance(encoder, type) else type(encoder)
+        if not f"{cls.__module__}.".startswith(f"{ENCODERS_MODULE}."):
+            raise ValueError(
+                f"The encoder of this {type(self).__name__} cannot be saved: "
+                f"it must be a backbone of {ENCODERS_MODULE}, given as an "
+                "instance, or as a class with its parameters in "
+                f"`encoder_kwargs`, got {cls.__module__}.{cls.__qualname__}."
+            )
+
+    def _load_pretrained(
+        self,
+        config: dict[str, Any],
+        repo_id: Union[str, Path],
+        *,
+        strict: bool,
+        revision: Optional[str] = None,
+        **fetch_kwargs: Any,
+    ) -> None:
+        """Load the weights of the estimator, as described by the
+        ``weights`` entry of its configuration, if any."""
+        weights = config.get("weights") or {}
+        if "repo_id" in weights:  # published by their authors
+            if not weights.get("revision"):
+                raise ValueError(
+                    f"The external weights of '{repo_id}' need a revision."
+                )
+            weights_file = fetch_file(
+                weights["repo_id"],
+                weights.get("filename", self.WEIGHTS_NAME),
+                revision=weights["revision"],
+                **fetch_kwargs,
+            )
+        else:
+            weights_file = fetch_file(
+                repo_id, self.WEIGHTS_NAME, revision=revision, **fetch_kwargs
+            )
+        state_dict = load_safetensors(weights_file)
+        if "converter" in weights:
+            from .external import get_converter
+
+            state_dict = get_converter(weights["converter"]).convert(
+                state_dict
+            )
+        missing_ok = tuple(weights.get("missing_ok", ()))
+        result = self.load_state_dict(state_dict, strict=False)
+        missing = [
+            key
+            for key in result.missing_keys
+            if not key.startswith(missing_ok)
+        ]
+        if missing or result.unexpected_keys:
+            message = (
+                f"The weights do not match {type(self).__name__}: missing "
+                f"keys {missing}, unexpected keys {result.unexpected_keys}."
+            )
+            if strict:
+                raise RuntimeError(message)
+            warnings.warn(message, stacklevel=3)
+        self.fitted_ = True
 
     def fit(
         self,

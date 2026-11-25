@@ -11,25 +11,38 @@ Load weights that are published by their authors in another format.
 
 Some weights cannot be published again in the nidl format, for instance
 because their license forbids derivatives. Such a model is still published
-like any other, with a `config.json` in the nidl format (see
-:class:`~nidl.estimators.base.NidlHubMixin`), but without weights: its
-``"weights"`` entry points to the repository of the authors, and names a
-converter of this module.
+like any other, with a ``config.yaml`` in the nidl format (see
+:class:`~nidl.estimators.BaseEstimator`), but without weights: its
+``weights`` entry points to the repository of the authors, and names a
+converter of this module:
 
-The ``"weights"`` entry contains:
+.. code-block:: yaml
 
-- ``"repo_id"``: the Hugging Face repository of the authors;
-- ``"revision"``: the commit of this repository validated with nidl. It is
+    nidl_version: 0.0.3
+    estimator:
+      _target_: nidl.estimators.ssl.neurojepa.NeuroJEPA
+      ...
+    weights:
+      repo_id: NYUMedML/Neuro-JEPA
+      revision: f55b154091aa7ac5ca23632918e216cd92d9f2cb
+      filename: model.safetensors
+      converter: NeuroJEPAWeights
+      missing_ok: [predictor.]
+
+The ``weights`` entry contains:
+
+- ``repo_id``: the Hugging Face repository of the authors;
+- ``revision``: the commit of this repository validated with nidl. It is
   required, so that the weights cannot change without notice;
-- ``"filename"`` (optional, default `model.safetensors`): the safetensors
+- ``filename`` (optional, default `model.safetensors`): the safetensors
   file holding the weights;
-- ``"converter"``: the name of a subclass of :class:`ExternalWeights` defined
-  in this module;
-- ``"missing_ok"`` (optional): prefixes of the parameters of the estimator
+- ``converter`` (optional): the name of a subclass of
+  :class:`ExternalWeights` defined in this module;
+- ``missing_ok`` (optional): prefixes of the parameters of the estimator
   that the weights do not include, which keep their initial values.
 
 When the estimator is loaded with
-:meth:`~nidl.estimators.base.NidlHubMixin.from_pretrained`, the weights are
+:meth:`~nidl.utils.hub.HubMixin.from_pretrained`, the weights are
 downloaded from the repository of the authors, renamed by the converter and
 loaded strictly in the estimator built from the configuration.
 """
@@ -37,9 +50,40 @@ loaded strictly in the estimator built from the configuration.
 from __future__ import annotations
 
 import abc
+import sys
 from collections.abc import Mapping
 
 import torch
+
+
+def get_converter(name: str) -> ExternalWeights:
+    """Return the converter of weights named in a configuration.
+
+    Parameters
+    ----------
+    name : str
+        The name of a subclass of :class:`ExternalWeights` defined in this
+        module.
+
+    Returns
+    -------
+    converter : ExternalWeights
+        An instance of this subclass.
+
+    Raises
+    ------
+    ValueError
+        If `name` is not a converter of this module.
+    """
+    converter = getattr(sys.modules[__name__], str(name), None)
+    if (
+        str(name).startswith("_")
+        or not isinstance(converter, type)
+        or not issubclass(converter, ExternalWeights)
+        or converter is ExternalWeights
+    ):
+        raise ValueError(f"Unknown converter '{name}'.")
+    return converter()
 
 
 class ExternalWeights(abc.ABC):
@@ -53,12 +97,14 @@ class ExternalWeights(abc.ABC):
     To publish such a model:
 
     1) implement a subclass of :class:`ExternalWeights` in this module;
-    2) write the `config.json` of the estimator, with a ``"weights"`` entry
+    2) write the ``config.yaml`` of the estimator, i.e., its configuration
+       (see :func:`~nidl.utils.config.get_config`), with a ``weights`` entry
        naming the repository, the revision and the converter;
     3) check that the estimator loaded with
-       :meth:`~nidl.estimators.base.NidlHubMixin.from_pretrained` returns the
+       :meth:`~nidl.utils.hub.HubMixin.from_pretrained` returns the
        same features as the official code;
-    4) publish the `config.json`, with a model card, to the `nidl-neurospin
+    4) publish the ``config.yaml`` and the ``preprocessor_config.yaml`` of
+       its preprocessing, with a model card, to the `nidl-neurospin
        <https://huggingface.co/nidl-neurospin>`_ organization.
     """
 

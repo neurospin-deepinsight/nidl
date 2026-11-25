@@ -8,15 +8,7 @@ architecture and preprocessing, so that they can be used directly in a
 pipeline, as frozen feature extractors or as a starting point for
 fine-tuning.
 
-This tutorial compares eight of them on brain age prediction on OpenBHB
-[1]_. Three are the open models of nidl, pretrained with nidl on OpenMind
-[6]_ with the recipe of
-:ref:`sphx_glr_auto_examples_plot_open_models_pretraining.py`:
-
-- Open-SimCLR and Open-BarlowTwins, two ResNet-50;
-- Open-NeuroJEPA, a ViT-B with sparse mixtures of experts.
-
-The five others are published models, ported to nidl:
+This tutorial compares five of them on brain age prediction on OpenBHB [1]_:
 
 - y-Aware [2]_, a DenseNet-121 pretrained on gray matter maps (VBM);
 - Neuro-SimCLR [3]_, a ResNet-18 pretrained on T1-weighted images;
@@ -27,8 +19,8 @@ The five others are published models, ported to nidl:
 For each model, we will:
 
 1. load its weights with ``from_pretrained``;
-2. preprocess the OpenBHB images as the model expects, with
-   ``get_preprocessing``;
+2. preprocess the OpenBHB images as the model expects, with the
+   preprocessing published with it, loaded by ``Transform.from_pretrained``;
 3. extract frozen features of the training and test images;
 4. fit a ridge regression of age on these features and compare the true and
    predicted ages on the test set;
@@ -41,7 +33,7 @@ For each model, we will:
     ``huggingface-cli login``. The other weights are hosted by the
     `nidl-neurospin <https://huggingface.co/nidl-neurospin>`_ organization.
     Extracting the features of the whole OpenBHB dataset with all the models
-    takes more than an hour on one GPU: set ``max_samples`` to try it on fewer
+    takes about an hour on one GPU: set ``max_samples`` to try it on fewer
     images. For this reason, this example is not run when building the
     documentation: its results on the whole dataset are shown at the end.
 
@@ -56,8 +48,6 @@ For each model, we will:
        brain MRI", Nature Neuroscience, 2026.
 .. [5] Huang et al., "Learning Sparse Latent Predictive Foundation Model for
        Multimodal Neuroimaging", arXiv:2606.14957, 2026.
-.. [6] Wald et al., "An OpenMind for 3D medical vision self-supervised
-       learning", ICCV, 2025.
 
 Setup
 -----
@@ -78,12 +68,8 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, Subset
 
 from nidl.datasets import OpenBHB
-from nidl.estimators.ssl import (
-    BarlowTwins,
-    NeuroJEPA,
-    SimCLR,
-    YAwareContrastiveLearning,
-)
+from nidl.estimators.ssl import NeuroJEPA, SimCLR, YAwareContrastiveLearning
+from nidl.transforms import Transform
 
 # %%
 # We define some global parameters: the OpenBHB folder (downloaded on first
@@ -99,11 +85,10 @@ num_workers = 8
 # -----------------
 #
 # Each model is described by its estimator class, the Hugging Face repository
-# of its weights, the OpenBHB modality it takes and the parameters of its
-# preprocessing that depend on our data.
-#
-# The open models were pretrained on the same quasi-raw preprocessing as
-# OpenBHB: they need no parameter.
+# holding its weights and its preprocessing, the OpenBHB modality it takes,
+# and ``preprocessing_kwargs``: the parameters of its preprocessing that are
+# specific to OpenBHB. They are given to ``Transform.from_pretrained``, and
+# complete, or replace, the parameters saved with the model.
 #
 # Arrays do not carry their orientation: OpenBHB images are in the LAS
 # orientation of their template (the first axis goes from right to left).
@@ -113,36 +98,18 @@ num_workers = 8
 # for BrainIAC and a zero-padding for Neuro-SimCLR. The y-Aware model was
 # trained on the same VBM preprocessing as OpenBHB.
 
-models = {
-    "Open-SimCLR": {
-        "estimator": SimCLR,
-        "repo_id": "nidl-neurospin/open-simclr-resnet50",
-        "modality": "quasiraw",
-        "preprocessing": {},
-    },
-    "Open-BarlowTwins": {
-        "estimator": BarlowTwins,
-        "repo_id": "nidl-neurospin/open-barlowtwins-resnet50",
-        "modality": "quasiraw",
-        "preprocessing": {},
-    },
-    "Open-NeuroJEPA": {
-        "estimator": NeuroJEPA,
-        "repo_id": "nidl-neurospin/open-neurojepa-vit-b",
-        "modality": "quasiraw",
-        "preprocessing": {},
-    },
+model_configs = {
     "y-Aware (VBM)": {
         "estimator": YAwareContrastiveLearning,
         "repo_id": "nidl-neurospin/yaware-densenet121-bhb10k",
         "modality": "vbm",
-        "preprocessing": {},
+        "preprocessing_kwargs": {},
     },
     "Neuro-SimCLR": {
         "estimator": SimCLR,
         "repo_id": "nidl-neurospin/neuro-simclr-resnet18",
         "modality": "quasiraw",
-        "preprocessing": {
+        "preprocessing_kwargs": {
             "input_orientation": "LAS",
             "padding": ((5, 6), (6, 5), (6, 5)),
         },
@@ -151,35 +118,39 @@ models = {
         "estimator": SimCLR,
         "repo_id": "nidl-neurospin/brainiac-vit-b",
         "modality": "quasiraw",
-        "preprocessing": {"crop": ((6, 176), (7, 213), (3, 165))},
+        "preprocessing_kwargs": {"crop": ((6, 176), (7, 213), (3, 165))},
     },
     "Neuro-JEPA": {
         "estimator": NeuroJEPA,
         "repo_id": "nidl-neurospin/neuro-jepa-vit-b",
         "modality": "quasiraw",
-        "preprocessing": {"input_orientation": "LAS"},
+        "preprocessing_kwargs": {"input_orientation": "LAS"},
     },
     "Neuro-JEPA-Large": {
         "estimator": NeuroJEPA,
         "repo_id": "nidl-neurospin/neuro-jepa-vit-l",
         "modality": "quasiraw",
-        "preprocessing": {"input_orientation": "LAS"},
+        "preprocessing_kwargs": {"input_orientation": "LAS"},
     },
 }
 
 # %%
 # Loading a pretrained model is a single call. The returned estimator holds
-# the architecture and the weights of the published model, and knows the
-# input it expects: ``get_preprocessing`` returns the transform reproducing
-# the preprocessing of its original implementation, and ``transform`` rejects
-# images of the wrong shape. The extra parameters configure the PyTorch
-# Lightning trainer used to extract the features.
+# the architecture and the weights of the published model. The extra
+# parameters configure the PyTorch Lightning trainer used to extract the
+# features. The preprocessing of its inputs is published in the same
+# repository: ``Transform.from_pretrained`` returns the transform reproducing
+# the preprocessing of its original implementation, given the parameters that
+# depend on our data.
 
 model = SimCLR.from_pretrained(
     "nidl-neurospin/brainiac-vit-b", devices=1, enable_progress_bar=False
 )
-print(model.pretrained_config_["input"])
-print(model.get_preprocessing(**models["BrainIAC"]["preprocessing"]))
+transform = Transform.from_pretrained(
+    "nidl-neurospin/brainiac-vit-b",
+    **model_configs["BrainIAC"]["preprocessing_kwargs"],
+)
+print(transform.get_config())
 
 # %%
 # Feature extraction
@@ -202,7 +173,9 @@ def extract_features(model, config, split):
         modality=config["modality"],
         target=["age", "sex"],
         split=split,
-        transforms=model.get_preprocessing(**config["preprocessing"]),
+        transforms=Transform.from_pretrained(
+            config["repo_id"], **config["preprocessing_kwargs"]
+        ),
         target_transforms=encode_targets,
     )
     if max_samples is not None:
@@ -220,11 +193,11 @@ def extract_features(model, config, split):
 
 
 # %%
-# The Neuro-JEPA models are run in bfloat16, as in their training. The
+# The Neuro-JEPA models are run in bfloat16, as in their original code. The
 # others are run in full precision.
 
 features = {}
-for name, config in models.items():
+for name, config in model_configs.items():
     precision = "bf16-mixed" if config["estimator"] is NeuroJEPA else None
     model = config["estimator"].from_pretrained(
         config["repo_id"],
@@ -248,8 +221,7 @@ for name, config in models.items():
 # A ridge regression, with its regularization chosen by cross-validation on
 # the training set, predicts the age from the standardized features. The
 # encoders stay frozen: this measures how linearly the age can be read from
-# the pretrained representations, not how well each model could do after
-# fine-tuning.
+# the pretrained representations.
 
 predictions, scores = {}, []
 for name, splits in features.items():
@@ -294,19 +266,14 @@ plt.rcParams.update(
 y_test = next(iter(features.values()))["val"][1]
 ages = y_test[:, 0]
 age_range = (ages.min() - 2, ages.max() + 2)
-n_columns = 4
-n_rows = -(-len(models) // n_columns)
 fig, axes = plt.subplots(
-    n_rows,
-    n_columns,
-    figsize=(3.2 * n_columns, 3.6 * n_rows),
+    1,
+    len(model_configs),
+    figsize=(3.2 * len(model_configs), 3.6),
     sharex=True,
     sharey=True,
-    squeeze=False,
 )
-for ax in axes.flat[len(models) :]:
-    ax.axis("off")
-for ax, name in zip(axes.flat, models, strict=False):
+for ax, name in zip(axes, model_configs, strict=True):
     ax.plot(age_range, age_range, color=muted, linewidth=1, linestyle="--")
     ax.scatter(
         ages,
@@ -328,14 +295,12 @@ for ax, name in zip(axes.flat, models, strict=False):
         fontsize=9,
         color=ink,
     )
+    ax.set_xlabel("True age (years)")
     ax.set_xlim(age_range)
     ax.set_ylim(age_range)
     ax.set_aspect("equal")
     ax.grid(color="#e8e7e3", linewidth=0.5)
-for ax in axes[:, 0]:
-    ax.set_ylabel("Predicted age (years)")
-for ax in axes[-1]:
-    ax.set_xlabel("True age (years)")
+axes[0].set_ylabel("Predicted age (years)")
 fig.suptitle(
     "Brain age on the OpenBHB test set, ridge on frozen features",
     color=ink,
@@ -358,21 +323,18 @@ age_colors = LinearSegmentedColormap.from_list(
 )
 is_female = y_test[:, 1].astype(bool)
 fig, axes = plt.subplots(
-    2 * n_rows,
-    n_columns,
-    figsize=(3.2 * n_columns, 3.4 * 2 * n_rows),
+    2,
+    len(model_configs),
+    figsize=(3.2 * len(model_configs), 6.8),
     squeeze=False,
     layout="constrained",
 )
-for ax in axes[:, :].flat[2 * len(models) :]:
-    ax.axis("off")
-for index, name in enumerate(models):
+for column, name in enumerate(model_configs):
     X_test = StandardScaler().fit_transform(features[name]["val"][0])
     pca = PCA(n_components=2, random_state=0)
     components = pca.fit_transform(X_test)
     variance = pca.explained_variance_ratio_ * 100
-    row, column = 2 * (index // n_columns), index % n_columns
-    age_ax, sex_ax = axes[row, column], axes[row + 1, column]
+    age_ax, sex_ax = axes[:, column]
     points = age_ax.scatter(
         *components.T,
         c=ages,
@@ -401,9 +363,8 @@ for index, name in enumerate(models):
         ax.set_ylabel(f"PC 2 ({variance[1]:.0f}%)")
         ax.set_xticks([])
         ax.set_yticks([])
-for row in range(0, 2 * n_rows, 2):
-    fig.colorbar(points, ax=axes[row, -1], label="Age (years)")
-    fig.colorbar(points, ax=axes[row + 1, -1]).remove()  # aligns columns
+fig.colorbar(points, ax=axes[0, -1], label="Age (years)")
+fig.colorbar(points, ax=axes[1, -1]).remove()  # keeps the columns aligned
 handles, labels = axes[1, 0].get_legend_handles_labels()
 fig.legend(handles, labels, loc="outside lower center", ncols=2, frameon=False)
 fig.suptitle("PCA of the frozen features of the test images", color=ink)
@@ -426,10 +387,10 @@ plt.show()
 # Conclusion
 # ----------
 #
-# In a few lines, nidl gives access to open models, which anyone can
-# reproduce, and to published models with the exact architecture and
-# preprocessing of their original implementation. Their frozen features
-# already predict the brain age accurately with a simple ridge regression.
+# In a few lines, nidl gives access to published models with the exact
+# architecture and preprocessing of their original implementation. Their
+# frozen features already predict the brain age accurately with a simple ridge
+# regression.
 #
 # The same estimators can be fine-tuned with ``fit``, saved with
 # ``save_pretrained`` and shared with ``push_to_hub``.

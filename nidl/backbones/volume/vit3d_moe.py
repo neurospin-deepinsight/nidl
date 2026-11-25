@@ -11,6 +11,8 @@ import torch.nn.functional as F  # ruff: ignore[lowercase-imported-as-non-lowerc
 from torch import distributed as dist
 from torch import nn
 
+from ...utils.config import ConfigMixin
+
 
 def trunc_normal_(
     tensor: torch.Tensor,
@@ -531,7 +533,7 @@ class Block(nn.Module):
         return x, moe_scores
 
 
-class VisionTransformer3DMoE(nn.Module):
+class VisionTransformer3DMoE(ConfigMixin, nn.Module):
     """3D ViT backbone with an optional sparse Mixture-of-Experts (MoE)
     mixed in at configurable layers.
 

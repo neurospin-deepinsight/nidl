@@ -144,30 +144,49 @@ heads used by these estimators.
 Pretrained weights
 ------------------
 
-All estimators inherit from :class:`~nidl.estimators.base.NidlHubMixin`: they
-can be saved, shared on the Hugging Face Hub and instantiated with published
-weights, as in `braindecode <https://braindecode.org>`_:
+All estimators inherit from :class:`~nidl.utils.hub.HubMixin`: they can be
+saved, shared on the Hugging Face Hub and instantiated with published
+weights, as in `transformers <https://huggingface.co/docs/transformers>`_.
+The preprocessing of their inputs is shared in the same repository, and
+loaded with the same method of :class:`~nidl.transforms.transforms.Transform`:
 
 .. code-block:: python
 
     from nidl.estimators.ssl import SimCLR
+    from nidl.transforms import Transform
 
     model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
-    transform = model.get_preprocessing()
+    transform = Transform.from_pretrained("nidl-neurospin/brainiac-vit-b")
 
 A published estimator is a folder, or a Hub repository, holding its weights
-and a ``config.json`` with everything needed to build it: the estimator, its
-encoder, the shape and range of its inputs and their preprocessing. The
-estimator then knows the input it expects:
-:meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing` gives the
-preprocessing of the training data, and batches of the wrong shape or range
-raise an error in :meth:`~nidl.estimators.BaseEstimator.transform`. Save your own estimators with
-:meth:`~nidl.estimators.base.NidlHubMixin.save_pretrained` or
-:meth:`~nidl.estimators.base.NidlHubMixin.push_to_hub`. Install the
-dependencies with ``pip install nidl[pretrained]``.
+in ``model.safetensors`` and its configuration in ``config.yaml``: the
+parameters given to its constructor, its encoder included (see
+:class:`~nidl.utils.config.ConfigMixin`). Save your own estimators with
+:meth:`~nidl.utils.hub.HubMixin.save_pretrained` or
+:meth:`~nidl.utils.hub.HubMixin.push_to_hub`. Install the
+dependencies with ``pip install nidl[hub]``.
 
 The available models, their expected inputs and licenses are listed in
 :ref:`pretrained_models`.
+
+.. currentmodule:: nidl.utils
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    hub.HubMixin
+    config.ConfigMixin
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+    hub.save_pretrained
+    hub.push_to_hub
+    config.get_config
+    config.instantiate
+    config.check_config
 
 .. currentmodule:: nidl.estimators
 
@@ -175,7 +194,6 @@ The available models, their expected inputs and licenses are listed in
    :toctree: generated/
    :template: class.rst
 
-    base.NidlHubMixin
     external.ExternalWeights
     external.NeuroJEPAWeights
 

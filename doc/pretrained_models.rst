@@ -5,79 +5,51 @@ Pretrained Models
 =================
 
 nidl gives access to models pretrained on large neuroimaging cohorts, ready
-to be used as frozen feature extractors or fine-tuned on your own data. Each
-model is published on the Hugging Face Hub with a ``config.json`` that fully
-describes the nidl estimator: its parameters, its encoder, the shape of its
-inputs and their preprocessing. Loading a model thus gives the exact
-architecture of its original implementation, the preprocessing its weights
-expect, and checks on the inputs given to it.
+to be used as frozen feature extractors or fine-tuned on your own data. As in
+the `transformers <https://huggingface.co/docs/transformers>`_ library, each
+model is published on the Hugging Face Hub with:
 
-Two families of models are available:
+- a ``config.yaml`` that fully describes the nidl estimator, its parameters
+  and its encoder, and its weights in ``model.safetensors``;
+- a ``preprocessor_config.yaml`` that describes the preprocessing its weights
+  expect.
 
-- **open models**, pretrained with nidl on open data. Their data, code,
-  training recipe and weights are all public, so that anyone can reproduce
-  them, compare new methods with them under the same conditions, or build
-  upon them;
-- **published models**, ported to nidl and validated against their original
-  code. They are faithful to their papers, with their own pretraining data
-  and preprocessing.
+Loading a model thus gives the exact architecture of its original
+implementation and the preprocessing of its inputs.
+
+The models currently available are published models, ported to nidl and
+validated against their original code. They are faithful to their papers,
+with their own pretraining data and preprocessing.
 
 
 Quick start
 -----------
 
-Install the dependencies with ``pip install nidl[pretrained]``, then:
+Install the dependencies with ``pip install nidl[hub]``, then:
 
 .. code-block:: python
 
     from torch.utils.data import DataLoader
     from nidl.estimators.ssl import SimCLR
+    from nidl.transforms import Transform
 
-    model = SimCLR.from_pretrained("nidl-neurospin/open-simclr-resnet50")
-    preprocess = model.get_preprocessing()
+    model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
+    # Give the parameters depending on your data, if any
+    preprocess = Transform.from_pretrained("nidl-neurospin/brainiac-vit-b")
 
     loader = DataLoader([preprocess(volume) for volume in volumes], batch_size=4)
     features = model.transform(loader)  # frozen features
     # or fine-tune it: model.fit(train_loader)
 
-:meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing` returns the
-transform reproducing the preprocessing of the original code. For some
-published models, its parameters fix what depends on your data, such as the
-orientation of the volumes: see each model below for the expected input.
-:meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of the wrong
-shape. See :ref:`sphx_glr_auto_examples_plot_pretrained_openbhb.py`
-for a complete pipeline on OpenBHB.
+:meth:`Transform.from_pretrained <nidl.utils.hub.HubMixin.from_pretrained>`
+returns the transform reproducing the preprocessing of the original code. The
+parameters that depend on your data, such as the orientation of the volumes,
+are not saved and must be given to it: see each model below for the expected
+input. See :ref:`sphx_glr_auto_examples_plot_pretrained_openbhb.py` for a
+complete pipeline on OpenBHB.
 
 
-Open models
------------
-
-The open models are pretrained with nidl on the train split of
-:class:`~nidl.datasets.OpenMind`, 787 OpenNeuro datasets with a quasi-raw
-preprocessing (skull-stripping, bias field correction and linear
-registration to MNI152 at 1 mm, as OpenBHB), on a single GPU.
-Everything needed to rebuild them is public:
-
-- the data, downloaded by nidl at a fixed revision;
-- the estimator, its hyper-parameters and its training parameters, in the
-  ``config.json`` of each model: ``from_config`` builds the same estimator,
-  randomly initialized, ready to be trained;
-- the data loading and the augmentations, in the
-  :ref:`pretraining recipe <sphx_glr_auto_examples_plot_open_models_pretraining.py>`;
-- the weights, under the CC-BY 4.0 license, with all the parameters of the
-  estimator (e.g., the projection heads and the predictor of NeuroJEPA), so
-  that their pretraining can also be continued.
-
-.. pretrained-models::
-   :family: open
-   :view: table
-
-.. pretrained-models::
-   :family: open
-   :view: cards
-
-
-Published models
+Available models
 ----------------
 
 .. pretrained-models::
@@ -102,10 +74,10 @@ To illustrate the use of these models, the age of the participants of
 :class:`~nidl.datasets.OpenBHB` is predicted from their frozen features. 
 Here, models were pretrained on different data and with different
 preprocessings so this comparison is biased but offers a first idea of their
-performance. The open models share the same pretraining data and
-preprocessing, so that they can be compared with each other.
+performance.
 
 .. pretrained-models::
+   :family: published
    :view: openbhb
 
 .. image:: images/plot_pretrained_openbhb_age.png
@@ -116,24 +88,29 @@ preprocessing, so that they can be compared with each other.
 Share your own model
 --------------------
 
-Any nidl estimator can be saved in the same format with
-:meth:`~nidl.estimators.base.NidlHubMixin.save_pretrained`, or published
-directly with :meth:`~nidl.estimators.base.NidlHubMixin.push_to_hub`:
+Any nidl estimator, and any nidl transform, can be saved in the same format
+with ``save_pretrained``, or published directly with ``push_to_hub``:
 
 .. code-block:: python
 
-    model.fit(train_loader)
-    model.push_to_hub(
-        "my-org/my-model",
-        preprocessing={"transform": "ZNormalization", "kwargs": {}},
-        input_shape=(1, 121, 145, 121),
-    )
+    from nidl.backbones.volume import resnet18
+    from nidl.estimators.ssl import SimCLR
+    from nidl.transforms.volume.preprocessing import ZNormalization
 
-It can then be loaded by anyone with ``from_pretrained("my-org/my-model")``.
-The training parameters of the estimator, such as ``max_epochs`` or
-``precision``, are saved with it, so that ``from_config`` rebuilds an
-estimator trained the same way: share your data loading and augmentations as
-the open models do to make your model fully reproducible.
+    model = SimCLR(encoder=resnet18(n_embedding=512), proj_input_dim=512)
+    model.fit(train_loader)
+    model.push_to_hub("my-org/my-model")
+    ZNormalization().push_to_hub("my-org/my-model")
+
+It can then be loaded by anyone with ``SimCLR.from_pretrained("my-org/my-model")``
+and ``Transform.from_pretrained("my-org/my-model")``. The estimator is saved
+with the parameters given to its constructor, its encoder included: only the
+backbones of ``nidl.backbones`` can be saved. A preprocessing made of
+several transforms can be a ``Compose`` of ``torchvision.transforms``,
+saved with :func:`nidl.utils.hub.push_to_hub`. See
+:class:`~nidl.estimators.BaseEstimator` and :class:`~nidl.utils.hub.HubMixin`
+for the details of the format.
+
 For weights published elsewhere that cannot be redistributed, implement an
 :class:`~nidl.estimators.external.ExternalWeights` converter.
 
@@ -141,8 +118,7 @@ For weights published elsewhere that cannot be redistributed, implement an
 Licenses and access
 -------------------
 
-The open models are released under the CC-BY 4.0 license. The other
-weights keep the license of their authors, given above and in the model
+The weights keep the license of their authors, given above and in the model
 card of each repository: check it before using a model, in particular for
 commercial or clinical use. Weights that cannot be redistributed, such as the
 Neuro-JEPA ones, are downloaded from the repository of their authors, at the

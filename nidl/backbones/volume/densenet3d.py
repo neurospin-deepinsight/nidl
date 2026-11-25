@@ -16,8 +16,10 @@ import torch.nn.functional as func
 import torch.utils.checkpoint as cp
 from torch import nn
 
+from ...utils.config import ConfigMixin
 
-class DenseNet(nn.Module):
+
+class DenseNet(ConfigMixin, nn.Module):
     """3D Densenet architecture adapted from Huang et al. 2018. See
     https://doi.org/10.48550/arXiv.1608.06993 for details.
 

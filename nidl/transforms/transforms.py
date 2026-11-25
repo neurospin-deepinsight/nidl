@@ -22,10 +22,13 @@ from typing import Any, Optional, Union
 import numpy as np
 import torch
 
+from ..utils.config import is_torchvision_container
+from ..utils.hub import HubMixin
+
 TypeTransformInput = Union[np.ndarray, torch.Tensor]
 
 
-class Transform(ABC):
+class Transform(HubMixin, ABC):
     """Abstract class for all nidl transformations.
 
     The general logic for any transformation when called is:
@@ -77,7 +80,51 @@ class Transform(ABC):
         Probability to apply the transformation.
         If float, it should be between 0 and 1 (included).
         If None (default), the transformation is always applied.
+
+    Notes
+    -----
+    .. rubric:: Sharing transforms
+
+    A transform is saved, in a local folder or a Hugging Face repository,
+    with :meth:`~nidl.utils.hub.HubMixin.save_pretrained` or
+    :meth:`~nidl.utils.hub.HubMixin.push_to_hub`, as a
+    ``preprocessor_config.yaml`` file holding its configuration, i.e., the
+    parameters given to its constructor (see
+    :class:`~nidl.utils.config.ConfigMixin`). It should be in the same
+    repository as an estimator, as the preprocessing of its inputs.
+
+    :meth:`Transform.from_pretrained
+    <nidl.utils.hub.HubMixin.from_pretrained>` returns the saved
+    transform, whatever its class. The parameters that depend on the data,
+    such as the orientation of the volumes, are not saved and must be given
+    to it.
+
+    A ``Compose``, ``RandomApply``, ``RandomChoice`` or ``RandomOrder`` of
+    `torchvision.transforms` (or `torchvision.transforms.v2`) of nidl
+    transforms is saved in the same way with
+    :func:`nidl.utils.hub.save_pretrained` or
+    :func:`nidl.utils.hub.push_to_hub`.
+
+    Examples
+    --------
+    >>> from nidl.transforms import Transform
+    >>> from nidl.transforms.volume.preprocessing import ZNormalization
+    >>> ZNormalization().save_pretrained("my_model")
+    PosixPath('my_model')
+    >>> transform = Transform.from_pretrained("my_model")
+    >>> type(transform).__name__
+    'ZNormalization'
     """
+
+    CONFIG_NAME = "preprocessor_config.yaml"
+    CONFIG_KEY = "transform"
+
+    @classmethod
+    def _accepts(cls, target: type) -> bool:
+        # The generic method also builds the containers of torchvision.
+        return super()._accepts(target) or (
+            cls is Transform and is_torchvision_container(target)
+        )
 
     def __init__(self, p: Union[float, None] = None):
         self.p = self.parse_probability(p)
@@ -447,6 +494,7 @@ class VolumeTransform(Transform):
             )
         return data
 
+
 class DinoTransform(Transform):
     """
     Applies the two different sequences of transforms needed to compute
@@ -459,18 +507,18 @@ class DinoTransform(Transform):
     global_crops_transform : Callable
         Function that defines the transform used to compute
         ALL global crops from the input volume. See Examples.
-    
+
     local_crops_transform : Callable
         Function that defines the transform used to compute
         ALL local crops from the input volume. See Examples.
-    
+
     n_global_crops : int, default = 2
         Number of global crops to be derived from the input volume
-    
+
     n_local_crops : int, default = 8
         Number of local crops to be derived from the input volume
 
-        
+
     Examples
     --------
     >>> from torchvision.transforms import Compose
@@ -498,12 +546,13 @@ class DinoTransform(Transform):
     ...     n_local_crops = 2,
     ... )
 
-    
+
     References
     ----------
     .. [1] Caron, M., et al., "Emerging Properties in Self-Supervised Vision
         Transformers" ICCV, 2021. https://arxiv.org/abs/2104.14294
     """
+
     def __init__(
         self,
         global_crops_transform: Callable,
@@ -517,9 +566,11 @@ class DinoTransform(Transform):
         self.global_crops_transforms = []
         self.local_crops_transforms = []
         self.n_global_crops = self._parse_crops_count(
-            n_global_crops, "n_global_crops")
+            n_global_crops, "n_global_crops"
+        )
         self.n_local_crops = self._parse_crops_count(
-            n_local_crops, "n_local_crops")
+            n_local_crops, "n_local_crops"
+        )
 
         if callable(global_crops_transform):
             for _ in range(self.n_global_crops):
@@ -529,7 +580,7 @@ class DinoTransform(Transform):
                 "Unexpected global_crops_transform, got "
                 f"{type(global_crops_transform)} but expected a callable"
             )
-    
+
         if callable(local_crops_transform):
             for _ in range(self.n_local_crops):
                 self.local_crops_transforms.append(local_crops_transform)
@@ -538,7 +589,6 @@ class DinoTransform(Transform):
                 "Unexpected n_local_crops, got "
                 f"{type(local_crops_transform)} but expected a callable"
             )
-    
 
     def parse_data(self, data: Any):
         """Data are not parsed here."""
@@ -559,7 +609,8 @@ class DinoTransform(Transform):
         return crops_count
 
     def apply_transform(
-            self, data_parsed, **kwargs) -> list[TypeTransformInput]:
+        self, data_parsed, **kwargs
+    ) -> list[TypeTransformInput]:
         """
         Parameters
         ----------

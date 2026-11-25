@@ -127,7 +127,7 @@ class SimCLR(TransformerMixin, BaseEstimator):
     .. rubric:: Pretrained Weights
 
     Weights are available on the Hugging Face Hub, in the nidl format (see
-    :class:`~nidl.estimators.base.NidlHubMixin`):
+    :class:`~nidl.estimators.BaseEstimator`):
 
     - `nidl-neurospin/brainiac-vit-b
       <https://huggingface.co/nidl-neurospin/brainiac-vit-b>`_: BrainIAC [4]_,
@@ -148,15 +148,16 @@ class SimCLR(TransformerMixin, BaseEstimator):
         BrainIAC features. The weights are unchanged, but the projection head
         was trained on the first patch token.
 
-    Each set of weights needs its own preprocessing, given by
-    :meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing`, and
-    :meth:`~nidl.estimators.BaseEstimator.transform` rejects inputs of the
-    wrong shape:
+    Each set of weights needs its own preprocessing, published in the same
+    repository and loaded with
+    :meth:`Transform.from_pretrained
+    <nidl.utils.hub.HubMixin.from_pretrained>`:
 
+    >>> from nidl.transforms import Transform
     >>> model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
-    >>> preprocess = model.get_preprocessing()
+    >>> preprocess = Transform.from_pretrained("nidl-neurospin/brainiac-vit-b")
 
-    Loading weights needs ``pip install nidl[pretrained]``. See
+    Loading weights needs ``pip install nidl[hub]``. See
     :ref:`pretrained_models` for all the available models.
 
     References
@@ -348,7 +349,6 @@ class SimCLR(TransformerMixin, BaseEstimator):
             The encoded features returned by the encoder.
 
         """
-        self.check_pretrained_input(batch)
         return self.encoder(batch)
 
     def configure_optimizers(self):

@@ -91,9 +91,8 @@ Preprocessing of pretrained models
 ..................................
 
 Classes that reproduce the preprocessing of the original implementation of
-published pretrained models, given by
-:meth:`~nidl.estimators.base.NidlHubMixin.get_preprocessing` once their weights
-are loaded.
+published pretrained models, published with their weights and loaded with
+:meth:`Transform.from_pretrained <nidl.utils.hub.HubMixin.from_pretrained>`.
 
 .. autosummary::
    :toctree: generated/
