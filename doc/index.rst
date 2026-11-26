@@ -126,8 +126,9 @@ Key features
             model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
             features = model.transform(loader)
 
-        +++
-        :ref:`Learn more <pretrained_models>` :fas:`arrow-right`
+        .. card-footer::
+
+            :ref:`Learn more <pretrained_models>` :fas:`arrow-right`
 
 Fit a model in a few lines
 --------------------------
