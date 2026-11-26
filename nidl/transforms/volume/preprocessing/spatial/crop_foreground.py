@@ -1,5 +1,5 @@
 ##########################################################################
-# NSAp - Copyright (C) CEA, 2026
+# NSAp - Copyright (C) CEA, 2025
 # Distributed under the terms of the CeCILL-B license, as published by
 # the CEA-CNRS-INRIA. Refer to the LICENSE file or to
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
@@ -18,10 +18,13 @@ class CropForeground(VolumeTransform):
 
     The foreground is made of the voxels strictly above `threshold` in any
     channel. The bounding box is enlarged by `margin` voxels on each side,
-    without going beyond the volume.
+    without going beyond the volume. A volume without foreground is returned
+    unchanged.
 
     It handles :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
     returns a consistent output (same type).
+
+    Reimplementation of MONAI's ``CropForeground`` [1]_ (Apache-2.0).
 
     Parameters
     ----------
@@ -32,6 +35,12 @@ class CropForeground(VolumeTransform):
     kwargs : dict
         Keyword arguments given to
         :class:`nidl.transforms.transforms.Transform`.
+
+    References
+    ----------
+    .. [1] Cardoso, M. J., et al., "MONAI: An open-source framework for deep
+           learning in healthcare." arXiv, 2022.
+           https://arxiv.org/abs/2211.02701
 
     Examples
     --------
@@ -62,25 +71,23 @@ class CropForeground(VolumeTransform):
         Returns
         -------
         data: np.ndarray or torch.Tensor
-            Cropped data with same type as input.
-
-        Raises
-        ------
-        ValueError
-            If the volume has no foreground.
+            Cropped data (a copy) with same type as input, unchanged if
+            there is no foreground.
         """
         foreground = data > self.threshold
         if isinstance(foreground, torch.Tensor):
             foreground = foreground.cpu().numpy()
         if data.ndim == 4:
             foreground = foreground.any(axis=0)
-        if not foreground.any():
-            raise ValueError("Cannot crop a volume without foreground.")
-        bounding_box = [slice(None)] * (data.ndim - 3)
-        for axis in range(3):
-            other_axes = tuple(i for i in range(3) if i != axis)
-            indices = np.flatnonzero(foreground.any(axis=other_axes))
-            start = max(indices[0] - self.margin, 0)
-            end = min(indices[-1] + self.margin + 1, foreground.shape[axis])
-            bounding_box.append(slice(start, end))
-        return data[tuple(bounding_box)]
+        if foreground.any():
+            bounding_box = [slice(None)] * (data.ndim - 3)
+            for axis in range(3):
+                other_axes = tuple(i for i in range(3) if i != axis)
+                indices = np.flatnonzero(foreground.any(axis=other_axes))
+                start = max(indices[0] - self.margin, 0)
+                end = min(
+                    indices[-1] + self.margin + 1, foreground.shape[axis]
+                )
+                bounding_box.append(slice(start, end))
+            data = data[tuple(bounding_box)]
+        return data.clone() if isinstance(data, torch.Tensor) else data.copy()

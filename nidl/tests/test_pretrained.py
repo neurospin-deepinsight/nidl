@@ -1118,8 +1118,8 @@ class TestCropForeground(unittest.TestCase):
         )
 
     def test_no_foreground(self):
-        with self.assertRaisesRegex(ValueError, "foreground"):
-            CropForeground(margin=4)(np.zeros((1, 4, 4, 4)))
+        x = np.zeros((1, 4, 4, 4))
+        np.testing.assert_array_equal(CropForeground(margin=4)(x), x)
         with self.assertRaises(ValueError):
             CropForeground(margin=-1)
 

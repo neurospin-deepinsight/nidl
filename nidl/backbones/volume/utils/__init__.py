@@ -6,6 +6,11 @@
 # for details.
 ##########################################################################
 
+from .input_adapters import (
+    IdentityAdapter,
+    Patched3DInputAdapter,
+    SimpleFeaturesInputAdapter,
+)
 from .pos_embed import (
     build_1d_sincos_posemb,
     build_2d_sincos_posemb,

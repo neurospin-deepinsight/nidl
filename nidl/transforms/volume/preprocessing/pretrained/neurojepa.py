@@ -105,10 +105,17 @@ class NeuroJEPAPreprocessing(VolumeTransform):
         output : torch.Tensor
             Float32 volume of shape :math:`(C, 96, 108, 96)`, with
             :math:`C=1` if the input has no channel.
+
+        Raises
+        ------
+        ValueError
+            If the volume has no foreground (e.g. a constant volume).
         """
         volume = to_float_volume(data)
         volume[np.isnan(volume)] = 0.0
         volume = self.rescale(self.reorient(volume))
+        if not (volume > self.crop_foreground.threshold).any():
+            raise ValueError("Cannot preprocess a volume without foreground.")
         volume = self.crop_foreground(self.pad(volume))
         x = F.interpolate(
             torch.from_numpy(np.ascontiguousarray(volume)).unsqueeze(0),

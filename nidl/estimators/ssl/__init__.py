@@ -9,6 +9,7 @@
 """Self-supervised estimators."""
 
 from .barlowtwins import BarlowTwins
+from .comm import CoMM
 from .dcl import DCL
 from .dino import DINO
 from .ijepa import IJEPA
