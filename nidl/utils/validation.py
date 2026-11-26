@@ -1,15 +1,16 @@
 ##########################################################################
-# NSAp - Copyright (C) CEA, 2025
+# NSAp - Copyright (C) CEA, 2025 - 2026
 # Distributed under the terms of the CeCILL-B license, as published by
 # the CEA-CNRS-INRIA. Refer to the LICENSE file or to
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
 # for details.
 ##########################################################################
-from __future__ import annotations
 
+import os
 from collections.abc import Sequence
 from functools import update_wrapper, wraps
 from inspect import isclass
+from pathlib import Path
 from types import MethodType
 from typing import Optional
 
@@ -152,3 +153,42 @@ def available_if(check):
     return lambda fn: _AvailableIfDescriptor(
         fn, check, attribute_name=fn.__name__
     )
+
+
+def get_cache_dir(
+        data_dir: str | Path | None = None,
+    ) -> Path:
+    """
+    Return nidl default cache directory.
+
+    This is typically useful for the end-user to check where the data is
+    downloaded and stored.
+
+    Parameters
+    ----------
+    data_dir : str | Path | None
+        Path where data should be downloaded. By default, files are
+        downloaded in a ``nidl_data`` folder in the home directory of the
+        user.
+        Default None.
+
+    Returns
+    -------
+    path
+        Path to the cache directory.
+
+    Notes
+    -----
+    This function retrieves the cache directory using the following
+    priority :
+
+    1. defaults system paths
+    2. the keyword argument data_dir
+    4. the user environment variable NIDL_CACHE
+    5. nidl_data in the user home folder
+    """
+    if data_dir is None:
+        data_dir = os.getenv("NIDL_CACHE")
+        if data_dir is None:
+            data_dir = Path("~/nidl_data").expanduser()
+    return Path(data_dir)

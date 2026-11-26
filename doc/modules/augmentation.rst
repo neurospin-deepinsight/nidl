@@ -79,12 +79,29 @@ transformations on brain 3D volumes.
     ZNormalization
     CropForeground
     CropOrPad
+    CropForeground
+    Reorient
     Resample
     Resize
 
 .. autoclasstree:: nidl.transforms.volume.preprocessing
    :strict:
    :align: center
+
+Preprocessing of pretrained models
+..................................
+
+Classes that reproduce the preprocessing of the original implementation of
+published pretrained models, published with their weights and loaded with
+:meth:`Transform.from_pretrained <nidl.utils.hub.HubMixin.from_pretrained>`.
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    NeuroJEPAPreprocessing
+    NeuroSimCLRPreprocessing
+    BrainIACPreprocessing
 
 
 

@@ -7,11 +7,17 @@
 ##########################################################################
 
 from .intensity import RobustRescaling, ZNormalization
+from .pretrained import (
+    BrainIACPreprocessing,
+    NeuroJEPAPreprocessing,
+    NeuroSimCLRPreprocessing,
+)
 from .spatial import (
     CropForeground,
     CropOrPad,
     InverseLetterbox,
     Letterbox,
+    Reorient,
     Resample,
     Resize,
 )

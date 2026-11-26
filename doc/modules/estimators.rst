@@ -165,6 +165,63 @@ built with :func:`~nidl.utils.data_parsing.collate_multimodal`.
     collate_multimodal
 
 
+Pretrained weights
+------------------
+
+All estimators inherit from :class:`~nidl.utils.hub.HubMixin`: they can be
+saved, shared on the Hugging Face Hub and instantiated with published
+weights, as in `transformers <https://huggingface.co/docs/transformers>`_.
+The preprocessing of their inputs is shared in the same repository, and
+loaded with the same method of :class:`~nidl.transforms.transforms.Transform`:
+
+.. code-block:: python
+
+    from nidl.estimators.ssl import SimCLR
+    from nidl.transforms import Transform
+
+    model = SimCLR.from_pretrained("nidl-neurospin/brainiac-vit-b")
+    transform = Transform.from_pretrained("nidl-neurospin/brainiac-vit-b")
+
+A published estimator is a folder, or a Hub repository, holding its weights
+in ``model.safetensors`` and its configuration in ``config.yaml``: the
+parameters given to its constructor, its encoder included (see
+:class:`~nidl.utils.config.ConfigMixin`). Save your own estimators with
+:meth:`~nidl.utils.hub.HubMixin.save_pretrained` or
+:meth:`~nidl.utils.hub.HubMixin.push_to_hub`. Install the
+dependencies with ``pip install nidl[hub]``.
+
+The available models, their expected inputs and licenses are listed in
+:ref:`pretrained_models`.
+
+.. currentmodule:: nidl.utils
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    hub.HubMixin
+    config.ConfigMixin
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+
+    hub.save_pretrained
+    hub.push_to_hub
+    config.get_config
+    config.instantiate
+    config.check_config
+
+.. currentmodule:: nidl.estimators
+
+.. autosummary::
+   :toctree: generated/
+   :template: class.rst
+
+    external.ExternalWeights
+    external.NeuroJEPAWeights
+
+
 Probing estimators
 ------------------
 

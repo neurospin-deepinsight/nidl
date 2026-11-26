@@ -46,7 +46,7 @@ from torchvision.datasets import MNIST
 
 from nidl.estimators.ssl import SimCLR
 from nidl.transforms.transforms import MultiViewsTransform
-from nidl.utils.weights import Weights
+from nidl.utils.hub import Weights
 
 # %%
 # We define some global parameters that will be used throughout the notebook.
@@ -243,9 +243,9 @@ if not load_pretrained:
 if load_pretrained:
     # Load model from checkpoint
     weights = Weights(
-        'hf-hub:neurospin/nidl_example_simclr_mnist',
+        filepath="nidl_example_simclr_mnist.ckpt",
+        repo_id="neurospin/nidl_example_simclr_mnist",
         data_dir=model_dir,
-        filepath='nidl_example_simclr_mnist.ckpt'
     )
     model = weights.load_checkpoint(
         SimCLR,

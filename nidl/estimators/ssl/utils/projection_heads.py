@@ -25,10 +25,12 @@ class ProjectionHead(nn.Module):
         non_linearity_layer)`. Each block applies:
 
         1) a linear layer with `in_features` and `out_features` (with bias if
-           `batch_norm_layer` is None)
+           `bias` is True and `batch_norm_layer` is None)
         2) a batch normalization layer as defined by `batch_norm_layer`
             (optional)
         3) a non-linearity as defined by `non_linearity_layer` (optional)
+    bias : bool, default=True
+        Whether the linear layers can have a bias.
 
     Attributes
     ----------
@@ -51,6 +53,7 @@ class ProjectionHead(nn.Module):
         blocks: list[
             tuple[int, int, Optional[nn.Module], Optional[nn.Module]]
         ],
+        bias: bool = True,
     ):
         super().__init__()
 
@@ -60,7 +63,7 @@ class ProjectionHead(nn.Module):
         for input_dim, output_dim, batch_norm, non_linearity in blocks:
             if self._proj_input_dim is None:
                 self._proj_input_dim = input_dim
-            use_bias = not bool(batch_norm)
+            use_bias = bias and not bool(batch_norm)
             layers.append(nn.Linear(input_dim, output_dim, bias=use_bias))
             if batch_norm:
                 layers.append(batch_norm)
@@ -120,12 +123,25 @@ class SimCLRProjectionHead(ProjectionHead):
         input_dim: int = 2048,
         hidden_dim: int = 2048,
         output_dim: int = 128,
+        bias: bool = True,
+        batch_norm: bool = False,
     ):
         super().__init__(
             [
-                (input_dim, hidden_dim, None, nn.ReLU()),
-                (hidden_dim, output_dim, None, None),
-            ]
+                (
+                    input_dim,
+                    hidden_dim,
+                    nn.BatchNorm1d(hidden_dim) if batch_norm else None,
+                    nn.ReLU(),
+                ),
+                (
+                    hidden_dim,
+                    output_dim,
+                    nn.BatchNorm1d(output_dim) if batch_norm else None,
+                    None,
+                ),
+            ],
+            bias=bias,
         )
 
 

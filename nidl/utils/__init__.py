@@ -12,5 +12,5 @@ Various utilities to help with development.
 
 from .bunch import Bunch
 from .color import print_multicolor
+from .hub import Weights
 from .lr_scheduler import LinearWarmupCosineAnnealingLR
-from .weights import Weights

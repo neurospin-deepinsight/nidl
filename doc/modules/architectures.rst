@@ -19,8 +19,8 @@ Pre-trained weights
 ...................
 
 nidl offers pre-trained weights for every provided architecture. The weights
-can be restored using the :meth:`nidl.utils.weights.Weights.load_pretrained` method.
-Available weights are listed `here <https://huggingface.co/neurospin>`_.
+can be restored using the :meth:`nidl.utils.hub.Weights.load_pretrained` method.
+Available weights are listed `here <https://huggingface.co/nidl-neurospin>`_.
 
 
 Weights
@@ -28,7 +28,7 @@ Weights
 
 Classes that allow to restore pre-trained weights.
 
-.. currentmodule:: nidl.utils.weights
+.. currentmodule:: nidl.utils.hub
 
 .. autosummary::
    :toctree: generated/
@@ -42,6 +42,11 @@ Volume
 
 Classes that implement architectures that can be applied on brain volumes and
 various utility functions.
+
+These architectures record the parameters given to their constructor (see
+:class:`~nidl.utils.config.ConfigMixin`): an estimator using one of them as
+encoder can be saved with
+:meth:`~nidl.utils.hub.HubMixin.save_pretrained`.
 
 .. currentmodule:: nidl.backbones.volume
 

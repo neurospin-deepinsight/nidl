@@ -238,7 +238,7 @@ class OpenMind(Dataset):
     References
     ----------
     .. [1] Wald et al., An OpenMind for 3D medical vision self-supervised
-           learning, arXiv 2025
+           learning, ICCV 2025
     """
 
     REPO_ID = "neurospin/openmind"

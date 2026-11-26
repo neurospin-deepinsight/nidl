@@ -14,49 +14,80 @@ from ....transforms import TypeTransformInput, VolumeTransform
 
 
 class CropForeground(VolumeTransform):
-    """Crop a 3d volume to the bounding box of its foreground
-    (voxels above `threshold` in any channel).
+    """Crop a 3d volume around its foreground.
+
+    The foreground is made of the voxels strictly above `threshold` in any
+    channel. The bounding box is enlarged by `margin` voxels on each side,
+    without going beyond the volume. A volume without foreground is returned
+    unchanged.
+
+    It handles :class:`numpy.ndarray` or :class:`torch.Tensor` as input and
+    returns a consistent output (same type).
 
     Reimplementation of MONAI's ``CropForeground`` [1]_ (Apache-2.0).
 
     Parameters
     ----------
-    threshold: float, default=0.0
-        Voxels strictly above this value are foreground.
-    kwargs: dict
-        Keyword arguments.
+    margin : int, default=0
+        Number of voxels added around the foreground on each side.
+    threshold : float, default=0.0
+        Voxels strictly above this value are in the foreground.
+    kwargs : dict
+        Keyword arguments given to
+        :class:`nidl.transforms.transforms.Transform`.
 
     References
     ----------
     .. [1] Cardoso, M. J., et al., "MONAI: An open-source framework for deep
            learning in healthcare." arXiv, 2022.
            https://arxiv.org/abs/2211.02701
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from nidl.transforms.volume.preprocessing import CropForeground
+    >>> volume = np.zeros((30, 30, 30))
+    >>> volume[10:12, 1:3, 25:27] = 1
+    >>> CropForeground(margin=4)(volume).shape
+    (10, 7, 9)
     """
 
-    def __init__(self, threshold: float = 0.0, **kwargs):
+    def __init__(self, margin: int = 0, threshold: float = 0.0, **kwargs):
         super().__init__(**kwargs)
+        if margin < 0:
+            raise ValueError(f"margin must be positive, got {margin}.")
+        self.margin = margin
         self.threshold = threshold
 
     def apply_transform(self, data: TypeTransformInput) -> TypeTransformInput:
-        """Crop to the foreground (unchanged if there is none).
+        """Crop the input data around its foreground.
 
         Parameters
         ----------
         data: np.ndarray or torch.Tensor
-            The input volume.
+            The input data with shape :math:`(C, H, W, D)` or
+            :math:`(H, W, D)`.
 
         Returns
         -------
         data: np.ndarray or torch.Tensor
-            Cropped volume (a copy), same type as the input.
+            Cropped data (a copy) with same type as input, unchanged if
+            there is no foreground.
         """
-        mask = data > self.threshold
-        if isinstance(mask, torch.Tensor):
-            mask = mask.cpu().numpy()
-        if mask.ndim == 4:
-            mask = mask.any(axis=0)
-        if mask.any():
-            idx = np.argwhere(mask)
-            lo, hi = idx.min(axis=0), idx.max(axis=0) + 1
-            data = data[..., lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]]
+        foreground = data > self.threshold
+        if isinstance(foreground, torch.Tensor):
+            foreground = foreground.cpu().numpy()
+        if data.ndim == 4:
+            foreground = foreground.any(axis=0)
+        if foreground.any():
+            bounding_box = [slice(None)] * (data.ndim - 3)
+            for axis in range(3):
+                other_axes = tuple(i for i in range(3) if i != axis)
+                indices = np.flatnonzero(foreground.any(axis=other_axes))
+                start = max(indices[0] - self.margin, 0)
+                end = min(
+                    indices[-1] + self.margin + 1, foreground.shape[axis]
+                )
+                bounding_box.append(slice(start, end))
+            data = data[tuple(bounding_box)]
         return data.clone() if isinstance(data, torch.Tensor) else data.copy()

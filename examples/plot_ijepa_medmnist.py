@@ -66,7 +66,7 @@ from nidl.backbones.volume import VisionTransformer3D
 from nidl.estimators.ssl import IJEPA
 from nidl.transforms.volume.augmentation import RandomResizedCrop
 from nidl.transforms.volume.preprocessing import ZNormalization
-from nidl.utils.weights import Weights
+from nidl.utils.hub import Weights
 
 # %%
 # We define some global parameters that will be used throughout the example.
@@ -292,9 +292,9 @@ if not load_pretrained:
     model.fit(train_ssl_loader)
 else:
     weights = Weights(
-        f"hf-hub:{hf_repo_id}",
-        data_dir=model_dir,
         filepath=hf_checkpoint,
+        repo_id=hf_repo_id,
+        data_dir=model_dir,
     )
     weights.load_pretrained(model)
     model.fitted_ = True

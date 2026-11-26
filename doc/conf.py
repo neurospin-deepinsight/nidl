@@ -40,6 +40,7 @@ from nidl.info import __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "gh_substitutions",
+    "pretrained_models",
     "myst_parser",
     "numpydoc",
     "sphinx_copybutton",
@@ -361,9 +362,12 @@ sphinx_gallery_conf = {
     "junit": "../test-results/sphinx-gallery/junit.xml",
     "examples_dirs": "../examples/",
     "gallery_dirs": "auto_examples",
-    # Examples rendered without being executed: the CoMM pretraining needs
-    # the whole OpenMind dataset (460 GB) and hours on a GPU.
-    "filename_pattern": r"/plot_(?!comm_openmind)",
+    # Examples rendered without being executed:
+    # - the pretrained models example needs a GPU, gated weights and the
+    #   whole OpenBHB quasi-raw dataset (rendered with precomputed figures);
+    # - the CoMM pretraining needs the whole OpenMind dataset (460 GB) and
+    #   hours on a GPU.
+    "filename_pattern": r"/plot_(?!pretrained_openbhb|comm_openmind)",
     # Ignore the function signature leftover by joblib
     "ignore_pattern": r"func_code\.py",
     "show_memory": not sys.platform.startswith("win"),

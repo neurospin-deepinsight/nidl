@@ -52,7 +52,7 @@ from torchvision.models import resnet18
 
 from nidl.estimators.ssl import DCL, SimCLR
 from nidl.transforms.transforms import MultiViewsTransform
-from nidl.utils.weights import Weights
+from nidl.utils.hub import Weights
 
 # %%
 # We define some global parameters that will be used throughout the notebook.
@@ -358,14 +358,14 @@ def train_models(batch_size, simclr, dcl):
 # Load trained models' weights from HuggingFace
 def load_weights(batch_size):
     weights_simclr = Weights(
-        name="hf-hub:neurospin/nidl_example_dcl_vs_simclr",
-        data_dir=model_dir,
         filepath=f"example_simclr_bs_{batch_size}.ckpt",
+        repo_id="neurospin/nidl_example_dcl_vs_simclr",
+        data_dir=model_dir,
     )
     weights_dcl = Weights(
-        name="hf-hub:neurospin/nidl_example_dcl_vs_simclr",
-        data_dir=model_dir,
         filepath=f"example_dcl_bs_{batch_size}.ckpt",
+        repo_id="neurospin/nidl_example_dcl_vs_simclr",
+        data_dir=model_dir,
     )
 
     simclr = weights_simclr.load_checkpoint(

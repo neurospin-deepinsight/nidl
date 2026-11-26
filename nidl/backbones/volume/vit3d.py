@@ -17,6 +17,7 @@ from timm.models.vision_transformer import Attention, Block, Mlp
 from torch import Tensor, nn
 
 from ...backbones.volume.utils.pos_embed import build_3d_sincos_posemb
+from ...utils.config import ConfigMixin
 
 
 def _to_3tuple(x: int | Sequence[int]) -> tuple[int, int, int]:
@@ -180,7 +181,7 @@ class PatchEmbed3D(nn.Module):
         return x.flatten(2).transpose(1, 2)
 
 
-class VisionTransformer3D(nn.Module):
+class VisionTransformer3D(ConfigMixin, nn.Module):
     """
     3D Vision Transformer with a timm-like interface.
 
